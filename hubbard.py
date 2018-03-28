@@ -7,7 +7,7 @@ import sisl
 
 class Hubbard(object):
     
-    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=5., nsc=[1,1,1]):
+    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=3., nsc=[1,1,1]):
         # Save parameters
         self.fn = fn
         self.t = t # [onsite,1NN,2NN,3NN]
@@ -25,8 +25,8 @@ class Hubbard(object):
         print 'Found %i pz sites' %self.sites
         # Set hoppings
         self.set_hoppings()
-        self.conv = {}
-        
+        self.init_nc(fn+'.nc')
+
     def set_hoppings(self):
         # Build hamiltonian for backbone
         self.H0 = sisl.Hamiltonian(self.pi_geom)
@@ -85,37 +85,36 @@ class Hubbard(object):
         scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
         plt.show()
         
-    def save_state(self):
-        self.conv[self.U] = [1*self.nup,1*self.ndn,self.Etot]
-        print 'Saved state for U = %.4f eV' %self.U
-        
-    def retrieve_state(self,U):
-        [self.nup,self.dn,Etot] = self.conv[U]
-        self.U = U
-        print 'Retrieved state for U = %.4f eV' %self.U
-
     def init_nc(self,fn):
-        ncf = NC.Dataset(fn,'w')
-        ncf.createDimension('unl',None)
-        ncf.createDimension('spin',2)
-        ncf.createDimension('sites',len(self.pi_geom))
-        ncf.createVariable('U', 'f8', ("unl",))
-        ncf.createVariable('density', 'f8', ("unl","spin","sites"))
-        self.ncf = ncf
+        self.fn = fn
+        try:
+            print 'Appending to', fn
+            self.ncf = NC.Dataset(fn,'a')
+        except:
+            print 'Initiating', fn
+            ncf = NC.Dataset(fn,'w')
+            ncf.createDimension('unl',None)
+            ncf.createDimension('spin',2)
+            ncf.createDimension('sites',len(self.pi_geom))
+            ncf.createVariable('U', 'f8', ("unl",))
+            ncf.createVariable('density', 'f8', ("unl","spin","sites"))
+            ncf.createVariable('Etot', 'f8', ("unl",))
+            self.ncf = ncf
         
     def save(self):
-        i = len(self.ncf['U'][:])
-        print "entries =", i
-        j, = np.where(self.ncf['U'][:] == self.U)
-        if len(j) == 0:
-            self.ncf['U'][i] = self.U
-            self.ncf['density'][i] = [self.nup,self.ndn]
+        # Check if U-value is already stored
+        i = np.where(self.ncf['U'][:] == self.U)[0]
+        if len(i) == 0:
+            i = len(self.ncf['U'][:])
+        self.ncf['U'][i] = self.U
+        self.ncf['density'][i] = [self.nup,self.ndn]
+        self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
+        print 'Wrote U=%.4feV data to'%self.U,self.fn
         
 
 if __name__ == '__main__':
-     T = Hubbard('molecule.XV')
+     T = Hubbard('molecule.XV',U=4.)
      T.init_spins(1)
-     [T.iterate(mix=.1) for i in range(30)]
-     T.init_nc('test.nc')
+     [T.iterate(mix=.1) for i in range(10)]
      T.save()
