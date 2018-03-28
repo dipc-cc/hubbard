@@ -197,6 +197,31 @@ class Hubbard(object):
         return klist, eigs_up, eigs_dn
 
 
+    def plot_bands(self):
+        fig = plt.figure(figsize=(4,8))
+        axes = plt.axes()
+        # Get TB bands
+        ka, evup, evdn = self.get_1D_band_structure()
+        ka = 2*ka # Units ka/pi
+        # determine midgap
+        egap = (evup[0,self.Nup]+evup[0,self.Nup-1])/2
+        # Plotting
+        plt.plot(ka, evup-egap, 'r')
+        plt.ylim(-4,4)
+        plt.rc('font', family='Bitstream Vera Serif', size=19)
+        plt.rc('text', usetex=True)
+        if self.t3 == 0:
+            NN = '1NN'
+        else:
+            NN = '3NN'
+        axes.set_title(r'%s $U=%.2f$ eV'%(NN,self.U),size=19)
+        axes.set_xlabel(r'$ka/\pi$')
+        axes.set_ylabel(r'$E_{nk}$ (eV)')
+        plt.subplots_adjust(left=0.2,top=.95,bottom=0.1,right=0.95)
+        plt.savefig(self.fn+'-%s-U%.3i.pdf'%(NN,self.U*100))
+        plt.close('all')
+
+
 if __name__ == '__main__':
     for i in range(1,4):
         T = Hubbard('Systems/mol%i.XV'%i)
