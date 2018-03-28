@@ -3,11 +3,11 @@ import netCDF4 as NC
 import matplotlib.pyplot as plt
 #import glob
 import sisl
-
+import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=3., nsc=[1,1,1]):
+    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=3., pol=0, nsc=[1,1,1]):
         # Save parameters
         self.fn = fn
         self.t = t # [onsite,1NN,2NN,3NN]
@@ -25,6 +25,7 @@ class Hubbard(object):
         print 'Found %i pz sites' %self.sites
         # Set hoppings
         self.set_hoppings()
+        self.init_polarization(pol)
         self.init_nc(fn+'.nc')
 
     def set_hoppings(self):
@@ -36,14 +37,14 @@ class Hubbard(object):
                 if ti != 0:
                     self.H0.H[ia,idx[j]] = -ti
 
-    def init_spins(self,dN):
+    def init_polarization(self,pol):
         self.Hup = self.H0.copy()
         self.Hdn = self.H0.copy()
         # Determine how many up's and down's
         sites = len(self.pi_geom)
-        self.Nup = int(sites/2+dN)
+        self.Nup = int(sites/2+pol)
         self.Ndn = int(sites-self.Nup)
-        print 'Nup, Ndn, dN =',self.Nup, self.Ndn, self.Nup-self.Ndn
+        print 'Nup, Ndn, pol =',self.Nup, self.Ndn, self.Nup-self.Ndn
         assert self.Nup+self.Ndn == sites
         self.nup = np.random.rand(sites)
         self.nup = self.nup/np.sum(self.nup)*self.Nup
@@ -88,33 +89,62 @@ class Hubbard(object):
     def init_nc(self,fn):
         self.fn = fn
         try:
-            print 'Appending to', fn
             self.ncf = NC.Dataset(fn,'a')
+            print 'Appending to', fn
         except:
             print 'Initiating', fn
             ncf = NC.Dataset(fn,'w')
             ncf.createDimension('unl',None)
             ncf.createDimension('spin',2)
             ncf.createDimension('sites',len(self.pi_geom))
-            ncf.createVariable('U', 'f8', ("unl",))
-            ncf.createVariable('density', 'f8', ("unl","spin","sites"))
-            ncf.createVariable('Etot', 'f8', ("unl",))
+            ncf.createVariable('hash', 'i8', ('unl',))
+            ncf.createVariable('U', 'f8', ('unl',))
+            ncf.createVariable('Nup', 'i4', ('unl',))
+            ncf.createVariable('Ndn', 'i4', ('unl',))
+            ncf.createVariable('Density', 'f8', ('unl','spin','sites'))
+            ncf.createVariable('Etot', 'f8', ('unl',))
             self.ncf = ncf
         
     def save(self):
-        # Check if U-value is already stored
-        i = np.where(self.ncf['U'][:] == self.U)[0]
+        s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
+        print 'parameter string', s
+        myhash = int(hashlib.md5(s).hexdigest()[:7],16)
+        print myhash
+        # Check if this set is already stored
+        i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
-            i = len(self.ncf['U'][:])
+            i = len(self.ncf['hash'][:])
+        else:
+            i = i[0] # first entry
+        self.ncf['hash'][i] = myhash
         self.ncf['U'][i] = self.U
-        self.ncf['density'][i] = [self.nup,self.ndn]
+        self.ncf['Nup'][i] = self.Nup
+        self.ncf['Ndn'][i] = self.Ndn
+        self.ncf['Density'][i,0] = self.nup
+        self.ncf['Density'][i,1] = self.ndn
         self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
         print 'Wrote U=%.4feV data to'%self.U,self.fn
-        
+
+    def read(self,U,Nup,Ndn):
+        s = 'U%.4f Nup%i Ndn%i' %(U, Nup, Ndn)
+        print 'parameter string', s
+        myhash = int(hashlib.md5(s).hexdigest()[:7],16)
+        print myhash
+        i = np.where(self.ncf['hash'][:] == myhash)[0]
+        if len(i) == 0:
+            print 'Error: no data stored for these parameters'
+        else:
+            i = i[0]
+            self.U = self.ncf['U'][i]
+            self.nup = self.ncf['Density'][i][0]
+            self.ndn = self.ncf['Density'][i][1]
+            self.Etot = self.ncf['Etot'][i]
+
 
 if __name__ == '__main__':
-     T = Hubbard('molecule.XV',U=4.)
-     T.init_spins(1)
-     [T.iterate(mix=.1) for i in range(10)]
+     T = Hubbard('molecule.XV', U=4.1, pol=0)
+     for i in range(10):
+         print T.iterate(mix=.1)
      T.save()
+     T.read(4.0,14,14)
