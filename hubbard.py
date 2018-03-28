@@ -147,13 +147,17 @@ class Hubbard(object):
 
     def gethash(self):
         s = ''
-        for v in [self.t1, self.t2, self.t3, self.U, self.Nup, self.Ndn]:
-            s += '%.2f'%v
+        s += 't1=%.2f '%self.t1
+        s += 't2=%.2f '%self.t2
+        s += 't3=%.2f '%self.t3
+        s += 'U=%.2f '%self.U
+        s += 'Nup=%.2f '%self.Nup
+        s += 'Ndn=%.2f '%self.Ndn
         myhash = int(hashlib.md5(s).hexdigest()[:7],16)
-        return myhash
+        return myhash, s
 
     def save(self):
-        myhash = self.gethash()
+        myhash, s = self.gethash()
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(self.ncf['hash'][:])
@@ -170,10 +174,11 @@ class Hubbard(object):
         print 'Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn
 
     def read(self):
-        myhash = self.gethash()
+        myhash, s = self.gethash()
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
-            print 'Data not found'
+            print 'Hash not found:'
+            print '...', s
         else:
             i = i[0]
             self.U = self.ncf['U'][i]
