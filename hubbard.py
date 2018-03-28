@@ -93,9 +93,9 @@ class HubbardH(object):
         
     def save_state(self):
         self.conv[self.U] = [1*self.nup,1*self.ndn,self.Hup.copy(),self.Hdn.copy(),self.Etot]
-        print 'Saved state for U=',self.U
+        print 'Saved state for U = %.4f eV' %self.U
         
     def retrieve_state(self,U):
         [self.nup,self.dn,self.Hup,self.Hdn,Etot] = self.conv[U]
         self.U = U
-        print 'Retrieved state for U=',self.U
+        print 'Retrieved state for U = %.4f eV' %self.U
