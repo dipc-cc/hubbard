@@ -186,6 +186,12 @@ class Hubbard(object):
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
 
+    def find_midgap(self,k=[0,0,0]):
+        evup = self.Hup.eigh(k=k)
+        evdn = self.Hdn.eigh(k=k)
+        homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
+        lumo = min(evup[self.Nup], evdn[self.Ndn])
+        return (lumo+homo)/2
 
     def get_1D_band_structure(self):
         klist = np.linspace(0,0.5,101)
@@ -204,7 +210,7 @@ class Hubbard(object):
         ka, evup, evdn = self.get_1D_band_structure()
         ka = 2*ka # Units ka/pi
         # determine midgap
-        egap = (evup[0,self.Nup]+evup[0,self.Nup-1])/2
+        egap = find_midgap()
         # Plotting
         plt.plot(ka, evup-egap, 'r')
         plt.ylim(-4,4)
@@ -219,6 +225,52 @@ class Hubbard(object):
         axes.set_ylabel(r'$E_{nk}$ (eV)')
         plt.subplots_adjust(left=0.2,top=.95,bottom=0.1,right=0.95)
         plt.savefig(self.fn+'-%s-U%.3i.pdf'%(NN,self.U*100))
+        plt.close('all')
+
+
+    def calc_orbital_charge_overlaps(self,k=[0,0,0],ispin=0):
+        if ispin == 0:
+            ev, evec = self.Hup.eigh(k=k,eigvals_only=False)
+        else:
+            ev, evec = self.Hdn.eigh(k=k,eigvals_only=False)
+        # Compute orbital charge overlaps
+        L = np.einsum('ia,ia,ib,ib->ab',evec,evec,evec,evec).real
+        return ev, L
+
+
+    def plot_localizations(self,k=[0,0,0],ymax=0.15):
+        #U0 = N.diagonal(U)
+        #U1 = N.diagonal(U,offset=1)
+        #labU0 = r'$\eta_{\alpha\alpha}$'
+        #labU1 = r'$\eta_{\alpha,\alpha+1}$'
+
+        fig = plt.figure(figsize=(10,5))
+        axes = plt.axes();
+        axes.fill_between([-10,0], 0, ymax, facecolor='k', alpha=0.1)
+        # Plot data
+        egap = self.find_midgap()
+        for i in range(2):
+            ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
+            L = np.diagonal(L)
+            print i,max(L)
+            plt.plot(ev-egap,L,'rg'[i]+'.+'[i], label=[r'$\sigma_\uparrow$',r'$\sigma_\downarrow$'][i])
+        #ev2 = (ev[1:]+ev[:-1])/2
+        #plt.plot(ev2,U1,'.',label=labU1)
+        axes.set_xlabel(r'$E_\alpha$ (eV)')
+        axes.set_ylabel(r'$\eta_{\alpha}=\int dr |\psi_\alpha|^4$')
+        axes.legend()
+        axes.set_xlim(-10, 10)
+        axes.set_ylim(0, ymax)
+        plt.rc('font', family='Bitstream Vera Serif', size=19)
+        plt.rc('text', usetex=True)
+        #for i in range(len(ev)):
+        #    axes.annotate(i,(ev[i],U0[i]),fontsize=6)
+        if self.t3 == 0:
+            NN = '1NN'
+        else:
+            NN = '3NN'
+        axes.set_title(r'%s $U=%.2f$eV'%(NN, self.U))
+        fig.savefig(self.fn+'-%s-U%.3i-loc.pdf'%(NN, self.U*100))
         plt.close('all')
 
 
