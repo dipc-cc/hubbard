@@ -198,17 +198,17 @@ class Hubbard(object):
 
 
 if __name__ == '__main__':
-    T = Hubbard('molecule.XV')
-    print T.polarize(1)
-    T.iterate()
-    T.save()
-    T.U = 3.2
-    T.read()
-    for i in range(10):
-        print T.iterate(mix=1)
-    T.save()
-    Nup, Ndn = T.polarize(1)
-    T.read()
-    for i in range(10):
-        print T.iterate(mix=.1)
-    T.save()
+    for i in range(1,4):
+        T = Hubbard('Systems/mol%i.XV'%i)
+        T.U = 3.5
+        # Do singlet and triplet states
+        for pol in [0,1]:
+            print 'Polarization:', T.polarize(pol)
+            # preconditioning
+            for i in range(10):
+                T.iterate(mix=.1)
+            # Mix with larger weight
+            for i in range(25):
+                dn, E = T.iterate(mix=1)
+                print dn, E
+            T.save()
