@@ -26,6 +26,9 @@ class Hubbard(object):
         self.U = 0.0
         self.Ndn = int(self.sites/2)
         self.Nup = int(self.sites-self.Ndn)
+        print '   U   =', self.U
+        print '   Nup =', self.Nup
+        print '   Ndn =', self.Ndn
         # Construct Hamiltonians
         self.set_hoppings()
         # Initialize data file
@@ -87,11 +90,22 @@ class Hubbard(object):
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(6,6))
         axes = plt.axes()
-        axes.set_aspect('equal') 
+        axes.set_aspect('equal')
         scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
         scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
         plt.show()
-        
+
+    def plot_charge(self,f=100):
+        x = self.pi_geom.xyz[:,0]
+        y = self.pi_geom.xyz[:,1]
+        pol = self.nup+self.ndn
+        fig = plt.figure(figsize=(6,6))
+        axes = plt.axes()
+        axes.set_aspect('equal')
+        scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
+        scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
+        plt.show()
+
     def init_nc(self,fn):
         self.fn = fn
         try:
@@ -128,7 +142,7 @@ class Hubbard(object):
         self.ncf['Density'][i,1] = self.ndn
         self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
-        print 'Wrote U=%.4feV data to'%self.U,self.fn
+        print 'Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn
 
     def read(self):
         s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
