@@ -7,11 +7,12 @@ import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], nsc=[1,1,1], kmesh=[1,1,1]):
+    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1,1,1], kmesh=[1,1,1]):
         # Save parameters
         self.fn = fn
-        self.t = t # [onsite,1NN,2NN,3NN]
-        self.R = R # [0.1,r1,r2,r3]
+        self.t1 = t1
+        self.t2 = t2
+        self.t3 = t3
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
         # Determine pz sites
@@ -52,13 +53,17 @@ class Hubbard(object):
         return self.Nup, self.Ndn
 
     def set_hoppings(self):
+        # Radii defining 1st, 2nd, and 3rd neighbors
+        R = [0.1,1.6,2.6,3.1]
         # Build hamiltonian for backbone
         self.H0 = sisl.Hamiltonian(self.pi_geom)
         for ia in self.pi_geom:
-            idx = self.pi_geom.close(ia,R=self.R)
-            for j,ti in enumerate(self.t):
-                if ti != 0:
-                    self.H0.H[ia,idx[j]] = -ti
+            idx = self.pi_geom.close(ia,R=R)
+            self.H0.H[ia,idx[1]] = -self.t1
+            if self.t2 != 0:
+                self.H0.H[ia,idx[2]] = -self.t2
+            if self.t3 != 0:
+                self.H0.H[ia,idx[3]] = -self.t3
         self.Hup = self.H0.copy()
         self.Hdn = self.H0.copy()
 
