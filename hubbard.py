@@ -7,12 +7,11 @@ import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=3., pol=0, nsc=[1,1,1]):
+    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], nsc=[1,1,1]):
         # Save parameters
         self.fn = fn
         self.t = t # [onsite,1NN,2NN,3NN]
         self.R = R # [0.1,r1,r2,r3]
-        self.U = U # Onsite Coulomb repulsion
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
         # Determine pz sites
@@ -23,10 +22,22 @@ class Hubbard(object):
         self.pi_geom = self.geom.remove(Hlist)
         self.sites = len(self.pi_geom)
         print 'Found %i pz sites' %self.sites
-        # Set hoppings
+        # Set default values
+        self.U = 0.0
+        self.Ndn = int(self.sites/2)
+        self.Nup = int(self.sites-self.Ndn)
+        # Construct Hamiltonians
         self.set_hoppings()
-        self.init_polarization(pol)
+        # Initialize data file
         self.init_nc(fn+'.nc')
+        # Try reading from file
+        self.read()
+
+    def polarize(self,pol):
+        'Polarizing by',pol
+        self.Nup += int(pol)
+        self.Ndn -= int(pol)
+        return self.Nup, self.Ndn
 
     def set_hoppings(self):
         # Build hamiltonian for backbone
@@ -36,20 +47,15 @@ class Hubbard(object):
             for j,ti in enumerate(self.t):
                 if ti != 0:
                     self.H0.H[ia,idx[j]] = -ti
-
-    def init_polarization(self,pol):
         self.Hup = self.H0.copy()
         self.Hdn = self.H0.copy()
-        # Determine how many up's and down's
-        sites = len(self.pi_geom)
-        self.Nup = int(sites/2+pol)
-        self.Ndn = int(sites-self.Nup)
-        print 'Nup, Ndn, pol =',self.Nup, self.Ndn, self.Nup-self.Ndn
-        assert self.Nup+self.Ndn == sites
-        self.nup = np.random.rand(sites)
-        self.nup = self.nup/np.sum(self.nup)*self.Nup
-        self.ndn = np.random.rand(sites)
-        self.ndp = self.ndn/np.sum(self.ndn)*self.Ndn
+
+
+    def init_density(self):
+        self.nup = np.random.rand(self.sites)
+        self.nup = self.nup/np.sum(self.nup)*(self.Nup)
+        self.ndn = np.random.rand(self.sites)
+        self.ndp = self.ndn/np.sum(self.ndn)*(self.Ndn)
 
     def iterate(self,mix=1.0):
         nup = self.nup
@@ -73,7 +79,7 @@ class Hubbard(object):
         self.ndn = mix*nidn+(1.-mix)*ndn
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
-        return dn,self.Etot
+        return dn, self.Etot
         
     def plot_polarization(self,f=100):
         x = self.pi_geom.xyz[:,0]
@@ -107,9 +113,7 @@ class Hubbard(object):
         
     def save(self):
         s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
-        print 'parameter string', s
         myhash = int(hashlib.md5(s).hexdigest()[:7],16)
-        print myhash
         # Check if this set is already stored
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
@@ -126,14 +130,15 @@ class Hubbard(object):
         self.ncf.sync()
         print 'Wrote U=%.4feV data to'%self.U,self.fn
 
-    def read(self,U,Nup,Ndn):
-        s = 'U%.4f Nup%i Ndn%i' %(U, Nup, Ndn)
-        print 'parameter string', s
+    def read(self):
+        s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
         myhash = int(hashlib.md5(s).hexdigest()[:7],16)
-        print myhash
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
-            print 'Error: no data stored for these parameters'
+            print 'Initializing random density'
+            self.init_density()
+            self.iterate()
+            self.save()
         else:
             i = i[0]
             self.U = self.ncf['U'][i]
@@ -143,8 +148,17 @@ class Hubbard(object):
 
 
 if __name__ == '__main__':
-     T = Hubbard('molecule.XV', U=4.1, pol=0)
-     for i in range(10):
-         print T.iterate(mix=.1)
-     T.save()
-     T.read(4.0,14,14)
+    T = Hubbard('molecule.XV')
+    print T.polarize(1)
+    T.iterate()
+    T.save()
+    T.U = 3.2
+    T.read()
+    for i in range(10):
+        print T.iterate(mix=1)
+    T.save()
+    Nup, Ndn = T.polarize(1)
+    T.read()
+    for i in range(10):
+        print T.iterate(mix=.1)
+    T.save()
