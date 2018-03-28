@@ -7,7 +7,7 @@ import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], nsc=[1,1,1]):
+    def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], nsc=[1,1,1], kmesh=[1,1,1]):
         # Save parameters
         self.fn = fn
         self.t = t # [onsite,1NN,2NN,3NN]
@@ -31,6 +31,13 @@ class Hubbard(object):
         print '   Ndn =', self.Ndn
         # Construct Hamiltonians
         self.set_hoppings()
+        # Generate kmesh
+        [nx,ny,nz] = kmesh
+        self.kmesh = []
+        for kx in np.arange(0, 1, 1./nx):
+            for ky in np.arange(0, 1, 1./ny):
+                for kz in np.arange(0, 1, 1./nz):
+                    self.kmesh.append([kx, ky, kz])
         # Initialize data file
         self.init_nc(fn+'.nc')
         # First time we need to initialize arrays
@@ -72,11 +79,17 @@ class Hubbard(object):
             self.Hup.H[ia,ia] = self.U*self.ndn[ia]
             self.Hdn.H[ia,ia] = self.U*self.nup[ia]
         # Solve eigenvalue problems
-        ev_up, evec_up = self.Hup.eigh(eigvals_only=False)
-        ev_dn, evec_dn = self.Hdn.eigh(eigvals_only=False)
-        # Compute new occupations
-        niup = np.sum(np.power(evec_up[:,:int(Nup)],2),axis=1).real
-        nidn = np.sum(np.power(evec_dn[:,:int(Ndn)],2),axis=1).real
+        niup = 0*nup
+        nidn = 0*ndn
+        for k in self.kmesh:
+            print 'Doing k =',k
+            ev_up, evec_up = self.Hup.eigh(k=k,eigvals_only=False)
+            ev_dn, evec_dn = self.Hdn.eigh(k=k,eigvals_only=False)
+            # Compute new occupations
+            niup += np.sum(np.power(evec_up[:,:int(Nup)],2),axis=1).real
+            nidn += np.sum(np.power(evec_dn[:,:int(Ndn)],2),axis=1).real
+        niup = niup/len(self.kmesh)
+        nidn = nidn/len(self.kmesh)
         # Measure of density change
         dn = np.sum(abs(nup-niup))
         # Update occupations
