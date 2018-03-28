@@ -82,12 +82,11 @@ class Hubbard(object):
         niup = 0*nup
         nidn = 0*ndn
         for k in self.kmesh:
-            print 'Doing k =',k
             ev_up, evec_up = self.Hup.eigh(k=k,eigvals_only=False)
             ev_dn, evec_dn = self.Hdn.eigh(k=k,eigvals_only=False)
             # Compute new occupations
-            niup += np.sum(np.power(evec_up[:,:int(Nup)],2),axis=1).real
-            nidn += np.sum(np.power(evec_dn[:,:int(Ndn)],2),axis=1).real
+            niup += np.sum(np.absolute(evec_up[:,:int(Nup)])**2,axis=1).real
+            nidn += np.sum(np.absolute(evec_dn[:,:int(Ndn)])**2,axis=1).real
         niup = niup/len(self.kmesh)
         nidn = nidn/len(self.kmesh)
         # Measure of density change
