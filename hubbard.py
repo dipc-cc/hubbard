@@ -104,14 +104,14 @@ class Hubbard(object):
         self.ncf = ncf
         
     def save(self):
-        entries = len(self.ncf['U'][:])
-        print entries
-        try:
-            i, = np.where(self.ncf['U'][:] == self.U)
-            print i
-        except:
-            self.ncf['U']
-
+        i = len(self.ncf['U'][:])
+        print "entries =", i
+        j, = np.where(self.ncf['U'][:] == self.U)
+        if len(j) == 0:
+            self.ncf['U'][i] = self.U
+            self.ncf['density'][i] = [self.nup,self.ndn]
+        self.ncf.sync()
+        
 
 if __name__ == '__main__':
      T = Hubbard('molecule.XV')
