@@ -143,16 +143,22 @@ class Hubbard(object):
             ncf.createVariable('Density', 'f8', ('unl','spin','sites'))
             ncf.createVariable('Etot', 'f8', ('unl',))
             self.ncf = ncf
-        
-    def save(self):
-        s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
+
+
+    def gethash(self):
+        s = ''
+        for v in [self.t1, self.t2, self.t3, self.U, self.Nup, self.Ndn]:
+            s += '%.2f'%v
         myhash = int(hashlib.md5(s).hexdigest()[:7],16)
-        # Check if this set is already stored
+        return myhash
+
+    def save(self):
+        myhash = self.gethash()
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(self.ncf['hash'][:])
         else:
-            i = i[0] # first entry
+            i = i[0]
         self.ncf['hash'][i] = myhash
         self.ncf['U'][i] = self.U
         self.ncf['Nup'][i] = self.Nup
@@ -164,8 +170,7 @@ class Hubbard(object):
         print 'Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn
 
     def read(self):
-        s = 'U%.4f Nup%i Ndn%i' %(self.U, self.Nup, self.Ndn)
-        myhash = int(hashlib.md5(s).hexdigest()[:7],16)
+        myhash = self.gethash()
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
             print 'Data not found'
