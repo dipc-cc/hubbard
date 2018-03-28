@@ -1,5 +1,5 @@
 import numpy as np
-#import netCDF4 as NC
+import netCDF4 as NC
 import matplotlib.pyplot as plt
 #import glob
 import sisl
@@ -21,7 +21,8 @@ class Hubbard(object):
             if self.geom.atoms[ia].Z == 1:
                 Hlist.append(ia)
         self.pi_geom = self.geom.remove(Hlist)
-        print 'Found %i pz sites'%len(self.pi_geom)
+        self.sites = len(self.pi_geom)
+        print 'Found %i pz sites' %self.sites
         # Set hoppings
         self.set_hoppings()
         self.conv = {}
@@ -42,7 +43,7 @@ class Hubbard(object):
         sites = len(self.pi_geom)
         self.Nup = int(sites/2+dN)
         self.Ndn = int(sites-self.Nup)
-        print 'Nup, Ndn, dN =',self.Nup, self.Ndn, self.Nup-self.Ndn, 
+        print 'Nup, Ndn, dN =',self.Nup, self.Ndn, self.Nup-self.Ndn
         assert self.Nup+self.Ndn == sites
         self.nup = np.random.rand(sites)
         self.nup = self.nup/np.sum(self.nup)*self.Nup
@@ -92,3 +93,29 @@ class Hubbard(object):
         [self.nup,self.dn,Etot] = self.conv[U]
         self.U = U
         print 'Retrieved state for U = %.4f eV' %self.U
+
+    def init_nc(self,fn):
+        ncf = NC.Dataset(fn,'w')
+        ncf.createDimension('unl',None)
+        ncf.createDimension('spin',2)
+        ncf.createDimension('sites',len(self.pi_geom))
+        ncf.createVariable('U', 'f8', ("unl",))
+        ncf.createVariable('density', 'f8', ("unl","spin","sites"))
+        self.ncf = ncf
+        
+    def save(self):
+        entries = len(self.ncf['U'][:])
+        print entries
+        try:
+            i, = np.where(self.ncf['U'][:] == self.U)
+            print i
+        except:
+            self.ncf['U']
+
+
+if __name__ == '__main__':
+     T = Hubbard('molecule.XV')
+     T.init_spins(1)
+     [T.iterate(mix=.1) for i in range(30)]
+     T.init_nc('test.nc')
+     T.save()
