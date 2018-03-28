@@ -56,7 +56,7 @@ class Hubbard(object):
         self.Hdn = self.H0.copy()
 
 
-    def randomize_density(self):
+    def random_density(self):
         self.nup = np.random.rand(self.sites)
         self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
