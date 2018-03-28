@@ -33,6 +33,8 @@ class Hubbard(object):
         self.set_hoppings()
         # Initialize data file
         self.init_nc(fn+'.nc')
+        # First time we need to initialize arrays
+        self.random_density()
         # Try reading from file
         self.read()
 
@@ -54,7 +56,7 @@ class Hubbard(object):
         self.Hdn = self.H0.copy()
 
 
-    def init_density(self):
+    def randomize_density(self):
         self.nup = np.random.rand(self.sites)
         self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
@@ -149,10 +151,7 @@ class Hubbard(object):
         myhash = int(hashlib.md5(s).hexdigest()[:7],16)
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
-            print 'Initializing random density'
-            self.init_density()
-            self.iterate()
-            self.save()
+            print 'Data not found'
         else:
             i = i[0]
             self.U = self.ncf['U'][i]
