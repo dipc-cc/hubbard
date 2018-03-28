@@ -172,6 +172,16 @@ class Hubbard(object):
             self.Etot = self.ncf['Etot'][i]
 
 
+    def get_1D_band_structure(self,nk):
+        klist = np.linspace(0,0.5,101)
+        eigs_up = np.empty([len(klist), H.H0.no])
+        eigs_dn = np.empty([len(klist), H.H0.no])
+        for ik, k in enumerate(klist):
+            eigs_up[ik,:] = H.Hup.eigh([k,0,0], eigvals_only=True)
+            eigs_dn[ik,:] = H.Hdn.eigh([k,0,0], eigvals_only=True)
+        return klist, eigs_up, eigs_dn
+
+
 if __name__ == '__main__':
     T = Hubbard('molecule.XV')
     print T.polarize(1)
