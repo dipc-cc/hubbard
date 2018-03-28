@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sisl
 
 
-class HubbardH(object):
+class Hubbard(object):
     
     def __init__(self, fn, t=[0,2.7,0.2,0.18], R=[0.1,1.6,2.6,3.1], U=5., nsc=[1,1,1]):
         # Save parameters
@@ -48,18 +48,16 @@ class HubbardH(object):
         self.nup = self.nup/np.sum(self.nup)*self.Nup
         self.ndn = np.random.rand(sites)
         self.ndp = self.ndn/np.sum(self.ndn)*self.Ndn
-            
-    def get_polarization(self):
-        pol = self.nup-self.ndn
-        print 'Pol=',np.sum(pol)
-        print 'nup=',np.sum(self.nup)
-        return pol
-        
+
     def iterate(self,mix=1.0):
         nup = self.nup
         ndn = self.ndn
         Nup = self.Nup
         Ndn = self.Ndn
+        # Update Hamiltonian
+        for ia in self.pi_geom:
+            self.Hup.H[ia,ia] = self.U*self.ndn[ia]
+            self.Hdn.H[ia,ia] = self.U*self.nup[ia]
         # Solve eigenvalue problems
         ev_up, evec_up = self.Hup.eigh(eigvals_only=False)
         ev_dn, evec_dn = self.Hdn.eigh(eigvals_only=False)
@@ -73,11 +71,6 @@ class HubbardH(object):
         self.ndn = mix*nidn+(1.-mix)*ndn
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
-        # Update Hamiltonian
-        for ia in self.pi_geom:
-            self.Hup.H[ia,ia] = self.U*self.ndn[ia]
-            self.Hdn.H[ia,ia] = self.U*self.nup[ia]
-        #self.get_polarization()
         return dn,self.Etot
         
     def plot_polarization(self,f=100):
@@ -92,10 +85,10 @@ class HubbardH(object):
         plt.show()
         
     def save_state(self):
-        self.conv[self.U] = [1*self.nup,1*self.ndn,self.Hup.copy(),self.Hdn.copy(),self.Etot]
+        self.conv[self.U] = [1*self.nup,1*self.ndn,self.Etot]
         print 'Saved state for U = %.4f eV' %self.U
         
     def retrieve_state(self,U):
-        [self.nup,self.dn,self.Hup,self.Hdn,Etot] = self.conv[U]
+        [self.nup,self.dn,Etot] = self.conv[U]
         self.U = U
         print 'Retrieved state for U = %.4f eV' %self.U
