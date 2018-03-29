@@ -13,6 +13,12 @@ class Hubbard(object):
         self.t1 = t1
         self.t2 = t2
         self.t3 = t3
+        # Determine whether this is 1NN or 3NN
+        if self.t3 == 0:
+            self.model = '1NN'
+        else:
+            self.model = '3NN'
+        # Read geometry etc
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
         # Determine pz sites
@@ -48,10 +54,7 @@ class Hubbard(object):
 
     def get_label(self):
         s = self.fn
-        if self.t3 == 0:
-            s += '-1NN'
-        else:
-            s += '-3NN'
+        s += '-%s'%self.model
         s += '-U%i'%(self.U*100)
         return s
 
@@ -214,7 +217,7 @@ class Hubbard(object):
         return klist, eigs_up, eigs_dn
 
 
-    def plot_bands(self):
+    def plot_bands(self, extrabands=None):
         fig = plt.figure(figsize=(4,8))
         axes = plt.axes()
         # Get TB bands
@@ -227,7 +230,7 @@ class Hubbard(object):
         plt.ylim(-4, 4)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        axes.set_title(r'%s $U=%.2f$ eV'%(self.U), size=19)
+        axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U), size=19)
         axes.set_xlabel(r'$ka/\pi$')
         axes.set_ylabel(r'$E_{nk}$ (eV)')
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
@@ -266,7 +269,7 @@ class Hubbard(object):
         axes.set_ylim(0, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        axes.set_title(r'%s $U=%.2f$eV'%(NN, self.U))
+        axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
         fig.savefig(self.get_label()+'-loc.pdf')
         plt.close('all')
 
