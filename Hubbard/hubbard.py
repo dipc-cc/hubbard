@@ -200,32 +200,44 @@ class Hubbard(object):
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
 
-    def find_midgap(self,k=[0,0,0]):
+    def find_midgap(self, k=[0,0,0]):
         evup = self.Hup.eigh(k=k)
         evdn = self.Hdn.eigh(k=k)
         homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
         lumo = min(evup[self.Nup], evdn[self.Ndn])
         return (lumo+homo)/2
 
-    def get_1D_band_structure(self):
-        klist = np.linspace(0,0.5,101)
+    def get_1D_band_structure(self, nk=51):
+        klist = np.linspace(0,0.5,nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
         for ik, k in enumerate(klist):
-            eigs_up[ik,:] = self.Hup.eigh([k,0,0], eigvals_only=True)
-            eigs_dn[ik,:] = self.Hdn.eigh([k,0,0], eigvals_only=True)
+            eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
+            eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
         return klist, eigs_up, eigs_dn
 
 
-    def plot_bands(self, extrabands=None):
-        fig = plt.figure(figsize=(4,8))
+    def plot_bands(self, TSHS=None, nk=51):
+        fig = plt.figure(figsize=(4, 8))
         axes = plt.axes()
         # Get TB bands
         ka, evup, evdn = self.get_1D_band_structure()
         ka = 2*ka # Units ka/pi
         # determine midgap
         egap = self.find_midgap()
-        # Plotting
+        # Add siesta bandstructure?
+        if TSHS:
+            dftH = sisl.get_sile(TSHS).read_hamiltonian()
+            klist = np.linspace(0, 0.5, nk)
+            eigs_up = np.empty([len(klist), dftH.no])
+            #eigs_dn = np.empty([len(klist), dftH.no])
+            print 'Diagonalizing DFT Hamiltonian'
+            for ik, k in enumerate(klist):
+                print '%i/%i'%(ik, nk),
+                eigs_up[ik,:] = dftH.eigh([k,0,0], eigvals_only=True)
+                #eigs_dn[ik,:] = dftH.eigh([k,0,0], eigvals_only=True)
+            print
+            plt.plot(ka, eigs_up, 'k')
         plt.plot(ka, evup-egap, 'r')
         plt.ylim(-4, 4)
         plt.rc('font', family='Bitstream Vera Serif', size=19)

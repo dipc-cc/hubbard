@@ -11,9 +11,10 @@ H.read()
 for i in range(1):
     print H.iterate(mix=.1)
 
-for i in range(50):
+for i in range(1):
     print H.iterate(mix=1)
 
 H.save()
 H.plot_polarization(f=400)
 H.plot_bands()
+H.plot_bands('molecule.TSHS')
