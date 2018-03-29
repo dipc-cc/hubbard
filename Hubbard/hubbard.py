@@ -168,7 +168,7 @@ class Hubbard(object):
         plt.close('all')
 
 
-    def plot_charge(self,f=100):
+    def plot_charge(self, f=100):
         x = self.pi_geom.xyz[:,0]
         y = self.pi_geom.xyz[:,1]
         pol = self.nup+self.ndn
@@ -182,7 +182,35 @@ class Hubbard(object):
         print 'Wrote', outfn
         plt.close('all')
 
+    def plotWF(self):
+        # This function does not yet work
+        sc = 15
+        bdx = 2
+        ratio = (max(x)-min(x)+2*bdx)/(max(y)-min(y)+2*bdx)
+        fig = plt.figure(figsize=(8,6))
+        axes = plt.axes()
+        plt.rc('font', family='Bitstream Vera Serif',size=16)
+        plt.rc('text', usetex=True)
+        axes.set_xlabel(r'$x$ (\AA)')
+        axes.set_ylabel(r'$y$ (\AA)')
+        axes.set_xlim(min(x)-bdx,max(x)+bdx)
+        axes.set_ylim(min(y)-bdx,max(y)+bdx)
+        axes.set_aspect('equal') 
+        pc = PatchCollection(ptch, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        pc.set_array(0*data);
+        pc.set_clim(-10,10) # colorbar limits
+        axes.add_collection(pc)
+        if max(data)<-min(data):
+            data = -data # change sign of wf to have largest element as positive
+            scatter1 = axes.scatter(x,y,data,'r'); # pos. part, marker AREA is proportional to data
+            scatter2 = axes.scatter(x,y,-data,'g'); # neg. part
+            axes.set_title(title)
+            fnout= d+'/'+fn
+            fig.savefig(fnout)
+            print 'Wrote',fnout
+            plt.close('all')
 
+        
     def init_nc(self,fn):
         try:
             self.ncf = NC.Dataset(fn,'a')
