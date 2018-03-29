@@ -224,17 +224,13 @@ class Hubbard(object):
         egap = self.find_midgap()
         # Plotting
         plt.plot(ka, evup-egap, 'r')
-        plt.ylim(-4,4)
+        plt.ylim(-4, 4)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        if self.t3 == 0:
-            NN = '1NN'
-        else:
-            NN = '3NN'
-        axes.set_title(r'%s $U=%.2f$ eV'%(NN,self.U),size=19)
+        axes.set_title(r'%s $U=%.2f$ eV'%(self.U), size=19)
         axes.set_xlabel(r'$ka/\pi$')
         axes.set_ylabel(r'$E_{nk}$ (eV)')
-        plt.subplots_adjust(left=0.2,top=.95,bottom=0.1,right=0.95)
+        plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
         fig.savefig(self.get_label()+'-bands.pdf')
         plt.close('all')
 
