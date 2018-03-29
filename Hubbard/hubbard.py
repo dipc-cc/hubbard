@@ -210,7 +210,7 @@ class Hubbard(object):
         ka, evup, evdn = self.get_1D_band_structure()
         ka = 2*ka # Units ka/pi
         # determine midgap
-        egap = find_midgap()
+        egap = self.find_midgap()
         # Plotting
         plt.plot(ka, evup-egap, 'r')
         plt.ylim(-4,4)
