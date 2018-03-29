@@ -9,7 +9,7 @@ class Hubbard(object):
     
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1,1,1], kmesh=[1,1,1]):
         # Save parameters
-        self.fn = fn
+        self.fn = fn[:-3]
         self.t1 = t1
         self.t2 = t2
         self.t3 = t3
@@ -40,11 +40,20 @@ class Hubbard(object):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
         # Initialize data file
-        self.init_nc(fn+'.nc')
+        self.init_nc(self.fn+'.nc')
         # First time we need to initialize arrays
         self.random_density()
         # Try reading from file
         self.read()
+
+    def get_label(self):
+        s = self.fn
+        if self.t3 == 0:
+            s += '-1NN'
+        else:
+            s += '-3NN'
+        s += '-U%i'%(self.U*100)
+        return s
 
     def polarize(self,pol):
         'Polarizing by',pol
@@ -102,7 +111,7 @@ class Hubbard(object):
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
-        
+
     def plot_polarization(self,f=100):
         x = self.pi_geom.xyz[:,0]
         y = self.pi_geom.xyz[:,1]
@@ -112,7 +121,9 @@ class Hubbard(object):
         axes.set_aspect('equal')
         scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
         scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
-        plt.show()
+        fig.savefig(self.get_label()+'-pol.pdf')
+        plt.close('all')
+
 
     def plot_charge(self,f=100):
         x = self.pi_geom.xyz[:,0]
@@ -123,10 +134,11 @@ class Hubbard(object):
         axes.set_aspect('equal')
         scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
         scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
-        plt.show()
+        fig.savefig(self.get_label()+'-chg.pdf')
+        plt.close('all')
+
 
     def init_nc(self,fn):
-        self.fn = fn
         try:
             self.ncf = NC.Dataset(fn,'a')
             print 'Appending to', fn
@@ -143,7 +155,6 @@ class Hubbard(object):
             ncf.createVariable('Density', 'f8', ('unl','spin','sites'))
             ncf.createVariable('Etot', 'f8', ('unl',))
             self.ncf = ncf
-
 
     def gethash(self):
         s = ''
@@ -224,7 +235,7 @@ class Hubbard(object):
         axes.set_xlabel(r'$ka/\pi$')
         axes.set_ylabel(r'$E_{nk}$ (eV)')
         plt.subplots_adjust(left=0.2,top=.95,bottom=0.1,right=0.95)
-        plt.savefig(self.fn+'-%s-U%.3i.pdf'%(NN,self.U*100))
+        fig.savefig(self.get_label()+'-bands.pdf')
         plt.close('all')
 
 
@@ -238,12 +249,7 @@ class Hubbard(object):
         return ev, L
 
 
-    def plot_localizations(self,k=[0,0,0],ymax=0.15):
-        #U0 = N.diagonal(U)
-        #U1 = N.diagonal(U,offset=1)
-        #labU0 = r'$\eta_{\alpha\alpha}$'
-        #labU1 = r'$\eta_{\alpha,\alpha+1}$'
-
+    def plot_localizations(self, k=[0,0,0], ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10,5))
         axes = plt.axes();
         axes.fill_between([-10,0], 0, ymax, facecolor='k', alpha=0.1)
@@ -253,24 +259,19 @@ class Hubbard(object):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
             print i,max(L)
-            plt.plot(ev-egap,L,'rg'[i]+'.+'[i], label=[r'$\sigma_\uparrow$',r'$\sigma_\downarrow$'][i])
-        #ev2 = (ev[1:]+ev[:-1])/2
-        #plt.plot(ev2,U1,'.',label=labU1)
-        axes.set_xlabel(r'$E_\alpha$ (eV)')
-        axes.set_ylabel(r'$\eta_{\alpha}=\int dr |\psi_\alpha|^4$')
+            plt.plot(ev-egap,L,'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$',r'$\sigma=\downarrow$'][i])
+            if annotate:
+                for i in range(len(ev)):
+                    axes.annotate(i, (ev[i]-egap, L[i]),fontsize=6)
+        axes.set_xlabel(r'$E_{\alpha\sigma}$ (eV)')
+        axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
         axes.set_xlim(-10, 10)
         axes.set_ylim(0, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        #for i in range(len(ev)):
-        #    axes.annotate(i,(ev[i],U0[i]),fontsize=6)
-        if self.t3 == 0:
-            NN = '1NN'
-        else:
-            NN = '3NN'
         axes.set_title(r'%s $U=%.2f$eV'%(NN, self.U))
-        fig.savefig(self.fn+'-%s-U%.3i-loc.pdf'%(NN, self.U*100))
+        fig.savefig(self.get_label()+'-loc.pdf')
         plt.close('all')
 
 
