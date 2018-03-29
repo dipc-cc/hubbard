@@ -137,6 +137,9 @@ class Hubbard(object):
         axes = plt.axes()
         x = self.geom.xyz[:,0]
         y = self.geom.xyz[:,1]
+        # move to around origo
+        x -= np.average(x)
+        y -= np.average(y)
         bdx = 2
         axes.set_xlim(min(x)-bdx,max(x)+bdx)
         axes.set_ylim(min(y)-bdx,max(y)+bdx)
@@ -159,7 +162,9 @@ class Hubbard(object):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         cb = plt.colorbar(pc2, label=r'$Q_\uparrow -Q_\downarrow$ ($e$)', cax=cax)
         plt.subplots_adjust(right=0.8)
-        fig.savefig(self.get_label()+'-pol.pdf')
+        outfn = self.get_label()+'-pol.pdf'
+        fig.savefig(outfn)
+        print 'Wrote', outfn
         plt.close('all')
 
 
@@ -172,7 +177,9 @@ class Hubbard(object):
         axes.set_aspect('equal')
         scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
         scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
-        fig.savefig(self.get_label()+'-chg.pdf')
+        outfn =	self.get_label()+'-chg.pdf'
+        fig.savefig(outfn)
+        print 'Wrote', outfn
         plt.close('all')
 
 
@@ -281,7 +288,9 @@ class Hubbard(object):
         axes.set_xlabel(r'$ka/\pi$')
         axes.set_ylabel(r'$E_{nk}$ (eV)')
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
-        fig.savefig(self.get_label()+'-bands.pdf')
+        outfn = self.get_label()+'-bands.pdf'
+        fig.savefig(outfn)
+        print 'Wrote', outfn
         plt.close('all')
 
 
@@ -317,7 +326,9 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
-        fig.savefig(self.get_label()+'-loc.pdf')
+        outfn = self.get_label()+'-loc.pdf'
+        fig.savefig(outfn)
+        print 'Wrote', outfn
         plt.close('all')
 
 
