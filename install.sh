@@ -1,1 +1,1 @@
-python setup.py install --prefix=/home/thf/.local
+python setup.py install --prefix=~/.local
