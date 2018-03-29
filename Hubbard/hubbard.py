@@ -1,6 +1,10 @@
 import numpy as np
 import netCDF4 as NC
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.collections import PatchCollection
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.colors as mcolors
 #import glob
 import sisl
 import hashlib
@@ -115,15 +119,46 @@ class Hubbard(object):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def plot_polarization(self,f=100):
-        x = self.pi_geom.xyz[:,0]
-        y = self.pi_geom.xyz[:,1]
+    def get_atomic_patch(self):
+        pH = []
+        pC = []
+        g = self.geom
+        for ia in g:
+            if g.atoms[ia].Z == 1:
+                pH.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.4))
+            elif g.atoms[ia].Z == 6:
+                pC.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.7))
+        return pH, pC
+
+    def plot_polarization(self, f=100, cmax=0.4):
+        pH, pC = self.get_atomic_patch()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(6,6))
         axes = plt.axes()
+        x = self.geom.xyz[:,0]
+        y = self.geom.xyz[:,1]
+        bdx = 2
+        axes.set_xlim(min(x)-bdx,max(x)+bdx)
+        axes.set_ylim(min(y)-bdx,max(y)+bdx)
+        plt.rc('font', family='Bitstream Vera Serif',size=16)
+        plt.rc('text', usetex=True)
+        axes.set_xlabel(r'$x$ (\AA)')
+        axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
-        scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
+        #scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
+        #scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
+        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        pc1.set_array(np.zeros(len(pH)))
+        axes.add_collection(pc1)
+        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        pc2.set_array(pol)
+        pc1.set_clim(-cmax,cmax) # colorbar limits
+        pc2.set_clim(-cmax,cmax) # colorbar limits
+        axes.add_collection(pc2)
+        divider = make_axes_locatable(axes)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
+        cb = plt.colorbar(pc2, label=r'$Q_\uparrow -Q_\downarrow$ ($e$)', cax=cax)
+        plt.subplots_adjust(right=0.8)
         fig.savefig(self.get_label()+'-pol.pdf')
         plt.close('all')
 
