@@ -122,16 +122,20 @@ class Hubbard(object):
     def get_atomic_patch(self):
         pH = []
         pC = []
+        pS = []
         g = self.geom
         for ia in g:
             if g.atoms[ia].Z == 1:
                 pH.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.4))
             elif g.atoms[ia].Z == 6:
                 pC.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.7))
-        return pH, pC
+            elif g.atoms[ia].Z > 10:
+                # Substrate atom
+                pS.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.2))
+        return pH, pC, pS
 
     def plot_polarization(self, f=100, cmax=0.4):
-        pH, pC = self.get_atomic_patch()
+        pH, pC, pS = self.get_atomic_patch()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(6,6))
         axes = plt.axes()
