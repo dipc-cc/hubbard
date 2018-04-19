@@ -1,0 +1,61 @@
+SystemTitle molecule
+SystemLabel molecule
+
+SolutionMethod     diagon
+TS.HS.Save         true
+
+MD.TypeOfRun  CG
+MD.TypeOfRun  Broyden
+MD.Broyden.Cycle.On.Maxit F
+MD.NumCGsteps  1000
+MD.MaxForceTol 0.002 eV/Ang
+
+Diag.ParallelOverK true
+
+%block kgrid_Monkhorst_Pack
+ 100    0    0    0.0
+  0    1    0    0.0
+  0    0    1    0.0
+%endblock kgrid_Monkhorst_Pack
+
+MaxSCFIterations      3000
+SCFMustConverge       true
+
+DM.Tolerance          1.d-5
+DM.UseSaveDM          true
+DM.NumberPulay	      7
+DM.MixingWeight       0.1
+MD.UseSaveXV          true
+
+XC.functional         LDA
+XC.authors     	      CA
+
+MeshCutoff            400. Ry
+
+PAO.BasisSize   DZP
+PAO.BasisType   split
+
+%block ChemicalSpeciesLabel
+    1   1 H.ca
+    2   6 C.ca2
+%endblock ChemicalSpeciesLabel
+
+%include STRUCT.fdf
+
+SpinPolarized   true
+
+#FixSpin  true
+#Spin.Fix true
+#Spin.Total 0
+#TotalSpin  0
+
+%block DM.InitSpin
+44   1.
+10  -1.
+%endblock DM.InitSpin
+
+WriteMullikenPop 1
+WriteHirshfeldPop true
+WriteVoronoiPop true
+WriteEigenvalues true
+WriteWaveFunctions true
