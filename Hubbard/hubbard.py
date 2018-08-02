@@ -5,13 +5,12 @@ import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as mcolors
-#import glob
 import sisl
 import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1,1,1], kmesh=[1,1,1]):
+    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1]):
         # Save parameters
         self.fn = fn[:-3]
         self.t1 = t1
@@ -62,27 +61,26 @@ class Hubbard(object):
         s += '-U%i'%(self.U*100)
         return s
 
-    def polarize(self,pol):
-        'Polarizing by',pol
+    def polarize(self, pol):
+        'Polarizing by', pol
         self.Nup += int(pol)
         self.Ndn -= int(pol)
         return self.Nup, self.Ndn
 
     def set_hoppings(self):
         # Radii defining 1st, 2nd, and 3rd neighbors
-        R = [0.1,1.6,2.6,3.1]
+        R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
         self.H0 = sisl.Hamiltonian(self.pi_geom)
         for ia in self.pi_geom:
             idx = self.pi_geom.close(ia,R=R)
-            self.H0.H[ia,idx[1]] = -self.t1
+            self.H0.H[ia, idx[1]] = -self.t1
             if self.t2 != 0:
-                self.H0.H[ia,idx[2]] = -self.t2
+                self.H0.H[ia, idx[2]] = -self.t2
             if self.t3 != 0:
-                self.H0.H[ia,idx[3]] = -self.t3
+                self.H0.H[ia, idx[3]] = -self.t3
         self.Hup = self.H0.copy()
         self.Hdn = self.H0.copy()
-
 
     def random_density(self):
         self.nup = np.random.rand(self.sites)
@@ -90,24 +88,24 @@ class Hubbard(object):
         self.ndn = np.random.rand(self.sites)
         self.ndp = self.ndn/np.sum(self.ndn)*(self.Ndn)
 
-    def iterate(self,mix=1.0):
+    def iterate(self, mix=1.0):
         nup = self.nup
         ndn = self.ndn
         Nup = self.Nup
         Ndn = self.Ndn
         # Update Hamiltonian
         for ia in self.pi_geom:
-            self.Hup.H[ia,ia] = self.U*self.ndn[ia]
-            self.Hdn.H[ia,ia] = self.U*self.nup[ia]
+            self.Hup.H[ia, ia] = self.U*self.ndn[ia]
+            self.Hdn.H[ia, ia] = self.U*self.nup[ia]
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
         for k in self.kmesh:
-            ev_up, evec_up = self.Hup.eigh(k=k,eigvals_only=False)
-            ev_dn, evec_dn = self.Hdn.eigh(k=k,eigvals_only=False)
+            ev_up, evec_up = self.Hup.eigh(k=k, eigvals_only=False)
+            ev_dn, evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
             # Compute new occupations
-            niup += np.sum(np.absolute(evec_up[:,:int(Nup)])**2,axis=1).real
-            nidn += np.sum(np.absolute(evec_dn[:,:int(Ndn)])**2,axis=1).real
+            niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+            nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
         niup = niup/len(self.kmesh)
         nidn = nidn/len(self.kmesh)
         # Measure of density change
@@ -126,41 +124,41 @@ class Hubbard(object):
         g = self.geom
         for ia in g:
             if g.atoms[ia].Z == 1:
-                pH.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.4))
+                pH.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
             elif g.atoms[ia].Z == 6:
-                pC.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.7))
+                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z > 10:
                 # Substrate atom
-                pS.append(patches.Circle((g.xyz[ia,0],g.xyz[ia,1]), radius=0.2))
+                pS.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
         return pH, pC, pS
 
     def plot_polarization(self, f=100, cmax=0.4):
         pH, pC, pS = self.get_atomic_patch()
         pol = self.nup-self.ndn
-        fig = plt.figure(figsize=(6,6))
+        fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
-        x = self.geom.xyz[:,0]
-        y = self.geom.xyz[:,1]
+        x = self.geom.xyz[:, 0]
+        y = self.geom.xyz[:, 1]
         # move to around origo
         x -= np.average(x)
         y -= np.average(y)
         bdx = 2
-        axes.set_xlim(min(x)-bdx,max(x)+bdx)
-        axes.set_ylim(min(y)-bdx,max(y)+bdx)
-        plt.rc('font', family='Bitstream Vera Serif',size=16)
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
-        #scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
-        #scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
-        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        #scatter1 = axes.scatter(x, y, f*pol, 'r'); # pos. part, marker AREA is proportional to data
+        #scatter2 = axes.scatter(x, y, -f*pol, 'g'); # neg. part
+        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc2.set_array(pol)
-        pc1.set_clim(-cmax,cmax) # colorbar limits
-        pc2.set_clim(-cmax,cmax) # colorbar limits
+        pc1.set_clim(-cmax, cmax) # colorbar limits
+        pc2.set_clim(-cmax, cmax) # colorbar limits
         axes.add_collection(pc2)
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("right", size="5%", pad=0.1)
@@ -173,14 +171,14 @@ class Hubbard(object):
 
 
     def plot_charge(self, f=100):
-        x = self.pi_geom.xyz[:,0]
-        y = self.pi_geom.xyz[:,1]
+        x = self.pi_geom.xyz[:, 0]
+        y = self.pi_geom.xyz[:, 1]
         pol = self.nup+self.ndn
-        fig = plt.figure(figsize=(6,6))
+        fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
         axes.set_aspect('equal')
-        scatter1 = axes.scatter(x,y,f*pol,'r'); # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x,y,-f*pol,'g'); # neg. part
+        scatter1 = axes.scatter(x, y, f*pol, 'r'); # pos. part, marker AREA is proportional to data
+        scatter2 = axes.scatter(x, y, -f*pol, 'g'); # neg. part
         outfn =	self.get_label()+'-chg.pdf'
         fig.savefig(outfn)
         print 'Wrote', outfn
@@ -191,40 +189,40 @@ class Hubbard(object):
         sc = 15
         bdx = 2
         ratio = (max(x)-min(x)+2*bdx)/(max(y)-min(y)+2*bdx)
-        fig = plt.figure(figsize=(8,6))
+        fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
-        plt.rc('font', family='Bitstream Vera Serif',size=16)
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        axes.set_xlim(min(x)-bdx,max(x)+bdx)
-        axes.set_ylim(min(y)-bdx,max(y)+bdx)
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_aspect('equal') 
-        pc = PatchCollection(ptch, cmap=plt.cm.bwr, alpha=1.,lw=1.2, edgecolor='0.6')
+        pc = PatchCollection(ptch, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc.set_array(0*data);
-        pc.set_clim(-10,10) # colorbar limits
+        pc.set_clim(-10, 10) # colorbar limits
         axes.add_collection(pc)
-        if max(data)<-min(data):
+        if max(data) < -min(data):
             data = -data # change sign of wf to have largest element as positive
-            scatter1 = axes.scatter(x,y,data,'r'); # pos. part, marker AREA is proportional to data
-            scatter2 = axes.scatter(x,y,-data,'g'); # neg. part
+            scatter1 = axes.scatter(x, y, data, 'r'); # pos. part, marker AREA is proportional to data
+            scatter2 = axes.scatter(x, y, -data, 'g'); # neg. part
             axes.set_title(title)
             fnout= d+'/'+fn
             fig.savefig(fnout)
-            print 'Wrote',fnout
+            print 'Wrote', fnout
             plt.close('all')
 
         
     def init_nc(self,fn):
         try:
-            self.ncf = NC.Dataset(fn,'a')
+            self.ncf = NC.Dataset(fn, 'a')
             print 'Appending to', fn
         except:
             print 'Initiating', fn
-            ncf = NC.Dataset(fn,'w')
-            ncf.createDimension('unl',None)
-            ncf.createDimension('spin',2)
-            ncf.createDimension('sites',len(self.pi_geom))
+            ncf = NC.Dataset(fn, 'w')
+            ncf.createDimension('unl', None)
+            ncf.createDimension('spin', 2)
+            ncf.createDimension('sites', len(self.pi_geom))
             ncf.createVariable('hash', 'i8', ('unl',))
             ncf.createVariable('U', 'f8', ('unl',))
             ncf.createVariable('Nup', 'i4', ('unl',))
@@ -241,7 +239,7 @@ class Hubbard(object):
         s += 'U=%.2f '%self.U
         s += 'Nup=%.2f '%self.Nup
         s += 'Ndn=%.2f '%self.Ndn
-        myhash = int(hashlib.md5(s).hexdigest()[:7],16)
+        myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
         return myhash, s
 
     def save(self):
@@ -255,8 +253,8 @@ class Hubbard(object):
         self.ncf['U'][i] = self.U
         self.ncf['Nup'][i] = self.Nup
         self.ncf['Ndn'][i] = self.Ndn
-        self.ncf['Density'][i,0] = self.nup
-        self.ncf['Density'][i,1] = self.ndn
+        self.ncf['Density'][i, 0] = self.nup
+        self.ncf['Density'][i, 1] = self.ndn
         self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
         print 'Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn
@@ -274,7 +272,7 @@ class Hubbard(object):
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
 
-    def find_midgap(self, k=[0,0,0]):
+    def find_midgap(self, k=[0, 0, 0]):
         evup = self.Hup.eigh(k=k)
         evdn = self.Hdn.eigh(k=k)
         homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
@@ -282,7 +280,7 @@ class Hubbard(object):
         return (lumo+homo)/2
 
     def get_1D_band_structure(self, nk=51):
-        klist = np.linspace(0,0.5,nk)
+        klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
         for ik, k in enumerate(klist):
@@ -308,8 +306,8 @@ class Hubbard(object):
             print 'Diagonalizing DFT Hamiltonian'
             for ik, k in enumerate(klist):
                 print '%i/%i'%(ik, nk),
-                eigs_up[ik,:] = dftH.eigh([k,0,0], eigvals_only=True)
-                #eigs_dn[ik,:] = dftH.eigh([k,0,0], eigvals_only=True)
+                eigs_up[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
+                #eigs_dn[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
             print
             plt.plot(ka, eigs_up, 'k')
         plt.plot(ka, evup-egap, 'r')
@@ -326,30 +324,30 @@ class Hubbard(object):
         plt.close('all')
 
 
-    def calc_orbital_charge_overlaps(self,k=[0,0,0],ispin=0):
+    def calc_orbital_charge_overlaps(self, k=[0, 0, 0], ispin=0):
         if ispin == 0:
-            ev, evec = self.Hup.eigh(k=k,eigvals_only=False)
+            ev, evec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
-            ev, evec = self.Hdn.eigh(k=k,eigvals_only=False)
+            ev, evec = self.Hdn.eigh(k=k, eigvals_only=False)
         # Compute orbital charge overlaps
-        L = np.einsum('ia,ia,ib,ib->ab',evec,evec,evec,evec).real
+        L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
 
-    def plot_localizations(self, k=[0,0,0], ymax=0.15, annotate=True):
-        fig = plt.figure(figsize=(10,5))
+    def plot_localizations(self, k=[0, 0, 0], ymax=0.15, annotate=True):
+        fig = plt.figure(figsize=(10, 5))
         axes = plt.axes();
-        axes.fill_between([-10,0], 0, ymax, facecolor='k', alpha=0.1)
+        axes.fill_between([-10, 0], 0, ymax, facecolor='k', alpha=0.1)
         # Plot data
         egap = self.find_midgap()
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
             print i,max(L)
-            plt.plot(ev-egap,L,'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$',r'$\sigma=\downarrow$'][i])
+            plt.plot(ev-egap, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
-                    axes.annotate(i, (ev[i]-egap, L[i]),fontsize=6)
+                    axes.annotate(i, (ev[i]-egap, L[i]), fontsize=6)
         axes.set_xlabel(r'$E_{\alpha\sigma}$ (eV)')
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
@@ -362,20 +360,3 @@ class Hubbard(object):
         fig.savefig(outfn)
         print 'Wrote', outfn
         plt.close('all')
-
-
-if __name__ == '__main__':
-    for i in range(1,4):
-        T = Hubbard('Systems/mol%i.XV'%i)
-        T.U = 3.5
-        # Do singlet and triplet states
-        for pol in [0,1]:
-            print 'Polarization:', T.polarize(pol)
-            # preconditioning
-            for i in range(10):
-                T.iterate(mix=.1)
-            # Mix with larger weight
-            for i in range(25):
-                dn, E = T.iterate(mix=1)
-                print dn, E
-            T.save()
