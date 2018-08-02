@@ -2,7 +2,7 @@ import Hubbard.hubbard as HH
 
 
 
-H = HH.Hubbard('../Examples/31cGNR/LDA/3-1-3/8.870/molecule.XV')
+H = HH.Hubbard('../Examples/molecules/antracenes/2-antracene.XV')
 
 H.U = 5.
 H.random_density()

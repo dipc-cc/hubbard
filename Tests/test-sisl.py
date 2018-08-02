@@ -8,10 +8,4 @@ for ia, io in H:
     H[io,idx[0]] = 0.
     H[io,idx[1]] = -2.7
 
-#H.finalize()
-#print dir(H)
-#print
-#print H.Hk(k=[0., 0.5, 0])
-
-#print H
 print H.eigh(k=[0., 0.5, 0.])
