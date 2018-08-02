@@ -123,10 +123,10 @@ write_version()
 
 # Main setup of python modules
 setup(name='Hubbard',
-      requires=['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)'],
+      requires=['python (>=2.7)', 'numpy (>=1.8)', 'scipy (>=0.17)', 'netCDF4 (>=1.2.7)', 'sisl (>=0.9.2)'],
       description='Python package for mean-field Hubbard models',
       author='Thomas Frederiksen',
-      author_email='thomas_frederiksen@ehu.es',
+      author_email='thomas_frederiksen@ehu.eus',
       license='GPL',
       packages=packages,
       configuration=configuration)
