@@ -30,3 +30,11 @@ Contributions are highly appreciated.
 If you find any bugs please form a [bug report/issue][issues]
 
 If you have a fix please consider adding a [pull request][pulls].
+
+
+
+<!---
+Links to external and internal sites.
+-->
+[issues]: https://github.com/dipc-cc/hubbard/issues
+[pulls]: https://github.com/dipc-cc/hubbard/pulls
