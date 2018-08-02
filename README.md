@@ -1,3 +1,5 @@
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 # Hubbard #
 
 __Hubbard__ is a Python package for solving the meanfield Hubbard model.
@@ -31,6 +33,8 @@ If you find any bugs please form a [bug report/issue][issues]
 
 If you have a fix please consider adding a [pull request][pulls].
 
+## License ##
+__Hubbard__ is distributed under [LGPL][lgpl], please see the LICENSE file.
 
 
 <!---
@@ -38,3 +42,4 @@ Links to external and internal sites.
 -->
 [issues]: https://github.com/dipc-cc/hubbard/issues
 [pulls]: https://github.com/dipc-cc/hubbard/pulls
+[lgpl]: http://www.gnu.org/licenses/lgpl.html
