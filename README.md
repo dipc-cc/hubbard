@@ -1,6 +1,5 @@
 # Hubbard #
 
-## About ##
 __Hubbard__ is a Python package for solving the meanfield Hubbard model.
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen in 2018.
@@ -9,9 +8,9 @@ This project was initiated by Sofia Sanz and Thomas Frederiksen in 2018.
 ## Dependencies ##
 Before installation of __Hubbard__ the following packages are required
    - numpy >= 1.8
-   - scipy
    - netCDF4
-
+   - matplotlib
+   - sisl
 
 ## Installation ##
 Manual installation is performed with the command
