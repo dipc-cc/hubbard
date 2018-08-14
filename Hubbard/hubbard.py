@@ -6,7 +6,9 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as mcolors
 import sisl
+from sisl import *
 import hashlib
+import scipy
 
 class Hubbard(object):
     
@@ -24,6 +26,8 @@ class Hubbard(object):
         # Read geometry etc
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
+        self.geom.write('molecule.xyz')
+        print('Wrote molecule.xyz')
         # Determine pz sites
         Hlist = []
         for ia in self.geom:
@@ -31,14 +35,14 @@ class Hubbard(object):
                 Hlist.append(ia)
         self.pi_geom = self.geom.remove(Hlist)
         self.sites = len(self.pi_geom)
-        print 'Found %i pz sites' %self.sites
+        print('Found %i pz sites' %self.sites)
         # Set default values
         self.U = 0.0
         self.Ndn = int(self.sites/2)
         self.Nup = int(self.sites-self.Ndn)
-        print '   U   =', self.U
-        print '   Nup =', self.Nup
-        print '   Ndn =', self.Ndn
+        print('   U   =', self.U)
+        print('   Nup =', self.Nup)
+        print('   Ndn =', self.Ndn)
         # Construct Hamiltonians
         self.set_hoppings()
         # Generate kmesh
@@ -62,7 +66,7 @@ class Hubbard(object):
         return s
 
     def polarize(self, pol):
-        'Polarizing by', pol
+        print('Polarizing by', pol)
         self.Nup += int(pol)
         self.Ndn -= int(pol)
         return self.Nup, self.Ndn
@@ -86,7 +90,7 @@ class Hubbard(object):
         self.nup = np.random.rand(self.sites)
         self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
-        self.ndp = self.ndn/np.sum(self.ndn)*(self.Ndn)
+        self.ndn = self.ndn/np.sum(self.ndn)*(self.Ndn)
 
     def iterate(self, mix=1.0):
         nup = self.nup
@@ -115,6 +119,11 @@ class Hubbard(object):
         self.ndn = mix*nidn+(1.-mix)*ndn
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
+        # Store values in [up,dn] arrays (see RealSpaceWF)
+        self.ev = [ev_up,ev_dn]
+        self.vecs = [evec_up, evec_dn]
+        self.spinLabel = ['up','dn']
+        self.N = [self.Nup, self.Ndn]
         return dn, self.Etot
 
     def get_atomic_patch(self):
@@ -140,8 +149,8 @@ class Hubbard(object):
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
         # move to around origo
-        x -= np.average(x)
-        y -= np.average(y)
+        #x -= np.average(x)
+        #y -= np.average(y)
         bdx = 2
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
@@ -166,9 +175,57 @@ class Hubbard(object):
         plt.subplots_adjust(right=0.8)
         outfn = self.get_label()+'-pol.pdf'
         fig.savefig(outfn)
-        print 'Wrote', outfn
+        print('Wrote', outfn)
         plt.close('all')
 
+    def RealSpaceWF(self,geom,ev,vecs,state,spinLabel,v=20,height=1.1,vmax=0.006):
+        r = np.linspace(0, 1.6, 700)
+        func = 5 * np.exp(-r * 5)
+        orb = SphericalOrbital(1, (r, func))
+        # Create pz orbital for each C atom
+        C = Atom(6,orb) 
+        # Change unit cell
+        H = Hamiltonian(geom)
+        H.geom.set_sc(SuperCell([v,v,v,90,90,90],nsc=[1,1,1])) 
+        H.geom.atom.replace(H.geom.atom[0],C)
+        grid = Grid(0.075, sc=H.geom.sc)
+        es = EigenstateElectron(vecs.T, ev, H) 
+        es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
+        index = grid.index([0, 0, height])
+        plt.imshow(grid.grid[:, :,index[2]].T, cmap='seismic',origin='lower',vmax=vmax, vmin=-vmax);
+        plt.colorbar();
+        outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
+        plt.rc('text', usetex=True)
+        plt.title('State %i, E = %.3f eV'%(state,ev[state]))
+        plt.xlabel(r'$x$ (\AA)')
+        plt.ylabel(r'$y$ (\AA)')
+        plt.savefig(outfn, bbox_inches='tight')
+        print('Wrote', outfn)
+        plt.close('all')
+            
+    def PlotRealSpaceWF(self,v=20,height=1.1,vmax=0.006,EnWindow=2.0,f=0.25):
+        '''
+            So far it only works for non periodic molecule
+        '''
+        # Finding midgap between [up,down] energy levels
+        if (self.N[0] + self.N[1]) % 2 !=0:
+            midgap = max(self.ev[0][int(self.N[0])-1],self.ev[1][int(self.N[1])-1])
+        else:
+            midgap = (max(self.ev[0][int(self.N[0])-1],self.ev[1][int(self.N[1])-1])+\
+                      min(self.ev[0][int(self.N[0])],self.ev[1][int(self.N[1])]))/2
+        self.ev -= midgap
+        # Recenter image to better visualization
+        geom = self.pi_geom
+        xyz_center = geom.center(what='xyz')
+        geom.xyz -= [xyz_center[0]*f, xyz_center[1]*f, xyz_center[2]]
+        # Find states over an energy window to plot them
+        states = np.where(np.abs(self.ev[0])< EnWindow)[0]
+        for state in states:
+            # Plotting both [up,down] states
+            self.RealSpaceWF(geom,self.ev[0],self.vecs[0],state,self.spinLabel[0],v=20,height=1.1,vmax=0.006)
+            self.RealSpaceWF(geom,self.ev[1],self.vecs[1],state,self.spinLabel[1],v=20,height=1.1,vmax=0.006)
+        
 
     def plot_charge(self, f=100):
         x = self.pi_geom.xyz[:, 0]
@@ -181,7 +238,7 @@ class Hubbard(object):
         scatter2 = axes.scatter(x, y, -f*pol, 'g'); # neg. part
         outfn =	self.get_label()+'-chg.pdf'
         fig.savefig(outfn)
-        print 'Wrote', outfn
+        print('Wrote', outfn)
         plt.close('all')
 
     def plotWF(self):
@@ -209,16 +266,15 @@ class Hubbard(object):
             axes.set_title(title)
             fnout= d+'/'+fn
             fig.savefig(fnout)
-            print 'Wrote', fnout
+            print('Wrote', fnout)
             plt.close('all')
-
         
     def init_nc(self,fn):
         try:
             self.ncf = NC.Dataset(fn, 'a')
-            print 'Appending to', fn
+            print('Appending to', fn)
         except:
-            print 'Initiating', fn
+            print('Initiating', fn)
             ncf = NC.Dataset(fn, 'w')
             ncf.createDimension('unl', None)
             ncf.createDimension('spin', 2)
@@ -257,14 +313,14 @@ class Hubbard(object):
         self.ncf['Density'][i, 1] = self.ndn
         self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
-        print 'Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn)
 
     def read(self):
         myhash, s = self.gethash()
         i = np.where(self.ncf['hash'][:] == myhash)[0]
         if len(i) == 0:
-            print 'Hash not found:'
-            print '...', s
+            print('Hash not found:')
+            print('...', s)
         else:
             i = i[0]
             self.U = self.ncf['U'][i]
@@ -303,12 +359,12 @@ class Hubbard(object):
             klist = np.linspace(0, 0.5, nk)
             eigs_up = np.empty([len(klist), dftH.no])
             #eigs_dn = np.empty([len(klist), dftH.no])
-            print 'Diagonalizing DFT Hamiltonian'
+            print('Diagonalizing DFT Hamiltonian')
             for ik, k in enumerate(klist):
-                print '%i/%i'%(ik, nk),
+                print('%i/%i'%(ik, nk),)
                 eigs_up[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
                 #eigs_dn[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
-            print
+            #print
             plt.plot(ka, eigs_up, 'k')
         plt.plot(ka, evup-egap, 'r')
         plt.ylim(-4, 4)
@@ -320,7 +376,7 @@ class Hubbard(object):
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
         outfn = self.get_label()+'-bands.pdf'
         fig.savefig(outfn)
-        print 'Wrote', outfn
+        print('Wrote', outfn)
         plt.close('all')
 
 
@@ -343,7 +399,7 @@ class Hubbard(object):
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
-            print i,max(L)
+            print(i,max(L))
             plt.plot(ev-egap, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
@@ -358,5 +414,5 @@ class Hubbard(object):
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
         outfn = self.get_label()+'-loc.pdf'
         fig.savefig(outfn)
-        print 'Wrote', outfn
+        print('Wrote', outfn)
         plt.close('all')
