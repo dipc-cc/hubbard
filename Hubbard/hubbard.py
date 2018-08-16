@@ -50,9 +50,7 @@ class Hubbard(object):
                     self.kmesh.append([kx, ky, kz])
         # Initialize data file
         self.init_nc(self.fn+'.nc')
-        # First time we need to initialize arrays
-        self.random_density()
-        # Try reading from file
+        # Try reading from file or use random density
         self.read()
 
     def get_label(self):
@@ -87,6 +85,7 @@ class Hubbard(object):
         self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
         self.ndp = self.ndn/np.sum(self.ndn)*(self.Ndn)
+        print 'Random density generated'
 
     def iterate(self, mix=1.0):
         nup = self.nup
@@ -266,6 +265,7 @@ class Hubbard(object):
         if len(i) == 0:
             print 'Hash not found:'
             print '...', s
+            self.random_density()
         else:
             i = i[0]
             self.U = self.ncf['U'][i]
