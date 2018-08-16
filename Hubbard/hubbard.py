@@ -281,12 +281,24 @@ class Hubbard(object):
         return (lumo+homo)/2
 
     def get_1D_band_structure(self, nk=51):
+        # Save to file
+        fup = open(self.get_label()+'-bands-up.dat', 'w')
+        fdn = open(self.get_label()+'-bands-dn.dat', 'w')
         klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
+        egap = self.find_midgap()
         for ik, k in enumerate(klist):
             eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
             eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
+            fup.write('%.8f '%k)
+            fdn.write('%.8f '%k)
+            for ev in eigs_up[ik]:
+                fup.write('%.8f ' %(ev-egap))
+            for ev in eigs_dn[ik]:
+                fdn.write('%.8f ' %(ev-egap))
+            fup.write('\n')
+            fdn.write('\n')
         return klist, eigs_up, eigs_dn
 
 
