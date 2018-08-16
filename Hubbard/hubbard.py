@@ -278,6 +278,7 @@ class Hubbard(object):
         evdn = self.Hdn.eigh(k=k)
         homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
         lumo = min(evup[self.Nup], evdn[self.Ndn])
+        print 'HL gap: %.3f eV' % (lumo-homo)
         return (lumo+homo)/2
 
     def get_1D_band_structure(self, nk=51):
