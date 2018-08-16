@@ -273,13 +273,14 @@ class Hubbard(object):
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
 
-    def find_midgap(self, k=[0, 0, 0]):
+    def find_midgap(self, k=[0, 0, 0], verbose=False):
         evup = self.Hup.eigh(k=k)
         evdn = self.Hdn.eigh(k=k)
         homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
         lumo = min(evup[self.Nup], evdn[self.Ndn])
-        print 'HL gap: %.3f eV' % (lumo-homo)
-        return (lumo+homo)/2
+        if verbose:
+            print 'HL gap: %.3f eV at k=' % (lumo-homo), k
+        return lumo-homo, (lumo+homo)/2
 
     def get_1D_band_structure(self, nk=51):
         # Save to file
@@ -288,18 +289,26 @@ class Hubbard(object):
         klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
-        egap = self.find_midgap()
+        gap1, emid = self.find_midgap()
+        gap0 = 1.e10
+        k0 = -1
         for ik, k in enumerate(klist):
             eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
             eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
+            egap, tmp = self.find_midgap(k=[k, 0, 0])
+            if egap < gap0:
+                gap0 = egap
+                k0 = k
             fup.write('%.8f '%k)
             fdn.write('%.8f '%k)
             for ev in eigs_up[ik]:
-                fup.write('%.8f ' %(ev-egap))
+                fup.write('%.8f ' %(ev-emid))
             for ev in eigs_dn[ik]:
-                fdn.write('%.8f ' %(ev-egap))
+                fdn.write('%.8f ' %(ev-emid))
             fup.write('\n')
             fdn.write('\n')
+        print '   Gap1: %.3f eV at k=[0,0,0]' % gap1
+        print '   Gap0: %.3f eV at k=[%.3f,0,0]' % (gap0, k0)
         return klist, eigs_up, eigs_dn
 
 
@@ -310,7 +319,7 @@ class Hubbard(object):
         ka, evup, evdn = self.get_1D_band_structure()
         ka = 2*ka # Units ka/pi
         # determine midgap
-        egap = self.find_midgap()
+        egap, emid = self.find_midgap()
         # Add siesta bandstructure?
         if TSHS:
             dftH = sisl.get_sile(TSHS).read_hamiltonian()
@@ -324,7 +333,7 @@ class Hubbard(object):
                 #eigs_dn[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
             print
             plt.plot(ka, eigs_up, 'k')
-        plt.plot(ka, evup-egap, 'r')
+        plt.plot(ka, evup-emid, 'r')
         plt.ylim(-4, 4)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
@@ -353,7 +362,7 @@ class Hubbard(object):
         axes = plt.axes();
         axes.fill_between([-10, 0], 0, ymax, facecolor='k', alpha=0.1)
         # Plot data
-        egap = self.find_midgap()
+        egap, emid = self.find_midgap()
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
@@ -361,7 +370,7 @@ class Hubbard(object):
             plt.plot(ev-egap, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
-                    axes.annotate(i, (ev[i]-egap, L[i]), fontsize=6)
+                    axes.annotate(i, (ev[i]-emid, L[i]), fontsize=6)
         axes.set_xlabel(r'$E_{\alpha\sigma}$ (eV)')
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
