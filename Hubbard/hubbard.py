@@ -230,6 +230,7 @@ class Hubbard(object):
             ncf.createVariable('Density', 'f8', ('unl','spin','sites'))
             ncf.createVariable('Etot', 'f8', ('unl',))
             self.ncf = ncf
+            ncf.sync()
 
     def gethash(self):
         s = ''
