@@ -31,6 +31,7 @@ for u in np.linspace(0.0,4.0,5):
     egap, emid = H.find_midgap()
     print u, egap, 'tmp'
     H.plot_bands()
+    H.plot_polarization()
     if u == 0:
         # Fix some issues with the first plot
         H.plot_bands()
