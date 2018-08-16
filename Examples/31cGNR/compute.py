@@ -29,7 +29,6 @@ for u in np.linspace(0.0,4.0,5):
             H.save()
     H.save()
     egap, emid = H.find_midgap()
-    print u, egap, 'tmp'
     H.plot_bands()
     H.plot_polarization()
     if u == 0:
