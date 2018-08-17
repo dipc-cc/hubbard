@@ -6,7 +6,7 @@ import numpy as np
 tol = 1e-10
 
 # 3NN tight-binding model
-H = HH.Hubbard('2-antracene.XV', t1=2.7, t2=0.2, t3=.18)
+H = HH.Hubbard('2-anthracene.XV', t1=2.7, t2=0.2, t3=.18)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions
