@@ -173,14 +173,10 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def RealSpaceWF(self,geom,ev,vecs,state,spinLabel,title,v=20,z=1.1,vmax=0.006,grid_unit=0.075):
-        x = geom.xyz[:, 0]
-        y = geom.xyz[:, 1]
+    def RealSpaceWF(self,geom,ev,vecs,state,spinLabel,title,vx=20,vy=0,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
-        bdx = 4
-        axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        bdx=4
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True) 
         # Create pz orbital for each C atom
@@ -189,8 +185,10 @@ class Hubbard(object):
         orb = SphericalOrbital(1, (r, func))
         C = Atom(6,orb) 
         # Change sc cell for plotting purpose
+        if vy == 0: vy = vx;
+        if vz == 0: vz = vx;
         H = Hamiltonian(geom)
-        H.geom.set_sc(SuperCell(v))
+        H.geom.set_sc(SuperCell([vx,vy,vz]))
         H.geom.atom.replace(H.geom.atom[0],C)
         if np.any(vecs.imag): dtype=np.complex128
         else: dtype=None
@@ -198,20 +196,18 @@ class Hubbard(object):
         es = EigenstateElectron(vecs.T, ev, H) 
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, \
-            extent=[min(x)-bdx, max(x)+bdx,min(y)-bdx, max(y)+bdx]); # Plot only the real part of the WF
+        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[0,vx,0,vy]); # Plot only the real part of the WF
         plt.colorbar(ax);
         axes.set_title(title)
-        # Check labels
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
         fig.savefig(outfn)
-        #grid.write('wavefunction.cube') # write to Cube (3D grid) file
+        #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
         plt.close('all')
             
-    def plot_RealSpaceWF(self,k=[0,0,0],v=20,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
+    def plot_RealSpaceWF(self,k=[0,0,0],vx=20,vy=0,vz=0,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
         evup -= self.find_midgap()
@@ -225,9 +221,9 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.RealSpaceWF(geom,evup,vecup,state,'up',title,v=v,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.RealSpaceWF(geom,evup,vecup,state,'up',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
-            self.RealSpaceWF(geom,evdn,vecdn,state,'dn',title,v=v,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.RealSpaceWF(geom,evdn,vecdn,state,'dn',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
         
 
     def plot_charge(self, f=100):
@@ -288,7 +284,7 @@ class Hubbard(object):
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
         for state in states:
-            # Plot both [up,dn] states
+            # Plot both [up,down] states
             data[Clist] = np.sign(vecup[:,state].real)*(vecup[:,state].real)**2
             title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
             self.WF(data,title,'-up-state%i'%state,f=f)
