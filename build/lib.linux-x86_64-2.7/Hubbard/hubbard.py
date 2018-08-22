@@ -178,7 +178,7 @@ class Hubbard(object):
         y = geom.xyz[:, 1]
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
-        bdx = 4
+        bdx=4
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         plt.rc('font', family='Bitstream Vera Serif', size=16)
@@ -207,7 +207,7 @@ class Hubbard(object):
         axes.set_ylabel(r'$y$ (\AA)')
         outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
         fig.savefig(outfn)
-        #grid.write('wavefunction.cube') # write to Cube (3D grid) file
+        #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
         plt.close('all')
             
@@ -224,9 +224,9 @@ class Hubbard(object):
         states = np.where(np.abs(evup)< EnWindow)[0]
         for state in states:
             # Plot both [up,down] states
-            title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
+            title = r'E=%.2f eV  k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
             self.RealSpaceWF(geom,evup,vecup,state,'up',title,v=v,z=z,vmax=vmax,grid_unit=grid_unit)
-            title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
+            title = r'E=%.2f eV  k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
             self.RealSpaceWF(geom,evdn,vecdn,state,'dn',title,v=v,z=z,vmax=vmax,grid_unit=grid_unit)
         
 
@@ -288,13 +288,14 @@ class Hubbard(object):
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
         for state in states:
-            # Plot both [up,dn] states
             data[Clist] = np.sign(vecup[:,state].real)*(vecup[:,state].real)**2
             title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.WF(data,title,'-up-state%i'%state,f=f)
+            label = '-up-state%i'%state
+            self.WF(data,title,label,f=f)
             data[Clist] = np.sign(vecdn[:,state].real)*(vecdn[:,state].real)**2
-            title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evdn[state],k[0],k[1],k[2]) 
-            self.WF(data,title,'-dn-state%i'%state,f=f)
+            title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
+            label = '-dn-state%i'%state
+            self.WF(data,title,label,f=f)
 
 
     def init_nc(self,fn):
