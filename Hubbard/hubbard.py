@@ -205,10 +205,11 @@ class Hubbard(object):
         plt.close('all')
             
     def plot_RealSpaceWF(self,k=[0,0,0],vx=20,vy=0,vz=0,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
+        egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
-        evup -= self.find_midgap()
-        evdn -= self.find_midgap()
+        evup -= emid
+        evdn -= emid
         # Recenter image for better visualization
         geom = self.pi_geom
         xyz_center = geom.center(what='xyz')
@@ -273,10 +274,11 @@ class Hubbard(object):
         plt.close('all')
         
     def plot_WF(self, k=[0,0,0], EnWindow=2.0,f=3000):
+        egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
-        evup -= self.find_midgap()
-        evdn -= self.find_midgap()
+        evup -= emid
+        evdn -= emid
         states = np.where(np.abs(evup)< EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
