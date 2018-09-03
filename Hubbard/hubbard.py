@@ -8,7 +8,6 @@ import matplotlib.colors as mcolors
 import sisl
 from sisl import *
 import hashlib
-import scipy
 
 
 class Hubbard(object):
