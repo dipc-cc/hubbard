@@ -12,7 +12,7 @@ H = HH.Hubbard('2-anthracene.XV', t1=2.7, t2=0.2, t3=.18)
 # FM and AFM solutions
 f = open('FM-AFM.dat','w')
 
-for u in np.linspace(0.0,4.0,51):
+for u in np.linspace(0.0, 4.0, 5):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.0-u
     
@@ -31,6 +31,8 @@ for u in np.linspace(0.0,4.0,51):
             print "   AFM iteration %i: deltaN = %.8f" %(i, deltaN)
     print "   Converged in %i iterations" %i
     H.save() # Computed density to file
+    H.plot_WF()
+    H.plot_RealSpaceWF()
 
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
