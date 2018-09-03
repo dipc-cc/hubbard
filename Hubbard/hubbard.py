@@ -6,7 +6,6 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as mcolors
 import sisl
-from sisl import *
 import hashlib
 
 
@@ -179,18 +178,18 @@ class Hubbard(object):
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
-        orb = SphericalOrbital(1, (r, func))
-        C = Atom(6,orb) 
+        orb = sisl.SphericalOrbital(1, (r, func))
+        C = sisl.Atom(6,orb)
         # Change sc cell for plotting purpose
         if vy == 0: vy = vx;
         if vz == 0: vz = vx;
-        H = Hamiltonian(geom)
-        H.geom.set_sc(SuperCell([vx,vy,vz]))
+        H = sisl.Hamiltonian(geom)
+        H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
         H.geom.atom.replace(H.geom.atom[0],C)
         if np.any(vecs.imag): dtype=np.complex128
         else: dtype=None
-        grid = Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
-        es = EigenstateElectron(vecs.T, ev, H) 
+        grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
+        es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
         ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[0,vx,0,vy]); # Plot only the real part of the WF
