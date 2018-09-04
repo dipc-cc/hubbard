@@ -246,7 +246,6 @@ class Hubbard(object):
         bdx = 2
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
-        ratio = (max(x)-min(x)+2*bdx)/(max(y)-min(y)+2*bdx)
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
         plt.rc('font', family='Bitstream Vera Serif', size=16)
