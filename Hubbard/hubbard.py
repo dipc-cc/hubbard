@@ -359,7 +359,7 @@ class Hubbard(object):
         homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
         lumo = min(evup[self.Nup], evdn[self.Ndn])
         if verbose:
-            print 'HL gap: %.3f eV at k=' % (lumo-homo), k
+            print('HL gap: %.3f eV at k=' % (lumo-homo), k)
         return lumo-homo, (lumo+homo)/2
 
     def get_1D_band_structure(self, nk=51):
@@ -387,8 +387,8 @@ class Hubbard(object):
                 fdn.write('%.8f ' %(ev-emid))
             fup.write('\n')
             fdn.write('\n')
-        print '   Gap1: %.3f eV at k=[0,0,0]' % gap1
-        print '   Gap0: %.3f eV at k=[%.3f,0,0]' % (gap0, k0)
+        print('   Gap1: %.3f eV at k=[0,0,0]' % gap1)
+        print('   Gap0: %.3f eV at k=[%.3f,0,0]' % (gap0, k0))
         return klist, eigs_up, eigs_dn
 
 
