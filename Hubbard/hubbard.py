@@ -27,6 +27,8 @@ class Hubbard(object):
         # Read geometry etc
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
+        self.geom = self.geom.move(-self.geom.center(what='xyz'))
+        print(self.geom.center(what='xyz'))
         self.geom.write('molecule.xyz')
         print('Wrote molecule.xyz')
         # Determine pz sites
