@@ -174,7 +174,9 @@ class Hubbard(object):
     def RealSpaceWF(self,ev,vecs,state,spinLabel,title,vx=20,vy=0,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
-        bdx=4
+        x = self.geom.xyz[:, 0]
+        y = self.geom.xyz[:, 1]
+        bdx = 2
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True) 
         # Create pz orbital for each C atom
@@ -183,7 +185,8 @@ class Hubbard(object):
         orb = sisl.SphericalOrbital(1, (r, func))
         C = sisl.Atom(6,orb)
         # Change sc cell for plotting purpose
-        if vy == 0: vy = vx;
+        vx = np.abs((min(x)-bdx) - (max(x)+bdx))
+        vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
         if vz == 0: vz = vx;
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
