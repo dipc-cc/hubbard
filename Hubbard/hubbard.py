@@ -198,7 +198,7 @@ class Hubbard(object):
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[0,vx,0,vy]); # Plot only the real part of the WF
+        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[-vx*.5,vx*.5,-vy*.5,vy*.5]); # Plot only the real part of the WF
         plt.colorbar(ax);
         axes.set_title(title)
         axes.set_xlabel(r'$x$ (\AA)')
