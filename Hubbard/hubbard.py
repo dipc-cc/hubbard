@@ -180,13 +180,15 @@ class Hubbard(object):
         bdx = 2
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
-        # Plot geometry
-        pc1 = PatchCollection(pH, alpha=.8, lw=1.2, edgecolor='k',facecolor='None')
+        # Plot geometry backbone
+        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, alpha=.8, lw=1.2, edgecolor='k',facecolor='None')
+        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
         pc2.set_array(np.zeros(len(pC)))
-        axes.add_collection(pc2) 
+        axes.add_collection(pc2)
+        pc1.set_clim(-10, 10) # colorbar limits
+        pc2.set_clim(-10, 10) # colorbar limits 
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
