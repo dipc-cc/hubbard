@@ -171,7 +171,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def RealSpaceWF(self,geom,ev,vecs,state,spinLabel,title,vx=20,vy=0,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+    def RealSpaceWF(self,ev,vecs,state,spinLabel,title,vx=20,vy=0,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
         bdx=4
@@ -216,9 +216,9 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.RealSpaceWF(geom,evup,vecup,state,'up',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.RealSpaceWF(evup,vecup,state,'up',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
-            self.RealSpaceWF(geom,evdn,vecdn,state,'dn',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.RealSpaceWF(evdn,vecdn,state,'dn',title,vx=vx,vy=vy,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
         
 
     def plot_charge(self, f=100):
