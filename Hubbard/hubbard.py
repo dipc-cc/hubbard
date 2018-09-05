@@ -199,6 +199,7 @@ class Hubbard(object):
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
         if vz == 0: vz = vx;
         geom = self.pi_geom.move([vx*.5,vy*.5,0])
+        geom.xyz[np.where(np.abs(geom.xyz[:,2]<1e-3)),2] = 0 # z~0 -> z=0 
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
         H.geom.atom.replace(H.geom.atom[0],C)
