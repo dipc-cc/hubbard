@@ -211,10 +211,6 @@ class Hubbard(object):
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
         evup -= emid
         evdn -= emid
-        # Recenter image for better visualization
-        geom = self.pi_geom
-        xyz_center = geom.center(what='xyz')
-        geom.xyz -= [xyz_center[0]*f, xyz_center[1]*f, xyz_center[2]]
         # Find states over an energy window
         states = np.where(np.abs(evup)< EnWindow)[0]
         for state in states:
