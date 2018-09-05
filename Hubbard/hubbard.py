@@ -172,13 +172,21 @@ class Hubbard(object):
         plt.close('all')
 
     def RealSpaceWF(self,ev,vecs,state,spinLabel,title,vx=20,vy=0,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+        pH, pC, pS = self.get_atomic_patch()
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
         bdx = 2
         plt.rc('font', family='Bitstream Vera Serif', size=16)
-        plt.rc('text', usetex=True) 
+        plt.rc('text', usetex=True)
+        # Plot geometry
+        pc1 = PatchCollection(pH, alpha=.8, lw=1.2, edgecolor='k',facecolor='None')
+        pc1.set_array(np.zeros(len(pH)))
+        axes.add_collection(pc1)
+        pc2 = PatchCollection(pC, alpha=.8, lw=1.2, edgecolor='k',facecolor='None')
+        pc2.set_array(np.zeros(len(pC)))
+        axes.add_collection(pc2) 
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
