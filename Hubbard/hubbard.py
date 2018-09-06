@@ -12,7 +12,7 @@ import hashlib
 
 class Hubbard(object):
     
-    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1]):
+    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1], what='xyz'):
         # Save parameters
         if fn[-3:] == '.XV': self.fn = fn[:-3] 
         elif fn[-4:] == '.xyz': self.fn = fn[:-4]
@@ -27,7 +27,7 @@ class Hubbard(object):
         # Read geometry etc
         self.geom = sisl.get_sile(fn).read_geom()
         self.geom.sc.set_nsc(nsc)
-        self.geom = self.geom.move(-self.geom.center(what='xyz'))
+        self.geom = self.geom.move(-self.geom.center(what=what))
         self.geom.write('molecule.xyz')
         print('Wrote molecule.xyz')
         # Determine pz sites
