@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sisl
 
 graphene = sisl.geom.graphene()
@@ -8,4 +10,4 @@ for ia, io in H:
     H[io,idx[0]] = 0.
     H[io,idx[1]] = -2.7
 
-print H.eigh(k=[0., 0.5, 0.])
+print(H.eigh(k=[0., 0.5, 0.]))
