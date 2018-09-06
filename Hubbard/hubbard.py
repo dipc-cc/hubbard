@@ -253,7 +253,6 @@ class Hubbard(object):
 
     def WF(self, data, title, label,f=3000):
         pH, pC, pS = self.get_atomic_patch()
-        sc = 15
         bdx = 2
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
