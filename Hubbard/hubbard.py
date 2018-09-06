@@ -198,7 +198,7 @@ class Hubbard(object):
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
         if vz == 0: vz = vx;
-        geom = self.pi_geom.move([vx*.5,vy*.5,0])
+        geom = self.pi_geom.move([-(min(x)-bdx),-(min(y)-bdx),-self.geom.center()[2]])
         geom.xyz[np.where(np.abs(geom.xyz[:,2])<1e-3),2] = 0 # z~0 -> z=0 
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
@@ -209,7 +209,7 @@ class Hubbard(object):
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[-vx*.5,vx*.5,-vy*.5,vy*.5]); # Plot only the real part of the WF
+        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]); # Plot only the real part of the WF
         plt.colorbar(ax);
         axes.set_title(title)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
