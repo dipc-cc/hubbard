@@ -212,6 +212,8 @@ class Hubbard(object):
         ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[-vx*.5,vx*.5,-vy*.5,vy*.5]); # Plot only the real part of the WF
         plt.colorbar(ax);
         axes.set_title(title)
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
