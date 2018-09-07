@@ -197,7 +197,7 @@ class Hubbard(object):
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
-        if vz == 0: vz = vx;
+        if vz == 0: vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx),-(min(y)-bdx),-self.geom.center()[2]])
         geom.xyz[np.where(np.abs(geom.xyz[:,2])<1e-3),2] = 0 # z~0 -> z=0 
         H = sisl.Hamiltonian(geom)
@@ -209,8 +209,8 @@ class Hubbard(object):
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]); # Plot only the real part of the WF
-        plt.colorbar(ax);
+        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]) # Plot only the real part of the WF
+        plt.colorbar(ax)
         axes.set_title(title)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
@@ -245,8 +245,8 @@ class Hubbard(object):
         fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
         axes.set_aspect('equal')
-        scatter1 = axes.scatter(x, y, f*pol, 'r'); # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x, y, -f*pol, 'g'); # neg. part
+        scatter1 = axes.scatter(x, y, f*pol, 'r') # pos. part, marker AREA is proportional to data
+        scatter2 = axes.scatter(x, y, -f*pol, 'g') # neg. part
         outfn =	self.get_label()+'-chg.pdf'
         fig.savefig(outfn)
         print('Wrote', outfn)
@@ -277,8 +277,8 @@ class Hubbard(object):
         axes.add_collection(pc2)
         if max(data) < -min(data):
             data = -data # change sign of wf to have largest element as positive
-        scatter1 = axes.scatter(x, y, data*f, 'r'); # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x, y, -data*f, 'g'); # neg. part
+        scatter1 = axes.scatter(x, y, data*f, 'r') # pos. part, marker AREA is proportional to data
+        scatter2 = axes.scatter(x, y, -data*f, 'g') # neg. part
         axes.set_title(title)
         fnout= self.get_label()+'-WF%s.pdf'%label
         fig.savefig(fnout)
@@ -451,7 +451,7 @@ class Hubbard(object):
 
     def plot_localizations(self, k=[0, 0, 0], ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10, 5))
-        axes = plt.axes();
+        axes = plt.axes()
         axes.fill_between([-10, 0], 0, ymax, facecolor='k', alpha=0.1)
         # Plot data
         egap, emid = self.find_midgap()
