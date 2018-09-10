@@ -168,6 +168,58 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
+    def plot_RealSpacePOL(self,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+        pH, pC, pS = self.get_atomic_patch()
+        pol = self.nup-self.ndn
+        fig = plt.figure(figsize=(8, 6))
+        axes = plt.axes()
+        x = self.geom.xyz[:, 0]
+        y = self.geom.xyz[:, 1]
+        bdx = 2
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
+        plt.rc('text', usetex=True)
+        # Plot geometry backbone
+        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc1.set_array(np.zeros(len(pH)))
+        axes.add_collection(pc1)
+        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc2.set_array(np.zeros(len(pC)))
+        axes.add_collection(pc2)
+        pc1.set_clim(-10, 10) # colorbar limits
+        pc2.set_clim(-10, 10) # colorbar limits 
+        # Create pz orbital for each C atom
+        r = np.linspace(0, 1.6, 700)
+        func = 5 * np.exp(-r * 5)
+        orb = sisl.SphericalOrbital(1, (r, func))
+        C = sisl.Atom(6,orb)
+        # Change sc cell for plotting purpose
+        vx = np.abs((min(x)-bdx) - (max(x)+bdx))
+        vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
+        if vz == 0: vz = vx
+        geom = self.pi_geom.move([-(min(x)-bdx),-(min(y)-bdx),-self.geom.center()[2]])
+        geom.xyz[np.where(np.abs(geom.xyz[:,2])<1e-3),2] = 0 # z~0 -> z=0 
+        H = sisl.Hamiltonian(geom)
+        H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
+        H.geom.atom.replace(H.geom.atom[0],C)
+        if np.any(vecs.imag): dtype=np.complex128
+        else: dtype=None
+        grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
+        es = sisl.EigenstateElectron(pol, 0, H)
+        index = grid.index([0, 0, z])
+        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]) # Plot only the real part of the WF
+        plt.colorbar(ax)
+        axes.set_title(title)
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        axes.set_xlabel(r'$x$ (\AA)')
+        axes.set_ylabel(r'$y$ (\AA)')
+        outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
+        fig.savefig(outfn)
+        #grid.write('wavefunction.cube') # write to Cube file
+        print('Wrote', outfn)
+        plt.close('all')
+
+
     def RealSpaceWF(self,ev,vecs,state,spinLabel,title,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         fig = plt.figure(figsize=(8, 6))
