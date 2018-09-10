@@ -241,12 +241,19 @@ class Hubbard(object):
     def plot_charge(self, f=100):
         x = self.pi_geom.xyz[:, 0]
         y = self.pi_geom.xyz[:, 1]
-        pol = self.nup+self.ndn
+        bdx = 2
+        chg = self.nup+self.ndn
         fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
         axes.set_aspect('equal')
-        scatter1 = axes.scatter(x, y, f*pol, 'r') # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x, y, -f*pol, 'g') # neg. part
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
+        plt.rc('text', usetex=True)
+        scatter1 = axes.scatter(x, y, f*chg, 'r') # pos. part, marker AREA is proportional to data
+        scatter2 = axes.scatter(x, y, -f*chg, 'b') # neg. part
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        axes.set_xlabel(r'$x$ (\AA)')
+        axes.set_ylabel(r'$y$ (\AA)')
         outfn =	self.get_label()+'-chg.pdf'
         fig.savefig(outfn)
         print('Wrote', outfn)
