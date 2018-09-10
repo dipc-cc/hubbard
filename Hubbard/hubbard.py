@@ -168,7 +168,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def plot_RealSpacePOL(self,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+    def plot_rs_polarization(self,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
@@ -220,7 +220,7 @@ class Hubbard(object):
         plt.close('all')
 
 
-    def RealSpaceWF(self,ev,vecs,state,spinLabel,title,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+    def real_space_wf(self,ev,vecs,state,spinLabel,title,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -271,7 +271,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
             
-    def plot_RealSpaceWF(self,k=[0,0,0],vz=0,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
+    def plot_rs_wf(self,k=[0,0,0],vz=0,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
         egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
@@ -282,9 +282,9 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.RealSpaceWF(evup,vecup,state,'up',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.real_space_wf(evup,vecup,state,'up',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
-            self.RealSpaceWF(evdn,vecdn,state,'dn',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
+            self.real_space_wf(evdn,vecdn,state,'dn',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
         
 
     def plot_charge(self, f=100):
@@ -318,7 +318,7 @@ class Hubbard(object):
         plt.close('all')
 
 
-    def WF(self, data, title, label,f=3000):
+    def wf(self, data, title, label,f=3000):
         pH, pC, pS = self.get_atomic_patch()
         bdx = 2
         x = self.geom.xyz[:, 0]
@@ -350,7 +350,7 @@ class Hubbard(object):
         print('Wrote', fnout)
         plt.close('all')
         
-    def plot_WF(self, k=[0,0,0], EnWindow=2.0,f=3000):
+    def plot_wf(self, k=[0,0,0], EnWindow=2.0,f=3000):
         egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
@@ -363,10 +363,10 @@ class Hubbard(object):
             # Plot both [up,down] states
             data[Clist] = np.sign(vecup[:,state].real)*(vecup[:,state].real)**2
             title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.WF(data,title,'-up-state%i'%state,f=f)
+            self.wf(data,title,'-up-state%i'%state,f=f)
             data[Clist] = np.sign(vecdn[:,state].real)*(vecdn[:,state].real)**2
             title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evdn[state],k[0],k[1],k[2]) 
-            self.WF(data,title,'-dn-state%i'%state,f=f)
+            self.wf(data,title,'-dn-state%i'%state,f=f)
 
 
     def init_nc(self,fn):
