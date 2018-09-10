@@ -178,10 +178,10 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
         pc2.set_array(np.zeros(len(pC)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
@@ -244,10 +244,10 @@ class Hubbard(object):
         fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc2.set_array(np.zeros(len(pC)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
