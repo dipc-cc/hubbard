@@ -201,19 +201,19 @@ class Hubbard(object):
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
         H.geom.atom.replace(H.geom.atom[0],C)
-        if np.any(vecs.imag): dtype=np.complex128
-        else: dtype=None
-        grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
-        es = sisl.EigenstateElectron(pol, 0, H)
+        grid = sisl.Grid(grid_unit, sc=H.geom.sc)
+        vecs = np.zeros((self.sites,self.sites))
+        vecs[0,:] = pol
+        es = sisl.EigenstateElectron(vecs, np.zeros(self.sites), H)
+        es.sub(0).psi(grid)
         index = grid.index([0, 0, z])
         ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]) # Plot only the real part of the WF
         plt.colorbar(ax)
-        axes.set_title(title)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-realSpacePOL-state.pdf'
+        outfn = self.get_label()+'-realSpacePOL.pdf'
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
