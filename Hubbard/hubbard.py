@@ -32,11 +32,12 @@ class Hubbard(object):
         self.geom.write('molecule.xyz')
         print('Wrote molecule.xyz')
         # Determine pz sites
-        Hlist = []
+        aux = []
         for ia in self.geom:
-            if self.geom.atoms[ia].Z == 1:
-                Hlist.append(ia)
-        self.pi_geom = self.geom.remove(Hlist)
+            if self.geom.atoms[ia].Z != 6:
+                aux.append(ia)
+        # Remove all sites not carbon-type
+        self.pi_geom = self.geom.remove(aux)
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
         # Set default values
