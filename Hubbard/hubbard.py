@@ -245,6 +245,7 @@ class Hubbard(object):
         bdx = 2
         chg = self.nup+self.ndn
         fig = plt.figure(figsize=(6, 6))
+        axes = plt.axes()
         # Plot geometry backbone
         pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
         pc1.set_array(np.zeros(len(pH)))
@@ -254,7 +255,6 @@ class Hubbard(object):
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
         pc2.set_clim(-10, 10) # colorbar limits 
-        axes = plt.axes()
         axes.set_aspect('equal')
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
