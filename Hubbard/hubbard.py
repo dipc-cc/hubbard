@@ -143,9 +143,6 @@ class Hubbard(object):
         axes = plt.axes()
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
-        # move to around origo
-        #x -= np.average(x)
-        #y -= np.average(y)
         bdx = 2
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
