@@ -248,8 +248,7 @@ class Hubbard(object):
         axes.set_aspect('equal')
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
-        scatter1 = axes.scatter(x, y, f*chg, 'r') # pos. part, marker AREA is proportional to data
-        scatter2 = axes.scatter(x, y, -f*chg, 'b') # neg. part
+        scatter = axes.scatter(x, y, f*chg, 'r') # pos. part, marker AREA is proportional to data
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
