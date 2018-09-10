@@ -43,9 +43,9 @@ class Hubbard(object):
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
         # Count number of pi-electrons:
-        nB = len(np.where(self.pi_geom.atoms.Z==5)[0])
-        nC = len(np.where(self.pi_geom.atoms.Z==6)[0])
-        nN = len(np.where(self.pi_geom.atoms.Z==7)[0])
+        nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
+        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
+        nN = len(np.where(self.pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
@@ -94,16 +94,17 @@ class Hubbard(object):
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
-        self.H0 = sisl.Hamiltonian(self.pi_geom)
-        for ia in self.pi_geom:
-            idx = self.pi_geom.close(ia, R=R)
-            if self.pi_geom.atoms[ia].Z == 5:
+        g = self.pi_geom
+        self.H0 = sisl.Hamiltonian(g)
+        for ia in g:
+            idx = g.close(ia, R=R)
+            if g.atoms[ia].Z == 5:
                 # set onsite for B sites
-                self.H0.H[ia, idx[0]] = 30.
+                self.H0.H[ia, ia] = 3.
                 print('Found B site')
             # set onsite for N sites
-            if self.pi_geom.atoms[ia].Z == 7:
-                self.H0.H[ia, idx[0]] = -30.
+            if g.atoms[ia].Z == 7:
+                self.H0.H[ia, ia] = -3.
                 print('Found N site')
             # set hoppings
             self.H0.H[ia, idx[1]] = -self.t1
@@ -127,8 +128,10 @@ class Hubbard(object):
         Ndn = self.Ndn
         # Update Hamiltonian
         for ia in self.pi_geom:
-            self.Hup.H[ia, ia] = self.U*self.ndn[ia]
-            self.Hdn.H[ia, ia] = self.U*self.nup[ia]
+            # charge on neutral atom:
+            n0 = self.pi_geom.atoms[ia].Z-5
+            self.Hup.H[ia, ia] = self.U*(self.ndn[ia]-n0)
+            self.Hdn.H[ia, ia] = self.U*(self.nup[ia]-n0)
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
