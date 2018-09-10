@@ -213,7 +213,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-realSpacePOL.pdf'
+        outfn = self.get_label()+'-rs-pol.pdf'
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
@@ -265,7 +265,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
+        outfn = self.get_label()+'-rs-wf-%s-state%i.pdf'%(spinLabel,state)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
@@ -345,7 +345,7 @@ class Hubbard(object):
         scatter1 = axes.scatter(x, y, data*f, 'r') # pos. part, marker AREA is proportional to data
         scatter2 = axes.scatter(x, y, -data*f, 'g') # neg. part
         axes.set_title(title)
-        fnout= self.get_label()+'-WF%s.pdf'%label
+        fnout= self.get_label()+'-wf%s.pdf'%label
         fig.savefig(fnout)
         print('Wrote', fnout)
         plt.close('all')
