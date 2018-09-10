@@ -14,8 +14,10 @@ class Hubbard(object):
 
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None):
         # Save parameters
-        if fn[-3:] == '.XV': self.fn = fn[:-3]
-        elif fn[-4:] == '.xyz': self.fn = fn[:-4]
+        if fn[-3:] == '.XV':
+            self.fn = fn[:-3]
+        elif fn[-4:] == '.xyz':
+            self.fn = fn[:-4]
         self.t1 = t1
         self.t2 = t2
         self.t3 = t3
@@ -197,7 +199,8 @@ class Hubbard(object):
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))
-        if vz == 0: vz = vx
+        if vz == 0:
+            vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
         geom.xyz[np.where(np.abs(geom.xyz[:, 2])<1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
@@ -249,14 +252,17 @@ class Hubbard(object):
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))
-        if vz == 0: vz = vx
+        if vz == 0:
+            vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
         geom.xyz[np.where(np.abs(geom.xyz[:, 2])<1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
         H.geom.atom.replace(H.geom.atom[0], C)
-        if np.any(vecs.imag): dtype=np.complex128
-        else: dtype=None
+        if np.any(vecs.imag):
+            dtype=np.complex128
+        else:
+            dtype=None
         grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
