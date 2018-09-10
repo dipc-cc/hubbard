@@ -387,7 +387,10 @@ class Hubbard(object):
         print('Wrote', fnout)
         plt.close('all')
 
-    def plot_wf(self, k=[0, 0, 0], EnWindow=2.0, f=3000):
+    def plot_wf(self, k=[0, 0, 0], EnWindow=2.0, f=3000, density=True):
+        if not density:
+            # We plot directly the wavefunction instead
+            f = 1000
         egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
@@ -398,11 +401,17 @@ class Hubbard(object):
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             # Plot both [up,down] states
-            data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
+            if density:
+                data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
+            else:
+                data[Clist] = vecup[:, state].real
             title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evup[state], k[0], k[1], k[2])
             self.wf(data, title, '-up-state%i'%state, f=f)
-            data[Clist] = np.sign(vecdn[:, state].real)*(vecdn[:, state].real)**2
-            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
+            if density:
+                data[Clist] = np.sign(vecdn[:, state].real)*(vecdn[:, state].real)**2
+            else:
+                data[Clist] = vecdn[:, state].real
+                title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
             self.wf(data, title, '-dn-state%i'%state, f=f)
 
     def init_nc(self, fn):
