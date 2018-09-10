@@ -300,9 +300,9 @@ class Hubbard(object):
         states = np.where(np.abs(evup) < EnWindow)[0]
         for state in states:
             # Plot both [up,down] states
-            title = r'E=%.4f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state], k[0], k[1], k[2])
+            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evup[state], k[0], k[1], k[2])
             self.real_space_wf(evup, vecup, state, 'up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
-            title = r'E=%.4f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state], k[0], k[1], k[2])
+            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
             self.real_space_wf(evdn, vecdn, state, 'dn', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
@@ -379,10 +379,10 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
-            title = 'E=%.4f eV, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evup[state], k[0], k[1], k[2])
+            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evup[state], k[0], k[1], k[2])
             self.wf(data, title, '-up-state%i'%state, f=f)
             data[Clist] = np.sign(vecdn[:, state].real)*(vecdn[:, state].real)**2
-            title = 'E=%.4f eV, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evdn[state], k[0], k[1], k[2])
+            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
             self.wf(data, title, '-dn-state%i'%state, f=f)
 
     def init_nc(self, fn):
