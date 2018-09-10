@@ -21,7 +21,7 @@ for u in np.linspace(0.0,4.0,51):
     deltaN = 1.
     i = 0
     while deltaN > tol:
-        deltaN > 0.1:
+        if deltaN > 0.1:
             # precondition
             deltaN, eAFM = H.iterate(mix=.1)
         else:
@@ -39,7 +39,7 @@ for u in np.linspace(0.0,4.0,51):
     deltaN = 1 # Reset
     i = 0 # Reset
     while deltaN > tol:
-        deltaN > 0.1:
+        if deltaN > 0.1:
             # precondition
             deltaN, eFM = H.iterate(mix=.1)
         else:
