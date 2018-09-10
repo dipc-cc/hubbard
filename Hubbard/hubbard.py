@@ -48,6 +48,7 @@ class Hubbard(object):
         nN = len(np.where(self.pi_geom.atoms.Z==7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
+        print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Set default values
         self.U = 0.0
         self.Ndn = int(ntot/2)
