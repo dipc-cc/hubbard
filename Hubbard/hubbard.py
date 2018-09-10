@@ -239,11 +239,21 @@ class Hubbard(object):
         
 
     def plot_charge(self, f=100):
+        pH, pC, pS = self.get_atomic_patch()
         x = self.pi_geom.xyz[:, 0]
         y = self.pi_geom.xyz[:, 1]
         bdx = 2
         chg = self.nup+self.ndn
         fig = plt.figure(figsize=(6, 6))
+        # Plot geometry backbone
+        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc1.set_array(np.zeros(len(pH)))
+        axes.add_collection(pc1)
+        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, edgecolor='k',facecolor='None')
+        pc2.set_array(np.zeros(len(pC)))
+        axes.add_collection(pc2)
+        pc1.set_clim(-10, 10) # colorbar limits
+        pc2.set_clim(-10, 10) # colorbar limits 
         axes = plt.axes()
         axes.set_aspect('equal')
         plt.rc('font', family='Bitstream Vera Serif', size=16)
