@@ -36,16 +36,22 @@ class Hubbard(object):
         # Determine pz sites
         aux = []
         for ia in self.geom:
-            if self.geom.atoms[ia].Z != 6:
+            if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
         # Remove all sites not carbon-type
         self.pi_geom = self.geom.remove(aux)
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
+        # Count number of pi-electrons:
+        nB = len(np.where(self.pi_geom.atoms.Z==5)[0])
+        nC = len(np.where(self.pi_geom.atoms.Z==6)[0])
+        nN = len(np.where(self.pi_geom.atoms.Z==7)[0])
+        ntot = 0*nB+1*nC+2*nN
+        print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         # Set default values
         self.U = 0.0
-        self.Ndn = int(self.sites/2)
-        self.Nup = int(self.sites-self.Ndn)
+        self.Ndn = int(ntot/2)
+        self.Nup = int(ntot-self.Ndn)
         print('   U   =', self.U)
         print('   Nup =', self.Nup)
         print('   Ndn =', self.Ndn)
@@ -90,6 +96,15 @@ class Hubbard(object):
         self.H0 = sisl.Hamiltonian(self.pi_geom)
         for ia in self.pi_geom:
             idx = self.pi_geom.close(ia, R=R)
+            if self.pi_geom.atoms[ia].Z == 5:
+                # set onsite for B sites
+                self.H0.H[ia, idx[0]] = 30.
+                print('Found B site')
+            # set onsite for N sites
+            if self.pi_geom.atoms[ia].Z == 7:
+                self.H0.H[ia, idx[0]] = -30.
+                print('Found N site')
+            # set hoppings
             self.H0.H[ia, idx[1]] = -self.t1
             if self.t2 != 0:
                 self.H0.H[ia, idx[2]] = -self.t2
@@ -141,8 +156,12 @@ class Hubbard(object):
         for ia in g:
             if g.atoms[ia].Z == 1:
                 pH.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
-            elif g.atoms[ia].Z == 6:
+            elif g.atoms[ia].Z == 5: # B
+                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+            elif g.atoms[ia].Z == 6: # C
                 pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+            elif g.atoms[ia].Z == 7: # N
+                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10:
                 # Substrate atom
                 pS.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
@@ -375,7 +394,7 @@ class Hubbard(object):
         evdn -= emid
         states = np.where(np.abs(evup) < EnWindow)[0]
         data = np.zeros(len(self.geom))
-        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
+        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             # Plot both [up,down] states
             data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
