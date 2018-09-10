@@ -202,7 +202,7 @@ class Hubbard(object):
         if vz == 0:
             vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
-        geom.xyz[np.where(np.abs(geom.xyz[:, 2])<1e-3), 2] = 0 # z~0 -> z=0
+        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
         H.geom.atom.replace(H.geom.atom[0], C)
@@ -255,7 +255,7 @@ class Hubbard(object):
         if vz == 0:
             vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
-        geom.xyz[np.where(np.abs(geom.xyz[:, 2])<1e-3), 2] = 0 # z~0 -> z=0
+        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
         H.geom.atom.replace(H.geom.atom[0], C)
@@ -289,7 +289,7 @@ class Hubbard(object):
         evup -= emid
         evdn -= emid
         # Find states over an energy window
-        states = np.where(np.abs(evup)< EnWindow)[0]
+        states = np.where(np.abs(evup) < EnWindow)[0]
         for state in states:
             # Plot both [up,down] states
             title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state], k[0], k[1], k[2])
@@ -365,7 +365,7 @@ class Hubbard(object):
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
         evup -= emid
         evdn -= emid
-        states = np.where(np.abs(evup)< EnWindow)[0]
+        states = np.where(np.abs(evup) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
         for state in states:
