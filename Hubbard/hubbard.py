@@ -213,7 +213,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-%s-realSpaceWF-state%i.pdf'%(spinLabel,state)
+        outfn = self.get_label()+'-realSpacePOL-state.pdf'
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
