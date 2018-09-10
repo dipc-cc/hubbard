@@ -31,8 +31,8 @@ for u in np.linspace(0.0, 4.0, 5):
             print "   AFM iteration %i: deltaN = %.8f" %(i, deltaN)
     print "   Converged in %i iterations" %i
     H.save() # Computed density to file
-    H.plot_WF()
-    H.plot_RealSpaceWF()
+    H.plot_wf()
+    H.plot_rs_wf()
 
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
