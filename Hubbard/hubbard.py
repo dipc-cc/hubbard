@@ -130,8 +130,8 @@ class Hubbard(object):
         for ia in self.pi_geom:
             # charge on neutral atom:
             n0 = self.pi_geom.atoms[ia].Z-5
-            self.Hup.H[ia, ia] = self.U*(self.ndn[ia]-n0)
-            self.Hdn.H[ia, ia] = self.U*(self.nup[ia]-n0)
+            self.Hup.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.ndn[ia]-n0)
+            self.Hdn.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.nup[ia]-n0)
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
