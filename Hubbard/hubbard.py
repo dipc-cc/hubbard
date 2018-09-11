@@ -417,7 +417,7 @@ class Hubbard(object):
                 data[Clist] = np.sign(vec[:, state].real)*(vec[:, state].real)**2
             else:
                 data[Clist] = vec[:, state].real
-            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
+            title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             if ispin == 0:
                 self.wf(data, title, '-up-state%i'%state, f=f)
             else:
