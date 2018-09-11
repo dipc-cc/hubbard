@@ -323,9 +323,9 @@ class Hubbard(object):
         states = np.where(np.abs(evup) < EnWindow)[0]
         for state in states:
             # Plot both [up,down] states
-            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evup[state], k[0], k[1], k[2])
+            title = r'$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evup[state], k[0], k[1], k[2])
             self.real_space_wf(evup, vecup, state, 'up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
-            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
+            title = r'$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
             self.real_space_wf(evdn, vecdn, state, 'dn', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
@@ -573,7 +573,7 @@ class Hubbard(object):
             if annotate:
                 for i in range(len(ev)):
                     axes.annotate(i, (ev[i]-emid, L[i]), fontsize=6)
-        axes.set_xlabel(r'$E_{\alpha\sigma}$ (eV)')
+        axes.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)')
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
         axes.set_xlim(-10, 10)
