@@ -398,32 +398,30 @@ class Hubbard(object):
         print('Wrote', fnout)
         plt.close('all')
 
-    def plot_wf(self, k=[0, 0, 0], EnWindow=2.0, f=3000, density=True):
+    def plot_wf(self, k=[0, 0, 0], EnWindow=2.0, f=3000, density=True, ispin=0):
         if not density:
             # We plot directly the wavefunction instead
             f = 1000
         egap, emid = self.find_midgap()
-        evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
-        evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
-        evup -= emid
-        evdn -= emid
-        states = np.where(np.abs(evup) < EnWindow)[0]
+        if ispin == 0:
+            ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
+        else:
+            ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
+        ev -= emid
+        states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             # Plot both [up,down] states
             if density:
-                data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
+                data[Clist] = np.sign(vec[:, state].real)*(vec[:, state].real)**2
             else:
-                data[Clist] = vecup[:, state].real
-            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evup[state], k[0], k[1], k[2])
-            self.wf(data, title, '-up-state%i'%state, f=f)
-            if density:
-                data[Clist] = np.sign(vecdn[:, state].real)*(vecdn[:, state].real)**2
+                data[Clist] = vec[:, state].real
+            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
+            if ispin == 0:
+                self.wf(data, title, '-up-state%i'%state, f=f)
             else:
-                data[Clist] = vecdn[:, state].real
-                title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
-            self.wf(data, title, '-dn-state%i'%state, f=f)
+                self.wf(data, title, '-dn-state%i'%state, f=f)
 
     def init_nc(self, fn):
         try:
