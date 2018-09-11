@@ -11,11 +11,13 @@ import hashlib
 
 
 class Hubbard(object):
-    
+
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None):
         # Save parameters
-        if fn[-3:] == '.XV': self.fn = fn[:-3] 
-        elif fn[-4:] == '.xyz': self.fn = fn[:-4]
+        if fn[-3:] == '.XV':
+            self.fn = fn[:-3]
+        elif fn[-4:] == '.xyz':
+            self.fn = fn[:-4]
         self.t1 = t1
         self.t2 = t2
         self.t3 = t3
@@ -32,24 +34,32 @@ class Hubbard(object):
         self.geom.write('molecule.xyz')
         print('Wrote molecule.xyz')
         # Determine pz sites
-        Hlist = []
+        aux = []
         for ia in self.geom:
-            if self.geom.atoms[ia].Z == 1:
-                Hlist.append(ia)
-        self.pi_geom = self.geom.remove(Hlist)
+            if self.geom.atoms[ia].Z not in [5, 6, 7]:
+                aux.append(ia)
+        # Remove all sites not carbon-type
+        self.pi_geom = self.geom.remove(aux)
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
+        # Count number of pi-electrons:
+        nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
+        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
+        nN = len(np.where(self.pi_geom.atoms.Z == 7)[0])
+        ntot = 0*nB+1*nC+2*nN
+        print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
+        print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Set default values
         self.U = 0.0
-        self.Ndn = int(self.sites/2)
-        self.Nup = int(self.sites-self.Ndn)
+        self.Ndn = int(ntot/2)
+        self.Nup = int(ntot-self.Ndn)
         print('   U   =', self.U)
         print('   Nup =', self.Nup)
         print('   Ndn =', self.Ndn)
         # Construct Hamiltonians
         self.set_hoppings()
         # Generate kmesh
-        [nx,ny,nz] = kmesh
+        [nx, ny, nz] = kmesh
         self.kmesh = []
         for kx in np.arange(0, 1, 1./nx):
             for ky in np.arange(0, 1, 1./ny):
@@ -59,6 +69,14 @@ class Hubbard(object):
         self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
         self.read()
+        # Call dumb plot to avoid font issues with first real Matplotlib call
+        self.dumb_plot()
+
+    def dumb_plot(self):
+        "This function does nothing but avoids font conversion issues"
+        fig = plt.figure()
+        plt.rc('text', usetex=True)
+        plt.close('all')
 
     def get_label(self):
         s = self.fn
@@ -76,9 +94,19 @@ class Hubbard(object):
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
-        self.H0 = sisl.Hamiltonian(self.pi_geom)
-        for ia in self.pi_geom:
-            idx = self.pi_geom.close(ia,R=R)
+        g = self.pi_geom
+        self.H0 = sisl.Hamiltonian(g)
+        for ia in g:
+            idx = g.close(ia, R=R)
+            if g.atoms[ia].Z == 5:
+                # set onsite for B sites
+                self.H0.H[ia, ia] = 3.
+                print('Found B site')
+            # set onsite for N sites
+            if g.atoms[ia].Z == 7:
+                self.H0.H[ia, ia] = -3.
+                print('Found N site')
+            # set hoppings
             self.H0.H[ia, idx[1]] = -self.t1
             if self.t2 != 0:
                 self.H0.H[ia, idx[2]] = -self.t2
@@ -100,8 +128,10 @@ class Hubbard(object):
         Ndn = self.Ndn
         # Update Hamiltonian
         for ia in self.pi_geom:
-            self.Hup.H[ia, ia] = self.U*self.ndn[ia]
-            self.Hdn.H[ia, ia] = self.U*self.nup[ia]
+            # charge on neutral atom:
+            n0 = self.pi_geom.atoms[ia].Z-5
+            self.Hup.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.ndn[ia]-n0)
+            self.Hdn.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.nup[ia]-n0)
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
@@ -130,8 +160,12 @@ class Hubbard(object):
         for ia in g:
             if g.atoms[ia].Z == 1:
                 pH.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
-            elif g.atoms[ia].Z == 6:
+            elif g.atoms[ia].Z == 5: # B
+                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+            elif g.atoms[ia].Z == 6: # C
                 pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+            elif g.atoms[ia].Z == 7: # N
+                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10:
                 # Substrate atom
                 pS.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
@@ -169,7 +203,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def plot_rs_polarization(self,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+    def plot_rs_polarization(self, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
@@ -180,35 +214,38 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc1 = PatchCollection(pH, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc2 = PatchCollection(pC, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
         pc2.set_array(np.zeros(len(pC)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
-        pc2.set_clim(-10, 10) # colorbar limits 
+        pc2.set_clim(-10, 10) # colorbar limits
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
         orb = sisl.SphericalOrbital(1, (r, func))
-        C = sisl.Atom(6,orb)
+        C = sisl.Atom(6, orb)
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
-        vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
-        if vz == 0: vz = vx
-        geom = self.pi_geom.move([-(min(x)-bdx),-(min(y)-bdx),-self.geom.center()[2]])
-        geom.xyz[np.where(np.abs(geom.xyz[:,2])<1e-3),2] = 0 # z~0 -> z=0 
+        vy = np.abs((min(y)-bdx) - (max(y)+bdx))
+        if vz == 0:
+            vz = vx
+        geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
+        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
-        H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
-        H.geom.atom.replace(H.geom.atom[0],C)
+        H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
+        H.geom.atom.replace(H.geom.atom[0], C)
         grid = sisl.Grid(grid_unit, sc=H.geom.sc)
-        vecs = np.zeros((self.sites,self.sites))
-        vecs[0,:] = pol
+        vecs = np.zeros((self.sites, self.sites))
+        vecs[0, :] = pol
         es = sisl.EigenstateElectron(vecs, np.zeros(self.sites), H)
         es.sub(0).psi(grid)
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]) # Plot only the real part of the WF
+        # Plot only the real part of the WF
+        ax = axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax,
+                         extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
@@ -220,8 +257,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-
-    def real_space_wf(self,ev,vecs,state,spinLabel,title,vz=0,z=1.1,vmax=0.006,grid_unit=0.075):
+    def real_space_wf(self, ev, vecs, state, spinLabel, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -231,62 +267,66 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc1 = PatchCollection(pH, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys',alpha=1., lw=1.2, facecolor='None')
+        pc2 = PatchCollection(pC, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
         pc2.set_array(np.zeros(len(pC)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
-        pc2.set_clim(-10, 10) # colorbar limits 
+        pc2.set_clim(-10, 10) # colorbar limits
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
         orb = sisl.SphericalOrbital(1, (r, func))
-        C = sisl.Atom(6,orb)
+        C = sisl.Atom(6, orb)
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
-        vy = np.abs((min(y)-bdx) - (max(y)+bdx))    
-        if vz == 0: vz = vx
-        geom = self.pi_geom.move([-(min(x)-bdx),-(min(y)-bdx),-self.geom.center()[2]])
-        geom.xyz[np.where(np.abs(geom.xyz[:,2])<1e-3),2] = 0 # z~0 -> z=0 
+        vy = np.abs((min(y)-bdx) - (max(y)+bdx))
+        if vz == 0:
+            vz = vx
+        geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
+        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
-        H.geom.set_sc(sisl.SuperCell([vx,vy,vz]))
-        H.geom.atom.replace(H.geom.atom[0],C)
-        if np.any(vecs.imag): dtype=np.complex128
-        else: dtype=None
+        H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
+        H.geom.atom.replace(H.geom.atom[0], C)
+        if np.any(vecs.imag):
+            dtype=np.complex128
+        else:
+            dtype=None
         grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
-        ax = axes.imshow(grid.grid[:,:,index[2]].T.real, cmap='seismic', origin='lower',vmax=vmax, vmin=-vmax, extent=[min(x)-bdx,max(x)+bdx,min(y)-bdx,max(y)+bdx]) # Plot only the real part of the WF
+         # Plot only the real part of the WF
+        ax = axes.imshow(grid.grid[:, :, index[2]].T.real,
+                         cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_title(title)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-rs-wf-%s-state%i.pdf'%(spinLabel,state)
+        outfn = self.get_label()+'-rs-wf-%s-state%i.pdf'%(spinLabel, state)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
         plt.close('all')
-            
-    def plot_rs_wf(self,k=[0,0,0],vz=0,z=1.1,vmax=0.006,EnWindow=2.0,f=0.25,grid_unit=0.075):
+
+    def plot_rs_wf(self, k=[0, 0, 0], vz=0, z=1.1, vmax=0.006, EnWindow=2.0, f=0.25, grid_unit=0.075):
         egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
         evup -= emid
         evdn -= emid
         # Find states over an energy window
-        states = np.where(np.abs(evup)< EnWindow)[0]
+        states = np.where(np.abs(evup) < EnWindow)[0]
         for state in states:
             # Plot both [up,down] states
-            title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.real_space_wf(evup,vecup,state,'up',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
-            title = r'E=%.2f eV, k=[%.1f,%.1f,%.1f] $\pi/a$'%(evdn[state],k[0],k[1],k[2])
-            self.real_space_wf(evdn,vecdn,state,'dn',title,vz=vz,z=z,vmax=vmax,grid_unit=grid_unit)
-        
+            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evup[state], k[0], k[1], k[2])
+            self.real_space_wf(evup, vecup, state, 'up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
+            title = r'$E-E_{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
+            self.real_space_wf(evdn, vecdn, state, 'dn', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
         pH, pC, pS = self.get_atomic_patch()
@@ -304,7 +344,7 @@ class Hubbard(object):
         pc2.set_array(np.zeros(len(pC)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
-        pc2.set_clim(-10, 10) # colorbar limits 
+        pc2.set_clim(-10, 10) # colorbar limits
         axes.set_aspect('equal')
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
@@ -318,8 +358,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-
-    def wf(self, data, title, label,f=3000):
+    def wf(self, data, title, label, f=3000):
         pH, pC, pS = self.get_atomic_patch()
         bdx = 2
         x = self.geom.xyz[:, 0]
@@ -332,7 +371,7 @@ class Hubbard(object):
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
-        axes.set_aspect('equal') 
+        axes.set_aspect('equal')
         pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc1.set_array(np.zeros(len(pH)))
         axes.add_collection(pc1)
@@ -350,27 +389,35 @@ class Hubbard(object):
         fig.savefig(fnout)
         print('Wrote', fnout)
         plt.close('all')
-        
-    def plot_wf(self, k=[0,0,0], EnWindow=2.0,f=3000):
+
+    def plot_wf(self, k=[0, 0, 0], EnWindow=2.0, f=3000, density=True):
+        if not density:
+            # We plot directly the wavefunction instead
+            f = 1000
         egap, emid = self.find_midgap()
         evup, vecup = self.Hup.eigh(k=k, eigvals_only=False)
         evdn, vecdn = self.Hdn.eigh(k=k, eigvals_only=False)
         evup -= emid
         evdn -= emid
-        states = np.where(np.abs(evup)< EnWindow)[0]
+        states = np.where(np.abs(evup) < EnWindow)[0]
         data = np.zeros(len(self.geom))
-        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z == 6]
+        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             # Plot both [up,down] states
-            data[Clist] = np.sign(vecup[:,state].real)*(vecup[:,state].real)**2
-            title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evup[state],k[0],k[1],k[2])
-            self.wf(data,title,'-up-state%i'%state,f=f)
-            data[Clist] = np.sign(vecdn[:,state].real)*(vecdn[:,state].real)**2
-            title = 'E=%.2f, k=[%.2f,%.2f,%.2f] $\pi/a$'%(evdn[state],k[0],k[1],k[2]) 
-            self.wf(data,title,'-dn-state%i'%state,f=f)
+            if density:
+                data[Clist] = np.sign(vecup[:, state].real)*(vecup[:, state].real)**2
+            else:
+                data[Clist] = vecup[:, state].real
+            title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evup[state], k[0], k[1], k[2])
+            self.wf(data, title, '-up-state%i'%state, f=f)
+            if density:
+                data[Clist] = np.sign(vecdn[:, state].real)*(vecdn[:, state].real)**2
+            else:
+                data[Clist] = vecdn[:, state].real
+                title = '$E-E_{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(evdn[state], k[0], k[1], k[2])
+            self.wf(data, title, '-dn-state%i'%state, f=f)
 
-
-    def init_nc(self,fn):
+    def init_nc(self, fn):
         try:
             self.ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
@@ -384,7 +431,7 @@ class Hubbard(object):
             ncf.createVariable('U', 'f8', ('unl',))
             ncf.createVariable('Nup', 'i4', ('unl',))
             ncf.createVariable('Ndn', 'i4', ('unl',))
-            ncf.createVariable('Density', 'f8', ('unl','spin','sites'))
+            ncf.createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
             ncf.createVariable('Etot', 'f8', ('unl',))
             self.ncf = ncf
             ncf.sync()
@@ -415,7 +462,7 @@ class Hubbard(object):
         self.ncf['Density'][i, 1] = self.ndn
         self.ncf['Etot'][i] = self.Etot
         self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U,self.Nup,self.Ndn), self.fn)
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U, self.Nup, self.Ndn), self.fn)
 
     def read(self):
         myhash, s = self.gethash()
@@ -469,7 +516,6 @@ class Hubbard(object):
         print('   Gap0: %.3f eV at k=[%.3f,0,0]' % (gap0, k0))
         return klist, eigs_up, eigs_dn
 
-
     def plot_bands(self, TSHS=None, nk=51):
         fig = plt.figure(figsize=(4, 8))
         axes = plt.axes()
@@ -504,7 +550,6 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], ispin=0):
         if ispin == 0:
             ev, evec = self.Hup.eigh(k=k, eigvals_only=False)
@@ -513,7 +558,6 @@ class Hubbard(object):
         # Compute orbital charge overlaps
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
-
 
     def plot_localizations(self, k=[0, 0, 0], ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10, 5))
@@ -524,7 +568,7 @@ class Hubbard(object):
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
-            print(i,max(L))
+            print(i, max(L))
             plt.plot(ev-egap, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
