@@ -6,7 +6,7 @@ import numpy as np
 tol = 1e-10
 
 # 3NN tight-binding model
-H = HH.Hubbard('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18)
+H = HH.Hubbard('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18, what='xyz')
 
 for u in [0.0, 3.5]:
     # We approach the solutions from above, starting at U=4eV
@@ -28,4 +28,6 @@ for u in [0.0, 3.5]:
     H.save() # Computed density to file
     H.plot_wf(EnWindow=0.4, ispin=0)
     H.plot_wf(EnWindow=0.2, ispin=1)
+    H.plot_rs_wf(EnWindow=0.4, ispin=0)
+    H.plot_rs_wf(EnWindow=0.2, ispin=1)
     H.plot_localizations(ymax=0.12)
