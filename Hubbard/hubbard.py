@@ -569,7 +569,7 @@ class Hubbard(object):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
             print(i, max(L))
-            plt.plot(ev-egap, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
+            plt.plot(ev-emid, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
                     axes.annotate(i, (ev[i]-emid, L[i]), fontsize=6)
