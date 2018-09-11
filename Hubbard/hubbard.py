@@ -280,16 +280,24 @@ class Hubbard(object):
         func = 5 * np.exp(-r * 5)
         orb = sisl.SphericalOrbital(1, (r, func))
         C = sisl.Atom(6, orb)
+        B = sisl.Atom(5, orb)
+        N = sisl.Atom(7, orb)
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))
         if vz == 0:
             vz = vx
         geom = self.pi_geom.move([-(min(x)-bdx), -(min(y)-bdx), -self.geom.center()[2]])
-        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
+        geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 5e-2), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
-        H.geom.atom.replace(H.geom.atom[0], C)
+        for ia in H.geom:
+            if H.geom.atoms.Z[ia] == 6:
+                H.geom.atom.replace(H.geom.atom[ia], C)
+            elif H.geom.atoms.Z[ia] == 5:
+                H.geom.atom.replace(H.geom.atom[ia], B)
+            elif H.geom.atoms.Z[ia] == 7:
+                H.geom.atom.replace(H.geom.atom[ia], N)
         if np.any(vecs.imag):
             dtype=np.complex128
         else:
