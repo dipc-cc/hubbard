@@ -165,27 +165,25 @@ class Hubbard(object):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def get_atomic_patch(self):
-        pH = []
-        pC = []
-        pS = []
+    def get_atomic_patches(self):
+        ppi = [] # patches for pi-network
+        paux = [] # patches for other auxillary atoms
         g = self.geom
         for ia in g:
-            if g.atoms[ia].Z == 1:
-                pH.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
+            if g.atoms[ia].Z == 1: # H
+                paux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
             elif g.atoms[ia].Z == 5: # B
-                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+                ppi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z == 6: # C
-                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                ppi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 7: # N
-                pC.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
-            elif g.atoms[ia].Z > 10:
-                # Substrate atom
-                pS.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
-        return pH, pC, pS
+                ppi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+            elif g.atoms[ia].Z > 10: # Some other atom
+                paux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+        return ppi, paux
 
     def plot_polarization(self, f=100, cmax=0.4):
-        pH, pC, pS = self.get_atomic_patch()
+        ppi, paux = self.get_atomic_patches()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -196,10 +194,12 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
-        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
-        pc1.set_array(np.zeros(len(pH)))
+        # Auxiliary patches first
+        pc1 = PatchCollection(paux, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        pc1.set_array(np.zeros(len(paux)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        # Patches for pi-network
+        pc2 = PatchCollection(ppi, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
         pc2.set_array(pol)
         pc1.set_clim(-cmax, cmax) # colorbar limits
         pc2.set_clim(-cmax, cmax) # colorbar limits
@@ -217,7 +217,7 @@ class Hubbard(object):
         plt.close('all')
 
     def plot_rs_polarization(self, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
-        pH, pC, pS = self.get_atomic_patch()
+        ppi, paux = self.get_atomic_patches()
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -227,11 +227,11 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
-        pc1.set_array(np.zeros(len(pH)))
+        pc1 = PatchCollection(paux, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
+        pc1.set_array(np.zeros(len(paux)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
-        pc2.set_array(np.zeros(len(pC)))
+        pc2 = PatchCollection(ppi, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
+        pc2.set_array(np.zeros(len(ppi)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
         pc2.set_clim(-10, 10) # colorbar limits
@@ -271,7 +271,7 @@ class Hubbard(object):
         plt.close('all')
 
     def real_space_wf(self, ev, vecs, state, label, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
-        pH, pC, pS = self.get_atomic_patch()
+        ppi, paux = self.get_atomic_patches()
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
         x = self.geom.xyz[:, 0]
@@ -280,11 +280,11 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
-        pc1.set_array(np.zeros(len(pH)))
+        pc1 = PatchCollection(paux, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
+        pc1.set_array(np.zeros(len(paux)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
-        pc2.set_array(np.zeros(len(pC)))
+        pc2 = PatchCollection(ppi, cmap='Greys', alpha=1., lw=1.2, facecolor='None')
+        pc2.set_array(np.zeros(len(ppi)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
         pc2.set_clim(-10, 10) # colorbar limits
@@ -353,7 +353,7 @@ class Hubbard(object):
             self.real_space_wf(ev, vec, state, label+spin_label+'-state%i'%state, title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
-        pH, pC, pS = self.get_atomic_patch()
+        ppi, paux = self.get_atomic_patches()
         x = self.pi_geom.xyz[:, 0]
         y = self.pi_geom.xyz[:, 1]
         bdx = 2
@@ -361,11 +361,11 @@ class Hubbard(object):
         fig = plt.figure(figsize=(6, 6))
         axes = plt.axes()
         # Plot geometry backbone
-        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
-        pc1.set_array(np.zeros(len(pH)))
+        pc1 = PatchCollection(paux, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        pc1.set_array(np.zeros(len(paux)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
-        pc2.set_array(np.zeros(len(pC)))
+        pc2 = PatchCollection(ppi, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        pc2.set_array(np.zeros(len(ppi)))
         axes.add_collection(pc2)
         pc1.set_clim(-10, 10) # colorbar limits
         pc2.set_clim(-10, 10) # colorbar limits
@@ -383,7 +383,7 @@ class Hubbard(object):
         plt.close('all')
 
     def wf(self, data, title, label, f=3000):
-        pH, pC, pS = self.get_atomic_patch()
+        ppi, paux = self.get_atomic_patches()
         bdx = 2
         x = self.geom.xyz[:, 0]
         y = self.geom.xyz[:, 1]
@@ -396,11 +396,11 @@ class Hubbard(object):
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_aspect('equal')
-        pc1 = PatchCollection(pH, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
-        pc1.set_array(np.zeros(len(pH)))
+        pc1 = PatchCollection(paux, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        pc1.set_array(np.zeros(len(paux)))
         axes.add_collection(pc1)
-        pc2 = PatchCollection(pC, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
-        pc2.set_array(np.zeros(len(pC)))
+        pc2 = PatchCollection(ppi, cmap=plt.cm.bwr, alpha=1., lw=1.2, edgecolor='0.6')
+        pc2.set_array(np.zeros(len(ppi)))
         pc1.set_clim(-10, 10) # colorbar limits
         pc2.set_clim(-10, 10) # colorbar limits
         axes.add_collection(pc2)
