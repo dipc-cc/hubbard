@@ -421,9 +421,9 @@ class Hubbard(object):
                 data[Clist] = vec[:, state].real
                 label = ''
             if ispin == 0:
-                label = '-up'
+                label += '-up'
             else:
-                label = '-dn'
+                label += '-dn'
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             self.wf(data, title, label+'-state%i'%state, f=f)
 
