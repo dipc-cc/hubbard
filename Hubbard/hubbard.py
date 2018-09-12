@@ -426,15 +426,15 @@ class Hubbard(object):
             vec = np.sign(vec.real)*dens
         else:
             vec = vec.real
+        if ispin == 0:
+            label += '-up'
+        else:
+            label += '-dn'
         states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             data[Clist] = vec[:, state]
-            if ispin == 0:
-                label += '-up'
-            else:
-                label += '-dn'
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             self.wf(data, title, label+'-state%i'%state, f=f)
 
