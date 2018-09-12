@@ -12,15 +12,20 @@ import hashlib
 
 class Hubbard(object):
 
-    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None, write_xyz=False):
+    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, Nup=0, Ndn=0,
+                 nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None, write_xyz=False):
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
         elif fn[-4:] == '.xyz':
             self.fn = fn[:-4]
+        # Key parameters
         self.t1 = t1
         self.t2 = t2
         self.t3 = t3
+        self.U = U
+        self.Nup = Nup
+        self.Ndn = Ndn
         # Determine whether this is 1NN or 3NN
         if self.t3 == 0:
             self.model = '1NN'
@@ -51,15 +56,14 @@ class Hubbard(object):
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
-        # Set default values
-        self.U = 0.0
-        self.Ndn = int(ntot/2)
-        self.Nup = int(ntot-self.Ndn)
+        # Use default (low-spin) filling?
+        if Ndn <= 0:
+            self.Ndn = int(ntot/2)
+        if Nup <= 0:
+            self.Nup = int(ntot-self.Ndn)
         print('   U   =', self.U)
         print('   Nup =', self.Nup)
         print('   Ndn =', self.Ndn)
-        # Construct Hamiltonians
-        self.set_hoppings()
         # Generate kmesh
         [nx, ny, nz] = kmesh
         self.kmesh = []
@@ -67,6 +71,8 @@ class Hubbard(object):
             for ky in np.arange(0, 1, 1./ny):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
+        # Construct Hamiltonians
+        self.setup_hamiltonians()
         # Initialize data file
         self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
@@ -92,7 +98,7 @@ class Hubbard(object):
         self.Ndn -= int(pol)
         return self.Nup, self.Ndn
 
-    def set_hoppings(self):
+    def setup_hamiltonians(self):
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
@@ -117,7 +123,16 @@ class Hubbard(object):
         self.Hup = self.H0.copy()
         self.Hdn = self.H0.copy()
 
+    def update_spin_hamiltonian(self):
+        # Update spin Hamiltonian
+        for ia in self.pi_geom:
+            # charge on neutral atom:
+            n0 = self.pi_geom.atoms[ia].Z-5
+            self.Hup.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.ndn[ia]-n0)
+            self.Hdn.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.nup[ia]-n0)
+
     def random_density(self):
+        print('Setting random density')
         self.nup = np.random.rand(self.sites)
         self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
@@ -128,12 +143,6 @@ class Hubbard(object):
         ndn = self.ndn
         Nup = self.Nup
         Ndn = self.Ndn
-        # Update Hamiltonian
-        for ia in self.pi_geom:
-            # charge on neutral atom:
-            n0 = self.pi_geom.atoms[ia].Z-5
-            self.Hup.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.ndn[ia]-n0)
-            self.Hdn.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.nup[ia]-n0)
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
@@ -150,6 +159,8 @@ class Hubbard(object):
         # Update occupations
         self.nup = mix*niup+(1.-mix)*nup
         self.ndn = mix*nidn+(1.-mix)*ndn
+        # Update spin hamiltonian
+        self.update_spin_hamiltonian()
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
@@ -484,11 +495,14 @@ class Hubbard(object):
             print('...', s)
             self.random_density()
         else:
+            print('Found:')
+            print('...', s, 'in file')
             i = i[0]
             self.U = self.ncf['U'][i]
             self.nup = self.ncf['Density'][i][0]
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
+        self.update_spin_hamiltonian()
 
     def find_midgap(self, k=[0, 0, 0], verbose=False):
         evup = self.Hup.eigh(k=k)
