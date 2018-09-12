@@ -414,16 +414,18 @@ class Hubbard(object):
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
-            # Plot both [up,down] states
             if density:
                 data[Clist] = np.sign(vec[:, state].real)*(vec[:, state].real)**2
+                label = '-dens'
             else:
                 data[Clist] = vec[:, state].real
-            title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
+                label = ''
             if ispin == 0:
-                self.wf(data, title, '-up-state%i'%state, f=f)
+                label = '-up'
             else:
-                self.wf(data, title, '-dn-state%i'%state, f=f)
+                label = '-dn'
+            title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
+            self.wf(data, title, label+'-state%i'%state, f=f)
 
     def init_nc(self, fn):
         try:
