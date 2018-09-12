@@ -299,16 +299,12 @@ class Hubbard(object):
                 H.geom.atom.replace(H.geom.atom[ia], B)
             elif H.geom.atoms.Z[ia] == 7:
                 H.geom.atom.replace(H.geom.atom[ia], N)
-        if np.any(vecs.imag):
-            dtype=np.complex128
-        else:
-            dtype=None
-        grid = sisl.Grid(grid_unit, dtype=dtype, sc=H.geom.sc)
+        grid = sisl.Grid(grid_unit, sc=H.geom.sc)
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
          # Plot only the real part of the WF
-        ax = axes.imshow(grid.grid[:, :, index[2]].T.real,
+        ax = axes.imshow(grid.grid[:, :, index[2]].T,
                          cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_title(title)
