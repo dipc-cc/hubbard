@@ -3,4 +3,5 @@ build
 Hubbard/info.py
 *.pdf
 *.nc
+!Tests/mol-ref/mol-ref.nc
 *.dat
