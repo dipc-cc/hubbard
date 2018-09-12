@@ -569,10 +569,10 @@ class Hubbard(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def plot_localizations(self, k=[0, 0, 0], ymax=0.15, annotate=True):
+    def plot_localizations(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10, 5))
         axes = plt.axes()
-        axes.fill_between([-10, 0], 0, ymax, facecolor='k', alpha=0.1)
+        axes.fill_between([-xmax, 0], 0, ymax, facecolor='k', alpha=0.1)
         # Plot data
         egap, emid = self.find_midgap()
         for i in range(2):
@@ -585,7 +585,7 @@ class Hubbard(object):
         axes.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)')
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
-        axes.set_xlim(-10, 10)
+        axes.set_xlim(-xmax, xmax)
         axes.set_ylim(0, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
