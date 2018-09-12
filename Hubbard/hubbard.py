@@ -417,16 +417,20 @@ class Hubbard(object):
         else:
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
+        if density:
+            label = '-dens'
+            if np.any(vec.imag):
+                dens = vec*vec.conjugate().real
+            else:
+                dens = vec**2
+            vec = np.sign(vec.real)*dens
+        else:
+            vec = vec.real
         states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
-            if density:
-                data[Clist] = np.sign(vec[:, state].real)*(vec[:, state].real)**2
-                label = '-dens'
-            else:
-                data[Clist] = vec[:, state].real
-                label = ''
+            data[Clist] = vec[:, state]
             if ispin == 0:
                 label += '-up'
             else:
