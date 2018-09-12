@@ -415,6 +415,7 @@ class Hubbard(object):
             label = '-dens'
             vec = np.sign(vec.real)*np.abs(vec)**2
         else:
+            label = ''
             vec = vec.real
         if ispin == 0:
             label += '-up'
