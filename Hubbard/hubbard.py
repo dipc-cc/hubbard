@@ -338,7 +338,7 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             title = r'$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(ev[state], k[0], k[1], k[2])
-            self.real_space_wf(ev, vec, state, label+'-up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
+            self.real_space_wf(ev, vec, state, label+spin_label, title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
         pH, pC, pS = self.get_atomic_patch()
