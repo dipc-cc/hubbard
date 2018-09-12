@@ -322,13 +322,15 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def plot_rs_wf(self, k=[0, 0, 0], vz=0, z=1.1, vmax=0.006, EnWindow=2.0, f=0.25, grid_unit=0.075, ispin=0):
+    def plot_rs_wf(self, k=[0, 0, 0], vz=0, z=1.1, vmax=0.006, EnWindow=2.0, f=0.25, grid_unit=0.075, ispin=0, density=True):
         egap, emid = self.find_midgap()
         if ispin == 0:
             ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
+        if density:
+            vec = np.sign(vec)*vec**2
         # Find states over an energy window
         states = np.where(np.abs(ev) < EnWindow)[0]
         for state in states:
