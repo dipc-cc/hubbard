@@ -572,12 +572,14 @@ class Hubbard(object):
     def plot_localizations(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10, 5))
         axes = plt.axes()
-        axes.fill_between([-xmax, 0], 0, ymax, facecolor='k', alpha=0.1)
+        axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         # Plot data
+        lmax = 0.0
         egap, emid = self.find_midgap()
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
             L = np.diagonal(L)
+            lmax = max(lmax,max(L))
             plt.plot(ev-emid, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
@@ -586,7 +588,11 @@ class Hubbard(object):
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
         axes.set_xlim(-xmax, xmax)
-        axes.set_ylim(0, ymax)
+        if ymax > 0:
+            axes.set_ylim(0, ymax)
+        else:
+            # Autoset ylim to 110% of lmax
+            axes.set_ylim(0, 1.1*lmax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
