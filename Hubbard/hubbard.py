@@ -413,11 +413,7 @@ class Hubbard(object):
         ev -= emid
         if density:
             label = '-dens'
-            if np.any(vec.imag):
-                dens = vec*vec.conjugate().real
-            else:
-                dens = vec**2
-            vec = np.sign(vec.real)*dens
+            vec = np.sign(vec.real)*np.abs(vec)**2
         else:
             vec = vec.real
         if ispin == 0:
