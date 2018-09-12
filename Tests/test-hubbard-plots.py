@@ -19,6 +19,7 @@ H.plot_rs_wf(EnWindow=0.25, ispin=1, z=0.5, density=False)
 # Test also quantitatively that densities and eigenvalue spectrum are unchanged
 # Compute reference values:
 ev0, evec0 = H.Hup.eigh(eigvals_only=False)
+Etot0 = H.Etot*1
 
 # Reset density and iterate
 H.random_density()
@@ -40,3 +41,6 @@ if np.allclose(ev1, ev0):
 # Eigenvectors are a little more tricky due to arbitrary sign
 if np.allclose(np.abs(evec1), np.abs(evec0)):
     print 'Eigenvector check passed!'
+
+# Total energy check:
+print Etot0, etot, Etot0-etot
