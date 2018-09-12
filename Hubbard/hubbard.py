@@ -324,7 +324,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-rs-wf-%s.pdf'%(label)
+        outfn = self.get_label()+'-rs-wf%s.pdf'%(label)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
@@ -340,7 +340,7 @@ class Hubbard(object):
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
         if density:
-            label = 'dens'
+            label = '-dens'
             vec = np.sign(vec.real)*np.abs(vec)**2
         else:
             label = ''
