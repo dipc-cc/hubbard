@@ -330,11 +330,9 @@ class Hubbard(object):
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
         if density:
-            if np.any(vec.imag):
-                dens = vec*vec.conjugate().real
-            else:
-                dens = vec**2
-            vec = np.sign(vec.real)*dens
+            vec = np.sign(vec.real)*np.abs(vec)**2
+        else:
+            vec = vec.real
         # Find states over an energy window
         states = np.where(np.abs(ev) < EnWindow)[0]
         for state in states:
