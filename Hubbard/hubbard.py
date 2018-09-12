@@ -408,8 +408,10 @@ class Hubbard(object):
             f = 1000
         egap, emid = self.find_midgap()
         if ispin == 0:
+            spin_label = '-up'
             ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
+            spin_label = '-dn'
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
         if density:
@@ -418,17 +420,13 @@ class Hubbard(object):
         else:
             label = ''
             vec = vec.real
-        if ispin == 0:
-            label += '-up'
-        else:
-            label += '-dn'
         states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
             data[Clist] = vec[:, state]
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
-            self.wf(data, title, label+'-state%i'%state, f=f)
+            self.wf(data, title, label+spin_label+'-state%i'%state, f=f)
 
     def init_nc(self, fn):
         try:
