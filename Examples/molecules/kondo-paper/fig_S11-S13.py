@@ -6,12 +6,13 @@ import numpy as np
 tol = 1e-10
 
 # 3NN tight-binding model
-H = HH.Hubbard('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18, what='xyz')
+H = HH.Hubbard('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18,
+               what='xyz', angle=220)
 
 for u in [0.0, 3.5]:
     # We approach the solutions from above, starting at U=4eV
-    H.U = u 
-    H.read() # Try reading, if we already have density on file       
+    H.U = u
+    H.read() # Try reading, if we already have density on file
 
     deltaN = 1.
     i = 0
@@ -26,8 +27,11 @@ for u in [0.0, 3.5]:
             print "   AFM iteration %i: deltaN = %.8f" %(i, deltaN)
     print "   Converged in %i iterations" %i
     H.save() # Computed density to file
+    H.plot_wf(EnWindow=0.2, ispin=1)
+    """
     H.plot_wf(EnWindow=0.4, ispin=0)
     H.plot_wf(EnWindow=0.2, ispin=1)
     H.plot_rs_wf(EnWindow=0.4, ispin=0)
     H.plot_rs_wf(EnWindow=0.2, ispin=1)
     H.plot_localizations(ymax=0.12)
+    """
