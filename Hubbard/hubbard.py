@@ -258,7 +258,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def real_space_wf(self, ev, vecs, state, spinLabel, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
+    def real_space_wf(self, ev, vecs, state, label, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
         pH, pC, pS = self.get_atomic_patch()
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -312,7 +312,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
-        outfn = self.get_label()+'-rs-wf-%s-state%i.pdf'%(spinLabel, state)
+        outfn = self.get_label()+'-rs-wf-%s-state%i.pdf'%(label, state)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
         print('Wrote', outfn)
