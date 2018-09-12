@@ -321,8 +321,10 @@ class Hubbard(object):
     def plot_rs_wf(self, k=[0, 0, 0], vz=0, z=1.1, vmax=0.006, EnWindow=2.0, f=0.25, grid_unit=0.075, ispin=0, density=True):
         egap, emid = self.find_midgap()
         if ispin == 0:
+            spin_label = '-up'
             ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
+            spin_label = '-dn'
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
         ev -= emid
         if density:
@@ -336,10 +338,7 @@ class Hubbard(object):
         for state in states:
             # Plot both [up,down] states
             title = r'$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.1f,%.1f,%.1f] \pi/a$'%(ev[state], k[0], k[1], k[2])
-            if ispin == 0:
-                self.real_space_wf(ev, vec, state, label+'-up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
-            else:
-                self.real_space_wf(ev, vec, state, label+'-dn', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
+            self.real_space_wf(ev, vec, state, label+'-up', title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def plot_charge(self, f=100):
         pH, pC, pS = self.get_atomic_patch()
