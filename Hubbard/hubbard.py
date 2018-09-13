@@ -12,7 +12,7 @@ import hashlib
 
 class Hubbard(object):
 
-    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, Nup=0, Ndn=0,
+    def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None, write_xyz=False):
         # Save parameters
         if fn[-3:] == '.XV':
@@ -20,12 +20,14 @@ class Hubbard(object):
         elif fn[-4:] == '.xyz':
             self.fn = fn[:-4]
         # Key parameters
-        self.t1 = t1
+        self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
         self.t3 = t3
-        self.U = U
-        self.Nup = Nup
-        self.Ndn = Ndn
+        self.U = U # Hubbard onsite Coulomb parameter
+        self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
+        self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
+        self.Nup = Nup # Total number of up-electrons
+        self.Ndn = Ndn # Total number of down-electrons
         # Determine whether this is 1NN or 3NN
         if self.t3 == 0:
             self.model = '1NN'
@@ -108,11 +110,11 @@ class Hubbard(object):
             idx = g.close(ia, R=R)
             if g.atoms[ia].Z == 5:
                 # set onsite for B sites
-                self.H0.H[ia, ia] = 3.
+                self.H0.H[ia, ia] = self.eB
                 print('Found B site')
             # set onsite for N sites
             if g.atoms[ia].Z == 7:
-                self.H0.H[ia, ia] = -3.
+                self.H0.H[ia, ia] = self.eN
                 print('Found N site')
             # set hoppings
             self.H0.H[ia, idx[1]] = -self.t1
@@ -456,6 +458,8 @@ class Hubbard(object):
         s += 't2=%.2f '%self.t2
         s += 't3=%.2f '%self.t3
         s += 'U=%.2f '%self.U
+        s += 'eB=%.2f '%self.eB
+        s += 'eN=%.2f '%self.eN
         s += 'Nup=%.2f '%self.Nup
         s += 'Ndn=%.2f '%self.Ndn
         myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
