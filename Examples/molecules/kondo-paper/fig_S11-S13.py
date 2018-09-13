@@ -31,5 +31,5 @@ for u in [0.0, 3.5]:
     H.plot_wf(EnWindow=0.2, ispin=1)
     H.plot_rs_wf(EnWindow=0.4, ispin=0)
     H.plot_rs_wf(EnWindow=0.2, ispin=1)
-    H.plot_localizations(ymax=0.12)
+    H.plot_spectrum(ymax=0.12)
 

@@ -580,7 +580,7 @@ class Hubbard(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def plot_localizations(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True):
+    def plot_spectrum(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True):
         fig = plt.figure(figsize=(10, 5))
         axes = plt.axes()
         axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
