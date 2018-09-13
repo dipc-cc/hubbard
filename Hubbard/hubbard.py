@@ -148,16 +148,14 @@ class Hubbard(object):
         nidn = 0*ndn
         HOMO = -1e10
         LUMO = 1e10
-        ev_up = np.empty([len(self.kmesh), self.H0.no])
-        ev_dn = np.empty([len(self.kmesh), self.H0.no])
         for ik, k in enumerate(self.kmesh):
-            ev_up[ik], evec_up = self.Hup.eigh(k=k, eigvals_only=False)
-            ev_dn[ik], evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
+            ev_up, evec_up = self.Hup.eigh(k=k, eigvals_only=False)
+            ev_dn, evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
             # Compute new occupations
             niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
             nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
-            HOMO = max(HOMO, ev_up[ik, self.Nup-1], ev_dn[ik, self.Ndn-1])
-            LUMO = min(LUMO, ev_up[ik, self.Nup], ev_dn[ik, self.Ndn])
+            HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
+            LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         niup = niup/len(self.kmesh)
         nidn = nidn/len(self.kmesh)
         # Determine midgap energy reference
