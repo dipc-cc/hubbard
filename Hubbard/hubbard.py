@@ -530,7 +530,7 @@ class Hubbard(object):
             fdn.close()
         return klist, eigs_up, eigs_dn
 
-    def plot_bands(self, TSHS=None, nk=51):
+    def plot_bands(self, TSHS=None, nk=51, ymax=4.):
         fig = plt.figure(figsize=(4, 8))
         axes = plt.axes()
         # Get TB bands
@@ -548,8 +548,12 @@ class Hubbard(object):
                 eigs_up[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
                 #eigs_dn[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
             plt.plot(ka, eigs_up, 'k') # NB: with respect to SIESTA Fermi energy
+        if not np.allclose(evup, evdn):
+            # Add spin-down component to plot
+            plt.plot(ka, evdn, 'g.')
+        # Add spin-up component to plot
         plt.plot(ka, evup, 'r')
-        plt.ylim(-4, 4)
+        plt.ylim(-ymax, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U), size=19)
@@ -597,7 +601,7 @@ class Hubbard(object):
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
-        outfn = self.get_label()+'-loc.pdf'
+        outfn = self.get_label()+'-spectrum.pdf'
         fig.savefig(outfn)
         print('Wrote', outfn)
         plt.close('all')
