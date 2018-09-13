@@ -7,6 +7,7 @@ import numpy as np
 H = HH.Hubbard('mol-ref/mol-ref.XV', U=3.5)
 
 # Produce plots
+H.plot_spectrum()
 H.plot_charge()
 H.plot_polarization()
 H.plot_rs_polarization()
