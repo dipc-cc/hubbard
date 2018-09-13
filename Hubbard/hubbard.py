@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 import numpy as np
 import netCDF4 as NC
@@ -91,7 +92,7 @@ class Hubbard(object):
     def get_label(self):
         s = self.fn
         s += '-%s'%self.model
-        s += '-U%i'%(self.U*100)
+        s += '-U%.3i'%(self.U*100)
         return s
 
     def polarize(self, pol):
@@ -508,33 +509,41 @@ class Hubbard(object):
             print('HL gap: %.3f eV at k=' % (lumo-homo), k)
         return lumo-homo, (lumo+homo)/2
 
-    def get_1D_band_structure(self, nk=51):
-        # Save to file
-        fup = open(self.get_label()+'-bands-up.dat', 'w')
-        fdn = open(self.get_label()+'-bands-dn.dat', 'w')
+    def get_1D_band_structure(self, nk=51, data2file=False):
         klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
-        gap1, emid = self.find_midgap()
-        gap0 = 1.e10
-        k0 = -1
+        HOMO = -1e10
+        LUMO = 1e10
+        # Loop over k
         for ik, k in enumerate(klist):
             eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
             eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
-            egap, tmp = self.find_midgap(k=[k, 0, 0])
-            if egap < gap0:
-                gap0 = egap
-                k0 = k
-            fup.write('%.8f '%k)
-            fdn.write('%.8f '%k)
-            for ev in eigs_up[ik]:
-                fup.write('%.8f ' %(ev-emid))
-            for ev in eigs_dn[ik]:
-                fdn.write('%.8f ' %(ev-emid))
-            fup.write('\n')
-            fdn.write('\n')
-        print('   Gap1: %.3f eV at k=[0,0,0]' % gap1)
-        print('   Gap0: %.3f eV at k=[%.3f,0,0]' % (gap0, k0))
+            homo_k = max(eigs_up[ik, self.Nup-1], eigs_dn[ik, self.Ndn-1])
+            lumo_k = min(eigs_up[ik, self.Nup], eigs_dn[ik, self.Ndn])
+            HOMO = max(HOMO, homo_k)
+            LUMO = min(LUMO, lumo_k)
+        print('   HOMO-LUMO GAP: %.3f eV' % (LUMO-HOMO))
+        emid = (HOMO+LUMO)/2
+        # Set energy to midgap
+        eigs_up -= emid
+        eigs_dn -= emid
+        # Save to file
+        if data2file:
+            fup = open(self.get_label()+'-bands-up.dat', 'w')
+            fdn = open(self.get_label()+'-bands-dn.dat', 'w')
+            for ik, i in enumerate(klist):
+                # write to file
+                fup.write('%.8f '%k)
+                fdn.write('%.8f '%k)
+                for ev in eigs_up[ik]:
+                    fup.write('%.8f ' %ev)
+                for ev in eigs_dn[ik]:
+                    fdn.write('%.8f ' %ev)
+                fup.write('\n')
+                fdn.write('\n')
+            fup.close()
+            fdn.close()
         return klist, eigs_up, eigs_dn
 
     def plot_bands(self, TSHS=None, nk=51):
@@ -543,8 +552,6 @@ class Hubbard(object):
         # Get TB bands
         ka, evup, evdn = self.get_1D_band_structure()
         ka = 2*ka # Units ka/pi
-        # determine midgap
-        egap, emid = self.find_midgap()
         # Add siesta bandstructure?
         if TSHS:
             dftH = sisl.get_sile(TSHS).read_hamiltonian()
@@ -556,15 +563,14 @@ class Hubbard(object):
                 print('%i/%i'%(ik, nk),)
                 eigs_up[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
                 #eigs_dn[ik, :] = dftH.eigh([k, 0, 0], eigvals_only=True)
-            #print
-            plt.plot(ka, eigs_up, 'k')
-        plt.plot(ka, evup-emid, 'r')
+            plt.plot(ka, eigs_up, 'k') # NB: with respect to SIESTA Fermi energy
+        plt.plot(ka, evup, 'r')
         plt.ylim(-4, 4)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
         axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U), size=19)
         axes.set_xlabel(r'$ka/\pi$')
-        axes.set_ylabel(r'$E_{nk}$ (eV)')
+        axes.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
         outfn = self.get_label()+'-bands.pdf'
         fig.savefig(outfn)
