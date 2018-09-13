@@ -156,13 +156,11 @@ class Hubbard(object):
             # Compute new occupations
             niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
             nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
-            homo_k = max(ev_up[ik, self.Nup-1], ev_dn[ik, self.Ndn-1])
-            lumo_k = min(ev_up[ik, self.Nup], ev_dn[ik, self.Ndn])
+            HOMO = max(HOMO, ev_up[ik, self.Nup-1], ev_dn[ik, self.Ndn-1])
+            LUMO = min(LUMO, ev_up[ik, self.Nup], ev_dn[ik, self.Ndn])
         niup = niup/len(self.kmesh)
         nidn = nidn/len(self.kmesh)
         # Determine midgap energy reference
-        HOMO = max(HOMO, homo_k)
-        LUMO = min(LUMO, lumo_k)
         self.midgap = (LUMO+HOMO)/2
         # Measure of density change
         dn = np.sum(abs(nup-niup))
