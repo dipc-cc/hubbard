@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 import numpy as np
 import netCDF4 as NC
@@ -64,9 +63,6 @@ class Hubbard(object):
             self.Ndn = int(ntot/2)
         if Nup <= 0:
             self.Nup = int(ntot-self.Ndn)
-        print('   U   =', self.U)
-        print('   Nup =', self.Nup)
-        print('   Ndn =', self.Ndn)
         # Generate kmesh
         [nx, ny, nz] = kmesh
         self.kmesh = []
@@ -80,6 +76,7 @@ class Hubbard(object):
         self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
         self.read()
+        self.iterate(mix=0) # Determine midgap energy without changing densities
         # Call dumb plot to avoid font issues with first real Matplotlib call
         self.dumb_plot()
 
@@ -149,14 +146,24 @@ class Hubbard(object):
         # Solve eigenvalue problems
         niup = 0*nup
         nidn = 0*ndn
-        for k in self.kmesh:
-            ev_up, evec_up = self.Hup.eigh(k=k, eigvals_only=False)
-            ev_dn, evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
+        HOMO = -1e10
+        LUMO = 1e10
+        ev_up = np.empty([len(self.kmesh), self.H0.no])
+        ev_dn = np.empty([len(self.kmesh), self.H0.no])
+        for ik, k in enumerate(self.kmesh):
+            ev_up[ik], evec_up = self.Hup.eigh(k=k, eigvals_only=False)
+            ev_dn[ik], evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
             # Compute new occupations
             niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
             nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
+            homo_k = max(ev_up[ik, self.Nup-1], ev_dn[ik, self.Ndn-1])
+            lumo_k = min(ev_up[ik, self.Nup], ev_dn[ik, self.Ndn])
         niup = niup/len(self.kmesh)
         nidn = nidn/len(self.kmesh)
+        # Determine midgap energy reference
+        HOMO = max(HOMO, homo_k)
+        LUMO = min(LUMO, lumo_k)
+        self.midgap = (LUMO+HOMO)/2
         # Measure of density change
         dn = np.sum(abs(nup-niup))
         # Update occupations
@@ -360,14 +367,13 @@ class Hubbard(object):
         plt.close('all')
 
     def plot_rs_wf(self, k=[0, 0, 0], vz=0, z=1.1, vmax=0.006, EnWindow=2.0, f=0.25, grid_unit=0.075, ispin=0, density=True):
-        egap, emid = self.find_midgap()
         if ispin == 0:
             spin_label = '-up'
             ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
             spin_label = '-dn'
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
-        ev -= emid
+        ev -= self.midgap
         if density:
             label = '-dens'
             vec = np.sign(vec.real)*np.abs(vec)**2
@@ -412,14 +418,13 @@ class Hubbard(object):
         if not density:
             # We plot directly the wavefunction instead
             f = 1000
-        egap, emid = self.find_midgap()
         if ispin == 0:
             spin_label = '-up'
             ev, vec = self.Hup.eigh(k=k, eigvals_only=False)
         else:
             spin_label = '-dn'
             ev, vec = self.Hdn.eigh(k=k, eigvals_only=False)
-        ev -= emid
+        ev -= self.midgap
         if density:
             label = '-dens'
             vec = np.sign(vec.real)*np.abs(vec)**2
@@ -500,34 +505,17 @@ class Hubbard(object):
             self.Etot = self.ncf['Etot'][i]
         self.update_spin_hamiltonian()
 
-    def find_midgap(self, k=[0, 0, 0], verbose=False):
-        evup = self.Hup.eigh(k=k)
-        evdn = self.Hdn.eigh(k=k)
-        homo = max(evup[self.Nup-1], evdn[self.Ndn-1])
-        lumo = min(evup[self.Nup], evdn[self.Ndn])
-        if verbose:
-            print('HL gap: %.3f eV at k=' % (lumo-homo), k)
-        return lumo-homo, (lumo+homo)/2
-
     def get_1D_band_structure(self, nk=51, data2file=False):
         klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
-        HOMO = -1e10
-        LUMO = 1e10
         # Loop over k
         for ik, k in enumerate(klist):
             eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
             eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
-            homo_k = max(eigs_up[ik, self.Nup-1], eigs_dn[ik, self.Ndn-1])
-            lumo_k = min(eigs_up[ik, self.Nup], eigs_dn[ik, self.Ndn])
-            HOMO = max(HOMO, homo_k)
-            LUMO = min(LUMO, lumo_k)
-        print('   HOMO-LUMO GAP: %.3f eV' % (LUMO-HOMO))
-        emid = (HOMO+LUMO)/2
-        # Set energy to midgap
-        eigs_up -= emid
-        eigs_dn -= emid
+        # Set energy reference to midgap
+        eigs_up -= self.midgap
+        eigs_dn -= self.midgap
         # Save to file
         if data2file:
             fup = open(self.get_label()+'-bands-up.dat', 'w')
@@ -592,15 +580,15 @@ class Hubbard(object):
         axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         # Plot data
         lmax = 0.0
-        egap, emid = self.find_midgap()
         for i in range(2):
             ev, L = self.calc_orbital_charge_overlaps(k, ispin=i)
+            ev -= self.midgap
             L = np.diagonal(L)
             lmax = max(lmax, max(L))
-            plt.plot(ev-emid, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
+            plt.plot(ev, L, 'rg'[i]+'.+'[i], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][i])
             if annotate:
                 for i in range(len(ev)):
-                    axes.annotate(i, (ev[i]-emid, L[i]), fontsize=6)
+                    axes.annotate(i, (ev[i], L[i]), fontsize=6)
         axes.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)')
         axes.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         axes.legend()
