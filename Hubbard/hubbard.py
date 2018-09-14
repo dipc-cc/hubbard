@@ -39,6 +39,8 @@ class Hubbard(object):
         if what:
             self.geom = self.geom.move(-self.geom.center(what=what))
         self.geom = self.geom.rotate(angle, v, atom=atom)
+        # NB Force structure planar!!! (setting z = 0)
+        self.geom.xyz[:,2] = 0
         if write_xyz:
             self.geom.write(self.fn+'.xyz')
             print('Wrote '+self.fn+'.xyz')

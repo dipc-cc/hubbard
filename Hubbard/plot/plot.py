@@ -30,8 +30,13 @@ class GeometryPlot(Plot):
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         bdx = 2
-        self.axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        self.axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        self.xmin = min(x)-bdx
+        self.xmax = max(x)+bdx
+        self.ymin = min(y)-bdx
+        self.ymax = max(y)+bdx
+        self.extent = [min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx]
+        self.axes.set_xlim(self.xmin, self.xmax)
+        self.axes.set_ylim(self.ymin, self.ymax)
 
         # Patches
         pi = []
@@ -61,8 +66,8 @@ class GeometryPlot(Plot):
         self.axes.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
 
-    def add_colorbar(self, label):
+    def add_colorbar(self, layer, label):
         divider = make_axes_locatable(self.axes)
         cax = divider.append_axes("right", size="5%", pad=0.1)
-        cb = plt.colorbar(self.ppi, label=label, cax=cax)
+        cb = plt.colorbar(layer, label=label, cax=cax)
         plt.subplots_adjust(right=0.8)
