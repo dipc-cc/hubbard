@@ -57,7 +57,6 @@ class Hubbard(object):
         pz = sisl.SphericalOrbital(1, (r, func))
         for ia in self.pi_geom:
             self.pi_geom.atom[ia].orbital[0] = pz
-            print(self.pi_geom.atom[ia].orbital)
         # Count number of pi-electrons:
         nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
         nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
