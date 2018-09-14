@@ -4,7 +4,7 @@ from Hubbard.plot import GeometryPlot
 
 class Charge(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian):
+    def __init__(self, HubbardHamiltonian, colorbar=True):
 
         GeometryPlot.__init__(self, HubbardHamiltonian)
 
@@ -14,8 +14,10 @@ class Charge(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
-        # Set colorbar limits
+        # Colorbar
         self.ppi.set_clim(min(charge), max(charge))
+        if colorbar:
+            self.add_colorbar(label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
         # Write file
         fn = HubbardHamiltonian.get_label()+'-chg.pdf'
@@ -27,7 +29,7 @@ class Charge(GeometryPlot):
 
 class ChargeDifference(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian):
+    def __init__(self, HubbardHamiltonian, colorbar=True):
 
         GeometryPlot.__init__(self, HubbardHamiltonian)
 
@@ -39,9 +41,11 @@ class ChargeDifference(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(chgdiff)
 
-        # Set colorbar limits
+        # Colorbar
         cmax = max(abs(chgdiff))
         self.ppi.set_clim(-cmax, cmax)
+        if colorbar:
+            self.add_colorbar(label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{N.A.}$ ($e$)')
 
         # Write file
         fn = HubbardHamiltonian.get_label()+'-chgdiff.pdf'
@@ -52,7 +56,7 @@ class ChargeDifference(GeometryPlot):
 
 class SpinPolarization(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian):
+    def __init__(self, HubbardHamiltonian, colorbar=True):
 
         GeometryPlot.__init__(self, HubbardHamiltonian)
 
@@ -62,9 +66,11 @@ class SpinPolarization(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(spinpol)
 
-        # Set colorbar limits
+        # Colorbar
         cmax = max(abs(spinpol))
         self.ppi.set_clim(-cmax, cmax)
+        if colorbar:
+            self.add_colorbar(label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
 
         # Write file
         fn = HubbardHamiltonian.get_label()+'-pol.pdf'

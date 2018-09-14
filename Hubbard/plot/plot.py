@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class Plot(object):
 
@@ -35,3 +36,9 @@ class GeometryPlot(Plot):
         self.axes.set_xlabel(r'$x$ (\AA)')
         self.axes.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
+
+    def add_colorbar(self, label):
+        divider = make_axes_locatable(self.axes)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
+        cb = plt.colorbar(self.ppi, label=label, cax=cax)
+        plt.subplots_adjust(right=0.8)
