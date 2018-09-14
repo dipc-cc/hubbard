@@ -1,6 +1,9 @@
 from __future__ import print_function
 
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class Plot(object):
@@ -21,15 +24,36 @@ class Plot(object):
 
 class GeometryPlot(Plot):
 
-    def __init__(self, HubbardHamiltonian, figsize=(8, 6)):
-        Plot.__init__(self, figsize=figsize)
-        x = HubbardHamiltonian.geom.xyz[:, 0]
-        y = HubbardHamiltonian.geom.xyz[:, 1]
+    def __init__(self, HubbardHamiltonian, **keywords):
+        Plot.__init__(self)
+        g = HubbardHamiltonian.geom
+        x = g.xyz[:, 0]
+        y = g.xyz[:, 1]
         bdx = 2
         self.axes.set_xlim(min(x)-bdx, max(x)+bdx)
         self.axes.set_ylim(min(y)-bdx, max(y)+bdx)
+
         # Patches
-        self.ppi, self.paux = HubbardHamiltonian.get_atomic_patches()
+        pi = []
+        aux = []
+        for ia in g:
+            if g.atoms[ia].Z == 1: # H
+                aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
+            elif g.atoms[ia].Z == 5: # B
+                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+            elif g.atoms[ia].Z == 6: # C
+                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+            elif g.atoms[ia].Z == 7: # N
+                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+            elif g.atoms[ia].Z > 10: # Some other atom
+                aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+        ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **keywords)
+        ppi.set_array(np.zeros(len(pi)))
+        self.ppi = ppi
+        paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **keywords)
+        paux.set_array(np.zeros(len(aux)))
+        self.paux = paux
+
         # Compute data
         self.axes.add_collection(self.paux)
         self.axes.add_collection(self.ppi)

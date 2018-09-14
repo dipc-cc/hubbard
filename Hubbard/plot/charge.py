@@ -1,12 +1,13 @@
 from __future__ import print_function
 
+import matplotlib.pyplot as plt
 from Hubbard.plot import GeometryPlot
 
 class Charge(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, colorbar=True):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian)
+        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
 
         # Compute total charge on each site
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
@@ -31,7 +32,7 @@ class ChargeDifference(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, colorbar=True):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian)
+        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
 
         # Compute charge difference to neutral atom on each site
         chgdiff = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
@@ -58,7 +59,7 @@ class SpinPolarization(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, colorbar=True):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian)
+        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
 
         # Compute charge difference to neutral atom on each site
         spinpol = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
