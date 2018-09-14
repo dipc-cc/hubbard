@@ -196,7 +196,7 @@ class Hubbard(object):
         PCaux.set_clim(-cmax, cmax) # colorbar limits
         return PCpi, PCaux
 
-    def plot_polarization(self, cmax=0.4):
+    def plot_polarization(self, cmax=0.4, title=None):
         data = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
@@ -216,6 +216,8 @@ class Hubbard(object):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         cb = plt.colorbar(ppi, label=r'$Q_\uparrow -Q_\downarrow$ ($e$)', cax=cax)
         plt.subplots_adjust(right=0.8)
+        if title:
+            axes.set_title(title)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
@@ -224,8 +226,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def plot_charge(self):
-        data = self.nup+self.ndn
+    def plot_charge(self, title=None, chgdiff=False):
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
         x = self.geom.xyz[:, 0]
@@ -237,7 +238,19 @@ class Hubbard(object):
         plt.rc('text', usetex=True)
         # Patches
         ppi, paux = self.get_atomic_patches()
-        ppi.set_clim(min(data), max(data)) # colorbar limits
+        # Compute data
+        data = self.nup+self.ndn
+        if chgdiff:
+            # Plot electron charge difference with respect to neutral atom
+            for ia in self.pi_geom:
+                data[ia] -= self.pi_geom.atoms[ia].Z-5
+            outfn = self.get_label()+'-chgdiff.pdf'
+            cmax = max(abs(data))
+            ppi.set_clim(-cmax, cmax) # colorbar limits
+        else:
+            # Plot directly electron charge
+            outfn = self.get_label()+'-chg.pdf'
+            ppi.set_clim(min(data), max(data)) # colorbar limits
         ppi.set_array(data) # Set data
         axes.add_collection(paux)
         axes.add_collection(ppi)
@@ -245,10 +258,12 @@ class Hubbard(object):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         cb = plt.colorbar(ppi, label=r'$Q_\uparrow +Q_\downarrow$ ($e$)', cax=cax)
         plt.subplots_adjust(right=0.8)
+        if title:
+            axes.set_title(title)
+        axes.set_xlabel(r'$x$ (\AA)')
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
-        outfn = self.get_label()+'-chg.pdf'
         fig.savefig(outfn)
         print('Wrote', outfn)
         plt.close('all')
