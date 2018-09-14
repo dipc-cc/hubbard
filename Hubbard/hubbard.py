@@ -261,7 +261,6 @@ class Hubbard(object):
         if title:
             axes.set_title(title)
         axes.set_xlabel(r'$x$ (\AA)')
-        axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
         fig.savefig(outfn)
@@ -317,8 +316,11 @@ class Hubbard(object):
         plt.colorbar(ax)
         axes.set_xlim(min(x)-bdx, max(x)+bdx)
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        if title:
+            axes.set_title(title)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
+        axes.set_aspect('equal')
         outfn = self.get_label()+'-rs-pol.pdf'
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
@@ -373,6 +375,7 @@ class Hubbard(object):
         axes.set_ylim(min(y)-bdx, max(y)+bdx)
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
+        axes.set_aspect('equal')
         outfn = self.get_label()+'-rs-wf%s.pdf'%(label)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
@@ -586,7 +589,10 @@ class Hubbard(object):
         plt.ylim(-ymax, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U), size=19)
+        if title == 'default':
+            axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U), size=19)
+        else:
+            axes.set_title(title)
         axes.set_xlabel(r'$ka/\pi$')
         axes.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
@@ -604,7 +610,7 @@ class Hubbard(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def plot_spectrum(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True):
+    def plot_spectrum(self, k=[0, 0, 0], xmax=10., ymax=0.15, annotate=True, title='default'):
         fig = plt.figure(figsize=(10, 5))
         axes = plt.axes()
         axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
@@ -630,7 +636,10 @@ class Hubbard(object):
             axes.set_ylim(0, 1.1*lmax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
         plt.rc('text', usetex=True)
-        axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
+        if title == 'default':
+            axes.set_title(r'%s $U=%.2f$ eV'%(self.model, self.U))
+        else:
+            axes.set_title(title)
         outfn = self.get_label()+'-spectrum.pdf'
         fig.savefig(outfn)
         print('Wrote', outfn)
