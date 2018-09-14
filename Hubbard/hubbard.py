@@ -51,6 +51,13 @@ class Hubbard(object):
         self.pi_geom = self.geom.remove(aux)
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
+        # Set pz orbital for each pz site
+        r = np.linspace(0, 1.6, 700)
+        func = 5 * np.exp(-r * 5)
+        pz = sisl.SphericalOrbital(1, (r, func))
+        for ia in self.pi_geom:
+            self.pi_geom.atom[ia].orbital[0] = pz
+            print(self.pi_geom.atom[ia].orbital)
         # Count number of pi-electrons:
         nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
         nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
