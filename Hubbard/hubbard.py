@@ -57,6 +57,8 @@ class Hubbard(object):
         nN = len(np.where(self.pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
+        print(' ... B-atoms at sites', np.where(self.pi_geom.atoms.Z == 5)[0])
+        print(' ... N-atoms at sites', np.where(self.pi_geom.atoms.Z == 7)[0])
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Use default (low-spin) filling?
         if Ndn <= 0:
@@ -501,14 +503,22 @@ class Hubbard(object):
             self.Etot = self.ncf['Etot'][i]
         self.update_spin_hamiltonian()
 
-    def get_1D_band_structure(self, nk=51, data2file=False):
+    def get_1D_band_structure(self, nk=51, data2file=False, projection=None):
+        if not projection:
+            projection = range(len(self.pi_geom))
         klist = np.linspace(0, 0.5, nk)
         eigs_up = np.empty([len(klist), self.H0.no])
         eigs_dn = np.empty([len(klist), self.H0.no])
+        pdos_up = np.empty([len(klist), self.H0.no]) # Site-projected DOS
+        pdos_dn = np.empty([len(klist), self.H0.no])
         # Loop over k
         for ik, k in enumerate(klist):
-            eigs_up[ik, :] = self.Hup.eigh([k, 0, 0], eigvals_only=True)
-            eigs_dn[ik, :] = self.Hdn.eigh([k, 0, 0], eigvals_only=True)
+            eigs_up[ik, :], evec = self.Hup.eigh([k, 0, 0], eigvals_only=False)
+            v = evec[projection]
+            pdos_up[ik, :] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
+            eigs_dn[ik, :], evec = self.Hdn.eigh([k, 0, 0], eigvals_only=False)
+            v = evec[projection]
+            pdos_dn[ik, :] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
         # Set energy reference to midgap
         eigs_up -= self.midgap
         eigs_dn -= self.midgap
@@ -528,13 +538,13 @@ class Hubbard(object):
                 fdn.write('\n')
             fup.close()
             fdn.close()
-        return klist, eigs_up, eigs_dn
+        return klist, eigs_up, eigs_dn, pdos_up, pdos_dn
 
-    def plot_bands(self, TSHS=None, nk=51, ymax=4.):
+    def plot_bands(self, TSHS=None, nk=51, ymax=4., projection=None):
         fig = plt.figure(figsize=(4, 8))
         axes = plt.axes()
         # Get TB bands
-        ka, evup, evdn = self.get_1D_band_structure()
+        ka, evup, evdn, pdosup, pdosdn = self.get_1D_band_structure(projection=projection)
         ka = 2*ka # Units ka/pi
         # Add siesta bandstructure?
         if TSHS:
@@ -551,7 +561,12 @@ class Hubbard(object):
         if not np.allclose(evup, evdn):
             # Add spin-down component to plot
             plt.plot(ka, evdn, 'g.')
-        # Add spin-up component to plot
+        # Fat bands?
+        if projection != None:
+            for i, ev in enumerate(evup[0]):
+                #plt.fill_between(ka, evup[:, i]+pdosup[:, i], evup[:, i]-pdosup[:, i], alpha=.4, edgecolor='None', facecolor='Grey')
+                plt.errorbar(ka, evup[:, i], yerr=pdosup[:, i], alpha=.4, color='Grey')
+        # Add spin-up bands
         plt.plot(ka, evup, 'r')
         plt.ylim(-ymax, ymax)
         plt.rc('font', family='Bitstream Vera Serif', size=19)
