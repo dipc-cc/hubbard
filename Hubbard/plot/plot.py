@@ -21,15 +21,15 @@ class Plot(object):
 
 class GeometryPlot(Plot):
 
-    def __init__(self, HH, figsize=(8, 6)):
+    def __init__(self, HubbardHamiltonian, figsize=(8, 6)):
         Plot.__init__(self, figsize=figsize)
-        x = HH.geom.xyz[:, 0]
-        y = HH.geom.xyz[:, 1]
+        x = HubbardHamiltonian.geom.xyz[:, 0]
+        y = HubbardHamiltonian.geom.xyz[:, 1]
         bdx = 2
         self.axes.set_xlim(min(x)-bdx, max(x)+bdx)
         self.axes.set_ylim(min(y)-bdx, max(y)+bdx)
         # Patches
-        self.ppi, self.paux = HH.get_atomic_patches()
+        self.ppi, self.paux = HubbardHamiltonian.get_atomic_patches()
         # Compute data
         self.axes.add_collection(self.paux)
         self.axes.add_collection(self.ppi)
