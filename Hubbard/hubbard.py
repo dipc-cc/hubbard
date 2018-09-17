@@ -378,22 +378,9 @@ class Hubbard(object):
             self.real_space_wf(ev, vec, state, label+spin_label+'-state%i'%state, title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def wf(self, data, title, label, f=3000):
-        bdx = 2
-        x = self.geom.xyz[:, 0]
-        y = self.geom.xyz[:, 1]
-        fig = plt.figure(figsize=(8, 6))
-        axes = plt.axes()
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
-        plt.rc('text', usetex=True)
-        axes.set_xlabel(r'$x$ (\AA)')
-        axes.set_ylabel(r'$y$ (\AA)')
-        axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        axes.set_ylim(min(y)-bdx, max(y)+bdx)
-        axes.set_aspect('equal')
-	# Patches
+	    # Patches
         ppi, paux = self.get_atomic_patches()
-        axes.add_collection(paux)
-        axes.add_collection(ppi)
+        fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         if max(data) < -min(data):
             data = -data # change sign of wf to have largest element as positive
         scatter1 = axes.scatter(x, y, data*f, 'r') # pos. part, marker AREA is proportional to data
