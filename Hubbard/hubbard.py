@@ -315,17 +315,9 @@ class Hubbard(object):
         plt.close('all')
 
     def real_space_wf(self, ev, vecs, state, label, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
-        fig = plt.figure(figsize=(8, 6))
-        axes = plt.axes()
-        x = self.geom.xyz[:, 0]
-        y = self.geom.xyz[:, 1]
-        bdx = 2
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
-        plt.rc('text', usetex=True)
-	# Patches
+	    # Patches
         ppi, paux = self.get_atomic_patches(cmap='Greys', facecolor='None')
-        axes.add_collection(paux)
-        axes.add_collection(ppi)
+        fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
@@ -358,11 +350,6 @@ class Hubbard(object):
                          cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_title(title)
-        axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        axes.set_ylim(min(y)-bdx, max(y)+bdx)
-        axes.set_xlabel(r'$x$ (\AA)')
-        axes.set_ylabel(r'$y$ (\AA)')
-        axes.set_aspect('equal')
         outfn = self.get_label()+'-rs-wf%s.pdf'%(label)
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
