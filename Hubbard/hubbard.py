@@ -452,15 +452,15 @@ class Hubbard(object):
         ev -= self.midgap
         if density:
             label = '-dens'
-            vec = np.sign(vec.real)*np.abs(vec)**2
+            vec = np.e**(np.angle(vec)*1j)*np.abs(vec)**2
         else:
             label = ''
-            vec = vec.real
+            vec = vec = np.e**(np.angle(vec)*1j)*np.abs(vec)
         states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
         Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
         for state in states:
-            data[Clist] = vec[:, state]
+            data[Clist] = vec[:, state].real
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             self.wf(data, title, label+spin_label+'-state%i'%state, f=f)
 
