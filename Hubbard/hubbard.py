@@ -275,7 +275,7 @@ class Hubbard(object):
         print('Wrote', outfn)
         plt.close('all')
 
-    def plot_rs_polarization(self, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
+    def plot_rs_polarization(self, vz=0, z=1.1, vmax=0.006, grid_unit=0.075, title=None):
         pol = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
         axes = plt.axes()
