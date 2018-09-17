@@ -204,6 +204,24 @@ class Hubbard(object):
         PCaux.set_clim(-cmax, cmax) # colorbar limits
         return PCpi, PCaux
 
+    def plot_settings(ppi, paux):
+        fig = plt.figure(figsize=(8, 6))
+        axes = plt.axes()
+        x = self.geom.xyz[:, 0]
+        y = self.geom.xyz[:, 1]
+        bdx = 2
+        axes.set_xlim(min(x)-bdx, max(x)+bdx)
+        axes.set_ylim(min(y)-bdx, max(y)+bdx)
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
+        plt.rc('text', usetex=True)
+        axes.add_collection(paux)
+        axes.add_collection(ppi)
+        axes.set_xlabel(r'$x$ (\AA)')
+        axes.set_ylabel(r'$y$ (\AA)')
+        axes.set_aspect('equal')
+        return fig, axes, x, y, bdx
+
+
     def plot_polarization(self, cmax=0.4, title=None):
         data = self.nup-self.ndn
         fig = plt.figure(figsize=(8, 6))
