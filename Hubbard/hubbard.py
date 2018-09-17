@@ -240,17 +240,9 @@ class Hubbard(object):
         plt.close('all')
 
     def plot_charge(self, title=None, chgdiff=False):
-        fig = plt.figure(figsize=(8, 6))
-        axes = plt.axes()
-        x = self.geom.xyz[:, 0]
-        y = self.geom.xyz[:, 1]
-        bdx = 2
-        axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        axes.set_ylim(min(y)-bdx, max(y)+bdx)
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
-        plt.rc('text', usetex=True)
         # Patches
         ppi, paux = self.get_atomic_patches()
+        fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         # Compute data
         data = self.nup+self.ndn
         if chgdiff:
@@ -265,17 +257,12 @@ class Hubbard(object):
             outfn = self.get_label()+'-chg.pdf'
             ppi.set_clim(min(data), max(data)) # colorbar limits
         ppi.set_array(data) # Set data
-        axes.add_collection(paux)
-        axes.add_collection(ppi)
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("right", size="5%", pad=0.1)
         cb = plt.colorbar(ppi, label=r'$Q_\uparrow +Q_\downarrow$ ($e$)', cax=cax)
         plt.subplots_adjust(right=0.8)
         if title:
             axes.set_title(title)
-        axes.set_xlabel(r'$x$ (\AA)')
-        axes.set_ylabel(r'$y$ (\AA)')
-        axes.set_aspect('equal')
         fig.savefig(outfn)
         print('Wrote', outfn)
         plt.close('all')
