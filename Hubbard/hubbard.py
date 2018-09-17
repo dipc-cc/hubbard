@@ -401,7 +401,6 @@ class Hubbard(object):
         if density:
             label = '-dens'
             vec = np.e**(np.angle(vec)*1j)*np.abs(vec)**2
-            print(vec)
         else:
             label = ''
             vec =  np.e**(np.angle(vec)*1j)*np.abs(vec)
