@@ -370,12 +370,12 @@ class Hubbard(object):
                 H.geom.atom.replace(H.geom.atom[ia], B)
             elif H.geom.atoms.Z[ia] == 7:
                 H.geom.atom.replace(H.geom.atom[ia], N)
-        grid = sisl.Grid(grid_unit, sc=H.geom.sc)
+        grid = sisl.Grid(grid_unit, dtype=np.complex128, sc=H.geom.sc)
         es = sisl.EigenstateElectron(vecs.T, ev, H)
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
          # Plot only the real part of the WF
-        ax = axes.imshow(grid.grid[:, :, index[2]].T,
+        ax = axes.imshow(grid.grid[:, :, index[2]].T.real,
                          cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_title(title)
@@ -400,10 +400,11 @@ class Hubbard(object):
         ev -= self.midgap
         if density:
             label = '-dens'
-            vec = np.sign(vec.real)*np.abs(vec)**2
+            vec = np.e**(np.angle(vec)*1j)*np.abs(vec)**2
+            print(vec)
         else:
             label = ''
-            vec = vec.real
+            vec =  np.e**(np.angle(vec)*1j)*np.abs(vec)
         # Find states over an energy window
         states = np.where(np.abs(ev) < EnWindow)[0]
         for state in states:
