@@ -269,18 +269,10 @@ class Hubbard(object):
 
     def plot_rs_polarization(self, vz=0, z=1.1, vmax=0.006, grid_unit=0.075, title=None):
         pol = self.nup-self.ndn
-        fig = plt.figure(figsize=(8, 6))
-        axes = plt.axes()
-        x = self.geom.xyz[:, 0]
-        y = self.geom.xyz[:, 1]
-        bdx = 2
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
-        plt.rc('text', usetex=True)
-	# Patches
+        # Patches
         ppi, paux = self.get_atomic_patches(cmap='Greys', facecolor='None')
+        fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         ppi.set_array(pol) # Set data
-        axes.add_collection(paux)
-        axes.add_collection(ppi)
         # Create pz orbital for each C atom
         r = np.linspace(0, 1.6, 700)
         func = 5 * np.exp(-r * 5)
@@ -314,13 +306,8 @@ class Hubbard(object):
         ax = axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax,
                          extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
-        axes.set_xlim(min(x)-bdx, max(x)+bdx)
-        axes.set_ylim(min(y)-bdx, max(y)+bdx)
         if title:
             axes.set_title(title)
-        axes.set_xlabel(r'$x$ (\AA)')
-        axes.set_ylabel(r'$y$ (\AA)')
-        axes.set_aspect('equal')
         outfn = self.get_label()+'-rs-pol.pdf'
         fig.savefig(outfn)
         #grid.write('wavefunction.cube') # write to Cube file
