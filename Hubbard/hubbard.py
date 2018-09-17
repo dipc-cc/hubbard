@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import matplotlib.colors as mcolors
+import matplotlib.colors as mcolors 
 import sisl
 import hashlib
 
@@ -346,8 +346,9 @@ class Hubbard(object):
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
          # Plot only the real part of the WF
+        custom_map = cmap = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
         ax = axes.imshow(grid.grid[:, :, index[2]].T.real,
-                         cmap='seismic', origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
+                         cmap=custom_map, origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
         axes.set_title(title)
         outfn = self.get_label()+'-rs-wf%s.pdf'%(label)
