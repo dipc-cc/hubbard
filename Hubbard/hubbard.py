@@ -346,7 +346,7 @@ class Hubbard(object):
         es.sub(state).psi(grid) # plot the ith wavefunction on the grid.
         index = grid.index([0, 0, z])
          # Plot only the real part of the WF
-        custom_map = cmap = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
+        custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
         ax = axes.imshow(grid.grid[:, :, index[2]].T.real,
                          cmap=custom_map, origin='lower', vmax=vmax, vmin=-vmax, extent=[min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx])
         plt.colorbar(ax)
