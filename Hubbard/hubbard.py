@@ -46,9 +46,13 @@ class Hubbard(object):
             print('Wrote '+self.fn+'.xyz')
         # Determine pz sites
         aux = []
+        sp3 = []
         for ia in self.geom:
             if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
+            idx = self.geom.close(ia,R=[1.2]) # C-H bond distance
+            if self.geom.atoms[ia].Z == 6 and len(idx)==3:
+                sp3.append(ia)
         # Remove all sites not carbon-type
         self.pi_geom = self.geom.remove(aux)
         self.sites = len(self.pi_geom)
@@ -67,6 +71,7 @@ class Hubbard(object):
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print(' ... B-atoms at sites', np.where(self.pi_geom.atoms.Z == 5)[0])
         print(' ... N-atoms at sites', np.where(self.pi_geom.atoms.Z == 7)[0])
+        print('Found  %i sp3 atoms'%(len(sp3)))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Use default (low-spin) filling?
         if Ndn <= 0:
