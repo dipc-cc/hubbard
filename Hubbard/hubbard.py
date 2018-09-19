@@ -69,7 +69,7 @@ class Hubbard(object):
             self.pi_geom.atom[ia].orbital[0] = pz
         # Count number of pi-electrons:
         nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
-        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])-len(self.sp3)
+        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
         nN = len(np.where(self.pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
