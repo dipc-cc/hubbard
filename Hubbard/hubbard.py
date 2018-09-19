@@ -54,7 +54,7 @@ class Hubbard(object):
             if self.geom.atoms[ia].Z == 6 and len(idx)==3:
                 self.sp3.append(ia)
         # Remove all sites not carbon-type
-        self.pi_geom = self.geom.remove(aux)
+        self.pi_geom = self.geom.remove(aux+self.sp3)
         self.sites = len(self.pi_geom)
         print('Found %i pz sites' %self.sites)
         # Set pz orbital for each pz site
@@ -65,7 +65,7 @@ class Hubbard(object):
             self.pi_geom.atom[ia].orbital[0] = pz
         # Count number of pi-electrons:
         nB = len(np.where(self.pi_geom.atoms.Z == 5)[0])
-        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])
+        nC = len(np.where(self.pi_geom.atoms.Z == 6)[0])-len(self.sp3)
         nN = len(np.where(self.pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
@@ -418,7 +418,7 @@ class Hubbard(object):
             vec = vec = np.e**(np.angle(vec)*1j)*np.abs(vec)
         states = np.where(np.abs(ev) < EnWindow)[0]
         data = np.zeros(len(self.geom))
-        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7]]
+        Clist = [ia for ia in self.geom if self.geom.atoms[ia].Z in [5, 6, 7] if ia not in self.sp3]
         for state in states:
             data[Clist] = vec[:, state].real
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
