@@ -71,7 +71,7 @@ class Hubbard(object):
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print(' ... B-atoms at sites', np.where(self.pi_geom.atoms.Z == 5)[0])
         print(' ... N-atoms at sites', np.where(self.pi_geom.atoms.Z == 7)[0])
-        print('Found  %i sp3 atoms'%(len(self.sp3)))
+        print(' ... sp3 atoms at sites', self.sp3)
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Use default (low-spin) filling?
         if Ndn <= 0:
