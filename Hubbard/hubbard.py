@@ -228,8 +228,8 @@ class Hubbard(object):
         axes.set_xlabel(r'$x$ (\AA)')
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
-        if len(self.sp3)>0:
-            axes.add_patch(patches.Circle((np.average(x[self.sp3]),np.average(y[self.sp3])),radius=1.4,alpha=0.15,fc='c'))
+        if len(self.Hsp3)>0:
+            axes.add_patch(patches.Circle((np.average(x[self.Hsp3]),np.average(y[self.Hsp3])),radius=1.4,alpha=0.15,fc='c'))
         return fig, axes, x, y, bdx
 
 
