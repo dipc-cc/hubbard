@@ -47,12 +47,16 @@ class Hubbard(object):
         # Determine pz sites
         aux = []
         self.sp3 = []
+        self.Hsp3 = []
         for ia in self.geom:
             if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
             idx = self.geom.close(ia,R=[1.2]) # C-H bond distance
-            if self.geom.atoms[ia].Z == 6 and len(idx)==3:
-                self.sp3.append(ia)
+            if len(idx)==3:
+                if self.geom.atoms[ia].Z == 6: 
+                    self.sp3.append(ia)
+                if self.geom.atoms[ia].Z == 1:
+                    self.Hsp3.append(ia)
         # Remove all sites not carbon-type
         self.pi_geom = self.geom.remove(aux+self.sp3)
         self.sites = len(self.pi_geom)
