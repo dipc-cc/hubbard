@@ -55,8 +55,8 @@ class Hubbard(object):
             if len(idx[1])==4:
                 if self.geom.atoms[ia].Z == 6: 
                     self.sp3.append(ia)
-                if self.geom.atoms[ia].Z == 1:
-                    self.Hsp3.append(ia)
+                [self.Hsp3.append(i) for i in idx[1] if self.geom.atoms[i].Z == 1]
+        print(self.Hsp3)
         # Remove all sites not carbon-type
         self.pi_geom = self.geom.remove(aux+self.sp3)
         self.sites = len(self.pi_geom)
