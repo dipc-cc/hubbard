@@ -40,7 +40,7 @@ class Hubbard(object):
             self.geom = self.geom.move(-self.geom.center(what=what))
         self.geom = self.geom.rotate(angle, v, atom=atom)
         # NB Force structure planar!!! (setting z = 0)
-        self.geom.xyz[:,2] = 0
+        #self.geom.xyz[:,2] = 0
         if write_xyz:
             self.geom.write(self.fn+'.xyz')
             print('Wrote '+self.fn+'.xyz')
@@ -51,8 +51,8 @@ class Hubbard(object):
         for ia in self.geom:
             if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
-            idx = self.geom.close(ia,R=[1.2]) # C-H bond distance
-            if len(idx)==3:
+            idx = self.geom.close(ia,R=[0.1,1.6]) # C-H bond distance
+            if len(idx[1])==4:
                 if self.geom.atoms[ia].Z == 6: 
                     self.sp3.append(ia)
                 if self.geom.atoms[ia].Z == 1:
