@@ -51,8 +51,8 @@ class Hubbard(object):
         for ia in self.geom:
             if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
-            idx = self.geom.close(ia,R=[0.1,1.6]) # C-H bond distance
-            if len(idx[1])==4:
+            idx = self.geom.close(ia,R=[0.1,1.6])
+            if len(idx[1])==4: # Search for atoms with 4 neighbors
                 if self.geom.atoms[ia].Z == 6: 
                     self.sp3.append(ia)
                 [self.Hsp3.append(i) for i in idx[1] if self.geom.atoms[i].Z == 1]
