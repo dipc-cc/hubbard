@@ -284,13 +284,6 @@ class Hubbard(object):
         ppi, paux = self.get_atomic_patches(cmap='Greys', facecolor='None')
         fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         ppi.set_array(pol) # Set data
-        # Create pz orbital for each C atom
-        r = np.linspace(0, 1.6, 700)
-        func = 5 * np.exp(-r * 5)
-        orb = sisl.SphericalOrbital(1, (r, func))
-        C = sisl.Atom(6, orb)
-        B = sisl.Atom(5, orb)
-        N = sisl.Atom(7, orb)
         # Change sc cell for plotting purpose
         vx = np.abs((min(x)-bdx) - (max(x)+bdx))
         vy = np.abs((min(y)-bdx) - (max(y)+bdx))
@@ -300,13 +293,6 @@ class Hubbard(object):
         geom.xyz[np.where(np.abs(geom.xyz[:, 2]) < 1e-3), 2] = 0 # z~0 -> z=0
         H = sisl.Hamiltonian(geom)
         H.geom.set_sc(sisl.SuperCell([vx, vy, vz]))
-        for ia in H.geom:
-            if H.geom.atoms.Z[ia] == 6:
-                H.geom.atom.replace(H.geom.atom[ia], C)
-            elif H.geom.atoms.Z[ia] == 5:
-                H.geom.atom.replace(H.geom.atom[ia], B)
-            elif H.geom.atoms.Z[ia] == 7:
-                H.geom.atom.replace(H.geom.atom[ia], N)
         grid = sisl.Grid(grid_unit, sc=H.geom.sc)
         vecs = np.zeros((self.sites, self.sites))
         vecs[0, :] = pol
