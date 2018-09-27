@@ -22,7 +22,6 @@ class Charge(GeometryPlot):
 
         # Colorbars
         self.ppi.set_clim(min(charge), max(charge))
-        self.paux.set_clim(-1, 1)
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
@@ -43,7 +42,7 @@ class ChargeDifference(GeometryPlot):
 
         # Set default keywords
         if 'cmap' not in keywords:
-            keywords['cmap'] = cmap=plt.cm.bwr
+            keywords['cmap'] = plt.cm.bwr
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
@@ -58,7 +57,6 @@ class ChargeDifference(GeometryPlot):
         # Colorbars
         cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
-        self.paux.set_clim(-1, 1)
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
@@ -88,7 +86,6 @@ class SpinPolarization(GeometryPlot):
         # Colorbars
         cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
-        self.paux.set_clim(-1, 1)
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 

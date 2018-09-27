@@ -65,11 +65,16 @@ class GeometryPlot(Plot):
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10: # Some other atom
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+        # Pi sites
         ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         ppi.set_array(np.zeros(len(pi)))
+        ppi.set_clim(-1, 1)
         self.ppi = ppi
+
+        # Aux sites
         paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         paux.set_array(np.zeros(len(aux)))
+        paux.set_clim(-1, 1)
         self.paux = paux
 
         # Compute data
