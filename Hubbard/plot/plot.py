@@ -6,11 +6,18 @@ import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+
 class Plot(object):
 
-    def __init__(self, figsize=(8, 6)):
-        self.fig = plt.figure(figsize=figsize)
+    def __init__(self, **keywords):
+        # Figure size
+        if 'figsize' in keywords:
+            self.fig = plt.figure(figsize=keywords['figsize'])
+        else:
+            self.fig = plt.figure(figsize=(8, 6))
         self.axes = plt.axes()
+        if 'title' in keywords:
+            self.axes.set_title(keywords['title'])
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
 
@@ -25,7 +32,7 @@ class Plot(object):
 class GeometryPlot(Plot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
-        Plot.__init__(self)
+        Plot.__init__(self, **keywords)
         g = HubbardHamiltonian.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
@@ -37,6 +44,12 @@ class GeometryPlot(Plot):
         self.extent = [min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx]
         self.axes.set_xlim(self.xmin, self.xmax)
         self.axes.set_ylim(self.ymin, self.ymax)
+
+        # Relevant keywords
+        kw = {}
+        for k in keywords:
+            if k in ['cmap']:
+                kw[k] = keywords[k]
 
         # Patches
         pi = []
@@ -52,10 +65,10 @@ class GeometryPlot(Plot):
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10: # Some other atom
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
-        ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **keywords)
+        ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         ppi.set_array(np.zeros(len(pi)))
         self.ppi = ppi
-        paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **keywords)
+        paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         paux.set_array(np.zeros(len(aux)))
         self.paux = paux
 
