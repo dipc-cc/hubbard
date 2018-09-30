@@ -33,7 +33,9 @@ class GeometryPlot(Plot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
         Plot.__init__(self, **keywords)
-        g = HubbardHamiltonian.geom
+        self.geom = HubbardHamiltonian.geom
+        self.pi_geom = HubbardHamiltonian.pi_geom
+        g = self.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         bdx = 2
@@ -70,14 +72,12 @@ class GeometryPlot(Plot):
         ppi.set_array(np.zeros(len(pi)))
         ppi.set_clim(-1, 1)
         self.ppi = ppi
-
         # Aux sites
         paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         paux.set_array(np.zeros(len(aux)))
         paux.set_clim(-1, 1)
         self.paux = paux
 
-        # Compute data
         self.axes.add_collection(self.paux)
         self.axes.add_collection(self.ppi)
         self.axes.set_xlabel(r'$x$ (\AA)')
@@ -89,3 +89,10 @@ class GeometryPlot(Plot):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         cb = plt.colorbar(layer, label=label, cax=cax)
         plt.subplots_adjust(right=0.8)
+
+    def annotate(self, size=6):
+        g = self.pi_geom
+        x = g.xyz[:, 0]
+        y = g.xyz[:, 1]
+        for ia in g:
+            self.axes.annotate(ia, (x[ia], y[ia]), size=size)

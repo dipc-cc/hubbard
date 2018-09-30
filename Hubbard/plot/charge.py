@@ -25,6 +25,10 @@ class Charge(GeometryPlot):
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
+
         # Write file
         if 'filename' not in keywords:
             fn = HubbardHamiltonian.get_label()+'-chg.pdf'
@@ -60,6 +64,10 @@ class ChargeDifference(GeometryPlot):
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
+
         # Write file
         if 'filename' not in keywords:
             fn = HubbardHamiltonian.get_label()+'-chgdiff.pdf'
@@ -88,6 +96,10 @@ class SpinPolarization(GeometryPlot):
         self.ppi.set_clim(-cmax, cmax)
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
+
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
 
         # Write file
         if 'filename' not in keywords:
