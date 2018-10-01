@@ -98,12 +98,6 @@ class Hubbard(object):
         # Call dumb plot to avoid font issues with first real Matplotlib call
         self.dumb_plot()
 
-    def dumb_plot(self):
-        "This function does nothing but avoids font conversion issues"
-        fig = plt.figure()
-        plt.rc('text', usetex=True)
-        plt.close('all')
-
     def get_label(self):
         s = self.fn
         s += '-%s'%self.model
@@ -208,6 +202,35 @@ class Hubbard(object):
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
+
+    def converge(self, tol=1e-10, save=False):
+        """ Iterate Hamiltonian towards a specified tolerance criterion """
+        print('Iterating towards self-consistency...')
+        dn = 1.0
+        i = 0
+        while dn > tol:
+            i += 1
+            if dn > 0.1:
+                # precondition when density change is relatively large
+                dn, Etot = self.iterate(mix=.1)
+            else:
+                dn, Etot = self.iterate(mix=1)
+            # Print some info from time to time
+            if i%100 == 0:
+                print('   %i iterations completed'%i)
+                # Save density to netcdf?
+                if save:
+                    self.save()
+        print('   found solution in %i iterations'%i)
+
+
+# All functions below should be moved elsewhere:
+
+    def dumb_plot(self):
+        "This function does nothing but avoids font conversion issues"
+        fig = plt.figure()
+        plt.rc('text', usetex=True)
+        plt.close('all')
 
     def get_atomic_patches(self, cmax=10, cmap=plt.cm.bwr, **keywords):
         ppi = [] # patches for pi-network
