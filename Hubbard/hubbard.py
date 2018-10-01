@@ -201,7 +201,7 @@ class Hubbard(object):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def converge(self, tol=1e-10, save=False):
+    def converge(self, tol=1e-10, steps=100, save=False):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         dn = 1.0
@@ -214,12 +214,13 @@ class Hubbard(object):
             else:
                 dn, Etot = self.iterate(mix=1)
             # Print some info from time to time
-            if i%100 == 0:
+            if i%steps == 0:
                 print('   %i iterations completed'%i)
                 # Save density to netcdf?
                 if save:
                     self.save()
         print('   found solution in %i iterations'%i)
+        return dn, self.Etot
 
     def init_nc(self, fn):
         try:

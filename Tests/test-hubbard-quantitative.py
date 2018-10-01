@@ -12,19 +12,7 @@ Etot0 = H.Etot*1
 
 # Reset density and iterate
 H.random_density()
-deltaN = 1.0
-i = 0
-print 'Iterations / deltaN / etot / midgap energy reference'
-while deltaN > 1e-10:
-    if deltaN > 1e-2:
-        # preconditioning
-        deltaN, etot = H.iterate(mix=.1)
-    else:
-        deltaN, etot = H.iterate(mix=1)
-    i += 1
-    if i%10 == 0:
-        print i, deltaN, etot, H.midgap
-    
+dn, etot = H.converge(tol=1e-10, steps=10)
 ev1, evec1 = H.Hup.eigh(eigvals_only=False)
 
 # Total energy check:
