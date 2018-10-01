@@ -159,20 +159,21 @@ class Hubbard(object):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         self.nup = self.nup/np.sum(self.nup)*self.Nup
         self.ndn = self.ndn/np.sum(self.ndn)*self.Ndn
+        print('Normalized charge distributions to Nup=%i, Ndn=%i'%(self.Nup, self.Ndn))
 
-    def polarize_sites(self, atoms):
+    def polarize_sites(self, up, dn=[]):
         """ Maximize spin polarization on specific atomic sites.
-        A positive (negative) sign in front of an index is interpreted as maximum up (down)-spin polarization.
+        Optionally, sites with down-polarization can be specified
         """
-        for ia in atoms:
-            if ia < 0:
-                # User wants a down-polarization at this site
+        print('Setting up-polarization for sites', up)
+        for ia in up:
+            self.nup[ia] = 1.
+            self.ndn[ia] = 0.
+        if len(dn) > 0:
+            print('Setting down-polarization for sites', dn)
+            for ia in dn:
                 self.nup[ia] = 0.
                 self.ndn[ia] = 1.
-            else:
-                # Setting max up-polarization
-                self.nup[ia] = 1.
-                self.ndn[ia] = 0.
         self.normalize_charge()
 
     def iterate(self, mix=1.0):
