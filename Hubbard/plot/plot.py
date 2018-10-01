@@ -17,7 +17,7 @@ class Plot(object):
             self.fig = plt.figure(figsize=(8, 6))
         self.axes = plt.axes()
         if 'title' in keywords:
-            self.axes.set_title(keywords['title'])
+            self.set_title(keywords['title'])
         plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
 
@@ -28,6 +28,14 @@ class Plot(object):
     def close(self):
         plt.close('all')
 
+    def set_title(self, title):
+        self.axes.set_title(title)
+
+    def set_xlabel(self, label):
+        self.axes.set_xlabel(label)
+
+    def set_ylabel(self, label):
+        self.axes.set_ylabel(label)
 
 class GeometryPlot(Plot):
 
@@ -80,8 +88,8 @@ class GeometryPlot(Plot):
 
         self.axes.add_collection(self.paux)
         self.axes.add_collection(self.ppi)
-        self.axes.set_xlabel(r'$x$ (\AA)')
-        self.axes.set_ylabel(r'$y$ (\AA)')
+        self.set_xlabel(r'$x$ (\AA)')
+        self.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
 
     def add_colorbar(self, layer, label):
