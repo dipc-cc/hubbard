@@ -223,6 +223,72 @@ class Hubbard(object):
                     self.save()
         print('   found solution in %i iterations'%i)
 
+    def init_nc(self, fn):
+        try:
+            self.ncf = NC.Dataset(fn, 'a')
+            print('Appending to', fn)
+        except:
+            print('Initiating', fn)
+            ncf = NC.Dataset(fn, 'w')
+            ncf.createDimension('unl', None)
+            ncf.createDimension('spin', 2)
+            ncf.createDimension('sites', len(self.pi_geom))
+            ncf.createVariable('hash', 'i8', ('unl',))
+            ncf.createVariable('U', 'f8', ('unl',))
+            ncf.createVariable('Nup', 'i4', ('unl',))
+            ncf.createVariable('Ndn', 'i4', ('unl',))
+            ncf.createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
+            ncf.createVariable('Etot', 'f8', ('unl',))
+            self.ncf = ncf
+            ncf.sync()
+
+    def gethash(self):
+        s = ''
+        s += 't1=%.2f '%self.t1
+        s += 't2=%.2f '%self.t2
+        s += 't3=%.2f '%self.t3
+        s += 'U=%.2f '%self.U
+        s += 'eB=%.2f '%self.eB
+        s += 'eN=%.2f '%self.eN
+        s += 'Nup=%.2f '%self.Nup
+        s += 'Ndn=%.2f '%self.Ndn
+        myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
+        return myhash, s
+
+    def save(self):
+        myhash, s = self.gethash()
+        i = np.where(self.ncf['hash'][:] == myhash)[0]
+        if len(i) == 0:
+            i = len(self.ncf['hash'][:])
+        else:
+            i = i[0]
+        self.ncf['hash'][i] = myhash
+        self.ncf['U'][i] = self.U
+        self.ncf['Nup'][i] = self.Nup
+        self.ncf['Ndn'][i] = self.Ndn
+        self.ncf['Density'][i, 0] = self.nup
+        self.ncf['Density'][i, 1] = self.ndn
+        self.ncf['Etot'][i] = self.Etot
+        self.ncf.sync()
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc'%(self.U, self.Nup, self.Ndn, self.fn))
+
+    def read(self):
+        myhash, s = self.gethash()
+        i = np.where(self.ncf['hash'][:] == myhash)[0]
+        if len(i) == 0:
+            print('Hash not found:')
+            print('...', s)
+            self.random_density()
+        else:
+            print('Found:')
+            print('...', s, 'in file')
+            i = i[0]
+            self.U = self.ncf['U'][i]
+            self.nup = self.ncf['Density'][i][0]
+            self.ndn = self.ncf['Density'][i][1]
+            self.Etot = self.ncf['Etot'][i]
+        self.update_spin_hamiltonian()
+
 
 # All functions below should be moved elsewhere:
 
@@ -441,71 +507,6 @@ class Hubbard(object):
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             self.wf(data, title, label+spin_label+'-state%i'%state, f=f)
 
-    def init_nc(self, fn):
-        try:
-            self.ncf = NC.Dataset(fn, 'a')
-            print('Appending to', fn)
-        except:
-            print('Initiating', fn)
-            ncf = NC.Dataset(fn, 'w')
-            ncf.createDimension('unl', None)
-            ncf.createDimension('spin', 2)
-            ncf.createDimension('sites', len(self.pi_geom))
-            ncf.createVariable('hash', 'i8', ('unl',))
-            ncf.createVariable('U', 'f8', ('unl',))
-            ncf.createVariable('Nup', 'i4', ('unl',))
-            ncf.createVariable('Ndn', 'i4', ('unl',))
-            ncf.createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
-            ncf.createVariable('Etot', 'f8', ('unl',))
-            self.ncf = ncf
-            ncf.sync()
-
-    def gethash(self):
-        s = ''
-        s += 't1=%.2f '%self.t1
-        s += 't2=%.2f '%self.t2
-        s += 't3=%.2f '%self.t3
-        s += 'U=%.2f '%self.U
-        s += 'eB=%.2f '%self.eB
-        s += 'eN=%.2f '%self.eN
-        s += 'Nup=%.2f '%self.Nup
-        s += 'Ndn=%.2f '%self.Ndn
-        myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
-        return myhash, s
-
-    def save(self):
-        myhash, s = self.gethash()
-        i = np.where(self.ncf['hash'][:] == myhash)[0]
-        if len(i) == 0:
-            i = len(self.ncf['hash'][:])
-        else:
-            i = i[0]
-        self.ncf['hash'][i] = myhash
-        self.ncf['U'][i] = self.U
-        self.ncf['Nup'][i] = self.Nup
-        self.ncf['Ndn'][i] = self.Ndn
-        self.ncf['Density'][i, 0] = self.nup
-        self.ncf['Density'][i, 1] = self.ndn
-        self.ncf['Etot'][i] = self.Etot
-        self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to'%(self.U, self.Nup, self.Ndn), self.fn)
-
-    def read(self):
-        myhash, s = self.gethash()
-        i = np.where(self.ncf['hash'][:] == myhash)[0]
-        if len(i) == 0:
-            print('Hash not found:')
-            print('...', s)
-            self.random_density()
-        else:
-            print('Found:')
-            print('...', s, 'in file')
-            i = i[0]
-            self.U = self.ncf['U'][i]
-            self.nup = self.ncf['Density'][i][0]
-            self.ndn = self.ncf['Density'][i][1]
-            self.Etot = self.ncf['Etot'][i]
-        self.update_spin_hamiltonian()
 
     def get_1D_band_structure(self, nk=51, data2file=False, projection=None):
         if not projection:
