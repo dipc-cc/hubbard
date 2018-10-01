@@ -37,33 +37,31 @@ class Plot(object):
     def set_ylabel(self, label):
         self.axes.set_ylabel(label)
 
+    def set_xlim(self, xmin, xmax):
+        self.axes.set_xlim(xmin, xmax)
+
+    def set_ylim(self, ymin, ymax):
+        self.axes.set_ylim(ymin, ymax)
+
+
+
 class GeometryPlot(Plot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
         Plot.__init__(self, **keywords)
+        self.HH = HubbardHamiltonian
         self.geom = HubbardHamiltonian.geom
         self.pi_geom = HubbardHamiltonian.pi_geom
-        g = self.geom
-        x = g.xyz[:, 0]
-        y = g.xyz[:, 1]
-        bdx = 2
-        self.xmin = min(x)-bdx
-        self.xmax = max(x)+bdx
-        self.ymin = min(y)-bdx
-        self.ymax = max(y)+bdx
-        self.extent = [min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx]
-        self.axes.set_xlim(self.xmin, self.xmax)
-        self.axes.set_ylim(self.ymin, self.ymax)
-
+        self.set_axes()
         # Relevant keywords
         kw = {}
         for k in keywords:
             if k in ['cmap']:
                 kw[k] = keywords[k]
-
         # Patches
         pi = []
         aux = []
+        g = self.geom
         for ia in g:
             if g.atoms[ia].Z == 1: # H
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
@@ -80,14 +78,26 @@ class GeometryPlot(Plot):
         ppi.set_array(np.zeros(len(pi)))
         ppi.set_clim(-1, 1)
         self.ppi = ppi
+        self.axes.add_collection(self.ppi)
         # Aux sites
         paux = PatchCollection(aux, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         paux.set_array(np.zeros(len(aux)))
         paux.set_clim(-1, 1)
         self.paux = paux
-
         self.axes.add_collection(self.paux)
-        self.axes.add_collection(self.ppi)
+
+
+    def set_axes(self, bdx=2):
+        g = self.geom
+        x = g.xyz[:, 0]
+        y = g.xyz[:, 1]
+        self.xmin = min(x)-bdx
+        self.xmax = max(x)+bdx
+        self.ymin = min(y)-bdx
+        self.ymax = max(y)+bdx
+        self.extent = [min(x)-bdx, max(x)+bdx, min(y)-bdx, max(y)+bdx]
+        self.set_xlim(self.xmin, self.xmax)
+        self.set_ylim(self.ymin, self.ymax)
         self.set_xlabel(r'$x$ (\AA)')
         self.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
@@ -99,6 +109,7 @@ class GeometryPlot(Plot):
         plt.subplots_adjust(right=0.8)
 
     def annotate(self, size=6):
+        """ Annotate the site indices in the pi-network """
         g = self.pi_geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]

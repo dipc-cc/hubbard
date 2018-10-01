@@ -8,8 +8,6 @@ class Charge(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
 
-        self.HH = HubbardHamiltonian
-        
         # Set default keywords
         if 'cmap' not in keywords:
             keywords['cmap'] = plt.cm.bwr
@@ -24,7 +22,6 @@ class Charge(GeometryPlot):
         else:
             self.__orbitals__(charge, **keywords)
 
-
     def __orbitals__(self, charge, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(charge)
@@ -34,23 +31,8 @@ class Charge(GeometryPlot):
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
-        # Annotate atom numbers?
-        if 'annotate' in keywords:
-            self.annotate()
-
-        # Write file
-        if 'filename' not in keywords:
-            fn = self.HH.get_label()+'-chg.pdf'
-        else:
-            fn = keywords['filename']
-        self.savefig(fn)
-
-        # Close plot
-        self.close()
-
     def __realspace__(self, charge, **keywords):
         print('Not implemented yet')
-        
 
 
 class ChargeDifference(GeometryPlot):
@@ -77,20 +59,6 @@ class ChargeDifference(GeometryPlot):
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
-        # Annotate atom numbers?
-        if 'annotate' in keywords:
-            self.annotate()
-
-        # Write file
-        if 'filename' not in keywords:
-            fn = HubbardHamiltonian.get_label()+'-chgdiff.pdf'
-        else:
-            fn = keywords['filename']
-        self.savefig(fn)
-
-        # Close plot
-        self.close()
-
 
 class SpinPolarization(GeometryPlot):
 
@@ -109,20 +77,6 @@ class SpinPolarization(GeometryPlot):
         self.ppi.set_clim(-cmax, cmax)
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
-
-        # Annotate atom numbers?
-        if 'annotate' in keywords:
-            self.annotate()
-
-        # Write file
-        if 'filename' not in keywords:
-            fn = HubbardHamiltonian.get_label()+'-pol.pdf'
-        else:
-            fn = keywords['filename']
-        self.savefig(fn)
-
-        # Close plot
-        self.close()
 
 
 import sisl
@@ -160,10 +114,6 @@ class SpinPolarizationRS(GeometryPlot):
                               vmax=vmax, vmin=-vmax, extent=self.extent)
         if colorbar:
             self.add_colorbar(ax, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
-
-        # Write file
-        fn = HubbardHamiltonian.get_label()+'-rs-pol.pdf'
-        self.savefig(fn)
 
         # Close plot
         self.close()
