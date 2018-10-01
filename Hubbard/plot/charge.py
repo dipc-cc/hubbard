@@ -3,11 +3,16 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 from Hubbard.plot import GeometryPlot
 
+
 class Charge(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, colorbar=True):
+    def __init__(self, HubbardHamiltonian, **keywords):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
+        # Set default keywords
+        if 'cmap' not in keywords:
+            keywords['cmap'] = plt.cm.bwr
+
+        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
         # Compute total charge on each site
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
@@ -17,12 +22,18 @@ class Charge(GeometryPlot):
 
         # Colorbars
         self.ppi.set_clim(min(charge), max(charge))
-        self.paux.set_clim(-1, 1)
-        if colorbar:
+        if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
+
         # Write file
-        fn = HubbardHamiltonian.get_label()+'-chg.pdf'
+        if 'filename' not in keywords:
+            fn = HubbardHamiltonian.get_label()+'-chg.pdf'
+        else:
+            fn = keywords['filename']
         self.savefig(fn)
 
         # Close plot
@@ -31,53 +42,70 @@ class Charge(GeometryPlot):
 
 class ChargeDifference(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, colorbar=True):
+    def __init__(self, HubbardHamiltonian, **keywords):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
+        # Set default keywords
+        if 'cmap' not in keywords:
+            keywords['cmap'] = plt.cm.bwr
 
-        # Compute charge difference to neutral atom on each site
-        chgdiff = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
+        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+
+        # Compute total charge on each site, subtract neutral atom charge
+        charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
         for ia in HubbardHamiltonian.pi_geom:
-            chgdiff[ia] -= HubbardHamiltonian.pi_geom.atoms[ia].Z-5
+            charge[ia] -= HubbardHamiltonian.pi_geom.atoms[ia].Z-5
 
         # Set values for the pi-network
-        self.ppi.set_array(chgdiff)
+        self.ppi.set_array(charge)
 
         # Colorbars
-        cmax = max(abs(chgdiff))
+        cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
-        self.paux.set_clim(-1, 1)
-        if colorbar:
-            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{N.A.}$ ($e$)')
+        if 'colorbar' in keywords:
+            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
+
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
 
         # Write file
-        fn = HubbardHamiltonian.get_label()+'-chgdiff.pdf'
+        if 'filename' not in keywords:
+            fn = HubbardHamiltonian.get_label()+'-chgdiff.pdf'
+        else:
+            fn = keywords['filename']
         self.savefig(fn)
 
         # Close plot
         self.close()
 
+
 class SpinPolarization(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, colorbar=True):
+    def __init__(self, HubbardHamiltonian, **keywords):
 
         GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
 
-        # Compute charge difference to neutral atom on each site
-        spinpol = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
+        # Compute charge difference between up and down channels
+        charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
 
         # Set values for the pi-network
-        self.ppi.set_array(spinpol)
+        self.ppi.set_array(charge)
 
         # Colorbars
-        cmax = max(abs(spinpol))
+        cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
-        self.paux.set_clim(-1, 1)
-        if colorbar:
-            self.add_colorbar(self.ppi, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
+        if 'colorbar' in keywords:
+            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
+
+        # Annotate atom numbers?
+        if 'annotate' in keywords:
+            self.annotate()
 
         # Write file
-        fn = HubbardHamiltonian.get_label()+'-pol.pdf'
+        if 'filename' not in keywords:
+            fn = HubbardHamiltonian.get_label()+'-pol.pdf'
+        else:
+            fn = keywords['filename']
         self.savefig(fn)
 
         # Close plot
@@ -86,6 +114,7 @@ class SpinPolarization(GeometryPlot):
 
 import sisl
 import numpy as np
+
 
 class SpinPolarizationRS(GeometryPlot):
 
@@ -104,7 +133,7 @@ class SpinPolarizationRS(GeometryPlot):
         grid = sisl.Grid(grid_unit, sc=sc)
 
         # The following is a bit of black magic...
-        # not sure this gives the density on the grid  
+        # not sure this gives the density on the grid
         vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
         vecs[0, :] = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
         H = HubbardHamiltonian.H0.move([self.xmax, self.ymax, 0])
