@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import matplotlib.colors as mcolors 
+import matplotlib.colors as mcolors
 import sisl
 import hashlib
 
@@ -51,9 +51,9 @@ class Hubbard(object):
         for ia in self.geom:
             if self.geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
-            idx = self.geom.close(ia,R=[0.1,1.6])
+            idx = self.geom.close(ia, R=[0.1, 1.6])
             if len(idx[1])==4: # Search for atoms with 4 neighbors
-                if self.geom.atoms[ia].Z == 6: 
+                if self.geom.atoms[ia].Z == 6:
                     self.sp3.append(ia)
                 [self.Hsp3.append(i) for i in idx[1] if self.geom.atoms[i].Z == 1]
         # Remove all sites not carbon-type
@@ -152,9 +152,28 @@ class Hubbard(object):
     def random_density(self):
         print('Setting random density')
         self.nup = np.random.rand(self.sites)
-        self.nup = self.nup/np.sum(self.nup)*(self.Nup)
         self.ndn = np.random.rand(self.sites)
-        self.ndn = self.ndn/np.sum(self.ndn)*(self.Ndn)
+        self.normalize_charge()
+
+    def normalize_charge(self):
+        """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
+        self.nup = self.nup/np.sum(self.nup)*self.Nup
+        self.ndn = self.ndn/np.sum(self.ndn)*self.Ndn
+
+    def polarize_sites(self, atoms):
+        """ Maximize spin polarization on specific atomic sites.
+        A positive (negative) sign in front of an index is interpreted as maximum up (down)-spin polarization.
+        """
+        for ia in atoms:
+            if ia < 0:
+                # User wants a down-polarization at this site
+                self.nup[ia] = 0.
+                self.ndn[ia] = 1.
+            else:
+                # Setting max up-polarization
+                self.nup[ia] = 1.
+                self.ndn[ia] = 0.
+        self.normalize_charge()
 
     def iterate(self, mix=1.0):
         nup = self.nup
@@ -228,9 +247,8 @@ class Hubbard(object):
         axes.set_ylabel(r'$y$ (\AA)')
         axes.set_aspect('equal')
         if len(self.Hsp3)>0:
-            axes.add_patch(patches.Circle((np.average(x[self.Hsp3]),np.average(y[self.Hsp3])),radius=1.4,alpha=0.15,fc='c'))
+            axes.add_patch(patches.Circle((np.average(x[self.Hsp3]), np.average(y[self.Hsp3])), radius=1.4, alpha=0.15, fc='c'))
         return fig, axes, x, y, bdx
-
 
     def plot_polarization(self, cmax=0.4, title=None):
         data = self.nup-self.ndn
@@ -311,7 +329,7 @@ class Hubbard(object):
         plt.close('all')
 
     def real_space_wf(self, ev, vecs, state, label, title, vz=0, z=1.1, vmax=0.006, grid_unit=0.075):
-	    # Patches
+            # Patches
         ppi, paux = self.get_atomic_patches(cmap='Greys', facecolor='None')
         fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         # Change sc cell for plotting purpose
@@ -361,7 +379,7 @@ class Hubbard(object):
             self.real_space_wf(ev, vec, state, label+spin_label+'-state%i'%state, title, vz=vz, z=z, vmax=vmax, grid_unit=grid_unit)
 
     def wf(self, data, title, label, f=3000):
-	    # Patches
+            # Patches
         ppi, paux = self.get_atomic_patches()
         fig, axes, x, y, bdx = self.plot_settings(ppi, paux)
         if max(data) < -min(data):
