@@ -8,6 +8,8 @@ class Charge(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
 
+        self.HH = HubbardHamiltonian
+        
         # Set default keywords
         if 'cmap' not in keywords:
             keywords['cmap'] = plt.cm.bwr
@@ -17,6 +19,13 @@ class Charge(GeometryPlot):
         # Compute total charge on each site
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
 
+        if 'realspace' in keywords:
+            self.__realspace__(charge, **keywords)
+        else:
+            self.__orbitals__(charge, **keywords)
+
+
+    def __orbitals__(self, charge, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
@@ -31,13 +40,17 @@ class Charge(GeometryPlot):
 
         # Write file
         if 'filename' not in keywords:
-            fn = HubbardHamiltonian.get_label()+'-chg.pdf'
+            fn = self.HH.get_label()+'-chg.pdf'
         else:
             fn = keywords['filename']
         self.savefig(fn)
 
         # Close plot
         self.close()
+
+    def __realspace__(self, charge, **keywords):
+        print('Not implemented yet')
+        
 
 
 class ChargeDifference(GeometryPlot):
