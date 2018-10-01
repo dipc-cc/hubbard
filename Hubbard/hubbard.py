@@ -95,8 +95,6 @@ class Hubbard(object):
         # Try reading from file or use random density
         self.read()
         self.iterate(mix=0) # Determine midgap energy without changing densities
-        # Call dumb plot to avoid font issues with first real Matplotlib call
-        self.dumb_plot()
 
     def get_label(self):
         s = self.fn
@@ -291,12 +289,6 @@ class Hubbard(object):
 
 
 # All functions below should be moved elsewhere:
-
-    def dumb_plot(self):
-        "This function does nothing but avoids font conversion issues"
-        fig = plt.figure()
-        plt.rc('text', usetex=True)
-        plt.close('all')
 
     def get_atomic_patches(self, cmax=10, cmap=plt.cm.bwr, **keywords):
         ppi = [] # patches for pi-network
@@ -506,7 +498,6 @@ class Hubbard(object):
             data[Clist] = vec[:, state].real
             title = '$E-E_\mathrm{mid}=%.4f$ eV, $k=[%.2f,%.2f,%.2f] \pi/a$'%(ev[state], k[0], k[1], k[2])
             self.wf(data, title, label+spin_label+'-state%i'%state, f=f)
-
 
     def get_1D_band_structure(self, nk=51, data2file=False, projection=None):
         if not projection:

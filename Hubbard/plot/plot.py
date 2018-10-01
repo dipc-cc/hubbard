@@ -16,10 +16,8 @@ class Plot(object):
         else:
             self.fig = plt.figure(figsize=(8, 6))
         self.axes = plt.axes()
-        if 'title' in keywords:
-            self.set_title(keywords['title'])
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
         plt.rc('text', usetex=True)
+        plt.rc('font', family='Bitstream Vera Serif', size=16)
 
     def savefig(self, fn):
         self.fig.savefig(fn)
@@ -43,6 +41,8 @@ class Plot(object):
     def set_ylim(self, ymin, ymax):
         self.axes.set_ylim(ymin, ymax)
 
+# Generate a dummy plot, this seems to avoid font issues with subsequent instances
+Plot()
 
 
 class GeometryPlot(Plot):
@@ -85,7 +85,6 @@ class GeometryPlot(Plot):
         paux.set_clim(-1, 1)
         self.paux = paux
         self.axes.add_collection(self.paux)
-
 
     def set_axes(self, bdx=2):
         g = self.geom
