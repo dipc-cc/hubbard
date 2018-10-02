@@ -23,31 +23,27 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
-        # Determine whether this is 1NN or 3NN
-        if self.t3 == 0:
-            self.model = '1NN'
-        else:
-            self.model = '3NN'
         # Read geometry etc
-        geometry = sisl.get_sile(fn).read_geom()
-        geometry.sc.set_nsc(nsc)
+        ext_geom = sisl.get_sile(fn).read_geom()
+        ext_geom.sc.set_nsc(nsc)
         if what:
-            geometry = geometry.move(-geometry.center(what=what))
-        geometry = geometry.rotate(angle, v, atom=atom)
+            ext_geom = ext_geom.move(-ext_geom.center(what=what))
+        ext_geom = ext_geom.rotate(angle, v, atom=atom)
+        self.ext_geom = ext_geom # Keep the extended/complete geometry
         # Determine pz sites
         aux = []
         sp3 = []
         Hsp3 = []
-        for ia in geometry:
-            if geometry.atoms[ia].Z not in [5, 6, 7]:
+        for ia in ext_geom:
+            if ext_geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
-            idx = geometry.close(ia, R=[0.1, 1.6])
+            idx = ext_geom.close(ia, R=[0.1, 1.6])
             if len(idx[1])==4: # Search for atoms with 4 neighbors
-                if geometry.atoms[ia].Z == 6:
+                if ext_geom.atoms[ia].Z == 6:
                     sp3.append(ia)
-                [Hsp3.append(i) for i in idx[1] if geometry.atoms[i].Z == 1]
+                [Hsp3.append(i) for i in idx[1] if ext_geom.atoms[i].Z == 1]
         # Remove all sites not carbon-type
-        pi_geom = geometry.remove(aux+sp3)
+        pi_geom = ext_geom.remove(aux+sp3)
         self.sites = len(pi_geom)
         print('Found %i pz sites' %self.sites)
         # Set pz orbital for each pz site
@@ -79,58 +75,46 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
         # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom)
-        self.setup_hamiltonians()
+        sisl.Hamiltonian.__init__(self, pi_geom, dim=2)
+        self.init_hamiltonian_elements()
         # Initialize data file
         self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
         self.read()
         self.iterate(mix=0) # Determine midgap energy without changing densities
 
-    def get_label(self):
-        s = self.fn
-        s += '-%s'%self.model
-        s += '-U%.3i'%(self.U*100)
-        return s
-
-    def polarize(self, pol):
-        print('Polarizing by', pol)
-        self.Nup += int(pol)
-        self.Ndn -= int(pol)
-        return self.Nup, self.Ndn
-
-    def setup_hamiltonians(self):
+    def init_hamiltonian_elements(self):
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
         g = self.geom
-        self.H0 = sisl.Hamiltonian(g)
         for ia in g:
             idx = g.close(ia, R=R)
             if g.atoms[ia].Z == 5:
-                # set onsite for B sites
-                self.H0.H[ia, ia] = self.eB
-                print('Found B site')
-            # set onsite for N sites
-            if g.atoms[ia].Z == 7:
-                self.H0.H[ia, ia] = self.eN
-                print('Found N site')
+                self.H[ia, ia, :] = self.eB # set onsite for B sites
+            elif g.atoms[ia].Z == 7:
+                self.H[ia, ia, :] = self.eN # set onsite for N sites
             # set hoppings
-            self.H0.H[ia, idx[1]] = -self.t1
+            self.H[ia, idx[1], :] = -self.t1
             if self.t2 != 0:
-                self.H0.H[ia, idx[2]] = -self.t2
+                self.H[ia, idx[2], :] = -self.t2
             if self.t3 != 0:
-                self.H0.H[ia, idx[3]] = -self.t3
-        self.Hup = self.H0.copy()
-        self.Hdn = self.H0.copy()
+                self.H[ia, idx[3], :] = -self.t3
 
-    def update_spin_hamiltonian(self):
+    def update_hamiltonian(self):
         # Update spin Hamiltonian
-        for ia in self.geom:
+        g = self.geom
+        for ia in g:
             # charge on neutral atom:
-            n0 = self.geom.atoms[ia].Z-5
-            self.Hup.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.ndn[ia]-n0)
-            self.Hdn.H[ia, ia] = self.H0.H[ia, ia] + self.U*(self.nup[ia]-n0)
+            n0 = g.atoms[ia].Z-5
+            if g.atoms[ia].Z == 5:
+                e0 = self.eB
+            elif g.atoms[ia].Z == 7:
+                e0 = self.eN
+            else:
+                e0 = 0. # onsite for C site
+            self.H[ia, ia, 0] = e0 + self.U*(self.ndn[ia]-n0)
+            self.H[ia, ia, 1] = e0 + self.U*(self.nup[ia]-n0)
 
     def random_density(self):
         print('Setting random density')
@@ -170,8 +154,8 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         HOMO = -1e10
         LUMO = 1e10
         for ik, k in enumerate(self.kmesh):
-            ev_up, evec_up = self.Hup.eigh(k=k, eigvals_only=False)
-            ev_dn, evec_dn = self.Hdn.eigh(k=k, eigvals_only=False)
+            ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
+            ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
             niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
             nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
@@ -182,12 +166,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Determine midgap energy reference
         self.midgap = (LUMO+HOMO)/2
         # Measure of density change
-        dn = np.sum(abs(nup-niup))
+        dn = np.sum(abs(nup-niup)+abs(ndn-nidn))
         # Update occupations
         self.nup = mix*niup+(1.-mix)*nup
         self.ndn = mix*nidn+(1.-mix)*ndn
         # Update spin hamiltonian
-        self.update_spin_hamiltonian()
+        self.update_hamiltonian()
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
@@ -210,6 +194,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 # Save density to netcdf?
                 if save:
                     self.save()
+            print(dn,Etot)
         print('   found solution in %i iterations'%i)
         return dn, self.Etot
 
@@ -277,6 +262,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.nup = self.ncf['Density'][i][0]
             self.ndn = self.ncf['Density'][i][1]
             self.Etot = self.ncf['Etot'][i]
-        self.update_spin_hamiltonian()
+        self.update_hamiltonian()
 
 

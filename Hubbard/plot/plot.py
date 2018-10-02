@@ -50,8 +50,6 @@ class GeometryPlot(Plot):
     def __init__(self, HubbardHamiltonian, **keywords):
         Plot.__init__(self, **keywords)
         self.HH = HubbardHamiltonian
-        self.geom = HubbardHamiltonian.geom
-        self.pi_geom = HubbardHamiltonian.pi_geom
         self.set_axes()
         # Relevant keywords
         kw = {}
@@ -61,7 +59,7 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
-        g = self.geom
+        g = self.HH.ext_geom
         for ia in g:
             if g.atoms[ia].Z == 1: # H
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
@@ -87,7 +85,7 @@ class GeometryPlot(Plot):
         self.axes.add_collection(self.paux)
 
     def set_axes(self, bdx=2):
-        g = self.geom
+        g = self.HH.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         self.xmin = min(x)-bdx
@@ -109,7 +107,7 @@ class GeometryPlot(Plot):
 
     def annotate(self, size=6):
         """ Annotate the site indices in the pi-network """
-        g = self.pi_geom
+        g = self.HH.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         for ia in g:
