@@ -56,6 +56,8 @@ class GeometryPlot(Plot):
         for k in keywords:
             if k in ['cmap']:
                 kw[k] = keywords[k]
+            if k in ['facecolor']:
+                kw[k] = keywords[k]
         # Patches
         pi = []
         aux = []
