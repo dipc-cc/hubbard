@@ -48,7 +48,9 @@ Plot()
 class GeometryPlot(Plot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
+
         Plot.__init__(self, **keywords)
+
         self.HH = HubbardHamiltonian
         self.set_axes()
         # Relevant keywords

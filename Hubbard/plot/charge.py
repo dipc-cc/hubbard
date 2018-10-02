@@ -57,7 +57,6 @@ class Charge(GeometryPlot):
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
-  
 
 
 class ChargeDifference(GeometryPlot):
@@ -89,7 +88,11 @@ class SpinPolarization(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, **keywords):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr)
+        # Set default keywords
+        if 'cmap' not in keywords:
+            keywords['cmap'] = plt.cm.bwr
+
+        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
         # Compute charge difference between up and down channels
         charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn

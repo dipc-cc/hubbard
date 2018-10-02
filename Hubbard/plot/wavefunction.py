@@ -8,7 +8,11 @@ class Wavefunction(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, wf, **keywords):
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr, **keywords)
+        # Set default keywords
+        if 'cmap' not in keywords:
+            keywords['cmap'] = plt.cm.bwr
+
+        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
         x = HubbardHamiltonian.geom[:, 0]
         y = HubbardHamiltonian.geom[:, 1]

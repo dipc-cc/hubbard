@@ -4,17 +4,21 @@ import matplotlib.pyplot as plt
 from Hubbard.plot import Plot
 import numpy as np
 
+
 class Bandstructure(Plot):
 
     def __init__(self, HubbardHamiltonian, nk=51, ymax=4., projection=None, spin=0, scale=1, **keywords):
 
-        Plot.__init__(self, figsize=(4, 8), **keywords)
+        # Set default keywords
+        if 'figsize' not in keywords:
+            keywords['figsize'] = (4, 8)
+
+        Plot.__init__(self, **keywords)
 
         self.set_xlabel(r'$ka/\pi$')
-        #self.set_xlim(0, 
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)
-        
+
         # Get TB bands
         ka = np.linspace(0, 0.5, nk)
         ev = np.empty([len(ka), 2, HubbardHamiltonian.sites])

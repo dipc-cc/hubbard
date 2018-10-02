@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Hubbard.plot import Plot
 import numpy as np
 
+
 class Spectrum(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymax=0, **keywords):
@@ -27,4 +28,3 @@ class Spectrum(Plot):
             self.set_ylim(0, lmax)
         else:
             self.set_ylim(0, ymax)
-            
