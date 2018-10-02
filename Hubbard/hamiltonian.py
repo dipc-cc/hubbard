@@ -129,7 +129,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.ndn = self.ndn/np.sum(self.ndn)*self.Ndn
         print('Normalized charge distributions to Nup=%i, Ndn=%i'%(self.Nup, self.Ndn))
 
-    def polarize_sites(self, up, dn=[]):
+    def set_polarization(self, up, dn=[]):
         """ Maximize spin polarization on specific atomic sites.
         Optionally, sites with down-polarization can be specified
         """
