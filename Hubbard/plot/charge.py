@@ -103,7 +103,7 @@ class SpinPolarizationRS(GeometryPlot):
         # not sure this gives the density on the grid
         vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
         vecs[0, :] = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
-        H = HubbardHamiltonian.H.move([self.xmax, self.ymax, 0])
+        H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
         H.set_sc(sc)
         es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
         es.sub(0).psi(grid)
