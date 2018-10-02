@@ -38,9 +38,6 @@ class Charge(GeometryPlot):
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
     def __realspace__(self, charge, HubbardHamiltonian, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        # These limits ensure that the edgecolor for the patches stay the same
-        # grey ones as for other plots (patch arrays are set to zero)
-
         # As the radial extension is only 1.6 ang, two times this should
         # be enough for the supercell in the z-direction:
         sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
