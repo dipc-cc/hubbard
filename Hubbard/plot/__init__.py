@@ -12,3 +12,4 @@ Functionality for Plotting
 from plot import *
 from charge import *
 from wavefunction import *
+from spectrum import *

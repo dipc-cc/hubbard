@@ -198,6 +198,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         print('   found solution in %i iterations'%i)
         return dn, self.Etot
 
+    def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
+        ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
+        # Compute orbital charge overlaps
+        L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
+        return ev, L
+
     def init_nc(self, fn, ncgroup):
         try:
             self.ncf = NC.Dataset(fn, 'a')
