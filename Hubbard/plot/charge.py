@@ -32,10 +32,16 @@ class Charge(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
+        # Set color range
+        if 'vmax' in keywords:
+            self.ppi.set_clim(0, keywords['vmax'])
+        else:
+            self.ppi.set_clim(min(charge), max(charge))
+
         # Colorbars
-        self.ppi.set_clim(min(charge), max(charge))
         if 'colorbar' in keywords:
-            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
     def __realspace__(self, charge, HubbardHamiltonian, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         # As the radial extension is only 1.6 ang, two times this should
@@ -77,11 +83,17 @@ class ChargeDifference(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
-        # Colorbars
-        cmax = max(abs(charge))
+        # Set color range
+        if 'vmax' in keywords:
+            cmax = keywords['vmax']
+        else:
+            cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
+
+        # Colorbars
         if 'colorbar' in keywords:
-            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
 
 class SpinPolarization(GeometryPlot):
@@ -100,11 +112,17 @@ class SpinPolarization(GeometryPlot):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
-        # Colorbars
-        cmax = max(abs(charge))
+        # Set color range
+        if 'vmax' in keywords:
+            cmax = keywords['vmax']
+        else:
+            cmax = max(abs(charge))
         self.ppi.set_clim(-cmax, cmax)
+
+        # Colorbars
         if 'colorbar' in keywords:
-            self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
 
 import sisl

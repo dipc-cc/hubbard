@@ -283,5 +283,3 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.ndn = self.ncf[ncgroup]['Density'][i][1]
             self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.update_hamiltonian()
-
-
