@@ -178,7 +178,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def converge(self, tol=1e-10, steps=100, save=False):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, save=False):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         dn = 1.0
@@ -187,12 +187,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn, Etot = self.iterate(mix=.1)
+                dn, Etot = self.iterate(mix=premix)
             else:
-                dn, Etot = self.iterate(mix=1)
+                dn, Etot = self.iterate(mix=mix)
             # Print some info from time to time
             if i%steps == 0:
-                print('   %i iterations completed'%i)
+                print('   %i iterations completed:'%i, dn, Etot)
                 # Save density to netcdf?
                 if save:
                     self.save()
