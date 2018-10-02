@@ -1,9 +1,9 @@
-import Hubbard.hubbard as HH
+import Hubbard.hamiltonian as hh
 import sys
 import numpy as np
 
 # 3NN tight-binding model
-H = HH.Hubbard('2-anthracene.XV', t1=2.7, t2=0.2, t3=.18)
+H = hh.HubbardHamiltonian('2-anthracene.XV', t1=2.7, t2=0.2, t3=.18)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions

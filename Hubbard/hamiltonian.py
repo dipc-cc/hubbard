@@ -194,7 +194,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 # Save density to netcdf?
                 if save:
                     self.save()
-            print(dn,Etot)
         print('   found solution in %i iterations'%i)
         return dn, self.Etot
 

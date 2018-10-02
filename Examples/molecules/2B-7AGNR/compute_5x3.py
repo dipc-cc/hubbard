@@ -1,9 +1,9 @@
-import Hubbard.hubbard as HH
+import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import sys
 import numpy as np
 
-H = HH.Hubbard('7AGNR2B_5x3.XV', t1=2.7, t2=0.2, t3=.18, U=5.0, what='xyz')
+H = hh.HubbardHamiltonian('7AGNR2B_5x3.XV', t1=2.7, t2=0.2, t3=.18, U=5.0, what='xyz')
 H.polarize_sites([1, 99], dn=[80, 152])
 dn, etot = H.converge()
 H.save()
