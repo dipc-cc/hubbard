@@ -9,9 +9,10 @@ This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 
 ## Dependencies ##
 Before installation of __Hubbard__ the following packages are required
-   - numpy >= 1.8
+   - numpy >= 1.10
+   - scipy >= 0.18
    - netCDF4
-   - matplotlib
+   - matplotlib >= 2.2.2
    - sisl
 
 ## Installation ##
