@@ -1,11 +1,11 @@
-import Hubbard.hubbard as HH
+import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import numpy as np
 
 # Test all plot functionalities of Hubbard module
 # using a reference molecule (already converged)
 
-H = HH.Hubbard('mol-ref/mol-ref.XV', U=3.5, what='xyz')
+H = hh.HubbardHamiltonian('mol-ref/mol-ref.XV', U=3.5, what='xyz')
 
 # Old plotting routines
 if False:
@@ -32,6 +32,6 @@ if True:
     p.annotate()
     p.savefig('pol.pdf')
 
-    ev, evec = H.Hup.eigh(eigvals_only=False)
+    ev, evec = H.eigh(eigvals_only=False, spin=0)
     p = plot.Wavefunction(H, 500*evec[:, 10])
     p.savefig('wf.pdf')

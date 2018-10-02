@@ -47,8 +47,8 @@ class ChargeDifference(GeometryPlot):
 
         # Compute total charge on each site, subtract neutral atom charge
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
-        for ia in HubbardHamiltonian.pi_geom:
-            charge[ia] -= HubbardHamiltonian.pi_geom.atoms[ia].Z-5
+        for ia in HubbardHamiltonian.geom:
+            charge[ia] -= HubbardHamiltonian.geom.atoms[ia].Z-5
 
         # Set values for the pi-network
         self.ppi.set_array(charge)

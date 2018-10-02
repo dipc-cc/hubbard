@@ -10,8 +10,8 @@ class Wavefunction(GeometryPlot):
 
         GeometryPlot.__init__(self, HubbardHamiltonian, cmap=plt.cm.bwr, **keywords)
 
-        x = HubbardHamiltonian.pi_geom[:, 0]
-        y = HubbardHamiltonian.pi_geom[:, 1]
+        x = HubbardHamiltonian.geom[:, 0]
+        y = HubbardHamiltonian.geom[:, 1]
 
         assert len(x) == len(wf)
 
