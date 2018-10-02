@@ -18,7 +18,7 @@ class Charge(GeometryPlot):
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
 
         if 'realspace' in keywords:
-            self.__realspace__(charge, **keywords)
+            self.__realspace__(charge, HubbardHamiltonian, **keywords)
         else:
             self.__orbitals__(charge, **keywords)
 
@@ -31,8 +31,30 @@ class Charge(GeometryPlot):
         if 'colorbar' in keywords:
             self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
-    def __realspace__(self, charge, **keywords):
-        print('Not implemented yet')
+    def __realspace__(self, charge, HubbardHamiltonian, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+        # These limits ensure that the edgecolor for the patches stay the same
+        # grey ones as for other plots (patch arrays are set to zero)
+
+        # As the radial extension is only 1.6 ang, two times this should
+        # be enough for the supercell in the z-direction:
+        sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
+        grid = sisl.Grid(grid_unit, sc=sc)
+
+        # The following is a bit of black magic...
+        # not sure this gives the density on the grid
+        vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
+        vecs[0, :] = charge
+        H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
+        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
+        H.set_sc(sc)
+        es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
+        es.sub(0).psi(grid)
+        index = grid.index([0, 0, z])
+
+        # Plot only the real part
+        ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
+                              vmax=vmax, vmin=-vmax, extent=self.extent)
+  
 
 
 class ChargeDifference(GeometryPlot):
