@@ -206,7 +206,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             ncf = NC.Dataset(fn, 'w')
             ncf.createDimension('unl', None)
             ncf.createDimension('spin', 2)
-            ncf.createDimension('sites', len(self.pi_geom))
+            ncf.createDimension('sites', len(self.geom))
             ncf.createVariable('hash', 'i8', ('unl',))
             ncf.createVariable('U', 'f8', ('unl',))
             ncf.createVariable('Nup', 'i4', ('unl',))
