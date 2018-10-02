@@ -35,3 +35,6 @@ if True:
     ev, evec = H.eigh(eigvals_only=False, spin=0)
     p = plot.Wavefunction(H, 500*evec[:, 10])
     p.savefig('wf.pdf')
+
+    p = plot.Spectrum(H)
+    p.savefig('spectrum.pdf')
