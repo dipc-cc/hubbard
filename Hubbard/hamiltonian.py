@@ -91,6 +91,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         g = self.geom
         for ia in g:
             idx = g.close(ia, R=R)
+            # NB: I found that ':' is necessary in the following lines, but I don't understand why...
             if g.atoms[ia].Z == 5:
                 self.H[ia, ia, :] = self.eB # set onsite for B sites
             elif g.atoms[ia].Z == 7:
