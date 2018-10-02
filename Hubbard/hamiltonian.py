@@ -8,7 +8,8 @@ import hashlib
 class HubbardHamiltonian(sisl.Hamiltonian):
 
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
-                 nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None):
+                 nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
+                 ncgroup='default'):
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
@@ -78,9 +79,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         sisl.Hamiltonian.__init__(self, pi_geom, dim=2)
         self.init_hamiltonian_elements()
         # Initialize data file
-        self.init_nc(self.fn+'.nc')
+        self.init_nc(self.fn+'.nc', ncgroup=ncgroup)
         # Try reading from file or use random density
-        self.read()
+        self.read(ncgroup)
         self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
@@ -197,24 +198,29 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         print('   found solution in %i iterations'%i)
         return dn, self.Etot
 
-    def init_nc(self, fn):
+    def init_nc(self, fn, ncgroup):
         try:
             self.ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
         except:
             print('Initiating', fn)
-            ncf = NC.Dataset(fn, 'w')
-            ncf.createDimension('unl', None)
-            ncf.createDimension('spin', 2)
-            ncf.createDimension('sites', len(self.geom))
-            ncf.createVariable('hash', 'i8', ('unl',))
-            ncf.createVariable('U', 'f8', ('unl',))
-            ncf.createVariable('Nup', 'i4', ('unl',))
-            ncf.createVariable('Ndn', 'i4', ('unl',))
-            ncf.createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
-            ncf.createVariable('Etot', 'f8', ('unl',))
-            self.ncf = ncf
-            ncf.sync()
+            self.ncf = NC.Dataset(fn, 'w')
+        self.init_ncgrp(ncgroup)
+
+    def init_ncgrp(self, ncgroup):
+        if ncgroup not in self.ncf.groups:
+            # create croup
+            self.ncf.createGroup(ncgroup)
+            self.ncf[ncgroup].createDimension('unl', None)
+            self.ncf[ncgroup].createDimension('spin', 2)
+            self.ncf[ncgroup].createDimension('sites', len(self.geom))
+            self.ncf[ncgroup].createVariable('hash', 'i8', ('unl',))
+            self.ncf[ncgroup].createVariable('U', 'f8', ('unl',))
+            self.ncf[ncgroup].createVariable('Nup', 'i4', ('unl',))
+            self.ncf[ncgroup].createVariable('Ndn', 'i4', ('unl',))
+            self.ncf[ncgroup].createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
+            self.ncf[ncgroup].createVariable('Etot', 'f8', ('unl',))
+            self.ncf.sync()
 
     def gethash(self):
         s = ''
@@ -229,38 +235,46 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
         return myhash, s
 
-    def save(self):
+    def save(self, ncgroup='default'):
         myhash, s = self.gethash()
-        i = np.where(self.ncf['hash'][:] == myhash)[0]
+        self.init_ncgrp(ncgroup)
+        i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
-            i = len(self.ncf['hash'][:])
+            i = len(self.ncf[ncgroup]['hash'][:])
         else:
             i = i[0]
-        self.ncf['hash'][i] = myhash
-        self.ncf['U'][i] = self.U
-        self.ncf['Nup'][i] = self.Nup
-        self.ncf['Ndn'][i] = self.Ndn
-        self.ncf['Density'][i, 0] = self.nup
-        self.ncf['Density'][i, 1] = self.ndn
-        self.ncf['Etot'][i] = self.Etot
+        self.ncf[ncgroup]['hash'][i] = myhash
+        self.ncf[ncgroup]['U'][i] = self.U
+        self.ncf[ncgroup]['Nup'][i] = self.Nup
+        self.ncf[ncgroup]['Ndn'][i] = self.Ndn
+        self.ncf[ncgroup]['Density'][i, 0] = self.nup
+        self.ncf[ncgroup]['Density'][i, 1] = self.ndn
+        self.ncf[ncgroup]['Etot'][i] = self.Etot
         self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc'%(self.U, self.Nup, self.Ndn, self.fn))
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, self.fn, ncgroup))
 
-    def read(self):
+    def read(self, ncgroup=None):
         myhash, s = self.gethash()
-        i = np.where(self.ncf['hash'][:] == myhash)[0]
+        if ncgroup == None:
+            # Lookup if hash exists in any group
+            for grp in self.ncf.groups:
+                ncgroup = grp
+                i = np.where(self.ncf[grp]['hash'][:] == myhash)[0]
+                if len(i) > 0:
+                    break
+        i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             print('Hash not found:')
             print('...', s)
             self.random_density()
         else:
             print('Found:')
-            print('...', s, 'in file')
+            print('... %s in %s.nc{%s}' % (s, self.fn, ncgroup))
             i = i[0]
-            self.U = self.ncf['U'][i]
-            self.nup = self.ncf['Density'][i][0]
-            self.ndn = self.ncf['Density'][i][1]
-            self.Etot = self.ncf['Etot'][i]
+            self.U = self.ncf[ncgroup]['U'][i]
+            self.nup = self.ncf[ncgroup]['Density'][i][0]
+            self.ndn = self.ncf[ncgroup]['Density'][i][1]
+            self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.update_hamiltonian()
 
 
