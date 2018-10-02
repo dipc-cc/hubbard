@@ -104,6 +104,7 @@ class SpinPolarizationRS(GeometryPlot):
         vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
         vecs[0, :] = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
         H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
+        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
         H.set_sc(sc)
         es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
         es.sub(0).psi(grid)
