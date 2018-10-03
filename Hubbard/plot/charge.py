@@ -89,7 +89,7 @@ class ChargeDifference(GeometryPlot):
             charge[ia] -= HubbardHamiltonian.geom.atoms[ia].Z-5
 
         if 'realspace' in keywords:
-            self.__realspace__(HubbardHamiltonian, charge, **keywords)
+            self.__realspace__(charge, **keywords)
         else:
             self.__orbitals__(charge, **keywords)
             
@@ -109,7 +109,7 @@ class ChargeDifference(GeometryPlot):
             if keywords['colorbar'] != False:
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
-    def __realspace__(self, HubbardHamiltonian, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         
         grid, index = self.real_space_grid(charge, z, grid_unit)
 
