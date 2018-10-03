@@ -49,17 +49,14 @@ class Charge(GeometryPlot):
         # As the radial extension is only 1.6 ang, two times this should
         # be enough for the supercell in the z-direction:
         sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-        grid = sisl.Grid(grid_unit, sc=sc)
-
-        # The following is a bit of black magic...
-        # not sure this gives the density on the grid
-        vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
-        vecs[0, :] = charge
         H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
         H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
         H.set_sc(sc)
-        es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
-        es.sub(0).psi(grid)
+
+        # Create the real-space grid
+        grid = sisl.Grid(grid_unit, sc=sc)
+        grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
+        sisl.electron.wavefunction(charge, grid, geometry=H)
         index = grid.index([0, 0, z])
 
         # Plot only the real part
