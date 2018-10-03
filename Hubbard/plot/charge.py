@@ -119,6 +119,13 @@ class SpinPolarization(GeometryPlot):
         # Compute charge difference between up and down channels
         charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
 
+        if 'realspace' in keywords:
+            self.__realspace__(charge, HubbardHamiltonian, **keywords)
+
+        else:
+            self.__orbitals__(charge, **keywords)
+
+    def __orbitals__(self, charge, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
