@@ -40,7 +40,8 @@ class Wavefunction(GeometryPlot):
     
     def __realspace__(self, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         
-        grid, index = self.real_space_grid(wf, z, grid_unit) 
+        grid = self.real_space_grid(wf, grid_unit) 
+        index = grid.index([0,0,z])
 
         # Create custom map to differenciate it from polarization cmap
         import matplotlib.colors as mcolors
