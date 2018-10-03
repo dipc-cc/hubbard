@@ -79,9 +79,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         sisl.Hamiltonian.__init__(self, pi_geom, dim=2)
         self.init_hamiltonian_elements()
         # Initialize data file
-        self.init_nc(self.fn+'.nc', ncgroup=ncgroup)
+        self.ncgroup = ncgroup
+        self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
-        self.read(ncgroup)
+        self.read()
         self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
@@ -205,14 +206,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def init_nc(self, fn, ncgroup):
+    def init_nc(self, fn):
         try:
             self.ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
         except:
             print('Initiating', fn)
             self.ncf = NC.Dataset(fn, 'w')
-        self.init_ncgrp(ncgroup)
+        self.init_ncgrp(self.ncgroup)
 
     def init_ncgrp(self, ncgroup):
         if ncgroup not in self.ncf.groups:
@@ -242,7 +243,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
         return myhash, s
 
-    def save(self, ncgroup='default'):
+    def save(self, ncgroup=None):
+        if not ncgroup:
+            ncgroup = self.ncgroup
         myhash, s = self.gethash()
         self.init_ncgrp(ncgroup)
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
@@ -261,14 +264,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, self.fn, ncgroup))
 
     def read(self, ncgroup=None):
+        if not ncgroup:
+            ncgroup = self.ncgroup
         myhash, s = self.gethash()
-        if ncgroup == None:
-            # Lookup if hash exists in any group
-            for grp in self.ncf.groups:
-                ncgroup = grp
-                i = np.where(self.ncf[grp]['hash'][:] == myhash)[0]
-                if len(i) > 0:
-                    break
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             print('Hash not found:')
