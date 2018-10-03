@@ -2,6 +2,8 @@ from __future__ import print_function
 
 import matplotlib.pyplot as plt
 from Hubbard.plot import GeometryPlot
+import sisl
+import numpy as np
 
 
 class Charge(GeometryPlot):
@@ -172,7 +174,3 @@ class SpinPolarization(GeometryPlot):
             if keywords['colorbar'] != False:
                 # Charge density per unit of length in the z-direction
                 plt.colorbar(ax, label=r'$q_\uparrow-q_\downarrow$ ($e/$\AA)')
-
-
-import sisl
-import numpy as np
