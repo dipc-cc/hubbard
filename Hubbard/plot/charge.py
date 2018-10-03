@@ -111,8 +111,14 @@ class SpinPolarization(GeometryPlot):
     def __init__(self, HubbardHamiltonian, **keywords):
 
         # Set default keywords
-        if 'cmap' not in keywords:
-            keywords['cmap'] = plt.cm.bwr
+        if 'realspace' in keywords:
+            if 'facecolor' not in keywords:
+                keywords['facecolor'] = 'None'
+            if 'cmap' not in keywords:
+                keywords['cmap'] = 'Greys'
+        else:
+            if 'cmap' not in keywords:
+                keywords['cmap'] = plt.cm.bwr
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
