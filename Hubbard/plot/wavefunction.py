@@ -14,6 +14,14 @@ class Wavefunction(GeometryPlot):
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
+        if 'realspace' in keywords:
+            self.__realspace__(HubbardHamiltonian, wf, **keywords)
+
+        else:
+            self.__orbitals__(HubbardHamiltonian, wf, **keywords)
+
+    def __orbitals__(self, HubbardHamiltonian, wf, **keywords):    
+
         x = HubbardHamiltonian.geom[:, 0]
         y = HubbardHamiltonian.geom[:, 1]
 
