@@ -117,14 +117,12 @@ class GeometryPlot(Plot):
         for ia in g:
             self.axes.annotate(ia, (x[ia], y[ia]), size=size)
 
-
     def real_space_grid(self, v, z, grid_unit):
         # Set new sc to create real-space grid
         sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
         H = self.HH.H.move([-self.xmin, -self.ymin, 0])
         H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
         H.set_sc(sc)
-
         # Create the real-space grid
         grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
         sisl.electron.wavefunction(v, grid, geometry=H)
