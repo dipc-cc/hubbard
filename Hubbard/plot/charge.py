@@ -105,7 +105,7 @@ class ChargeDifference(GeometryPlot):
         
         grid = self.real_space_grid(charge, grid_unit)
         index =  grid.index([0,0,z])
-        
+
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
@@ -159,8 +159,9 @@ class SpinPolarization(GeometryPlot):
 
     def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         
-        grid, index = self.real_space_grid(charge, z, grid_unit)        
-
+        grid = self.real_space_grid(charge, grid_unit)        
+        index =  grid.index([0,0,z])
+        
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
