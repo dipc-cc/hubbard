@@ -134,7 +134,7 @@ class SpinPolarization(GeometryPlot):
         charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
 
         if 'realspace' in keywords:
-            self.__realspace__(charge, HubbardHamiltonian, **keywords)
+            self.__realspace__(charge, **keywords)
 
         else:
             self.__orbitals__(charge, **keywords)
@@ -155,7 +155,7 @@ class SpinPolarization(GeometryPlot):
             if keywords['colorbar'] != False:
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
 
-    def __realspace__(self, charge, HubbardHamiltonian, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         
         grid, index = self.real_space_grid(charge, z, grid_unit)        
 
