@@ -46,17 +46,8 @@ class Charge(GeometryPlot):
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
     def __realspace__(self, charge, HubbardHamiltonian, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        # As the radial extension is only 1.6 ang, two times this should
-        # be enough for the supercell in the z-direction:
-        sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-        H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
-        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
-        H.set_sc(sc)
-
-        # Create the real-space grid
-        grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
-        sisl.electron.wavefunction(charge, grid, geometry=H)
-        index = grid.index([0, 0, z])
+        
+        grid, index = self.real_space_grid(charge, z, grid_unit)  
 
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
