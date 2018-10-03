@@ -63,7 +63,11 @@ class Charge(GeometryPlot):
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
-
+        # Colorbars
+        if 'colorbar' in keywords:
+            if keywords['colorbar'] != False:
+                # Charge density per unit of length in the z-direction
+                plt.colorbar(ax, label=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)')
 
 class ChargeDifference(GeometryPlot):
 
