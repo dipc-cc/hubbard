@@ -54,7 +54,6 @@ class Charge(GeometryPlot):
         H.set_sc(sc)
 
         # Create the real-space grid
-        grid = sisl.Grid(grid_unit, sc=sc)
         grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
         sisl.electron.wavefunction(charge, grid, geometry=H)
         index = grid.index([0, 0, z])
