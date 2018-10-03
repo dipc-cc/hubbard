@@ -50,9 +50,11 @@ class Wavefunction(GeometryPlot):
         es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
         es.sub(0).psi(grid)
         index = grid.index([0, 0, z])
+
         # Create custom map to differenciate it from polarization cmap
         import matplotlib.colors as mcolors
         custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
+        
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap=custom_map, origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
