@@ -23,7 +23,7 @@ class Wavefunction(GeometryPlot):
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
         if 'realspace' in keywords:
-            self.__realspace__(HubbardHamiltonian, wf, **keywords)
+            self.__realspace__(wf, **keywords)
 
         else:
             self.__orbitals__(HubbardHamiltonian, wf, **keywords)
@@ -38,7 +38,7 @@ class Wavefunction(GeometryPlot):
         self.axes.scatter(x, y, wf.real, 'r') # pos. part, marker AREA is proportional to data
         self.axes.scatter(x, y, -wf.real, 'g') # neg. part
     
-    def __realspace__(self, HubbardHamiltonian, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
         
         grid, index = self.real_space_grid(wf, z, grid_unit) 
 
