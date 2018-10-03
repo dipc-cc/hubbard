@@ -139,7 +139,7 @@ class SpinPolarization(GeometryPlot):
         # Colorbars
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
-                self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
+                self.add_colorbar(self.ppi, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
 
 
 import sisl
