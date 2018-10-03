@@ -39,16 +39,15 @@ class Wavefunction(GeometryPlot):
         self.axes.scatter(x, y, -wf.real, 'g') # neg. part
     
     def __realspace__(self, HubbardHamiltonian, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+        # Set new sc to create real-space grid
         sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-        grid = sisl.Grid(grid_unit, sc=sc)
-        
-        vecs = np.zeros((HubbardHamiltonian.sites, HubbardHamiltonian.sites))
-        vecs[0, :] = wf
         H = HubbardHamiltonian.H.move([-self.xmin, -self.ymin, 0])
         H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
         H.set_sc(sc)
-        es = sisl.EigenstateElectron(vecs, np.zeros(HubbardHamiltonian.sites), H)
-        es.sub(0).psi(grid)
+
+        # Create the real-space grid
+        grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
+        sisl.electron.wavefunction(wf, grid, geometry=H)
         index = grid.index([0, 0, z])
 
         # Create custom map to differenciate it from polarization cmap
