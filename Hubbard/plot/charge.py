@@ -84,7 +84,8 @@ class ChargeDifference(GeometryPlot):
             self.__realspace__(charge, HubbardHamiltonian, **keywords)
         else:
             self.__orbitals__(charge, **keywords)
-
+            
+    def __orbitals__(self, charge, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
