@@ -53,4 +53,4 @@ class Wavefunction(GeometryPlot):
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
                 # Charge density per unit of length in the z-direction
-                plt.colorbar(ax, label=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)')
+                plt.colorbar(ax)
