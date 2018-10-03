@@ -80,6 +80,11 @@ class ChargeDifference(GeometryPlot):
         for ia in HubbardHamiltonian.geom:
             charge[ia] -= HubbardHamiltonian.geom.atoms[ia].Z-5
 
+        if 'realspace' in keywords:
+            self.__realspace__(charge, HubbardHamiltonian, **keywords)
+        else:
+            self.__orbitals__(charge, **keywords)
+
         # Set values for the pi-network
         self.ppi.set_array(charge)
 
