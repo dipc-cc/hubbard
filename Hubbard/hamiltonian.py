@@ -34,7 +34,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Determine pz sites
         aux = []
         sp3 = []
-        Hsp3 = []
         for ia in ext_geom:
             if ext_geom.atoms[ia].Z not in [5, 6, 7]:
                 aux.append(ia)
@@ -42,7 +41,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             if len(idx[1])==4: # Search for atoms with 4 neighbors
                 if ext_geom.atoms[ia].Z == 6:
                     sp3.append(ia)
-                [Hsp3.append(i) for i in idx[1] if ext_geom.atoms[i].Z == 1]
         # Remove all sites not carbon-type
         pi_geom = ext_geom.remove(aux+sp3)
         self.sites = len(pi_geom)
