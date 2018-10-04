@@ -63,6 +63,7 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
+        Hsp3 = []
         g = self.HH.ext_geom
         for ia in g:
             if g.atoms[ia].Z == 1: # H
@@ -75,6 +76,9 @@ class GeometryPlot(Plot):
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10: # Some other atom
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+            idx = g.close(ia, R=[0.1, 1.6])
+            if len(idx[1])==4: # Search for atoms with 4 neighbors
+                [Hsp3.append(i) for i in idx[1] if g.atoms[i].Z == 1]
         # Pi sites
         ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         ppi.set_array(np.zeros(len(pi)))
@@ -87,6 +91,11 @@ class GeometryPlot(Plot):
         paux.set_clim(-1, 1)
         self.paux = paux
         self.axes.add_collection(self.paux)
+        # sp3 Hybridization
+        if len(Hsp3)>0:
+            x = g.xyz[:, 0]
+            y = g.xyz[:, 1]
+            self.axes.add_patch(patches.Circle((np.average(x[Hsp3]), np.average(y[Hsp3])), radius=1.4, alpha=0.15, fc='c'))
 
     def set_axes(self, bdx=2):
         g = self.HH.geom
