@@ -23,6 +23,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.s1 = s1 # Overlap matrix element between 1NN
         self.s2 = s2 # Overlap matrix element between 2NN
         self.s3 = s3 # Overlap matrix element between 3NN
+        if self.s1 != 0:
+            self.orthogonal = False
+        else:
+            self.orthogonal = True
         self.U = U # Hubbard onsite Coulomb parameter
         self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
