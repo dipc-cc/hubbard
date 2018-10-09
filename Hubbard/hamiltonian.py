@@ -24,9 +24,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.s2 = s2 # Overlap matrix element between 2NN
         self.s3 = s3 # Overlap matrix element between 3NN
         if self.s1 != 0:
-            self.orthogonal = False
+            orthogonal = False
         else:
-            self.orthogonal = True
+            orthogonal = True
         self.U = U # Hubbard onsite Coulomb parameter
         self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
@@ -82,7 +82,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
         # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom, dim=2)
+        sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
         self.init_hamiltonian_elements()
         # Initialize data file
         self.ncgroup = ncgroup
