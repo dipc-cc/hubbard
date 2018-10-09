@@ -280,13 +280,15 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.update_hamiltonian()
 
-    def get_Zak_phase(self, Nx=501, sub='filled'):
-        # sample BZ along kz
+    def get_Zak_phase(self, Nx=51, sub='last', eigvals=False):
+        # Discretize kx over [-0.5, 0.5] in Nx-1 segments (1BZ)
         def func(sc, frac):
-            return [frac, 0, 0]
+            return [-0.5+float(Nx)/(Nx-1)*frac, 0, 0]
         bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
-        print(bz)
         if sub == 'filled':
-            # sum up over all occupied bands:
+            # Sum up over all occupied bands:
             sub = range(self.sites/2)
-        return sisl.electron.berry_phase(bz, sub=sub)
+        elif sub == 'last':
+            # Choose only last occupied band (spin-up):
+            sub = self.Nup-1
+        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, closed=False)
