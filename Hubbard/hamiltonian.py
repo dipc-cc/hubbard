@@ -109,7 +109,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 self.H[ia, idx[2], :] = -self.t2
             if self.t3 != 0:
                 self.H[ia, idx[3], :] = -self.t3
-            if self.orthogonal:
+            if not self.H.orthogonal:
                 self.H.S[ia, ia] = self.s0
                 self.H.S[ia, idx[1]] = self.s1
                 self.H.S[ia, idx[2]] = self.s2
