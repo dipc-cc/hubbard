@@ -279,3 +279,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.ndn = self.ncf[ncgroup]['Density'][i][1]
             self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.update_hamiltonian()
+
+    def get_Zak_phase(self, Nx=501, sub='filled'):
+        # sample BZ along kz
+        def func(sc, frac):
+            return [frac, 0, 0]
+        bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
+        print(bz)
+        if sub == 'filled':
+            # sum up over all occupied bands:
+            sub = range(self.sites/2)
+        return sisl.electron.berry_phase(bz, sub=sub)
