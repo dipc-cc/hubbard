@@ -9,7 +9,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
-                 ncgroup='default'):
+                 ncgroup='default', s0=1.0, s1=0.073, s2=0.018, s3=0.026):
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
@@ -19,6 +19,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
         self.t3 = t3
+        self.s0 = s0
+        self.s1 = s1
+        self.s2 = s2
+        self.s3 = s3
         self.U = U # Hubbard onsite Coulomb parameter
         self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
