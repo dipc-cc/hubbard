@@ -19,10 +19,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
         self.t3 = t3
-        self.s0 = s0
-        self.s1 = s1
-        self.s2 = s2
-        self.s3 = s3
+        self.s0 = s0 # Self overlap matrix element
+        self.s1 = s1 # Overlap matrix element between 1NN
+        self.s2 = s2 # Overlap matrix element between 2NN
+        self.s3 = s3 # Overlap matrix element between 3NN
         self.U = U # Hubbard onsite Coulomb parameter
         self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
