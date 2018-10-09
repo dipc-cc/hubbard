@@ -9,7 +9,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     def __init__(self, fn, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
-                 ncgroup='default'):
+                 ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
@@ -19,6 +19,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
         self.t3 = t3
+        self.s0 = s0 # Self overlap matrix element
+        self.s1 = s1 # Overlap matrix element between 1NN
+        self.s2 = s2 # Overlap matrix element between 2NN
+        self.s3 = s3 # Overlap matrix element between 3NN
+        if self.s1 != 0:
+            orthogonal = False
+        else:
+            orthogonal = True
         self.U = U # Hubbard onsite Coulomb parameter
         self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
@@ -74,7 +82,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
         # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom, dim=2)
+        sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
         self.init_hamiltonian_elements()
         # Initialize data file
         self.ncgroup = ncgroup
@@ -101,6 +109,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 self.H[ia, idx[2], :] = -self.t2
             if self.t3 != 0:
                 self.H[ia, idx[3], :] = -self.t3
+            if not self.H.orthogonal:
+                self.H.S[ia, ia] = self.s0
+                self.H.S[ia, idx[1]] = self.s1
+                self.H.S[ia, idx[2]] = self.s2
+                self.H.S[ia, idx[3]] = self.s3
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
@@ -158,8 +171,15 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
             ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
-            niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
-            nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
+            if self.H.orthogonal:
+                niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+                nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
+            else:
+                S = self.H.Sk().todense()
+                Dup = np.einsum('ia,ja->ij',evec_up[:,:int(Nup)],evec_up[:,:int(Nup)]).real
+                Ddn = np.einsum('ia,ja->ij',evec_dn[:,:int(Ndn)],evec_dn[:,:int(Ndn)]).real
+                niup += 0.5*(np.einsum('ij,ij->i',Dup,S) + np.einsum('ji,ji->i',Dup.T,S.T))
+                nidn += 0.5*(np.einsum('ij,ij->i',Ddn,S) + np.einsum('ji,ji->i',Ddn.T,S.T))
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         niup = niup/len(self.kmesh)
