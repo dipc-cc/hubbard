@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sisl
 import numpy as np
 import sys
@@ -22,23 +23,23 @@ def func(sc, frac):
     return [-0.5+frac, 0, 0]
 # Closed loop, show that this leads to incorrect results
 bzCl = sisl.BrillouinZone(H).parametrize(H, func, nx)
-#print bzCl.k
+#print(bzCl.k)
 
 
 def func2(sc, frac):
     return [-0.5+1.*nx/(nx-1)*frac, 0, 0]
 # Open loop, correct integration contour for Zak phase
-zOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
-#print bzOp.k
+bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
+#print(bzOp.k)
 
 for band in [0, 1]:
-    print '\nBand index =', band
+    print('\nBand index =', band)
     zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True)
-    print 'Zak (closed, incorrect): %.4f rad' % zak
+    print('Zak (closed, incorrect): %.4f rad' % zak)
     zak = sisl.electron.berry_phase(bzOp, sub=band, closed=False)
-    print 'Zak (open)             : %.4f rad' % zak
+    print('Zak (open)             : %.4f rad' % zak)
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
-    print 'Z2 invariant =', z2
+    print('Z2 invariant =', z2)
 
 if True:
     band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
