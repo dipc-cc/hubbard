@@ -28,7 +28,7 @@ class Wavefunction(GeometryPlot):
         else:
             self.__orbitals__(HubbardHamiltonian, wf, **keywords)
 
-    def __orbitals__(self, HubbardHamiltonian, wf, **keywords):    
+    def __orbitals__(self, HubbardHamiltonian, wf, **keywords):
 
         x = HubbardHamiltonian.geom[:, 0]
         y = HubbardHamiltonian.geom[:, 1]
@@ -37,16 +37,16 @@ class Wavefunction(GeometryPlot):
 
         self.axes.scatter(x, y, wf.real, 'r') # pos. part, marker AREA is proportional to data
         self.axes.scatter(x, y, -wf.real, 'g') # neg. part
-    
+
     def __realspace__(self, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        
-        grid = self.real_space_grid(wf, grid_unit) 
-        index = grid.index([0,0,z])
+
+        grid = self.real_space_grid(wf, grid_unit)
+        index = grid.index([0, 0, z])
 
         # Create custom map to differenciate it from polarization cmap
         import matplotlib.colors as mcolors
         custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
-        
+
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap=custom_map, origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)

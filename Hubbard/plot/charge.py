@@ -46,9 +46,9 @@ class Charge(GeometryPlot):
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
     def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        
-        grid = self.real_space_grid(charge, grid_unit)  
-        index =  grid.index([0,0,z])
+
+        grid = self.real_space_grid(charge, grid_unit)
+        index =  grid.index([0, 0, z])
 
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
@@ -58,6 +58,7 @@ class Charge(GeometryPlot):
             if keywords['colorbar'] != False:
                 # Charge density per unit of length in the z-direction
                 plt.colorbar(ax, label=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)')
+
 
 class ChargeDifference(GeometryPlot):
 
@@ -84,7 +85,7 @@ class ChargeDifference(GeometryPlot):
             self.__realspace__(charge, **keywords)
         else:
             self.__orbitals__(charge, **keywords)
-            
+
     def __orbitals__(self, charge, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(charge)
@@ -102,9 +103,9 @@ class ChargeDifference(GeometryPlot):
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
     def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        
+
         grid = self.real_space_grid(charge, grid_unit)
-        index =  grid.index([0,0,z])
+        index =  grid.index([0, 0, z])
 
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
@@ -114,7 +115,7 @@ class ChargeDifference(GeometryPlot):
             if keywords['colorbar'] != False:
                 # Charge density per unit of length in the z-direction
                 plt.colorbar(ax, label=r'$q_\uparrow+q_\downarrow-q_\mathrm{NA}$ ($e/$\AA)')
-        
+
 
 class SpinPolarization(GeometryPlot):
 
@@ -158,10 +159,10 @@ class SpinPolarization(GeometryPlot):
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
 
     def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-        
-        grid = self.real_space_grid(charge, grid_unit)        
-        index =  grid.index([0,0,z])
-        
+
+        grid = self.real_space_grid(charge, grid_unit)
+        index = grid.index([0, 0, z])
+
         # Plot only the real part
         ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)

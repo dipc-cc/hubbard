@@ -15,6 +15,7 @@ p.annotate()
 p.savefig('polarization.pdf')
 
 # Project onto boron sites
-p = plot.Bandstructure(H, scale=2, projection=[15, 26])
-p.set_title(r'$U=%.2f$ eV: %s'%(U, fn))
-p.savefig(fn+'.bands_U%.2f.pdf'%U)
+batoms = list(np.where(H.geom.atoms.Z == 5)[0])
+p = plot.Bandstructure(H, scale=2, projection=batoms)
+p.set_title(r'$U=%.2f$ eV: %s'%(U, fn.replace('_', '-')))
+p.savefig('bands_U%.2f.pdf'%U)

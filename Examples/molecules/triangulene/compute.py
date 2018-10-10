@@ -8,7 +8,7 @@ H = hh.HubbardHamiltonian('triangulene.xyz', t1=2.7, what='xyz')
 
 f = open('FM-AFM.dat', 'w')
 
-for u in np.linspace(0.0,3.5,15):
+for u in np.linspace(0.0, 3.5, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = u
     H.read() # Try reading, if we already have density on file

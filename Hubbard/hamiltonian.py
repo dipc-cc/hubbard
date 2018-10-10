@@ -176,10 +176,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
             else:
                 S = self.H.Sk().todense()
-                Dup = np.einsum('ia,ja->ij',evec_up[:,:int(Nup)],evec_up[:,:int(Nup)]).real
-                Ddn = np.einsum('ia,ja->ij',evec_dn[:,:int(Ndn)],evec_dn[:,:int(Ndn)]).real
-                niup += 0.5*(np.einsum('ij,ij->i',Dup,S) + np.einsum('ji,ji->i',Dup.T,S.T))
-                nidn += 0.5*(np.einsum('ij,ij->i',Ddn,S) + np.einsum('ji,ji->i',Ddn.T,S.T))
+                Dup = np.einsum('ia,ja->ij', evec_up[:, :int(Nup)], evec_up[:, :int(Nup)]).real
+                Ddn = np.einsum('ia,ja->ij', evec_dn[:, :int(Ndn)], evec_dn[:, :int(Ndn)]).real
+                niup += 0.5*(np.einsum('ij,ij->i', Dup, S) + np.einsum('ji,ji->i', Dup.T, S.T))
+                nidn += 0.5*(np.einsum('ij,ij->i', Ddn, S) + np.einsum('ji,ji->i', Ddn.T, S.T))
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         niup = niup/len(self.kmesh)

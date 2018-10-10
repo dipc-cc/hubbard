@@ -7,7 +7,7 @@ fn = sys.argv[1]
 
 # Read geometry and set up SSH Hamiltonian
 geom = sisl.get_sile(fn).read_geom()
-geom.set_nsc([3,1,1])
+geom.set_nsc([3, 1, 1])
 H = sisl.Hamiltonian(geom)
 for ia in geom:
     idx = geom.close(ia, R=[0.1, 1.1, 2.1])
@@ -17,16 +17,18 @@ for ia in geom:
 
 nx = 1000
 
-# Closed loop, show that this leads to incorrect results
+
 def func(sc, frac):
     return [-0.5+frac, 0, 0]
+# Closed loop, show that this leads to incorrect results
 bzCl = sisl.BrillouinZone(H).parametrize(H, func, nx)
 #print bzCl.k
 
-# Open loop, correct integration contour for Zak phase
+
 def func2(sc, frac):
     return [-0.5+1.*nx/(nx-1)*frac, 0, 0]
-bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
+# Open loop, correct integration contour for Zak phase
+zOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
 #print bzOp.k
 
 for band in [0, 1]:
