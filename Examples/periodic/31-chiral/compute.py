@@ -9,10 +9,7 @@ U = float(sys.argv[1])
 
 def compute(fn):
     head, tail = os.path.split(fn)
-    if '3-1-4' in fn:
-        H = hh.HubbardHamiltonian(fn, t1=2.7, t2=0.2, t3=.18, U=U, nsc=[3, 1, 1], kmesh=[51, 1, 1], what='xyz')
-    else:
-        H = hh.HubbardHamiltonian(fn, t1=2.7, t2=0.2, t3=.18, U=U, nsc=[3, 1, 1], kmesh=[51, 1, 1], what='xyz')
+    H = hh.HubbardHamiltonian(fn, t1=2.7, t2=0.2, t3=.18, U=U, nsc=[3, 1, 1], kmesh=[51, 1, 1], what='xyz')
     dn, etot = H.iterate()
     if dn > 0.1:
         # We don't have a good solution, try polarizing one edge:
@@ -25,8 +22,14 @@ def compute(fn):
     p.set_title(r'$U=%.2f$ eV [%s]'%(U, head))
     p.savefig(head+'/pol_U%.3i.pdf'%(U*100))
 
-    p = plot.Bandstructure(H)
+    p = plot.Bandstructure(H, ymax=4)
     p.set_title(r'$U=%.2f$ eV [%s]'%(U, head))
+    # Add Zak phases
+    ev = H.eigh(k=[0, 0, 0])
+    for i, evi in enumerate(ev):
+        if abs(evi-H.midgap) < 4.0:
+            zak = H.get_Zak_phase(Nx=100, sub=i)
+            p.axes.annotate('%.2f'%zak, (0.13*(i%2), evi-H.midgap), size=8)
     p.savefig(head+'/bands_U%.3i.pdf'%(U*100))
 
 for fn in sys.argv[2:]:
