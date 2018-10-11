@@ -16,7 +16,7 @@ for ia in geom:
     H[ia, idx[1]] = 1.0 # 1NN
     H[ia, idx[2]] = 0.5 # 2NN
 
-nx = 1000
+nx = 4
 
 
 def func(sc, frac):
@@ -32,16 +32,16 @@ def func2(sc, frac):
 bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
 #print(bzOp.k)
 
-for band in [0, 1]:
+for band in [0, 1, [0,1]]:
     print('\nBand index =', band)
-    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True)
-    print('Zak (closed, incorrect): %.4f rad' % zak)
+    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, zak=True)
+    print('Zak (closed) : %.4f rad' % zak)
     zak = sisl.electron.berry_phase(bzOp, sub=band, closed=False)
-    print('Zak (open)             : %.4f rad' % zak)
+    print('Zak (open)   : %.4f rad' % zak)
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
     print('Z2 invariant =', z2)
 
-if True:
+if False:
     band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
     band.set_parent(H)
     bs = band.asarray().eigh()

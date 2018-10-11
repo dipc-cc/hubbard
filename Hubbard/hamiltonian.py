@@ -300,7 +300,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.update_hamiltonian()
 
-    def get_Zak_phase(self, Nx=51, sub='last', eigvals=False):
+    def get_Zak_phase_open_contour(self, Nx=51, sub='last', eigvals=False):
+        """ This algorithm seems to return correct results, but may be prone
+        to random phases associated with the eigenstates for the first and last
+        k-point.
+        """
         # Discretize kx over [-0.5, 0.5] in Nx-1 segments (1BZ)
         def func(sc, frac):
             return [-0.5+float(Nx)/(Nx-1)*frac, 0, 0]
@@ -312,3 +316,20 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             # Choose only last occupied band (spin-up):
             sub = self.Nup-1
         return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, closed=False)
+
+    def get_Zak_phase(self, Nx=51, sub='last', eigvals=False):
+        """ Compute Zak phase for 1D systems oriented along the x-axis.
+        Keep in mind that the current implementation does not handle correctly band intersections.
+        Meaningful Zak phases can thus only be computed for the non-crossing bands.
+        """
+        # Discretize kx over [-0.5, 0.5[ in Nx-1 segments (1BZ)
+        def func(sc, frac):
+            return [frac, 0, 0]
+        bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
+        if sub == 'filled':
+            # Sum up over all occupied bands:
+            sub = range(self.sites/2)
+        elif sub == 'last':
+            # Choose only last occupied band (spin-up):
+            sub = self.Nup-1
+        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, closed=True, zak=True)
