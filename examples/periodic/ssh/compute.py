@@ -16,7 +16,7 @@ for ia in geom:
     H[ia, idx[1]] = 1.0 # 1NN
     H[ia, idx[2]] = 0.5 # 2NN
 
-nx = 4
+nx = 100
 
 
 def func(sc, frac):
