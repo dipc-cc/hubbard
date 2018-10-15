@@ -31,6 +31,12 @@ for i, evi in enumerate(ev):
         zak_open = H.get_Zak_phase_open_contour(Nx=100, sub=i)
         zak = H.get_Zak_phase(Nx=100, sub=i)
         print 'Zak phase for band %i : %.4f rad closed loop, %.4f rad (open loop): ' % (i, zak, zak_open)
-        p.axes.annotate('%.2f'%zak, (0.13*(i%2), evi-H.midgap), size=8)
+        p.axes.annotate('\#%i: %.4f'%(i, zak), (0.13*(i%2), evi-H.midgap), size=8)
+
+# Sum over filled bands:
+zak = H.get_Zak_phase(Nx=100)
+p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
+z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
+p.axes.annotate(r'$\mathbf{Z_2=%i}$'%z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
 fo = fn.replace('.XV', '-zak-U%.2f-eB%.2f.pdf'%(U, eB))
 p.savefig('summary/'+fo)
