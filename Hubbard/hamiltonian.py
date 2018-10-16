@@ -326,7 +326,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = range(self.Nup)
-        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, closed=True, zak=True)
+        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
 
     def get_singlepoint_Zak_phase(self, k=[0, 0, 0], spin=0):
         """ Singlepoint Zak phase? """
