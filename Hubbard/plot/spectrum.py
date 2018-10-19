@@ -56,7 +56,7 @@ class LDOSmap(Plot):
 
         cm = plt.cm.hot
         self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower')
-        self.set_xlabel(r'$x$ (Ang)')
+        self.set_xlabel(r'$x$ (\AA)')
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
         self.set_ylim(ymin, ymax)
