@@ -28,3 +28,36 @@ class Spectrum(Plot):
             self.set_ylim(0, lmax)
         else:
             self.set_ylim(0, ymax)
+
+
+class LDOSmap(Plot):
+
+    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
+                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10.,
+                 **keywords):
+
+        Plot.__init__(self, **keywords)
+        ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
+        ev -= HubbardHamiltonian.midgap
+        coord = HubbardHamiltonian.geom.xyz[:, axis]
+
+        xmin, xmax = min(coord)-dx, max(coord)+dx
+        ymin, ymax = -ymax, ymax
+        x = np.linspace(xmin, xmax, 501)
+        y = np.linspace(ymin, ymax, 101)
+
+        dat = np.zeros((len(x), len(y)))
+        for i, evi in enumerate(ev):
+            de = gamma_e/((y-evi)**2+gamma_e**2)
+            dos = np.zeros(len(x))
+            for i, vi in enumerate(evec[:, i]):
+                dos += vi**2*gamma_x/((x-coord[i])**2+gamma_x**2)
+            dat += np.outer(dos, de)
+
+        cm = plt.cm.hot
+        self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower')
+        self.set_xlabel(r'$x$ (Ang)')
+        self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
+        self.set_xlim(xmin, xmax)
+        self.set_ylim(ymin, ymax)
+        self.axes.set_aspect('auto')
