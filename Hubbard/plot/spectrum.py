@@ -43,8 +43,8 @@ class LDOSmap(Plot):
 
         xmin, xmax = min(coord)-dx, max(coord)+dx
         ymin, ymax = -ymax, ymax
-        x = np.linspace(xmin, xmax, 501)
-        y = np.linspace(ymin, ymax, 101)
+        x = np.linspace(xmin, xmax, nx)
+        y = np.linspace(ymin, ymax, ny)
 
         dat = np.zeros((len(x), len(y)))
         for i, evi in enumerate(ev):
