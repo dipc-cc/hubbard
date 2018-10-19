@@ -13,8 +13,17 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
+            # Read geometry etc
+            ext_geom = sisl.get_sile(fn).read_geom()
+            ext_geom.sc.set_nsc(nsc)
         elif fn[-4:] == '.xyz':
             self.fn = fn[:-4]
+            # Read geometry etc
+            ext_geom = sisl.get_sile(fn).read_geom()
+            ext_geom.sc.set_nsc(nsc)
+        if isinstance(fn, sisl.Geometry):
+            ext_geom = fn
+            ext_geom.sc.set_nsc(nsc)
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
@@ -32,9 +41,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
-        # Read geometry etc
-        ext_geom = sisl.get_sile(fn).read_geom()
-        ext_geom.sc.set_nsc(nsc)
         if what:
             ext_geom = ext_geom.move(-ext_geom.center(what=what))
         ext_geom = ext_geom.rotate(angle, v, atom=atom)
