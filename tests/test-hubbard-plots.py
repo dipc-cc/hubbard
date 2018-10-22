@@ -38,3 +38,6 @@ if True:
 
     p = plot.Spectrum(H)
     p.savefig('spectrum.pdf')
+
+    p = plot.LDOSmap(H)
+    p.savefig('ldos.pdf')
