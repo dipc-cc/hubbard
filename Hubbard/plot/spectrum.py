@@ -57,7 +57,12 @@ class LDOSmap(Plot):
         print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
         self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower')
-        self.set_xlabel(r'$x$ (\AA)')
+        if axis==0:
+            self.set_xlabel(r'$x$ (\AA)')
+        elif axis==1:
+            self.set_xlabel(r'$y$ (\AA)')
+        elif axis==2:
+            self.set_xlabel(r'$z$ (\AA)')
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
         self.set_ylim(ymin, ymax)
