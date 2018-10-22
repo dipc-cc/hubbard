@@ -48,12 +48,13 @@ class LDOSmap(Plot):
 
         dat = np.zeros((len(x), len(y)))
         for i, evi in enumerate(ev):
-            de = gamma_e/((y-evi)**2+gamma_e**2)
+            de = gamma_e/((y-evi)**2+gamma_e**2)/np.pi
             dos = np.zeros(len(x))
-            for i, vi in enumerate(evec[:, i]):
-                dos += vi**2*gamma_x/((x-coord[i])**2+gamma_x**2)
+            for j, vj in enumerate(evec[:, i]):
+                dos += abs(vj)**2*gamma_x/((x-coord[j])**2+gamma_x**2)/np.pi
             dat += np.outer(dos, de)
-
+        intdat = np.sum(dat)*(x[1]-x[0])*(y[1]-y[0])
+        print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
         self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower')
         self.set_xlabel(r'$x$ (\AA)')
