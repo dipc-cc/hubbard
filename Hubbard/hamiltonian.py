@@ -1,3 +1,14 @@
+"""
+
+:mod:`Hubbard.hamiltonian`
+==========================
+
+Function for the meanfield Hubbard Hamiltonian
+
+.. currentmodule:: Hubbard.hamiltonian
+
+"""
+
 from __future__ import print_function
 import numpy as np
 import netCDF4 as NC
@@ -6,10 +17,20 @@ import hashlib
 
 
 class HubbardHamiltonian(sisl.Hamiltonian):
+    """ sisl-type object
+
+    Parameters:
+    -----------
+    fn : filename
+    t1 : float, optional
+      nearest neighbor hopping matrix element
+
+    """
 
     def __init__(self, fn, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
                  ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
+        """ Initialize HubbardHamiltonian """
         # Save parameters
         if fn[-3:] == '.XV':
             self.fn = fn[:-3]
