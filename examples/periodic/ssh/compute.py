@@ -34,7 +34,7 @@ bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
 
 for band in [0, 1, [0,1]]:
     print('\nBand index =', band)
-    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, zak=True)
+    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, method='Zak')
     print('Zak (closed) : %.4f rad' % zak)
     zak = sisl.electron.berry_phase(bzOp, sub=band, closed=False)
     print('Zak (open)   : %.4f rad' % zak)
