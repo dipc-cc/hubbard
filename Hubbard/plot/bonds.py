@@ -37,5 +37,5 @@ class BondOrder(GeometryPlot):
                     elif a < -90:
                         a += 180
                 z = BO[r, c]
-                plt.plot(x, y, c='k', ls='-', lw=4)
+                plt.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
                 self.axes.text(sum(x)/2, sum(y)/2, r'%.3f'%z, ha="center", va="center", rotation=a, size=6, bbox=bbox_props)
