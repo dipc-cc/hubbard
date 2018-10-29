@@ -45,21 +45,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
                  ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
         """ Initialize HubbardHamiltonian """
-        # Save parameters
-        if fn[-3:] == '.XV':
-            self.fn = fn[:-3]
-            # Read geometry etc
-            ext_geom = sisl.get_sile(fn).read_geom()
-            ext_geom.sc.set_nsc(nsc)
-        elif fn[-4:] == '.xyz':
-            self.fn = fn[:-4]
-            # Read geometry etc
-            ext_geom = sisl.get_sile(fn).read_geom()
-            ext_geom.sc.set_nsc(nsc)
-        if isinstance(fn, sisl.Geometry):
-            ext_geom = fn
-            ext_geom.sc.set_nsc(nsc)
-            self.fn = fn_title
+        ext_geom = fn
+        ext_geom.sc.set_nsc(nsc)
+        self.fn = fn_title
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
