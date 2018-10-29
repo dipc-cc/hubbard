@@ -134,6 +134,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
+        """ Setup the initial Hamiltonian
+        
+        Set Hamiltonian matrix elements H_ij, where ij are pairs of atoms separated by a distance defined as:
+        R = [on-site, 1NN, 2NN, 3NN]
+        
+        """
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
