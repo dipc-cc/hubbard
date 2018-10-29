@@ -45,8 +45,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                  nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
                  ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
         """ Initialize HubbardHamiltonian """
-        ext_geom = fn
-        ext_geom.sc.set_nsc(nsc)
+        self.ext_geom = fn # Keep the extended/complete geometry
         self.fn = fn_title
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
@@ -65,10 +64,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
-        if what:
-            ext_geom = ext_geom.move(-ext_geom.center(what=what))
-        ext_geom = ext_geom.rotate(angle, v, atom=atom)
-        self.ext_geom = ext_geom # Keep the extended/complete geometry
         # Determine pz sites
         aux = []
         sp3 = []
