@@ -1,9 +1,16 @@
 import Hubbard.hamiltonian as hh
 import sys
 import numpy as np
+import sisl
+
+# Build sisl Geometry object
+mol_file = '2-anthracene.XV'
+fn = sisl.get_sile(mol_file).read_geom()
+fn.sc.set_nsc([1,1,1])
+fn = fn.move(-fn.center(what='xyz'))
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('2-anthracene.XV', t1=2.7, t2=0.2, t3=.18)
+H = hh.HubbardHamiltonian(fn, fn_title=mol_file[:-3], t1=2.7, t2=0.2, t3=.18)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions
