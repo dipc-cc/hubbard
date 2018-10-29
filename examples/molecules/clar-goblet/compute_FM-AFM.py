@@ -2,9 +2,15 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import sys
 import numpy as np
+import sisl
+
+# Build sisl Geometry object
+fn = sisl.get_sile('clar-goblet.xyz').read_geom()
+fn.sc.set_nsc([1,1,1])
+fn = fn.move(-fn.center(what='xyz'))
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('clar-goblet.xyz', t1=2.7, t2=.2, t3=.18, what='xyz')
+H = hh.HubbardHamiltonian(fn, fn_title='clar-goblet', t1=2.7, t2=.2, t3=.18)
 
 f = open('FM-AFM.dat', 'w')
 
