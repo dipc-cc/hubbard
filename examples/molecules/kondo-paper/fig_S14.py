@@ -1,9 +1,14 @@
 import Hubbard.hamiltonian as hh
 import sys
 import numpy as np
+import sisl
+
+# Build sisl Geometry object
+fn = sisl.get_sile('junction-2-2.XV').read_geom()
+fn.sc.set_nsc([1,1,1])
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18)
+H = hh.HubbardHamiltonian(fn, fn_title='junction-2-2', t1=2.7, t2=0.2, t3=.18)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions
