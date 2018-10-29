@@ -13,9 +13,25 @@ for u in [0.0, 3.5]:
     H.read() # Try reading, if we already have density on file
     H.converge()
     H.save() # Computed density to file
-    #The following calls no longer work:
-    #H.plot_wf(EnWindow=0.4, ispin=0)
-    #H.plot_wf(EnWindow=0.2, ispin=1)
-    #H.plot_rs_wf(EnWindow=0.4, ispin=0)
-    #H.plot_rs_wf(EnWindow=0.2, ispin=1)
-    #H.plot_spectrum(ymax=0.12)
+
+    # Plot Eigenspectrum
+    p = plot.Spectrum(H, ymax=0.12)
+    p.set_title(r'3NN, $U=%.2f$ eV'%H.U)
+    p.savefig('eigenspectrum_U%i.pdf'%(H.U*100))
+
+    # Plot HOMO and LUMO level wavefunctions for up- and down-electrons for U=3.5 eV
+    if H.U == 3.5:
+        spin = ['up', 'dn']
+        N = [H.Nup, H.Ndn]
+        for i in range(2):
+            ev, evec = H.eigh(eigvals_only=False, spin=i)
+            ev -= H.midgap
+
+            p = plot.Wavefunction(H, 1500*evec[:,N[i]-1])
+            p.set_title(r'$E = %.3f$ eV'%(ev[N[i]-1]))
+            p.savefig('HOMO-%s.pdf'%spin[i])
+
+            p = plot.Wavefunction(H, 1500*evec[:,N[i]])
+            p.set_title(r'$E = %.3f$ eV'%(ev[N[i]]))
+            p.savefig('LUMO-%s.pdf'%spin[i])
+
