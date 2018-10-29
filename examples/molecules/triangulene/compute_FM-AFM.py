@@ -4,7 +4,7 @@ import sys
 import numpy as np
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('triangulene.xyz', t1=2.7, what='xyz')
+H = hh.HubbardHamiltonian('triangulene.xyz', t1=2.7, t2=.2, t3=.18, what='xyz')
 
 f = open('FM-AFM.dat', 'w')
 
