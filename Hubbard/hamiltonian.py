@@ -41,10 +41,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     """
 
-    def __init__(self, fn, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
+    def __init__(self, ext_geom, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
                   kmesh=[1, 1, 1], ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
         """ Initialize HubbardHamiltonian """
-        self.ext_geom = fn # Keep the extended/complete geometry
+        self.ext_geom = ext_geom # Keep the extended/complete geometry
         self.fn = fn_title
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
