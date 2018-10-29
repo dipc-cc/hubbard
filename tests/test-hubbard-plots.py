@@ -1,24 +1,17 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import numpy as np
+import sisl
 
 # Test all plot functionalities of Hubbard module
 # using a reference molecule (already converged)
 
-H = hh.HubbardHamiltonian('mol-ref/mol-ref.XV', U=3.5, what='xyz')
+# Build sisl Geometry object
+fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geom()
+fn.sc.set_nsc([1,1,1])
+fn = fn.move(-fn.center(what='xyz')).rotate(220, [0,0,1])
 
-# Old plotting routines
-if False:
-    H.plot_spectrum()
-    H.plot_charge()
-    H.plot_polarization()
-    H.plot_rs_polarization()
-    H.plot_wf(EnWindow=0.25, ispin=0)
-    H.plot_wf(EnWindow=0.25, ispin=1)
-    H.plot_wf(EnWindow=0.25, ispin=1, density=False)
-    H.plot_rs_wf(EnWindow=0.25, ispin=0, z=0.5)
-    H.plot_rs_wf(EnWindow=0.25, ispin=1, z=0.5)
-    H.plot_rs_wf(EnWindow=0.25, ispin=1, z=0.5, density=False)
+H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
 
 # new routines
 if True:

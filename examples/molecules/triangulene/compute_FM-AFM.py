@@ -2,9 +2,16 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import sys
 import numpy as np
+import sisl
+
+# Build sisl Geometry object
+fn = sisl.get_sile('triangulene.xyz').read_geom()
+fn = fn.move(-fn.center(what='xyz'))
+fn.sc.set_nsc([1,1,1])
+
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('triangulene.xyz', t1=2.7, t2=.2, t3=.18, what='xyz')
+H = hh.HubbardHamiltonian(fn, fn_title='triangulene', t1=2.7, t2=.2, t3=.18)
 
 f = open('FM-AFM.dat', 'w')
 

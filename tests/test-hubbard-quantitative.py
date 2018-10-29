@@ -1,9 +1,15 @@
 import Hubbard.hamiltonian as hh
 import numpy as np
+import sisl
 
 # Test quantitatively that densities and eigenvalue spectrum are unchanged
 # using a reference molecule (already converged)
-H = hh.HubbardHamiltonian('mol-ref/mol-ref.XV', U=3.5)
+
+# Build sisl Geometry object
+fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geom()
+fn.sc.set_nsc([1,1,1])
+
+H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
 
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
