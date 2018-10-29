@@ -2,10 +2,15 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import sys
 import numpy as np
+import sisl
+
+# Build sisl Geometry object
+fn = sisl.get_sile('junction-2-2.XV').read_geom()
+fn.sc.set_nsc([1,1,1])
+fn = fn.move(-fn.center(what='xyz')).rotate(220, [0,0,1])
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('junction-2-2.XV', t1=2.7, t2=0.2, t3=.18,
-                          what='xyz', angle=220)
+H = hh.HubbardHamiltonian(fn, fn_title='junction-2-2', t1=2.7, t2=0.2, t3=.18)
 
 for u in [0.0, 3.5]:
     # We approach the solutions from above, starting at U=4eV
