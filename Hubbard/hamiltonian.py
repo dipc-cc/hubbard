@@ -41,25 +41,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     """
 
-    def __init__(self, fn, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
-                 nsc=[1, 1, 1], kmesh=[1, 1, 1], what=None, angle=0, v=[0, 0, 1], atom=None,
-                 ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
+    def __init__(self, ext_geom, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
+                  kmesh=[1, 1, 1], ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
         """ Initialize HubbardHamiltonian """
-        # Save parameters
-        if fn[-3:] == '.XV':
-            self.fn = fn[:-3]
-            # Read geometry etc
-            ext_geom = sisl.get_sile(fn).read_geom()
-            ext_geom.sc.set_nsc(nsc)
-        elif fn[-4:] == '.xyz':
-            self.fn = fn[:-4]
-            # Read geometry etc
-            ext_geom = sisl.get_sile(fn).read_geom()
-            ext_geom.sc.set_nsc(nsc)
-        if isinstance(fn, sisl.Geometry):
-            ext_geom = fn
-            ext_geom.sc.set_nsc(nsc)
-            self.fn = fn_title
+        self.ext_geom = ext_geom # Keep the extended/complete geometry
+        self.fn = fn_title
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
@@ -77,10 +63,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
-        if what:
-            ext_geom = ext_geom.move(-ext_geom.center(what=what))
-        ext_geom = ext_geom.rotate(angle, v, atom=atom)
-        self.ext_geom = ext_geom # Keep the extended/complete geometry
         # Determine pz sites
         aux = []
         sp3 = []
