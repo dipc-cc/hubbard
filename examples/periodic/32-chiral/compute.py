@@ -3,13 +3,20 @@ import Hubbard.plot as plot
 import numpy as np
 import sys
 import os
+import sisl
 
 U = float(sys.argv[1])
 
 
 def compute(fn):
     head, tail = os.path.split(fn)
-    H = hh.HubbardHamiltonian(fn, t1=2.7, t2=0.2, t3=.18, U=U, nsc=[3, 1, 1], kmesh=[51, 1, 1], what='xyz')
+
+    # Build sisl Geometry object
+    geom = sisl.get_sile(fn).read_geom()
+    geom = geom.move(-geom.center(what='xyz'))
+    geom.set_nsc([3,1,1])
+
+    H = hh.HubbardHamiltonian(geom, fn_title=fn[:-4], t1=2.7, t2=0.2, t3=.18, U=U, kmesh=[51, 1, 1])
     dn, etot = H.iterate()
     if dn > 0.1:
         # We don't have a good solution, try polarizing one edge:
