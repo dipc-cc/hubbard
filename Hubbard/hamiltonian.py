@@ -385,14 +385,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         -------
         object : the Huckel bond-order matrix
         """
-        # Current implentation only for 1D periodic systems along x
-        km = np.array(self.kmesh)
-        km[:, 0] = 0.
-        assert np.allclose(km, 0.)
         g = self.geom
         BO = sisl.Hamiltonian(g)
         R = [0.1, 1.6]
-        # NB The below assumes periodicity in x, needs generalization
         for ik, k in enumerate(self.kmesh):
             for spin in range(2):
                 ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
@@ -401,15 +396,13 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                         # Only sum over the filled states
                         break
                     for ia in g:
-                        for ja in g.close_sc(ia, R=R, isc=(0, 0, 0))[1]:
-                            bo = np.conj(evec[ia, i])*evec[ja, i]
-                            BO[ia, ja] += bo.real/len(self.kmesh)
-                        for ja in g.close_sc(ia, R=R, isc=(1, 0, 0))[1]:
-                            bo = np.conj(evec[ia, i])*evec[ja, i]*np.exp(-2.j*np.pi*k[0])
-                            BO[ia, ja] += bo.real/len(self.kmesh)
-                        for ja in g.close_sc(ia, R=R, isc=(-1, 0, 0))[1]:
-                            bo = np.conj(evec[ia, i])*evec[ja, i]*np.exp(2.j*np.pi*k[0])
-                            BO[ia, ja] += bo.real/len(self.kmesh)
+                        for ix in (-1, 0, 1):
+                            for iy in (-1, 0, 1):
+                                for iz in (-1, 0, 1):
+                                    r = (ix, iy, iz)
+                                    for ja in g.close_sc(ia, R=R, isc=r)[1]:
+                                        bo = np.conj(evec[ia, i])*evec[ja, i]*np.exp(-2.j*np.pi*np.dot(k, r))
+                                        BO[ia, ja] += bo.real/len(self.kmesh)
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)
