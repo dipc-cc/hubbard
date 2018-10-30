@@ -391,18 +391,17 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         for ik, k in enumerate(self.kmesh):
             for spin in range(2):
                 ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
-                for i, evi in enumerate(ev-self.midgap):
-                    if evi > 0:
-                        # Only sum over the filled states
-                        break
-                    for ia in g:
-                        for ix in (-1, 0, 1):
-                            for iy in (-1, 0, 1):
-                                for iz in (-1, 0, 1):
-                                    r = (ix, iy, iz)
-                                    for ja in g.close_sc(ia, R=R, isc=r)[1]:
-                                        bo = np.conj(evec[ia, i])*evec[ja, i]*np.exp(-2.j*np.pi*np.dot(k, r))
-                                        BO[ia, ja] += bo.real/len(self.kmesh)
+                ev -= self.midgap
+                idx = np.where(ev < 0.)[0]
+                bo = np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
+                for ia in g:
+                    for ix in (-1, 0, 1):
+                        for iy in (-1, 0, 1):
+                            for iz in (-1, 0, 1):
+                                r = (ix, iy, iz)
+                                for ja in g.close_sc(ia, R=R, isc=r)[1]:
+                                    bor = bo[ia, ja]*np.exp(-2.j*np.pi*np.dot(k, r))
+                                    BO[ia, ja] += bor.real/len(self.kmesh)
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)
