@@ -2,12 +2,17 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import numpy as np
 import sys
+import sisl
 
 fn = sys.argv[1]
+geom = sisl.get_sile(fn).read_geom()
+geom = geom.move(-geom.center(what='xyz'))
+geom.set_nsc([3,1,1])
+
 U = float(sys.argv[2])
 eB = float(sys.argv[3])
 
-H = hh.HubbardHamiltonian(fn, t1=2.7, t2=0.2, t3=.18, U=U, eB=eB, nsc=[3, 1, 1], kmesh=[51, 1, 1], what='xyz')
+H = hh.HubbardHamiltonian(geom, fn_title=fn[:-3], t1=2.7, t2=0.2, t3=.18, U=U, eB=eB, kmesh=[51, 1, 1])
 if U < 0.1:
     H.converge(premix=1.0)
 else:
