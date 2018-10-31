@@ -389,19 +389,26 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         BO = sisl.Hamiltonian(g)
         R = [0.1, 1.6]
         for ik, k in enumerate(self.kmesh):
-            for spin in range(2):
-                ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
-                ev -= self.midgap
-                idx = np.where(ev < 0.)[0]
-                bo = np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
-                for ia in g:
-                    for ix in (-1, 0, 1):
-                        for iy in (-1, 0, 1):
-                            for iz in (-1, 0, 1):
-                                r = (ix, iy, iz)
-                                for ja in g.close_sc(ia, R=R, isc=r)[1]:
-                                    bor = bo[ia, ja]*np.exp(-2.j*np.pi*np.dot(k, r))
-                                    BO[ia, ja] += bor.real/len(self.kmesh)
+            # spin-up first
+            ev, evec = self.eigh(k=k, eigvals_only=False, spin=0)
+            ev -= self.midgap
+            idx = np.where(ev < 0.)[0]
+            bo = np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
+            # add spin-down
+            ev, evec = self.eigh(k=k, eigvals_only=False, spin=1)
+            ev -= self.midgap
+            idx = np.where(ev < 0.)[0]
+            bo += np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
+            for ix in (-1, 0, 1):
+                for iy in (-1, 0, 1):
+                    for iz in (-1, 0, 1):
+                        r = (ix, iy, iz)
+                        phase = np.exp(-2.j*np.pi*np.dot(k, r))
+                        for ia in g:
+                            for ja in g.close_sc(ia, R=R, isc=r)[1]:
+                                bor = bo[ia, ja]*phase
+                                BO[ia, ja] += bor.real
+        BO /= len(self.kmesh)
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)
