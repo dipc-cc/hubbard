@@ -35,7 +35,12 @@ class BondOrder(GeometryPlot):
             else:
                 # intercell bond
                 cell = H.geom.sc.cell
+                # Compute projections onto lattice vectors
                 P = np.dot(cell, R)
+                # Normalize
+                for i in range(3):
+                    P[i] /= np.dot(cell[i], cell[i])**.5
+                # Look up largest projection
                 j = np.argmax(np.abs(P))
                 R -= np.sign(P[j])*cell[j] # Subtract relevant lattice vector
                 x = [xr[0], xr[0]-R[0]/2]
