@@ -18,24 +18,28 @@ class BondOrder(GeometryPlot):
 
         # Compute Huckel bond orders
         BO = H.get_bond_order()
+        d = 1.6 # max nearest-neighbor bond length
 
         # Plot results
         row, col = BO.nonzero()
         for i, r in enumerate(row):
             xr = H.geom.xyz[r]
             c = col[i]
-            if r < c:
-                xc = H.geom.xyz[c]
+            xc = H.geom.xyz[c]
+            R = xr-xc
+            if np.dot(R, R)**.5 <= d:
+                # intracell bond
                 x = [xr[0], xc[0]]
                 y = [xr[1], xc[1]]
-                try:
-                    a = int(keywords['angle'])
-                except:
-                    a = np.angle((xc[0]-xr[0])+1j*(xc[1]-xr[1]))*360./(2*np.pi)
-                    if a > 90:
-                        a -= 180
-                    elif a < -90:
-                        a += 180
-                z = BO[r, c]
                 plt.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
-                self.axes.text(sum(x)/2, sum(y)/2, r'%.3f'%z, ha="center", va="center", rotation=a, size=6, bbox=bbox_props)
+            else:
+                # intercell bond
+                R /= np.dot(R, R)**.5
+                R *= d
+                x = [xr[0], xr[0]+R[0]/2]
+                y = [xr[1], xr[1]+R[1]/2]
+                plt.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
+                x = [xc[0], xc[0]-R[0]/2]
+                y = [xc[1], xc[1]-R[1]/2]
+                plt.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
+            self.axes.text(sum(x)/2, sum(y)/2, r'%.3f'%BO[r, c], ha="center", va="center", rotation=15, size=6, bbox=bbox_props)
