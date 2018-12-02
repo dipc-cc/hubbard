@@ -288,7 +288,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         s += 'eN=%.2f '%self.eN
         s += 'Nup=%.2f '%self.Nup
         s += 'Ndn=%.2f '%self.Ndn
-        myhash = int(hashlib.md5(s).hexdigest()[:7], 16)
+        myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
         return myhash, s
 
     def save(self, ncgroup=None):

@@ -4,7 +4,7 @@ import Hubbard.hamiltonian as hh
 import sisl
 
 # Build sisl Geometry object
-fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geom()
+fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 
 # Run one iteration

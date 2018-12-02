@@ -4,7 +4,7 @@ import numpy as np
 import sisl
 
 # Build sisl Geometry object
-fn = sisl.get_sile('junction-2-2.XV').read_geom()
+fn = sisl.get_sile('junction-2-2.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 
 # 3NN tight-binding model

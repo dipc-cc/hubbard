@@ -7,7 +7,7 @@ import sisl
 pol = False
 
 # Build sisl Geometry object
-fn = sisl.get_sile('7AGNR2B_5x5.XV').read_geom()
+fn = sisl.get_sile('7AGNR2B_5x5.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 fn = fn.move(-fn.center(what='xyz'))
 

@@ -6,7 +6,7 @@ import sisl
 # using a reference molecule (already converged)
 
 # Build sisl Geometry object
-fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geom()
+fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 
 H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)

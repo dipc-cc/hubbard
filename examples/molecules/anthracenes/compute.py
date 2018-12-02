@@ -5,7 +5,7 @@ import sisl
 
 # Build sisl Geometry object
 mol_file = '2-anthracene.XV'
-fn = sisl.get_sile(mol_file).read_geom()
+fn = sisl.get_sile(mol_file).read_geometry()
 fn.sc.set_nsc([1,1,1])
 fn = fn.move(-fn.center(what='xyz'))
 
