@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 fn = sys.argv[1]
 
 # Read geometry and set up SSH Hamiltonian
-geom = sisl.get_sile(fn).read_geom()
+geom = sisl.get_sile(fn).read_geometry()
 geom.set_nsc([3, 1, 1])
 H = sisl.Hamiltonian(geom)
 for ia in geom:

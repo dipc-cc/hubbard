@@ -7,7 +7,7 @@ import sisl
 # using a reference molecule (already converged)
 
 # Build sisl Geometry object
-fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geom()
+fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 fn = fn.move(-fn.center(what='xyz')).rotate(220, [0,0,1])
 

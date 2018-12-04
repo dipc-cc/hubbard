@@ -8,3 +8,6 @@ Package for mean-field Hubbard approximation
 .. module:: Hubbard
 
 """
+
+from .hamiltonian import *
+from . import plot

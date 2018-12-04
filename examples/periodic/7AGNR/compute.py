@@ -5,7 +5,7 @@ import sys
 import sisl
 
 fn = sys.argv[1]
-geom = sisl.get_sile(fn).read_geom()
+geom = sisl.get_sile(fn).read_geometry()
 geom = geom.move(-geom.center(what='xyz'))
 geom.set_nsc([3,1,1])
 
