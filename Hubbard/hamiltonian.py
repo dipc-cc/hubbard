@@ -109,11 +109,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
         self.init_hamiltonian_elements()
         # Initialize data file
-        #self.ncgroup = ncgroup
-        #self.init_nc(self.fn+'.nc')
+        self.ncgroup = ncgroup
+        self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
-        #self.read()
-        #self.iterate(mix=0) # Determine midgap energy without changing densities
+        self.read()
+        self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
         """ Setup the initial Hamiltonian
