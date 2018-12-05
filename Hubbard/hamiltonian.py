@@ -148,17 +148,26 @@ class HubbardHamiltonian(sisl.Hamiltonian):
     def update_hamiltonian(self):
         # Update spin Hamiltonian
         g = self.geom
-        for ia in g:
-            # charge on neutral atom:
-            n0 = g.atoms[ia].Z-5
-            if g.atoms[ia].Z == 5:
+
+        # Faster to loop individual species
+        E = np.empty([len(g), 2])
+        E[:, 0] = self.U * self.ndn
+        E[:, 1] = self.U * self.nup
+        for atom, ias in g.atoms.iter(True):
+            # charge on neutral atom
+            n0 = atom.Z - 5
+            if atom.Z == 5:
                 e0 = self.eB
-            elif g.atoms[ia].Z == 7:
+            elif atom.Z == 7:
                 e0 = self.eN
             else:
-                e0 = 0. # onsite for C site
-            self.H[ia, ia, 0] = e0 + self.U * (self.ndn[ia] - n0)
-            self.H[ia, ia, 1] = e0 + self.U * (self.nup[ia] - n0)
+                e0 = 0.
+
+            # Faster to do it for more than one element at a time
+            E[ias, :] += e0 - self.U * n0
+
+            for ia in ias:
+                self.H[ia, ia, [0, 1]] = E[ia]
 
     def random_density(self):
         print('Setting random density')
