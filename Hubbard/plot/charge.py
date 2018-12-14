@@ -45,9 +45,9 @@ class Charge(GeometryPlot):
             if keywords['colorbar'] != False:
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
 
-    def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, charge, z=1.1, vmax=0.00006, grid_unit=0.05, **keywords):
 
-        grid = self.real_space_grid(charge, grid_unit)
+        grid = self.real_space_grid(charge, grid_unit, density=True)
         index =  grid.index([0, 0, z])
 
         # Plot only the real part
@@ -102,9 +102,9 @@ class ChargeDifference(GeometryPlot):
             if keywords['colorbar'] != False:
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)')
 
-    def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, charge, z=1.1, vmax=0.00006, grid_unit=0.05, **keywords):
 
-        grid = self.real_space_grid(charge, grid_unit)
+        grid = self.real_space_grid(charge, grid_unit, density=True)
         index =  grid.index([0, 0, z])
 
         # Plot only the real part
@@ -135,6 +135,7 @@ class SpinPolarization(GeometryPlot):
 
         # Compute charge difference between up and down channels
         charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn
+        
 
         if 'realspace' in keywords:
             self.__realspace__(charge, **keywords)
@@ -158,9 +159,9 @@ class SpinPolarization(GeometryPlot):
             if keywords['colorbar'] != False:
                 self.add_colorbar(self.ppi, label=r'$Q_\uparrow-Q_\downarrow$ ($e$)')
 
-    def __realspace__(self, charge, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
+    def __realspace__(self, charge, z=1.1, vmax=0.00006, grid_unit=0.05, **keywords):
 
-        grid = self.real_space_grid(charge, grid_unit)
+        grid = self.real_space_grid(charge, grid_unit, density=True)
         index = grid.index([0, 0, z])
 
         # Plot only the real part
