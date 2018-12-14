@@ -15,19 +15,33 @@ H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
 
 # new routines
 if True:
-    p = plot.Charge(H)
+    p = plot.Charge(H, colorbar=True)
     p.savefig('chg.pdf')
+
+    p = plot.Charge(H, realspace=True, colorbar=True)
+    p.savefig('chg_rs.pdf')
 
     p = plot.ChargeDifference(H)
     p.savefig('chgdiff.pdf')
+
+    p = plot.ChargeDifference(H, realspace=True)
+    p.savefig('chgdiff_rs.pdf')
 
     p = plot.SpinPolarization(H)
     p.annotate()
     p.savefig('pol.pdf')
 
+    p = plot.SpinPolarization(H, realspace=True)
+    p.annotate()
+    p.savefig('pol_rs.pdf')
+
     ev, evec = H.eigh(eigvals_only=False, spin=0)
     p = plot.Wavefunction(H, 500*evec[:, 10])
     p.savefig('wf.pdf')
+
+    ev, evec = H.eigh(eigvals_only=False, spin=0)
+    p = plot.Wavefunction(H, 10*evec[:, 10], realspace=True)
+    p.savefig('wf_rs.pdf')
 
     p = plot.Spectrum(H)
     p.savefig('spectrum.pdf')
