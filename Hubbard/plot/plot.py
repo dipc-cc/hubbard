@@ -140,20 +140,32 @@ class GeometryPlot(Plot):
     def real_space_grid(self, v, grid_unit, density=False):
         import sisl
 
+        # Move atomic coordinates (to fit the grid with the backbone plot) into a temporary Geometry object
+        # to avoid moving the real atomic coordinates
+        H = self.HH.geom.move([-self.xmin, -self.ymin, 0])
+        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
+
         # Set new sc to create real-space grid
         sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-        H = self.HH.H.move([-self.xmin, -self.ymin, 0])
-        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
         H.set_sc(sc)
         
         # Create the real-space grid
         grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
+
         if density:
             D = sisl.physics.DensityMatrix(H)
             for ia in H:
                 D.D[ia, ia] = v[ia]
             D.density(grid)
         else:
-            sisl.electron.wavefunction(v, grid, geometry=H)
+            if isinstance(v, sisl.physics.electron.EigenstateElectron):
+                # Set parent geometry equal to the temporary one
+                v.parent = H
+                v.wavefunction(grid)
+            else:
+                # In case v is a vector
+                sisl.electron.wavefunction(v, grid, geometry=H)
         
+        del H
+
         return grid
