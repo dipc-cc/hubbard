@@ -108,6 +108,34 @@ class GeometryPlot(Plot):
             y = g.xyz[:, 1]
             self.axes.add_patch(patches.Circle((np.average(x[Hsp3]), np.average(y[Hsp3])), radius=1.4, alpha=0.15, fc='c'))
 
+    def __orbitals__(self, v, label=None, **keywords):
+        # Set values for the pi-network
+        self.ppi.set_array(v)
+
+        # Set color range
+        if 'vmax' in keywords:
+            self.ppi.set_clim(0, keywords['vmax'])
+        else:
+            self.ppi.set_clim(min(v), max(v))
+
+        # Colorbars
+        if 'colorbar' in keywords:
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.ppi, label=label)
+
+    def __realspace__(self, v, z=1.1, vmax=0.00006, grid_unit=0.05, density=False, label=None, **keywords):
+
+        grid = self.real_space_grid(v, grid_unit, density=density)
+        index =  grid.index([0, 0, z])
+
+        # Plot only the real part
+        ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
+                              vmax=vmax, vmin=-vmax, extent=self.extent)
+        # Colorbars
+        if 'colorbar' in keywords:
+            if keywords['colorbar'] != False:
+                plt.colorbar(ax, label=label)
+
     def set_axes(self, bdx=2):
         g = self.HH.geom
         x = g.xyz[:, 0]
