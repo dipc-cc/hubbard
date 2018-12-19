@@ -15,9 +15,13 @@ class Charge(GeometryPlot):
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
                 keywords['cmap'] = 'Greys'
+            if 'label' not in keywords:
+                keywords['label']=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)'
         else:
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
+            if 'label' not in keywords:
+                keywords['label']=r'$Q_\uparrow+Q_\downarrow$ ($e$)'
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
@@ -25,40 +29,10 @@ class Charge(GeometryPlot):
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
 
         if 'realspace' in keywords:
-            self.__realspace__(charge, **keywords)
+            self.__realspace__(charge, density=True, **keywords)
 
         else:
             self.__orbitals__(charge, **keywords)
-
-    def __orbitals__(self, charge, **keywords):
-        # Set values for the pi-network
-        self.ppi.set_array(charge)
-
-        # Set color range
-        if 'vmax' in keywords:
-            self.ppi.set_clim(0, keywords['vmax'])
-        else:
-            self.ppi.set_clim(min(charge), max(charge))
-
-        # Colorbars
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
-                self.add_colorbar(self.ppi, label=r'$Q_\uparrow+Q_\downarrow$ ($e$)')
-
-    def __realspace__(self, charge, z=1.1, vmax=0.00006, grid_unit=0.05, **keywords):
-
-        grid = self.real_space_grid(charge, grid_unit, density=True)
-        index =  grid.index([0, 0, z])
-
-        # Plot only the real part
-        ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
-                              vmax=vmax, vmin=-vmax, extent=self.extent)
-        # Colorbars
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
-                # Charge density per unit of length in the z-direction
-                plt.colorbar(ax, label=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)')
-
 
 class ChargeDifference(GeometryPlot):
 
