@@ -128,13 +128,15 @@ class GeometryPlot(Plot):
         grid = self.real_space_grid(v, grid_unit, density=density)
         index =  grid.index([0, 0, z])
 
-        # Plot only the real part
-        ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
+        # Plot only the real part of the grid
+        # The image will be created in an imshow layer (stored in self.imshow)
+        self.imshow = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=-vmax, extent=self.extent)
+
         # Colorbars
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
-                plt.colorbar(ax, label=label)
+                self.add_colorbar(self.imshow, label=label)
 
     def set_axes(self, bdx=2):
         g = self.HH.geom
