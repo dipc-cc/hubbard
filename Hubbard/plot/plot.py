@@ -130,15 +130,21 @@ class GeometryPlot(Plot):
         def real_space_grid(v, grid_unit, density):
             import sisl
 
-            # Move atomic coordinates (to fit the grid with the backbone plot) into a temporary Geometry object
-            # to avoid moving the real atomic coordinates
-            H = self.HH.geom.move([-self.xmin, -self.ymin, 0])
+            # Create a temporary copy of the geometry 
+            H = self.HH.geom.copy()
+            
+            # Set new sc to create real-space grid
+            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
+            H.set_sc(sc)
+        
+            # Shift negative xy coordinates within the supercell
+            ix = np.where(H.xyz[:, 0] < 0)
+            iy = np.where(H.xyz[:, 1] < 0)
+            H.xyz[ix, 0] = H.axyz(isc=[1, 0, 0])[ix, 0]
+            H.xyz[iy, 1] = H.axyz(isc=[0, 1, 0])[iy, 1]
+            # Make z~0 -> z = 0                      
             H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
 
-            # Set new sc to create real-space grid
-            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-            H.set_sc(sc)
-            
             # Create the real-space grid
             grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
 
