@@ -25,33 +25,17 @@ class Wavefunction(GeometryPlot):
         if 'realspace' in keywords:
             self.__realspace__(wf, **keywords)
 
+            # Create custom map to differenciate it from polarization cmap
+            import matplotlib.colors as mcolors
+            custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
+            self.imshow.set_cmap(custom_map)
+
         else:
-            self.__orbitals__(HubbardHamiltonian, wf, **keywords)
+            x = HubbardHamiltonian.geom[:, 0]
+            y = HubbardHamiltonian.geom[:, 1]
 
-    def __orbitals__(self, HubbardHamiltonian, wf, **keywords):
+            assert len(x) == len(wf)
 
-        x = HubbardHamiltonian.geom[:, 0]
-        y = HubbardHamiltonian.geom[:, 1]
+            self.axes.scatter(x, y, wf.real, 'r') # pos. part, marker AREA is proportional to data
+            self.axes.scatter(x, y, -wf.real, 'g') # neg. part
 
-        assert len(x) == len(wf)
-
-        self.axes.scatter(x, y, wf.real, 'r') # pos. part, marker AREA is proportional to data
-        self.axes.scatter(x, y, -wf.real, 'g') # neg. part
-
-    def __realspace__(self, wf, z=1.1, vmax=0.006, grid_unit=0.05, **keywords):
-
-        grid = self.real_space_grid(wf, grid_unit)
-        index = grid.index([0, 0, z])
-
-        # Create custom map to differenciate it from polarization cmap
-        import matplotlib.colors as mcolors
-        custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['g', 'white', 'red'], N=100)
-
-        # Plot only the real part
-        ax = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap=custom_map, origin='lower',
-                              vmax=vmax, vmin=-vmax, extent=self.extent)
-        # Colorbars
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
-                # Charge density per unit of length in the z-direction
-                plt.colorbar(ax)

@@ -71,6 +71,8 @@ class GeometryPlot(Plot):
                 kw[k] = keywords[k]
             if k in ['facecolor']:
                 kw[k] = keywords[k]
+            if k in ['label']:
+                kw[k] = keywords[k]
         # Patches
         pi = []
         aux = []
@@ -108,6 +110,72 @@ class GeometryPlot(Plot):
             y = g.xyz[:, 1]
             self.axes.add_patch(patches.Circle((np.average(x[Hsp3]), np.average(y[Hsp3])), radius=1.4, alpha=0.15, fc='c'))
 
+    def __orbitals__(self, v, label=None, **keywords):
+        # Set values for the pi-network
+        self.ppi.set_array(v)
+
+        # Set color range
+        if 'vmax' in keywords:
+            self.ppi.set_clim(0, keywords['vmax'])
+        else:
+            self.ppi.set_clim(min(v), max(v))
+
+        # Colorbars
+        if 'colorbar' in keywords:
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.ppi, label=label)
+
+    def __realspace__(self, v, z=1.1, vmax=0.00006, grid_unit=0.05, density=False, label=None, **keywords):
+
+        def real_space_grid(v, grid_unit, density):
+            import sisl
+
+            # Create a temporary copy of the geometry 
+            H = self.HH.geom.copy()
+            
+            # Set new sc to create real-space grid
+            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
+            H.set_sc(sc)
+        
+            # Shift negative xy coordinates within the supercell
+            ix = np.where(H.xyz[:, 0] < 0)
+            iy = np.where(H.xyz[:, 1] < 0)
+            H.xyz[ix, 0] = H.axyz(isc=[1, 0, 0])[ix, 0]
+            H.xyz[iy, 1] = H.axyz(isc=[0, 1, 0])[iy, 1]
+            # Make z~0 -> z = 0                      
+            H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
+
+            # Create the real-space grid
+            grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
+
+            if density:
+                D = sisl.physics.DensityMatrix(H)
+                for ia in H:
+                    D.D[ia, ia] = v[ia]
+                D.density(grid)
+            else:
+                if isinstance(v, sisl.physics.electron.EigenstateElectron):
+                    # Set parent geometry equal to the temporary one
+                    v.parent = H
+                    v.wavefunction(grid)
+                else:
+                    # In case v is a vector
+                    sisl.electron.wavefunction(v, grid, geometry=H)
+            del H
+            return grid
+
+        grid = real_space_grid(v, grid_unit, density)
+        index =  grid.index([0, 0, z])
+
+        # Plot only the real part of the grid
+        # The image will be created in an imshow layer (stored in self.imshow)
+        self.imshow = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
+                              vmax=vmax, vmin=-vmax, extent=self.extent)
+        # Colorbars
+        if 'colorbar' in keywords:
+            if keywords['colorbar'] != False:
+                self.add_colorbar(self.imshow, label=label)
+
     def set_axes(self, bdx=2):
         g = self.HH.geom
         x = g.xyz[:, 0]
@@ -136,15 +204,3 @@ class GeometryPlot(Plot):
         y = g.xyz[:, 1]
         for ia in g:
             self.axes.annotate(ia, (x[ia], y[ia]), size=size)
-
-    def real_space_grid(self, v, grid_unit):
-        import sisl
-        # Set new sc to create real-space grid
-        sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2])
-        H = self.HH.H.move([-self.xmin, -self.ymin, 0])
-        H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
-        H.set_sc(sc)
-        # Create the real-space grid
-        grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
-        sisl.electron.wavefunction(v, grid, geometry=H)
-        return grid
