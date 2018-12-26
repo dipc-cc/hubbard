@@ -116,7 +116,11 @@ class GeometryPlot(Plot):
 
         # Set color range
         if 'vmax' in keywords:
-            self.ppi.set_clim(0, keywords['vmax'])
+            if 'vmin' in keywords:
+                vmin = keywords['vmin']
+            else:
+                vmin = -keywords['vmax']
+            self.ppi.set_clim(vmin, keywords['vmax'])
         else:
             self.ppi.set_clim(min(v), max(v))
 
