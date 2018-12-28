@@ -107,6 +107,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                     self.kmesh.append([kx, ky, kz])
         # Construct Hamiltonians
         sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
+        # Generate Monkhorst-Pack
+        self.mp = sisl.MonkhorstPack(self, kmesh)
+        # Initialize elements
         self.init_hamiltonian_elements()
         # Initialize data file
         self.ncgroup = ncgroup
@@ -234,9 +237,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def iterate2(self, bz, mix=1.0):
-        bz.set_parent(self)
-
+    def iterate2(self, mix=1.0):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
@@ -275,7 +276,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             return HOMO, LUMO, ni_up, ni_dn, Etot
 
         # Loop k-points and weights
-        for w, k in zip(bz.weight, bz.k):
+        for w, k in zip(self.mp.weight, self.mp.k):
             HOMO, LUMO, up, dn, etot = calc_occ(k, w, HOMO, LUMO)
             ni_up += up
             ni_dn += dn
@@ -301,9 +302,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         #      Etot is stored in the object, so why not use it from there?
         return dn, self.Etot
 
-    def iterate3(self, bz, mix=1.0, q_up=None, q_dn=None):
-        bz.set_parent(self)
-
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
@@ -317,7 +316,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         kT = 0.00001
         # Create fermi-level determination distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-        Ef = self.fermi_level(bz, q=[q_up, q_dn], distribution=dist)
+        Ef = self.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
         dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
 
@@ -344,7 +343,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             return ni_up, ni_dn, Etot
 
         # Loop k-points and weights
-        for w, k in zip(bz.weight, bz.k):
+        for w, k in zip(self.mp.weight, self.mp.k):
             up, dn, etot = calc_occ(k, w)
             ni_up += up
             ni_dn += dn
@@ -370,18 +369,25 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         #      Etot is stored in the object, so why not use it from there?
         return dn, self.Etot
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, save=False):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, save=False):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
+        if method == 2:
+            iterate_ = self.iterate2
+        elif method == 3:
+            iterate_ = self.iterate3
+        else:
+            iterate_ = self.iterate
+
         dn = 1.0
         i = 0
         while dn > tol:
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn, Etot = self.iterate(mix=premix)
+                dn, Etot = iterate_(mix=premix)
             else:
-                dn, Etot = self.iterate(mix=mix)
+                dn, Etot = iterate_(mix=mix)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, Etot)
