@@ -81,7 +81,7 @@ class SpinPolarization(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
             if 'label' not in keywords:
-                keywords['label']=r'$Q_\uparrow-Q_\downarrow$ ($e/$)'
+                keywords['label']=r'$Q_\uparrow-Q_\downarrow$ ($e$)'
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
