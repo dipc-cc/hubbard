@@ -76,22 +76,28 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
-        Hsp3 = []
         g = self.HH.ext_geom
         for ia in g:
+            idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
+                if len(idx[1]) == 2:
+                    # If the H atom has 2 neighbours (sp3 conf.) it adds a blue circle at its position
+                    self.axes.add_patch(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.4, alpha=0.15, fc='lightblue'))
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
             elif g.atoms[ia].Z == 5: # B
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z == 6: # C
-                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                if len(idx[1]) == 4:
+                    # If the C atom has 4 neighbours (sp3 configuration) it will be represented 
+                    # as an aux site 
+                    aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                else:
+                    pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 7: # N
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
             elif g.atoms[ia].Z > 10: # Some other atom
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
-            idx = g.close(ia, R=[0.1, 1.6])
-            if len(idx[1])==4: # Search for atoms with 4 neighbors
-                [Hsp3.append(i) for i in idx[1] if g.atoms[i].Z == 1]
+
         # Pi sites
         ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **kw)
         ppi.set_array(np.zeros(len(pi)))
@@ -104,12 +110,7 @@ class GeometryPlot(Plot):
         paux.set_clim(-1, 1)
         self.paux = paux
         self.axes.add_collection(self.paux)
-        # sp3 Hybridization
-        if len(Hsp3)>0:
-            x = g.xyz[:, 0]
-            y = g.xyz[:, 1]
-            self.axes.add_patch(patches.Circle((np.average(x[Hsp3]), np.average(y[Hsp3])), radius=1.4, alpha=0.15, fc='c'))
-
+        
     def __orbitals__(self, v, label=None, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(v)
