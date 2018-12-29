@@ -107,6 +107,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                     self.kmesh.append([kx, ky, kz])
         # Construct Hamiltonians
         sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
+        # Generate Monkhorst-Pack
+        self.mp = sisl.MonkhorstPack(self, kmesh)
+        # Initialize elements
         self.init_hamiltonian_elements()
         # Initialize data file
         self.ncgroup = ncgroup
@@ -177,8 +180,8 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
-        self.nup = self.nup/np.sum(self.nup)*self.Nup
-        self.ndn = self.ndn/np.sum(self.ndn)*self.Ndn
+        self.nup = self.nup / self.nup.sum() * self.Nup
+        self.ndn = self.ndn / self.ndn.sum() * self.Ndn
         print('Normalized charge distributions to Nup=%i, Ndn=%i'%(self.Nup, self.Ndn))
 
     def set_polarization(self, up, dn=[]):
@@ -186,14 +189,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         Optionally, sites with down-polarization can be specified
         """
         print('Setting up-polarization for sites', up)
-        for ia in up:
-            self.nup[ia] = 1.
-            self.ndn[ia] = 0.
+        self.nup[up] = 1.
+        self.ndn[up] = 0.
         if len(dn) > 0:
             print('Setting down-polarization for sites', dn)
-            for ia in dn:
-                self.nup[ia] = 0.
-                self.ndn[ia] = 1.
+            self.nup[dn] = 0.
+            self.ndn[dn] = 1.
         self.normalize_charge()
 
     def iterate(self, mix=1.0):
@@ -236,18 +237,157 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
         return dn, self.Etot
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, save=False):
+    def iterate2(self, mix=1.0):
+        # Create short-hands
+        nup = self.nup
+        ndn = self.ndn
+        Nup = int(self.Nup)
+        Ndn = int(self.Ndn)
+
+        # Initialize HOMO/LUMO variables
+        HOMO = -1e10
+        LUMO = 1e10
+
+        # Initialize new occupations and total energy with Hubbard U
+        ni_up = np.zeros(nup.shape)
+        ni_dn = np.zeros(ndn.shape)
+        # TODO Shouldn't this be calculated with the mixed values?
+        Etot = - self.U * (nup * ndn).sum()
+
+        # Solve eigenvalue problems
+        def calc_occ(k, weight, HOMO, LUMO):
+            """ My wrap function for calculating occupations """
+            es_up = self.eigenstate(k, spin=0)
+            es_dn = self.eigenstate(k, spin=1)
+
+            # Update HOMO, LUMO
+            HOMO = max(HOMO, es_up.eig[Nup-1], es_dn.eig[Ndn-1])
+            LUMO = min(LUMO, es_up.eig[Nup], es_dn.eig[Ndn])
+            
+            es_up = es_up.sub(range(Nup))
+            es_dn = es_dn.sub(range(Ndn))
+
+            ni_up = es_up.norm2(False).sum(0) * weight
+            ni_dn = es_dn.norm2(False).sum(0) * weight
+
+            # Calculate total energy
+            Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
+            # Return values
+            return HOMO, LUMO, ni_up, ni_dn, Etot
+
+        # Loop k-points and weights
+        for w, k in zip(self.mp.weight, self.mp.k):
+            HOMO, LUMO, up, dn, etot = calc_occ(k, w, HOMO, LUMO)
+            ni_up += up
+            ni_dn += dn
+            Etot += etot
+
+        # Determine midgap energy reference
+        self.midgap = (LUMO + HOMO) / 2
+        
+        # Measure of density change
+        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+
+        # Update occupations on sites with mixing
+        self.nup = mix * ni_up + (1. - mix) * nup
+        self.ndn = mix * ni_dn + (1. - mix) * ndn
+        
+        # Update spin hamiltonian
+        self.update_hamiltonian()
+
+        # Store total energy
+        self.Etot = Etot
+
+        # TODO in my opinion one should only return dn
+        #      Etot is stored in the object, so why not use it from there?
+        return dn, self.Etot
+
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None):
+        # Create short-hands
+        nup = self.nup
+        ndn = self.ndn
+        if q_up is None:
+            q_up = self.Nup
+        if q_dn is None:
+            q_dn = self.Ndn
+
+        # To do metallic systems one should use this thing to
+        # calculate the fermi-level:
+        kT = 0.00001
+        # Create fermi-level determination distribution
+        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+        Ef = self.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
+        dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
+
+        # Initialize new occupations and total energy with Hubbard U
+        ni_up = np.zeros(nup.shape)
+        ni_dn = np.zeros(ndn.shape)
+        # TODO Shouldn't this be calculated with the mixed values?
+        Etot = - self.U * (nup * ndn).sum()
+
+        # Solve eigenvalue problems
+        def calc_occ(k, weight):
+            """ My wrap function for calculating occupations """
+            es_up = self.eigenstate(k, spin=0)
+            es_dn = self.eigenstate(k, spin=1)
+
+            # Reduce to occupied stuff
+            occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
+            ni_up = (es_up.norm2(False) * occ_up).sum(0)
+            occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
+            ni_dn = (es_dn.norm2(False) * occ_dn).sum(0)
+            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
+
+            # Return values
+            return ni_up, ni_dn, Etot
+
+        # Loop k-points and weights
+        for w, k in zip(self.mp.weight, self.mp.k):
+            up, dn, etot = calc_occ(k, w)
+            ni_up += up
+            ni_dn += dn
+            Etot += etot
+
+        # Determine midgap energy reference (or simply the fermi-level)
+        self.midgap = Ef.sum() / 2
+        
+        # Measure of density change
+        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+
+        # Update occupations on sites with mixing
+        self.nup = mix * ni_up + (1. - mix) * nup
+        self.ndn = mix * ni_dn + (1. - mix) * ndn
+        
+        # Update spin hamiltonian
+        self.update_hamiltonian()
+
+        # Store total energy
+        self.Etot = Etot
+
+        # TODO in my opinion one should only return dn
+        #      Etot is stored in the object, so why not use it from there?
+        return dn, self.Etot
+
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, save=False):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
+        if method == 2:
+            iterate_ = self.iterate2
+        elif method == 3:
+            iterate_ = self.iterate3
+        else:
+            iterate_ = self.iterate
+
         dn = 1.0
         i = 0
         while dn > tol:
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn, Etot = self.iterate(mix=premix)
+                dn, Etot = iterate_(mix=premix)
             else:
-                dn, Etot = self.iterate(mix=mix)
+                dn, Etot = iterate_(mix=mix)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, Etot)

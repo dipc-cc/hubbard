@@ -15,4 +15,6 @@ print(dn, etot)
 # Run also one iteration with data from ncfile
 H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
 dn, etot = H.iterate(mix=1)
-print(dn, etot)
+
+for d, e in [H.iterate2(mix=1), H.iterate3(mix=1)]:
+    print(d-dn, e-etot)
