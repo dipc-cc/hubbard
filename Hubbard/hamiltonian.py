@@ -21,7 +21,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     Parameters:
     -----------
-    fn : filename
+    ext_geom : Geometry (sisl) object
+        complete geometry that hosts also the SuperCell
+        information (for instance the direction of periodicity, etc.)
+    fn_title : string, optional
+        name of output file
     t1 : float, optional
       nearest neighbor hopping matrix element
     t2 : float, optional
@@ -173,6 +177,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 self.H[ia, ia, [0, 1]] = E[ia]
 
     def random_density(self):
+        """ Initialize spin polarization  with random density """
         print('Setting random density')
         self.nup = np.random.rand(self.sites)
         self.ndn = np.random.rand(self.sites)
@@ -187,6 +192,13 @@ class HubbardHamiltonian(sisl.Hamiltonian):
     def set_polarization(self, up, dn=[]):
         """ Maximize spin polarization on specific atomic sites.
         Optionally, sites with down-polarization can be specified
+
+        Parameters
+        ----------
+        up : array_like
+            atomic sites where the spin-up density is going to be maximized
+        dn : array_like, optional
+            atomic sites where the spin-down density is going to be maximized
         """
         print('Setting up-polarization for sites', up)
         self.nup[up] = 1.
