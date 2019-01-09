@@ -5,3 +5,7 @@ Hubbard/info.py
 *.nc
 !Tests/mol-ref/mol-ref.nc
 *.dat
+*.aux
+*.log
+*.out
+*.synctex.gz
