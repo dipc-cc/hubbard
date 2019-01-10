@@ -18,8 +18,11 @@ class Spectrum(Plot):
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
             plt.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
-            for i in range(len(ev)):
-                self.axes.annotate(i, (ev[i], L[i]), fontsize=6)
+            
+            if 'annotate' in keywords:
+                if keywords['annotate'] != False:
+                    for i in range(len(ev)):
+                        self.axes.annotate(i, (ev[i], L[i]), fontsize=6)
         self.axes.legend()
         self.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)')
         self.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
