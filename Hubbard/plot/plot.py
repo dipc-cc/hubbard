@@ -80,9 +80,6 @@ class GeometryPlot(Plot):
         for ia in g:
             idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
-                if len(idx[1]) == 2:
-                    # If the H atom has 2 neighbours (sp3 conf.) it adds a blue circle at its position
-                    self.axes.add_patch(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.4, alpha=0.15, fc='lightblue'))
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
             elif g.atoms[ia].Z == 5: # B
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
@@ -91,6 +88,9 @@ class GeometryPlot(Plot):
                     # If the C atom has 4 neighbours (sp3 configuration) it will be represented 
                     # as an aux site 
                     aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                    # Add a blue patch at the H positions
+                    Hsp3 = [i for i in idx[1] if g.atoms[i].Z == 1]
+                    self.axes.add_patch(patches.Circle((np.average(g.xyz[Hsp3, 0]), np.average(g.xyz[Hsp3, 1])), radius=1.4, alpha=0.15, fc='c'))
                 else:
                     pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 7: # N
