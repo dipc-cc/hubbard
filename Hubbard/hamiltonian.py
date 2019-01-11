@@ -263,8 +263,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
         ni_dn = np.zeros(ndn.shape)
-        # TODO Shouldn't this be calculated with the mixed values?
-        Etot = - self.U * (nup * ndn).sum()
+        Etot = 0
 
         # Solve eigenvalue problems
         def calc_occ(k, weight, HOMO, LUMO):
@@ -308,7 +307,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot
+        self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
 
         # TODO in my opinion one should only return dn
         #      Etot is stored in the object, so why not use it from there?
