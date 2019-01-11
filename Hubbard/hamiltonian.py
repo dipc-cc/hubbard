@@ -247,7 +247,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.update_hamiltonian()
         # Compute total energy
         self.Etot = np.sum(ev_up[:int(Nup)]) + np.sum(ev_dn[:int(Ndn)]) - self.U*np.sum(self.nup*self.ndn)
-        return dn, self.Etot
+        return dn
 
     def iterate2(self, mix=1.0):
         # Create short-hands
@@ -311,7 +311,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
         # TODO in my opinion one should only return dn
         #      Etot is stored in the object, so why not use it from there?
-        return dn, self.Etot
+        return dn
 
     def iterate3(self, mix=1.0, q_up=None, q_dn=None):
         # Create short-hands
@@ -377,7 +377,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
         # TODO in my opinion one should only return dn
         #      Etot is stored in the object, so why not use it from there?
-        return dn, self.Etot
+        return dn
 
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, save=False):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
@@ -395,17 +395,17 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn, Etot = iterate_(mix=premix)
+                dn = iterate_(mix=premix)
             else:
-                dn, Etot = iterate_(mix=mix)
+                dn = iterate_(mix=mix)
             # Print some info from time to time
             if i%steps == 0:
-                print('   %i iterations completed:'%i, dn, Etot)
+                print('   %i iterations completed:'%i, dn, self.Etot)
                 # Save density to netcdf?
                 if save:
                     self.save()
         print('   found solution in %i iterations'%i)
-        return dn, self.Etot
+        return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
         ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
