@@ -20,11 +20,11 @@ for m in range(1,4):
     # Reset density and iterate
     H.random_density()
 
-    dn, etot = H.converge(tol=1e-10, steps=10, method=m)
+    dn = H.converge(tol=1e-10, steps=10, method=m)
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
-    print 'Total energy difference: %.4e eV' %(Etot0-etot)
+    print 'Total energy difference: %.4e eV' %(Etot0-H.Etot)
 
     # Eigenvalues are easy to check
     if np.allclose(ev1, ev0):
