@@ -246,7 +246,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Update spin hamiltonian
         self.update_hamiltonian()
         # Compute total energy
-        self.Etot = np.sum(ev_up[:int(Nup)])+np.sum(ev_dn[:int(Ndn)])-self.U*np.sum(nup*ndn)
+        self.Etot = np.sum(ev_up[:int(Nup)]) + np.sum(ev_dn[:int(Ndn)]) - self.U*np.sum(self.nup*self.ndn)
         return dn, self.Etot
 
     def iterate2(self, mix=1.0):
