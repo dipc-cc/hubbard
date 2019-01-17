@@ -16,12 +16,12 @@ H = hh.HubbardHamiltonian(fn, fn_title='triangulene', t1=2.7, t2=.2, t3=.18)
 f = open('FM-AFM.dat', 'w')
 
 for u in np.linspace(0.0, 3.5, 15):
-    # We approach the solutions from above, starting at U=4eV
     H.U = u
     H.read() # Try reading, if we already have density on file
 
     # AFM case first
-    dn, eAFM = H.converge(mix=.5, tol=1e-7)
+    dn = H.converge(mix=.5, tol=1e-5)
+    eAFM = H.Etot
     H.save() # Computed density to file
 
     #p = plot.SpinPolarization(H,  colorbar=True)
@@ -32,7 +32,8 @@ for u in np.linspace(0.0, 3.5, 15):
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
     H.read()
-    dn, eFM = H.converge(mix=.01, tol=1e-4)
+    dn = H.converge(mix=.5, tol=1e-5)
+    eFM = H.Etot
     H.save()
 
     # Revert the imbalance for next loop
