@@ -17,7 +17,7 @@ def compute(fn):
     geom.set_nsc([3,1,1])
 
     H = hh.HubbardHamiltonian(geom, fn_title=fn[:-3], t1=2.7, t2=0, t3=0, U=U, kmesh=[51, 1, 1])
-    dn, etot = H.iterate()
+    dn = H.iterate()
     if dn > 0.1:
         # We don't have a good solution, try polarizing one edge:
         H.set_polarization([1, 6])
