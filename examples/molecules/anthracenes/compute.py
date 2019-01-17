@@ -22,14 +22,16 @@ for u in np.linspace(0.0, 4.0, 5):
 
     # AFM case first
     H.read() # Try reading, if we already have density on file
-    dn, eAFM = H.converge()
+    dn = H.converge()
+    eAFM = H.Etot
     H.save() # Computed density to file
 
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
     H.read()
-    dn, eFM = H.converge()
+    dn = H.converge()
+    eFM = H.Etot
     H.save()
 
     # Revert the imbalance for next loop
