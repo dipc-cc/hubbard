@@ -1,23 +1,36 @@
 import Hubbard.hamiltonian as hh
+import Hubbard.plot as plot
 import sys
 import numpy as np
+import sisl
 
-# Density tolerance for quitting the iterations
-tol = 1e-10
+# Build sisl Geometry object
+fn = sisl.get_sile('type1.xyz').read_geometry()
+fn.sc.set_nsc([1,1,1])
+fn = fn.move(-fn.center(what='xyz')).rotate(220, [0,0,1])
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian('type1.xyz', t1=2.7, t2=0.2, t3=.18,
-                          what='xyz', angle=220)
+H = hh.HubbardHamiltonian(fn, fn_title='type1', t1=2.7, t2=0.2, t3=.18)
 
-for u in [0.0, 3.5]:
-    # We approach the solutions from above, starting at U=4eV
-    H.U = u
-    H.read() # Try reading, if we already have density on file
-    H.converge()
-    H.save() # Computed density to file
-    # The following needs to be updated:
-    #H.plot_polarization()
-    #H.plot_wf(EnWindow=0.4, ispin=0)
-    #H.plot_wf(EnWindow=0.2, ispin=1)
-    #H.plot_rs_wf(EnWindow=0.4, ispin=0, z=0.8)
-    #H.plot_rs_wf(EnWindow=0.2, ispin=1, z=0.8)
+# Plot the single-particle TB (U = 0.0) wavefunction (SO) for Type 1
+H.U = 0.0
+ev, evec = H.eigh(eigvals_only=False, spin=0)
+N = H.Nup
+ev -= H.midgap
+f = 3800
+v = evec[:,N-1]
+j = np.argmax(abs(v))
+wf = f*v**2*np.sign(v[j])*np.sign(v)
+p = plot.Wavefunction(H, wf)
+p.set_title(r'$E = %.3f$ eV'%(ev[N-1]))
+p.savefig('Fig3_SOMO.pdf')
+
+# Plot MFH spin polarization for U = 3.5 eV
+H.U = 3.5
+H.read() # Try reading, if we already have density on file
+H.converge()
+H.save() # Computed density to file
+p = plot.SpinPolarization(H, vmax=0.20)
+p.savefig('fig3_pol.pdf')
+
+
