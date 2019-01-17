@@ -15,7 +15,7 @@ grp = 'AFM-AFM-AFM'
 H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x5', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
 if pol:
     H.set_polarization([3, 99], dn=[82, 178])
-dn, etot = H.converge()
+dn = H.converge()
 H.save(grp)
 p = plot.SpinPolarization(H)
 p.annotate()
@@ -28,7 +28,7 @@ grp = 'AFM-FM-AFM'
 H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x5', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
 if pol:
     H.set_polarization([3, 178], dn=[82, 99])
-dn, etot = H.converge()
+dn = H.converge()
 H.save(grp)
 p = plot.SpinPolarization(H)
 p.annotate()
@@ -38,7 +38,7 @@ grp = 'FM-AFM-FM'
 H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x5', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
 if pol:
     H.set_polarization([3, 82], dn=[99, 178])
-dn, etot = H.converge()
+dn = H.converge()
 H.save(grp)
 p = plot.SpinPolarization(H)
 p.annotate()
