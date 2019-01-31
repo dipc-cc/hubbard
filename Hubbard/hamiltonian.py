@@ -573,3 +573,30 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             idx = g.close(ia, R=R)
             BO[ia, idx[1]] += 1.
         return BO.Hk(format=format) # Fold to Gamma
+
+    def spin_contamination(self):
+        """
+        Obtains the spin contamination after the MFH calculation
+        Ref. Chemical Physics Letters. 183 (5): 423–431.
+        """
+        # Define Nalpha and Nbeta, where Nalpha >= Nbeta 
+        Nalpha = max(self.Nup, self.Ndn)
+        Nbeta = min(self.Nup, self.Ndn)
+        
+        # Exact Total Spin expected value (< S² >)
+        S = .5*(Nalpha - Nbeta) * ( (Nalpha - Nbeta)*.5 + 1)
+
+        # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
+        ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
+        ev_dn, evec_dn = self.eigh(eigvals_only=False, spin=1)
+
+        prd = 0
+        for i in range(int(self.Nup)):
+            for j in range(int(self.Ndn)):
+                prd += np.sum( evec_up[:,i] * evec_dn[:,j] ) **2
+
+        # Spin contamination 
+        S_MFH = S + Nbeta - prd
+        print('Exact spin Stot: ', S)
+        print('Expected value of S^2 in the MFH approximation: ', S_MFH)        
+        print('Spin contamination (delta_S): ', S_MFH-S)
