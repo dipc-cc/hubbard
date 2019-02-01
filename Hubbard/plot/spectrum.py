@@ -36,7 +36,7 @@ class Spectrum(Plot):
 class LDOSmap(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
-                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10.,
+                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmax=None,
                  **keywords):
 
         Plot.__init__(self, **keywords)
@@ -59,7 +59,7 @@ class LDOSmap(Plot):
         intdat = np.sum(dat)*(x[1]-x[0])*(y[1]-y[0])
         print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
-        self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower')
+        self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower', vmax=vmax)
         if axis==0:
             self.set_xlabel(r'$x$ (\AA)')
         elif axis==1:
