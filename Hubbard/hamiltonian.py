@@ -578,6 +578,8 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         """
         Obtains the spin contamination after the MFH calculation
         Ref. Chemical Physics Letters. 183 (5): 423–431.
+        
+        This function works for non-periodic systems only.
         """
         # Define Nalpha and Nbeta, where Nalpha >= Nbeta 
         Nalpha = max(self.Nup, self.Ndn)
@@ -590,13 +592,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
         ev_dn, evec_dn = self.eigh(eigvals_only=False, spin=1)
 
-        prd = 0
-        for i in range(int(self.Nup)):
-            for j in range(int(self.Ndn)):
-                prd += np.sum( evec_up[:,i] * evec_dn[:,j] ) **2
-
+        # No need to tell which matrix of eigenstates correspond to alpha or beta, 
+        # the sisl function spin_squared already takes this into account
+        s2alpha, s2beta = sisl.electron.spin_squared(evec_up[:, :self.Nup].T, evec_dn[:, :self.Ndn].T)
+        
         # Spin contamination 
-        S_MFH = S + Nbeta - prd
-        print('Exact spin Stot: ', S)
-        print('Expected value of S^2 in the MFH approximation: ', S_MFH)        
-        print('Spin contamination (delta_S): ', S_MFH-S)
+        S_MFH = S + Nbeta - s2beta.sum()
+
+        return S, S_MFH
