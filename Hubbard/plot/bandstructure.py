@@ -7,7 +7,7 @@ import numpy as np
 
 class Bandstructure(Plot):
 
-    def __init__(self, HubbardHamiltonian, nk=51, ymax=4., projection=None, spin=0, scale=1, **keywords):
+    def __init__(self, HubbardHamiltonian, nk=51, ymax=4., projection=None, spin=0, scale=1, c='r', **keywords):
 
         # Set default keywords
         if 'figsize' not in keywords:
@@ -42,6 +42,6 @@ class Bandstructure(Plot):
             for i, evi in enumerate(ev[0, 0]):
                 plt.errorbar(x, ev[:, 0, i], yerr=scale*pdos[:, 0, i], alpha=.4, color='Grey')
         # Add spin-up component to plot (top layer)
-        plt.plot(x, ev[:, 0], 'r')
+        plt.plot(x, ev[:, 0], c)
         # Adjust borders
         plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
