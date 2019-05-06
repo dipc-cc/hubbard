@@ -73,7 +73,7 @@ class LDOSmap(Plot):
         self.axes.set_aspect('auto')
 
 
-class plotDOS_distribution(GeometryPlot):
+class DOS_distribution(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, E, eta=1e-3, spin=[0,1], f=300, sites=[], **keywords):
 
@@ -94,7 +94,28 @@ class plotDOS_distribution(GeometryPlot):
 
         DOS = HubbardHamiltonian.DOS(egrid=E, eta=eta, spin=spin)
 
-        for i in range(len(sites)):
-            self.ax.text(x[i]-0.5, y[i]-3,len(sites)-i,fontsize=15,color='r')
+        for s in sites:
+            self.axes.text(x[s], y[s], '%i'%s, fontsize=15, color='r')
 
         self.axes.scatter(x, y, f*DOS, 'b')
+
+    
+class DOS(Plot):
+    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0,1], sites=[], **keywords):
+
+        Plot.__init__(self, **keywords)
+        
+        DOS = HubbardHamiltonian.DOS(egrid=egrid, eta=eta, spin=spin)
+
+        if sites:
+            offset = 0.*np.average(DOS[sites[0]])
+            for i, s in enumerate(sites):
+                self.axes.plot(egrid, DOS[s]+offset*i, label='%i'%s)
+
+        else:
+            TDOS = DOS.sum(axis=0)
+            plt.plot(egrid,TDOS,label='TDOS')
+
+        self.set_xlabel(r'E-E$_\mathrm{midgap}$ [eV]')
+        self.set_ylabel(r'DOS [1/eV]')
+        self.axes.legend()
