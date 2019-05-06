@@ -169,13 +169,18 @@ class GeometryPlot(Plot):
             del H
             return grid
 
+        if 'vmin' in keywords:
+            vmin = keywords['vmin']
+        else:
+            vmin = -vmax
+
         grid = real_space_grid(v, grid_unit, density)
         index =  grid.index([0, 0, z])
 
         # Plot only the real part of the grid
         # The image will be created in an imshow layer (stored in self.imshow)
         self.imshow = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
-                              vmax=vmax, vmin=-vmax, extent=self.extent)
+                              vmax=vmax, vmin=vmin, extent=self.extent)
         # Colorbars
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
