@@ -36,7 +36,6 @@ ev, evec = H.eigh(eigvals_only=False, spin=0)
 p = plot.Wavefunction(H, 500*evec[:, 10])
 p.savefig('wf.pdf')
 
-ev, evec = H.eigh(eigvals_only=False, spin=0)
 p = plot.Wavefunction(H, 10*evec[:, 10], realspace=True)
 p.savefig('wf_rs.pdf')
 
@@ -46,11 +45,11 @@ p.savefig('spectrum.pdf')
 p = plot.LDOSmap(H)
 p.savefig('ldos.pdf')
 
-p = plot.plotDOS_distribution(H, 0.15, f=300, sites=[60])
+p = plot.DOS_distribution(H, 0.15, f=300, sites=[60])
 p.savefig('dos.pdf')
 
-p = plot.plotDOS(H, np.linspace(-0.2,0.2,101))
+p = plot.DOS(H, np.linspace(-0.2,0.2,101))
 p.savefig('dos2.pdf')
 
-p = plot.plotDOS(H, np.linspace(-0.2,0.2,101), sites=[60])
+p = plot.DOS(H, np.linspace(-0.2,0.2,101), sites=[60])
 p.savefig('ldos2.pdf')
