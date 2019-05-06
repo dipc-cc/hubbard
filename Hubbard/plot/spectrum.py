@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import matplotlib.pyplot as plt
 from Hubbard.plot import Plot
+from Hubbard.plot import GeometryPlot
 import numpy as np
 
 
@@ -70,3 +71,30 @@ class LDOSmap(Plot):
         self.set_xlim(xmin, xmax)
         self.set_ylim(ymin, ymax)
         self.axes.set_aspect('auto')
+
+
+class plotDOS_distribution(GeometryPlot):
+
+    def __init__(self, HubbardHamiltonian, E, eta=1e-3, spin=[0,1], f=300, sites=[], **keywords):
+
+        # Set default keywords
+        if 'realspace' in keywords:
+            if 'facecolor' not in keywords:
+                keywords['facecolor'] = 'None'
+            if 'cmap' not in keywords:
+                keywords['cmap'] = 'Greys'
+        else:
+            if 'cmap' not in keywords:
+                keywords['cmap'] = plt.cm.bwr
+
+        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+
+        x = HubbardHamiltonian.geom[:, 0]
+        y = HubbardHamiltonian.geom[:, 1]
+
+        DOS = HubbardHamiltonian.DOS(egrid=E, eta=eta, spin=spin)
+
+        for i in range(len(sites)):
+            self.ax.text(x[i]-0.5, y[i]-3,len(sites)-i,fontsize=15,color='r')
+
+        self.axes.scatter(x, y, f*DOS, 'b')
