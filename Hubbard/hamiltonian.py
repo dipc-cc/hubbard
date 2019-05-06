@@ -600,3 +600,35 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         S_MFH = S + Nbeta - s2beta.sum()
 
         return S, S_MFH
+
+    def DOS(self, egrid, eta=1e-3, spin=[0,1]):
+        """
+        Obtains the Density Of States of the system convoluted with a Lorentzian function
+
+        Parameters
+        ----------
+        egrid: float or array_like
+            Energy grid at which the DOS will be calculated.
+        eta: float
+            Smearing parameter
+        spin: integer or list of integers
+            If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+            If spin is not specified it returns DOS_up + DOS_dn.
+        """
+
+        # Check if egrid is numpy.ndarray
+        if not isinstance(egrid, (np.ndarray)):
+            egrid = np.array(egrid)
+        
+        # Obtain DOS
+        DOS = 0
+        for ispin in spin:
+            ev, evec = self.eigh(eigvals_only=False, spin=ispin)
+
+            id1 = np.ones(ev.shape,np.float)
+            id2 = np.ones(egrid.shape,np.float)
+            dE = np.outer(id1,egrid)-np.outer(ev,id2)
+            LOR = 2*eta/(dE**2+eta**2)
+            DOS += np.einsum('ai,ai,ij->aj',evec,evec,LOR)/(2*np.pi)
+        
+        return DOS
