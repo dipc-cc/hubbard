@@ -45,3 +45,12 @@ p.savefig('spectrum.pdf')
 
 p = plot.LDOSmap(H)
 p.savefig('ldos.pdf')
+
+p = plot.plotDOS_distribution(H, 0.15, f=300, sites=[60])
+p.savefig('dos.pdf')
+
+p = plot.plotDOS(H, np.linspace(-0.2,0.2,101))
+p.savefig('dos2.pdf')
+
+p = plot.plotDOS(H, np.linspace(-0.2,0.2,101), sites=[60])
+p.savefig('ldos2.pdf')
