@@ -95,13 +95,13 @@ class DOS_distribution(GeometryPlot):
 
         if 'realspace' in keywords:
             self.__realspace__(DOS, density=True, vmin=0, **keywords)
-            self.imshow.set_cmap('Blues')
+            self.imshow.set_cmap(plt.cm.hot)
 
         else:
             self.axes.scatter(x, y, f*DOS, 'b')
 
-        for s in sites:
-            self.axes.text(x[s], y[s], '%i'%s, fontsize=15, color='r')
+        for i, s in enumerate(sites):
+            self.axes.text(x[s], y[s], '%i'%i, fontsize=15, color='r')
 
     
 class DOS(Plot):
@@ -111,10 +111,10 @@ class DOS(Plot):
         
         DOS = HubbardHamiltonian.DOS(egrid=egrid, eta=eta, spin=spin)
 
-        if sites:
+        if np.any(sites):
             offset = 0.*np.average(DOS[sites[0]])
             for i, s in enumerate(sites):
-                self.axes.plot(egrid, DOS[s]+offset*i, label='%i'%s)
+                self.axes.plot(egrid, DOS[s]+offset*i, label='%i'%i)
 
         else:
             TDOS = DOS.sum(axis=0)
