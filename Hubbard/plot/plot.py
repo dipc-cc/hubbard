@@ -40,11 +40,11 @@ class Plot(object):
     def set_title(self, title, size=16):
         self.axes.set_title(title, size=size)
 
-    def set_xlabel(self, label):
-        self.axes.set_xlabel(label)
+    def set_xlabel(self, label, fontsize=16):
+        self.axes.set_xlabel(label, fontsize=fontsize)
 
-    def set_ylabel(self, label):
-        self.axes.set_ylabel(label)
+    def set_ylabel(self, label, fontsize=16):
+        self.axes.set_ylabel(label, fontsize=fontsize)
 
     def set_xlim(self, xmin, xmax):
         self.axes.set_xlim(xmin, xmax)
