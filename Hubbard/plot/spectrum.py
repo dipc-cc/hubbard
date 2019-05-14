@@ -89,7 +89,7 @@ class DOS_distribution(GeometryPlot):
 
         GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
 
-        DOS = HubbardHamiltonian.DOS(egrid=E, eta=eta, spin=spin)
+        DOS = HubbardHamiltonian.DOS(E, eta=eta, spin=spin)
         x = HubbardHamiltonian.geom[:, 0]
         y = HubbardHamiltonian.geom[:, 1]
 
@@ -109,7 +109,7 @@ class DOS(Plot):
 
         Plot.__init__(self, **keywords)
         
-        DOS = HubbardHamiltonian.DOS(egrid=egrid, eta=eta, spin=spin)
+        DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
 
         if np.any(sites):
             offset = 0.*np.average(DOS[sites[0]])
