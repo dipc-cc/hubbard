@@ -624,6 +624,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         DOS = 0
         for ispin in spin:
             ev, evec = self.eigh(eigvals_only=False, spin=ispin)
+            ev -= self.midgap
 
             id1 = np.ones(ev.shape,np.float)
             id2 = np.ones(egrid.shape,np.float)
