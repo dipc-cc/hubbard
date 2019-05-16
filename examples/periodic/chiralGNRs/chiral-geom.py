@@ -1,4 +1,7 @@
 import sisl
+import Hubbard.hamiltonian as hh
+import Hubbard.plot as plot
+import numpy as np
 
 def cgnr(n, m, w, d=1.42):
     "Generation of chiral GNR geometry (periodic along second lattice vector)"
@@ -15,5 +18,21 @@ def cgnr(n, m, w, d=1.42):
     gr.write('cgnr_%i_%i_%i.xyz'%(n, m, w))
     return g
 
-g = cgnr(3, 1, 8)
-print g
+def analyze(n, m, w, nx=100):
+    geom = cgnr(n, m, w)
+    directory = '%i-%i-%i'%(n, m, w)
+    H = hh.HubbardHamiltonian(geom, fn_title=directory, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
+    ymax = 2.0
+    p = plot.Bandstructure(H, ymax=ymax)
+    p.set_title(r'%s'%(directory))
+    zak = H.get_Zak_phase(Nx=nx, sub=H.Nup)
+    z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
+    p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
+    tol = 0.05
+    if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
+        # Only append Z2 when appropriate:
+        p.axes.annotate(r'$\mathbf{Z_2=%i}$'%z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
+    p.savefig(directory+'/bands_1NN.pdf')
+
+g = analyze(3, 1, 8)
+
