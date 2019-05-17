@@ -4,7 +4,7 @@ import Hubbard.plot as plot
 import numpy as np
 
 def cgnr(n, m, w, d=1.42):
-    "Generation of chiral GNR geometry (periodic along second lattice vector)"
+    "Generation of chiral GNR geometry (periodic along x-axis)"
     g0 = sisl.geom.graphene()
     g = sisl.geom.graphene(orthogonal='True')
     g = g.tile(n+1, 1)
@@ -13,8 +13,15 @@ def cgnr(n, m, w, d=1.42):
     g.cell[1] += g0.cell[1]
     if m > 1:
         g.cell[1, 0] += 3*(m-1)*d
-    g.set_nsc([1,3,1])
-    gr = g.repeat(3, 1)
+    cs = np.cos(np.pi/3)
+    sn = np.sin(np.pi/3)
+    A1 = d*(1.+cs)*(2.*(m-1)+1.)
+    A2 = d*(n+0.5)*sn*2.
+    theta = np.arctan(A2/A1)
+    gr = g.rotate(theta*360/(2*np.pi), v=[0,0,1])
+    gr.set_sc([A2*np.sin(theta)+A1*np.cos(theta), 10, 10])
+    gr.set_nsc([3,1,1])
+    #gr = gr.repeat(3,0)
     gr.write('cgnr_%i_%i_%i.xyz'%(n, m, w))
     return g
 
