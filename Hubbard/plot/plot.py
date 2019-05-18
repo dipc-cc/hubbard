@@ -31,6 +31,7 @@ class Plot(object):
         plt.rc('font', family='Bitstream Vera Serif', size=16)
 
     def savefig(self, fn):
+        plt.tight_layout()
         self.fig.savefig(fn)
         print('Wrote', fn)
 
