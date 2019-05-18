@@ -2,6 +2,7 @@ import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import numpy as np
+import os
 
 def cgnr(n, m, w, d=1.42):
     "Generation of chiral GNR geometry (periodic along x-axis)"
@@ -21,25 +22,45 @@ def cgnr(n, m, w, d=1.42):
     gr = g.rotate(theta*360/(2*np.pi), v=[0,0,1])
     gr.set_sc([A2*np.sin(theta)+A1*np.cos(theta), 10, 10])
     gr.set_nsc([3,1,1])
-    #gr = gr.repeat(3,0)
-    gr.write('cgnr_%i_%i_%i.xyz'%(n, m, w))
-    return g
+    # Mover center-of-mass to origo
+    gr = gr.move(-gr.center())
+    return gr
 
-def analyze(n, m, w, nx=100):
-    geom = cgnr(n, m, w)
+def analyze(n, m, w, nx=1001):
     directory = '%i-%i-%i'%(n, m, w)
+    print('Doing', directory)
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+    geom = cgnr(n, m, w)
+    geom.write(directory+'/cgnr.xyz')
+    geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
     H = hh.HubbardHamiltonian(geom, fn_title=directory, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
-    ymax = 2.0
+    ymax = 8.0
     p = plot.Bandstructure(H, ymax=ymax)
-    p.set_title(r'%s'%(directory))
-    zak = H.get_Zak_phase(Nx=nx, sub=H.Nup)
+    p.set_title(r'%s: $n_x=%i$'%(directory,nx))
+    # Zak one band only
+    zak1 = H.get_Zak_phase(Nx=nx, sub=H.Nup)
+    z21 = int(round(np.abs(1-np.exp(1j*zak1))/2))
+    zak1b = H.get_Zak_phase(Nx=nx+1, sub=H.Nup)
+    z21b = int(round(np.abs(1-np.exp(1j*zak1b))/2))
+    assert z21 == z21b
+    # Zak all filled bands
+    zak = H.get_Zak_phase(Nx=nx)
     z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
-    p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
+    print('%s: z21=%i [z2-all=%i]'%(directory, z21,z2))
+    #assert z21 == z2
+    #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
     tol = 0.05
     if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
         # Only append Z2 when appropriate:
-        p.axes.annotate(r'$\mathbf{Z_2=%i}$'%z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
+        p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
-g = analyze(3, 1, 8)
+
+n = 3
+m = 1
+g = analyze(n, m, 4)
+g = analyze(n, m, 6)
+g = analyze(n, m, 8)
+g = analyze(n, m, 10)
 
