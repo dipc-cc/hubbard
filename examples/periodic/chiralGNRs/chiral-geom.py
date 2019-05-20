@@ -56,7 +56,6 @@ def analyze(n, m, w, nx=1001):
         p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
-
 def analyze_edge(n,m,w):
     directory = '%i-%i-%i'%(n, m, w)
     print('Doing', directory)
@@ -75,7 +74,7 @@ def analyze_edge(n,m,w):
 
     # Eigenvectors and eigenvalues in 1NN model for finite ribbon
     geom.set_nsc([1,1,1])
-    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)        
+    H = hh.HubbardHamiltonian(geom, fn_title=directory, t1=2.7, t2=0., t3=0., U=0.)        
     ev, evec = H.H.eigh(eigvals_only=False,spin=0)
     ev -= H.midgap
 
