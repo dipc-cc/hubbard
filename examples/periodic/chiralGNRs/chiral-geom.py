@@ -64,7 +64,6 @@ def analyze_edge(n,m,w):
     # Create 15 length ribbon
     geom = cgnr(n,m,w).tile(15, axis=0)
     # Identify edge sites along the lower ribbon border
-    geom.set_nsc([3,1,1]) # Set periodic boundary conditions to avoid lateral edge sites
     sites = []
     for ia in geom:
         idx = geom.close(ia, R=[0.1, 1.43])
