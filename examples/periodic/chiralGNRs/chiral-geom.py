@@ -57,10 +57,54 @@ def analyze(n, m, w, nx=1001):
     p.savefig(directory+'/bands_1NN.pdf')
 
 
+def analyze_edge(n,m,w):
+    directory = '%i-%i-%i'%(n, m, w)
+    print('Doing', directory)
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+    # Create 15 length ribbon
+    geom = cgnr(n,m,w).tile(15, axis=0)
+    # Identify edge sites along the lower ribbon border
+    geom.set_nsc([3,1,1]) # Set periodic boundary conditions to avoid lateral edge sites
+    sites = []
+    for ia in geom:
+        idx = geom.close(ia, R=[0.1, 1.43])
+        if len(idx[1]) == 2 :
+            if geom.xyz[ia, 1] < 0:
+                sites.append(ia)
+
+    # Eigenvectors and eigenvalues in 1NN model for finite ribbon
+    geom.set_nsc([1,1,1])
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)        
+    ev, evec = H.H.eigh(eigvals_only=False,spin=0)
+    ev -= H.midgap
+
+    p = plot.Plot()
+    y1 = np.absolute(evec[sites, H.Nup-1] )**2
+    y2 = np.absolute(evec[sites, H.Nup] )**2
+    x = geom.xyz[sites, 0]
+    p.axes.plot(x, y1, '-or', label=r'HOMO')
+    p.axes.plot(x, y2, '--ob', label=r'LUMO')
+    p.axes.legend(fontsize=13)
+    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]')
+    p.set_xlabel(r'$x$ [\AA]')
+    p.set_title('[%s]'%directory)
+    p.savefig(directory+'/1NN_squared_wf.pdf')
+
+    if True:
+        # Plot edge sites?
+        v = np.zeros(len(H.geom))
+        v[sites] = 1.
+        p = plot.GeometryPlot(H, cmap='Reds', figsize=(10,3))
+        p.__orbitals__(v)
+        p.axes.set_clim(0,1.0)
+        p.set_title(r'Edge sites of [%s]'%directory)
+        p.savefig(directory+'/edge_sites.pdf')
+
 n = 3
 m = 1
 g = analyze(n, m, 4)
 g = analyze(n, m, 6)
 g = analyze(n, m, 8)
 g = analyze(n, m, 10)
-
+analyze_edge(n,m,6)
