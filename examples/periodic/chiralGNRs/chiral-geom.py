@@ -96,8 +96,7 @@ def analyze_edge(n,m,w):
         v = np.zeros(len(H.geom))
         v[sites] = 1.
         p = plot.GeometryPlot(H, cmap='Reds', figsize=(10,3))
-        p.__orbitals__(v)
-        p.axes.set_clim(0,1.0)
+        p.__orbitals__(v, vmax=1.0, vmin=0)
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
@@ -107,4 +106,4 @@ g = analyze(n, m, 4)
 g = analyze(n, m, 6)
 g = analyze(n, m, 8)
 g = analyze(n, m, 10)
-analyze_edge(n,m,6)
+analyze_edge(n, m, 6)
