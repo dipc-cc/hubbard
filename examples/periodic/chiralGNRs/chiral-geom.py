@@ -89,7 +89,7 @@ def analyze_edge(n,m,w):
     p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]')
     p.set_xlabel(r'$x$ [\AA]')
     p.set_title('[%s]'%directory)
-    p.savefig(directory+'/1NN_squared_wf.pdf')
+    p.savefig(directory+'/1NN_edge_wf.pdf')
 
     if True:
         # Plot edge sites?
