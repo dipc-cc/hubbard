@@ -374,7 +374,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         #      Etot is stored in the object, so why not use it from there?
         return dn
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, save=False):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         if method == 2:
