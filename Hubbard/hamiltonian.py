@@ -459,7 +459,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.ncf[ncgroup]['Density'][i, 1] = self.ndn
         self.ncf[ncgroup]['Etot'][i] = self.Etot
         self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
 
     def read(self, fn, ncgroup='default'):
         print('Reading', fn)
