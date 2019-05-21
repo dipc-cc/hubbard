@@ -117,7 +117,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.init_nc(self.fn+'.nc')
         # Try reading from file or use random density
         self.read()
-        self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
         """ Setup the initial Hamiltonian
