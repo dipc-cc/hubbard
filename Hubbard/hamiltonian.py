@@ -408,14 +408,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def init_nc(self, fn):
+    def init_nc(self, fn, ncgroup):
         try:
             self.ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
         except:
             print('Initiating', fn)
             self.ncf = NC.Dataset(fn, 'w')
-        self.init_ncgrp(self.ncgroup)
+        self.init_ncgrp(ncgroup)
 
     def init_ncgrp(self, ncgroup):
         if ncgroup not in self.ncf.groups:
@@ -445,12 +445,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
         return myhash, s
 
-    def save(self, fn, ncgroup=None):
-        self.init_nc(fn)
-        if not ncgroup:
-            ncgroup = self.ncgroup
+    def save(self, fn, ncgroup='default'):
+        self.init_nc(fn, ncgroup)
         myhash, s = self.gethash()
-        self.init_ncgrp(ncgroup)
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(self.ncf[ncgroup]['hash'][:])
@@ -466,9 +463,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.ncf.sync()
         print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
 
-    def read(self, ncgroup=None):
-        if not ncgroup:
-            ncgroup = self.ncgroup
+    def read(self, fn, ncgroup='default'):
+        print('Reading', fn)
+        self.ncf = NC.Dataset(fn, 'r')
         myhash, s = self.gethash()
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
@@ -477,7 +474,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.random_density()
         else:
             print('Found:')
-            print('... %s in %s.nc{%s}' % (s, self.fn, ncgroup))
+            print('... %s in %s.nc{%s}' % (s, fn, ncgroup))
             i = i[0]
             self.U = self.ncf[ncgroup]['U'][i]
             self.nup = self.ncf[ncgroup]['Density'][i][0]
