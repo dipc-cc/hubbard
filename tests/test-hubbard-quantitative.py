@@ -9,11 +9,11 @@ import sisl
 fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 fn.sc.set_nsc([1,1,1])
 
-H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
-
+H = hh.HubbardHamiltonian(fn, U=3.5)
+# Try reading from file or use random density
+H.read('mol-ref/mol-ref.nc')
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
-
 Etot0 = H.Etot*1
 
 for m in range(1,4):
