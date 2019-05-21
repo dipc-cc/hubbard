@@ -112,11 +112,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.mp = sisl.MonkhorstPack(self, kmesh)
         # Initialize elements
         self.init_hamiltonian_elements()
-        # Initialize data file
-        self.ncgroup = ncgroup
-        self.init_nc(self.fn+'.nc')
-        # Try reading from file or use random density
-        self.read()
 
     def init_hamiltonian_elements(self):
         """ Setup the initial Hamiltonian
@@ -451,7 +446,8 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
         return myhash, s
 
-    def save(self, ncgroup=None):
+    def save(self, fn, ncgroup=None):
+        self.init_nc(fn)
         if not ncgroup:
             ncgroup = self.ncgroup
         myhash, s = self.gethash()
@@ -469,7 +465,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.ncf[ncgroup]['Density'][i, 1] = self.ndn
         self.ncf[ncgroup]['Etot'][i] = self.Etot
         self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, self.fn, ncgroup))
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
 
     def read(self, ncgroup=None):
         if not ncgroup:
