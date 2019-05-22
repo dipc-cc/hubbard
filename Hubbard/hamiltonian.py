@@ -143,8 +143,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 self.H.S[ia, idx[3]] = self.s3
         # Determine midgap with U=0
         ev = self.H.eigh(spin=0)
-        HOMO = ev[self.Nup-1]
-        LUMO = ev[self.Ndn]
+        N = max(self.Nup, self.Ndn)
+        HOMO = ev[N-1]
+        LUMO = ev[N]
         self.midgap = (LUMO+HOMO)/2
 
     def update_hamiltonian(self):
