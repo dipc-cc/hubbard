@@ -479,6 +479,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.nup = self.ncf[ncgroup]['Density'][i][0]
             self.ndn = self.ncf[ncgroup]['Density'][i][1]
             self.Etot = self.ncf[ncgroup]['Etot'][i]
+        self.ncf.close()
         self.update_hamiltonian()
 
     def get_Zak_phase_open_contour(self, Nx=51, sub='filled', eigvals=False):
