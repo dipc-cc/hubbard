@@ -1,4 +1,5 @@
 import Hubbard.hamiltonian as hh
+import Hubbard.ncdf as ncdf
 import numpy as np
 import sisl
 
@@ -6,15 +7,20 @@ import sisl
 # using a reference molecule (already converged)
 
 # Build sisl Geometry object
-fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-fn.sc.set_nsc([1,1,1])
+molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
+molecule.sc.set_nsc([1,1,1])
 
-H = hh.HubbardHamiltonian(fn, U=3.5)
-# Try reading from file or use random density
-H.read('mol-ref/mol-ref.nc')
+# Try reading from file
+calc = ncdf.read('mol-ref/mol-ref.nc')
+H = hh.HubbardHamiltonian(molecule)
+H.U = calc.U
+H.Nup, H.Ndn = calc.Nup, calc.Ndn
+H.nup, H.ndn = calc.nup, calc.ndn
+H.update_hamiltonian()
+
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
-Etot0 = H.Etot*1
+Etot0 = calc.Etot*1
 
 for m in range(1,4):
     # Reset density and iterate
@@ -24,20 +30,20 @@ for m in range(1,4):
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
-    print 'Total energy difference: %.4e eV' %(Etot0-H.Etot)
+    print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
 
     # Eigenvalues are easy to check
     if np.allclose(ev1, ev0):
-        print 'Eigenvalue check passed'
+        print('Eigenvalue check passed')
     else:
         # Could be that up and down spins are interchanged
-        print 'Warning: Engenvalues for up-spins different. Checking down-spins instead'
+        print('Warning: Engenvalues for up-spins different. Checking down-spins instead')
         ev1, evec1 = H.eigh(eigvals_only=False, spin=1)
         if np.allclose(ev1, ev0):
-            print 'Eigenvalue check passed'
+            print('Eigenvalue check passed')
 
     # Eigenvectors are a little more tricky due to arbitrary sign
     if np.allclose(np.abs(evec1), np.abs(evec0)):
-        print 'Eigenvector check passed\n'
+        print('Eigenvector check passed\n')
     else:
-        print 'Eigenvector check failed!!!\n'
+        print('Eigenvector check failed!!!\n')
