@@ -18,7 +18,7 @@ import hashlib
 class read(object):
     
     def __init__(self, fn, ncgroup='default'):
-        print('Reading', fn)
+        print('Reading %s{%s}'%(fn, ncgroup))
         ncf = NC.Dataset(fn, 'r')
         self.ncgroups = ncf.groups
         self.U = ncf[ncgroup]['U'][0]
