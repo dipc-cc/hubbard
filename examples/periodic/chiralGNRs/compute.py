@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.ncdf as ncdf
 import numpy as np
 import sys
 import os
@@ -16,16 +17,19 @@ def compute(fn):
     geom = geom.move(-geom.center(what='xyz'))
     geom.set_nsc([3,1,1])
 
-    H = hh.HubbardHamiltonian(geom, fn_title=fn[:-3], t1=2.7, t2=0, t3=0, U=U, kmesh=[51, 1, 1])
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0, t3=0, U=U, kmesh=[51, 1, 1])
+    try:
+        c = ncdf.read(fn[:-3]+'.nc') # Try reading, if we already have density on file
+        H.nup, H.ndn = c.nup, c.ndn
+    except:
+        H.random_density()
     dn = H.iterate()
     if dn > 0.1:
         # We don't have a good solution, try polarizing one edge:
         H.set_polarization([1, 6])
-    if U == 0:
-        H.converge(save=True, premix=1.0)
-    else:
-        H.converge(save=True, steps=25)
-    H.save()
+    if U > 0:
+        H.converge(steps=25)
+        ncdf.write(H, fn[:-3]+'.nc')
 
     p = plot.SpinPolarization(H, colorbar=True, figsize=(6, 10), vmax=0.2)
     #p.annotate()
