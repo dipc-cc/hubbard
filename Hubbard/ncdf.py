@@ -22,6 +22,7 @@ class read(object):
         if ncgroup in ncf.groups:
             print('Reading %s{%s}'%(fn, ncgroup))
             self.ncgroups = ncf.groups
+            self.hash = ncf[ncgroup]['hash'][0]
             self.U = ncf[ncgroup]['U'][0]
             self.nup = ncf[ncgroup]['Density'][0][0]
             self.ndn = ncf[ncgroup]['Density'][0][1]
@@ -42,7 +43,7 @@ class write(object):
             print('Initiating', fn)
             ncf = NC.Dataset(fn, 'w')
         g = self.init_ncgrp(H, ncf, ncgroup)
-        myhash, s = self.gethash(H)
+        myhash = gethash(H).hash
         i = np.where(ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(ncf[ncgroup]['hash'][:])
@@ -81,9 +82,12 @@ class write(object):
             ncf[ncgroup].createVariable('Etot', 'f8', ('unl',))
             ncf.sync()
         else:
+            # Return True in case ncgroup is already an existing group
             return True
 
-    def gethash(self, HubbardHamiltonian):
+class gethash(object):
+
+    def __init__(self, HubbardHamiltonian):
         H = HubbardHamiltonian
         s = ''
         s += 't1=%.2f '%H.t1
@@ -94,5 +98,5 @@ class write(object):
         s += 'eN=%.2f '%H.eN
         s += 'Nup=%.2f '%H.Nup
         s += 'Ndn=%.2f '%H.Ndn
-        myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
-        return myhash, s
+        self.hash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
+        self.s = s
