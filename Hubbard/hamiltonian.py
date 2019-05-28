@@ -24,8 +24,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
     ext_geom : Geometry (sisl) object
         complete geometry that hosts also the SuperCell
         information (for instance the direction of periodicity, etc.)
-    fn_title : string, optional
-        name of output file
     t1 : float, optional
       nearest neighbor hopping matrix element
     t2 : float, optional
@@ -407,6 +405,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
+    '''
+    These function should be deleted since they now belong to another class
+
     def init_nc(self, fn, ncgroup):
         try:
             self.ncf = NC.Dataset(fn, 'a')
@@ -481,6 +482,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.Etot = self.ncf[ncgroup]['Etot'][i]
         self.ncf.close()
         self.update_hamiltonian()
+    '''
 
     def get_Zak_phase_open_contour(self, Nx=51, sub='filled', eigvals=False):
         """ This algorithm seems to return correct results, but may be prone
