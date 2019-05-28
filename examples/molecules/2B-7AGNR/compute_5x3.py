@@ -15,7 +15,6 @@ mol = mol.move(-mol.center(what='xyz'))
 up = [[1,99],[1,152],[1,80]]
 dn = [[80,152],[80,99],[99,152]]
 for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
-    print(grp)
     H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18, U=5.0)
     try:
         # Try reading from file
@@ -28,7 +27,7 @@ for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
         else:
             H.random_density()
     dn = H.converge()
-    b = ncdf.write(H, '7AGNR2B_5x3.nc', ncgroup=grp)
+    ncdf.write(H, '7AGNR2B_5x3.nc', ncgroup=grp)
     p = plot.SpinPolarization(H)
     p.set_title('Spin Pol 5x3 [%s]'%grp)
     p.annotate()
