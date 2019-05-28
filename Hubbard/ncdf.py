@@ -18,15 +18,16 @@ import hashlib
 class read(object):
     
     def __init__(self, fn, ncgroup='default'):
-        print('Reading %s{%s}'%(fn, ncgroup))
         ncf = NC.Dataset(fn, 'r')
-        self.ncgroups = ncf.groups
-        self.U = ncf[ncgroup]['U'][0]
-        self.nup = ncf[ncgroup]['Density'][0][0]
-        self.ndn = ncf[ncgroup]['Density'][0][1]
-        self.Etot = ncf[ncgroup]['Etot'][0]
-        self.Nup = ncf[ncgroup]['Nup'][0]
-        self.Ndn = ncf[ncgroup]['Ndn'][0]
+        if ncgroup in ncf.groups:
+            print('Reading %s{%s}'%(fn, ncgroup))
+            self.ncgroups = ncf.groups
+            self.U = ncf[ncgroup]['U'][0]
+            self.nup = ncf[ncgroup]['Density'][0][0]
+            self.ndn = ncf[ncgroup]['Density'][0][1]
+            self.Etot = ncf[ncgroup]['Etot'][0]
+            self.Nup = ncf[ncgroup]['Nup'][0]
+            self.Ndn = ncf[ncgroup]['Ndn'][0]
         ncf.close()
 
 
@@ -60,6 +61,7 @@ class write(object):
         ncf[ncgroup]['Density'][i, 1] = H.ndn
         ncf[ncgroup]['Etot'][i] = H.Etot
         ncf.sync()
+        ncf.close()
         print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s{%s}'%(H.U, H.Nup, H.Ndn, fn, ncgroup))
 
         
