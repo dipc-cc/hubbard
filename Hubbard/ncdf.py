@@ -16,8 +16,20 @@ import sisl
 import hashlib
 
 class read(object):
-    
+    '''
+    Parameters:
+    -----------
+    fn : filestr
+        Name of netcdf file it is going to read from
+    ncgroup : str, optional
+        Name of particular ncgroup that is going to be extracted
+        
+    Note: to follow *exactly* the same calculation, one can use the following 
+    identity as a filter: 
+        read(fn, ncgroup).hash == ncdf.gethash(H).hash   
+    '''
     def __init__(self, fn, ncgroup='default'):
+
         ncf = NC.Dataset(fn, 'r')
         if ncgroup in ncf.groups:
             print('Reading %s{%s}'%(fn, ncgroup))
