@@ -5,7 +5,7 @@
 
 Function for the meanfield Hubbard Hamiltonian
 
-.. currentmodule:: Hubbard.hamiltonian
+.. currentmodule:: Hubbard.sp2
 
 """
 
@@ -39,12 +39,12 @@ class sp2(sisl.Hamiltonian):
       of [pi/a]) along each direction in which the Hamiltonian 
       will be evaluated
     dim : int, optional
-        Dimension of Hamiltonian. If dim=2 the resulting Hamiltonian will be 
-        spin-polarized, if dim=1 (default) it will not.
+        Dimension of Hamiltonian. If dim=2(1) the resulting Hamiltonian 
+        will (not) be spin-polarized.
     """
 
     def __init__(self, ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
-                  kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=1):
+                  kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=1, N=0):
         """ Initialize HubbardHamiltonian """
         self.ext_geom = ext_geom # Keep the extended/complete geometry
         # Key parameters
@@ -86,6 +86,8 @@ class sp2(sisl.Hamiltonian):
         nC = len(np.where(pi_geom.atoms.Z == 6)[0])
         nN = len(np.where(pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
+        if N <= 0:
+            self.N = int(ntot/2)
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Construct Hamiltonians
@@ -124,9 +126,8 @@ class sp2(sisl.Hamiltonian):
                 self.H.S[ia, idx[3]] = self.s3
         # Determine midgap
         ev = self.H.eigh(spin=0)
-        N = max(self.Nup, self.Ndn)
-        HOMO = ev[N-1]
-        LUMO = ev[N]
+        HOMO = ev[self.N-1]
+        LUMO = ev[self.N]
         self.midgap = (LUMO+HOMO)/2
 
     def add_Hatoms(self):
