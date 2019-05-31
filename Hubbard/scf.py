@@ -16,7 +16,7 @@ import sisl
 import hashlib
 
 
-class HubbardHamiltonian(sisl.Hamiltonian):
+class scf(sisl.Hamiltonian):
     '''
     TBHam : sisl.Hamiltonian instance
         A spin-polarized tight-Binding Hamiltonian
