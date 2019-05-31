@@ -16,7 +16,7 @@ import sisl
 import hashlib
 
 
-class scf(sisl.Hamiltonian):
+class scf(object):
     '''
     TBHam : sisl.Hamiltonian instance
         A spin-polarized tight-Binding Hamiltonian
@@ -50,9 +50,18 @@ class scf(sisl.Hamiltonian):
             for ky in np.arange(0, 1, 1./ny):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
+        self.H = TBHam
+        self.geom = self.H.geometry
+        self.sites = len(self.H.geometry)
         # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self, kmesh)
-        
+        self.mp = sisl.MonkhorstPack(self.H, kmesh)
+
+    def eigh(self, k=[0,0,0], eigvals_only=False):
+        return self.H.eigh(k=k, eigvals_only=eigvals_only)
+    
+    def eigenstate(self, k, spin=0):
+        return self.H.eigenstate(k, spin=spin)
+
     def update_hamiltonian(self):
         # Update spin Hamiltonian
         g = self.geom
@@ -110,7 +119,7 @@ class scf(sisl.Hamiltonian):
             self.ndn[dn] = 1.
         self.normalize_charge()
 
-    def iterate2(self, mix=1.0):
+    def iterate(self, mix=1.0):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
