@@ -12,7 +12,6 @@ Function for the meanfield Hubbard Hamiltonian
 from __future__ import print_function
 import numpy as np
 import netCDF4 as NC
-import sisl
 import hashlib
 
 class read(object):
