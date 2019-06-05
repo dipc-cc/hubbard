@@ -2,44 +2,36 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import sys
 import numpy as np
+import Hubbard.ncdf as ncdf
 import sisl
 
 pol = False
 
 # Build sisl Geometry object
-fn = sisl.get_sile('7AGNR2B_5x3.XV').read_geometry()
-fn.sc.set_nsc([1,1,1])
-fn = fn.move(-fn.center(what='xyz'))
+mol = sisl.get_sile('7AGNR2B_5x3.XV').read_geometry()
+mol.sc.set_nsc([1,1,1])
+mol = mol.move(-mol.center(what='xyz'))
 
-grp = 'AFM-AFM-AFM'
-H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x3', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
-if pol:
-    H.set_polarization([1, 99], dn=[80, 152])
-dn = H.converge()
-H.save(grp)
-p = plot.SpinPolarization(H)
-p.annotate()
-p.savefig('pol_5x3_%s.pdf'%grp)
+up = [[1,99],[1,152],[1,80]]
+dn = [[80,152],[80,99],[99,152]]
+for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
+    H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18, U=5.0)
+    try:
+        # Try reading from file
+        calc = ncdf.read('7AGNR2B_5x3.nc', ncgroup=grp)
+        H.nup, H.ndn = calc.nup, calc.ndn
+        H.Nup, H.Ndn = calc.Nup, calc.Ndn
+    except:
+        if pol:
+            H.set_polarization(up[ig], dn=dn[ig])
+        else:
+            H.random_density()
+    dn = H.converge()
+    ncdf.write(H, '7AGNR2B_5x3.nc', ncgroup=grp)
+    p = plot.SpinPolarization(H)
+    p.set_title('Spin Pol 5x3 [%s]'%grp)
+    p.annotate()
+    p.savefig('pol_5x3_%s.pdf'%grp)
 
-p = plot.LDOSmap(H)
-p.savefig('pol_5x3_%s_ldos.pdf'%grp)
-
-grp = 'AFM-FM-AFM'
-H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x3', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
-if pol:
-    H.set_polarization([1, 152], dn=[80, 99])
-dn = H.converge()
-H.save(grp)
-p = plot.SpinPolarization(H)
-p.annotate()
-p.savefig('pol_5x3_%s.pdf'%grp)
-
-grp = 'FM-AFM-FM'
-H = hh.HubbardHamiltonian(fn, fn_title='7AGNR2B_5x3', t1=2.7, t2=0.2, t3=.18, U=5.0, ncgroup=grp)
-if pol:
-    H.set_polarization([1, 80], dn=[99, 152])
-dn = H.converge()
-H.save(grp)
-p = plot.SpinPolarization(H)
-p.annotate()
-p.savefig('pol_5x3_%s.pdf'%grp)
+    p = plot.LDOSmap(H)
+    p.savefig('pol_5x3_%s_ldos.pdf'%grp)

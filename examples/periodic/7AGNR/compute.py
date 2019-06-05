@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.ncdf as ncdf
 import numpy as np
 import sys
 import sisl
@@ -12,12 +13,19 @@ geom.set_nsc([3,1,1])
 U = float(sys.argv[2])
 eB = float(sys.argv[3])
 
-H = hh.HubbardHamiltonian(geom, fn_title=fn[:-3], t1=2.7, t2=0.2, t3=.18, U=U, eB=eB, kmesh=[51, 1, 1])
+H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0.2, t3=.18, U=U, eB=eB, kmesh=[51, 1, 1])
+try:
+    c = ncdf.read(fn[:-3]+'.nc') # Try reading, if we already have density on file
+    H.nup, H.ndn = c.nup, c.ndn
+except:
+    H.random_density()
+
 if U < 0.1:
     H.converge(premix=1.0)
 else:
     H.converge()
-H.save()
+
+ncdf.write(H, fn[:-3]+'.nc')
 
 # Spin polarization plot
 p = plot.SpinPolarization(H, colorbar=True, vmax=0.1)
@@ -35,7 +43,7 @@ for i, evi in enumerate(ev):
     if abs(evi-H.midgap) < ymax:
         zak_open = H.get_Zak_phase_open_contour(Nx=100, sub=i)
         zak = H.get_Zak_phase(Nx=100, sub=i)
-        print 'Zak phase for band %i : %.4f rad closed loop, %.4f rad (open loop): ' % (i, zak, zak_open)
+        print('Zak phase for band %i : %.4f rad closed loop, %.4f rad (open loop): ' % (i, zak, zak_open))
         p.axes.annotate('\#%i: %.4f'%(i, zak), (0.13*(i%2), evi-H.midgap), size=8)
 
 # Sum over filled bands:

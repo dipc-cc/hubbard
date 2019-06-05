@@ -24,8 +24,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
     ext_geom : Geometry (sisl) object
         complete geometry that hosts also the SuperCell
         information (for instance the direction of periodicity, etc.)
-    fn_title : string, optional
-        name of output file
     t1 : float, optional
       nearest neighbor hopping matrix element
     t2 : float, optional
@@ -45,11 +43,10 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     """
 
-    def __init__(self, ext_geom, fn_title='system', t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
-                  kmesh=[1, 1, 1], ncgroup='default', s0=1.0, s1=0, s2=0, s3=0):
+    def __init__(self, ext_geom, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
+                  kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0):
         """ Initialize HubbardHamiltonian """
         self.ext_geom = ext_geom # Keep the extended/complete geometry
-        self.fn = fn_title
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
         self.t2 = t2
@@ -93,9 +90,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         nN = len(np.where(pi_geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
-        print(' ... B-atoms at sites', np.where(pi_geom.atoms.Z == 5)[0])
-        print(' ... N-atoms at sites', np.where(pi_geom.atoms.Z == 7)[0])
-        print(' ... sp3 atoms at sites', sp3)
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Use default (low-spin) filling?
         if Ndn <= 0:
@@ -115,12 +109,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.mp = sisl.MonkhorstPack(self, kmesh)
         # Initialize elements
         self.init_hamiltonian_elements()
-        # Initialize data file
-        self.ncgroup = ncgroup
-        self.init_nc(self.fn+'.nc')
-        # Try reading from file or use random density
-        self.read()
-        self.iterate(mix=0) # Determine midgap energy without changing densities
 
     def init_hamiltonian_elements(self):
         """ Setup the initial Hamiltonian
@@ -151,6 +139,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                 self.H.S[ia, idx[1]] = self.s1
                 self.H.S[ia, idx[2]] = self.s2
                 self.H.S[ia, idx[3]] = self.s3
+        # Determine midgap with U=0
+        ev = self.H.eigh(spin=0)
+        N = max(self.Nup, self.Ndn)
+        HOMO = ev[N-1]
+        LUMO = ev[N]
+        self.midgap = (LUMO+HOMO)/2
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
@@ -379,7 +373,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         #      Etot is stored in the object, so why not use it from there?
         return dn
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, save=False):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         if method == 2:
@@ -401,9 +395,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
-                # Save density to netcdf?
-                if save:
-                    self.save()
+
         print('   found solution in %i iterations'%i)
         return dn
 
@@ -413,14 +405,17 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def init_nc(self, fn):
+    '''
+    These function should be deleted since they now belong to another class
+
+    def init_nc(self, fn, ncgroup):
         try:
             self.ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
         except:
             print('Initiating', fn)
             self.ncf = NC.Dataset(fn, 'w')
-        self.init_ncgrp(self.ncgroup)
+        self.init_ncgrp(ncgroup)
 
     def init_ncgrp(self, ncgroup):
         if ncgroup not in self.ncf.groups:
@@ -450,11 +445,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
         return myhash, s
 
-    def save(self, ncgroup=None):
-        if not ncgroup:
-            ncgroup = self.ncgroup
+    def save(self, fn, ncgroup='default'):
+        self.init_nc(fn, ncgroup)
         myhash, s = self.gethash()
-        self.init_ncgrp(ncgroup)
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(self.ncf[ncgroup]['hash'][:])
@@ -468,11 +461,11 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.ncf[ncgroup]['Density'][i, 1] = self.ndn
         self.ncf[ncgroup]['Etot'][i] = self.Etot
         self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s.nc{%s}'%(self.U, self.Nup, self.Ndn, self.fn, ncgroup))
+        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
 
-    def read(self, ncgroup=None):
-        if not ncgroup:
-            ncgroup = self.ncgroup
+    def read(self, fn, ncgroup='default'):
+        print('Reading', fn)
+        self.ncf = NC.Dataset(fn, 'r')
         myhash, s = self.gethash()
         i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
@@ -481,13 +474,15 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.random_density()
         else:
             print('Found:')
-            print('... %s in %s.nc{%s}' % (s, self.fn, ncgroup))
+            print('... %s in %s.nc{%s}' % (s, fn, ncgroup))
             i = i[0]
             self.U = self.ncf[ncgroup]['U'][i]
             self.nup = self.ncf[ncgroup]['Density'][i][0]
             self.ndn = self.ncf[ncgroup]['Density'][i][1]
             self.Etot = self.ncf[ncgroup]['Etot'][i]
+        self.ncf.close()
         self.update_hamiltonian()
+    '''
 
     def get_Zak_phase_open_contour(self, Nx=51, sub='filled', eigvals=False):
         """ This algorithm seems to return correct results, but may be prone

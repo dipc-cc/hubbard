@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.ncdf as ncdf
 import numpy as np
 import sisl
 
@@ -7,11 +8,16 @@ import sisl
 # using a reference molecule (already converged)
 
 # Build sisl Geometry object
-fn = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-fn.sc.set_nsc([1,1,1])
-fn = fn.move(-fn.center(what='xyz')).rotate(220, [0,0,1])
+molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
+molecule.sc.set_nsc([1,1,1])
+molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0,0,1])
 
-H = hh.HubbardHamiltonian(fn, fn_title='mol-ref/mol-ref', U=3.5)
+calc = ncdf.read('mol-ref/mol-ref.nc')
+H = hh.HubbardHamiltonian(molecule)
+H.U = calc.U
+H.Nup, H.Ndn = calc.Nup, calc.Ndn
+H.nup, H.ndn = calc.nup, calc.ndn
+H.update_hamiltonian()
 
 p = plot.Charge(H, colorbar=True)
 p.savefig('chg.pdf')

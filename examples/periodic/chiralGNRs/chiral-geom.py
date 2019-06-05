@@ -22,7 +22,7 @@ def cgnr(n, m, w, d=1.42):
     gr = g.rotate(theta*360/(2*np.pi), v=[0,0,1])
     gr.set_sc([A2*np.sin(theta)+A1*np.cos(theta), 10, 10])
     gr.set_nsc([3,1,1])
-    # Mover center-of-mass to origo
+    # Move center-of-mass to origo
     gr = gr.move(-gr.center())
     return gr
 
@@ -34,7 +34,7 @@ def analyze(n, m, w, nx=1001):
     geom = cgnr(n, m, w)
     geom.write(directory+'/cgnr.xyz')
     geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
-    H = hh.HubbardHamiltonian(geom, fn_title=directory, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
     ymax = 8.0
     p = plot.Bandstructure(H, ymax=ymax)
     p.set_title(r'%s: $n_x=%i$'%(directory,nx))
@@ -73,7 +73,7 @@ def analyze_edge(n,m,w):
 
     # Eigenvectors and eigenvalues in 1NN model for finite ribbon
     geom.set_nsc([1,1,1])
-    H = hh.HubbardHamiltonian(geom, fn_title=directory, t1=2.7, t2=0., t3=0., U=0.)        
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)        
     ev, evec = H.H.eigh(eigvals_only=False,spin=0)
     ev -= H.midgap
 
@@ -101,7 +101,7 @@ def analyze_edge(n,m,w):
 def band_inv(n,m,w):
     # Computes the parity of the VB and CB at Gamma and the edge of the BZ (X)
     geom = cgnr(n,m,w)
-    H = hh.HubbardHamiltonian(geom, fn_title='%i-%i-%i'%(n, m, w), t1=2.7, t2=0., t3=0., U=0.)
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
     evec_0 = np.zeros((2, len(H),len(H)), dtype=np.complex128)
     ev, evec_0[0,:,:] = H.H.eigh(k=[0,0,0], eigvals_only=False,spin=0)
