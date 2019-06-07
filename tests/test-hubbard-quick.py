@@ -1,7 +1,8 @@
 from __future__ import print_function
 
-import Hubbard.hamiltonian as hh
 import Hubbard.ncdf as ncdf
+import Hubbard.HubbardSCF as HubbardSCF
+import Hubbard.sp2 as sp2
 import sisl
 
 # Build sisl Geometry object
@@ -9,14 +10,15 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Run one iteration
-H = hh.HubbardHamiltonian(molecule, U=5.0)
-H.random_density()
-dn = H.iterate(mix=.1)
-print(dn, H.Etot)
+Hsp2 = sp2(molecule, dim=2)
+Hscf = HubbardSCF(Hsp2.H, U=5.0)
+Hscf.random_density()
+dn = Hscf.iterate(mix=.1)
+print(dn, Hscf.Etot)
 
 # Run also one iteration with data from ncfile
 calc = ncdf.read('mol-ref/mol-ref.nc')
-H = hh.HubbardHamiltonian(molecule)
+H = HubbardSCF(Hsp2.H)
 H.U = calc.U
 H.Nup, H.Ndn = calc.Nup, calc.Ndn
 H.nup, H.ndn = calc.nup, calc.ndn
