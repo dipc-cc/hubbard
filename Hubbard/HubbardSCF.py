@@ -49,8 +49,8 @@ class HubbardSCF(object):
             for ky in np.arange(0, 1, 1./ny):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
-        self.H = TBHam
-        self.geom = self.H.geometry
+        self.H = TBHam.copy()
+        self.geom = TBHam.geometry
         self.sites = len(self.geom)
         self.e0 = TBHam.Hk().diagonal()
         # Generate Monkhorst-Pack
