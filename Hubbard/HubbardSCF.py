@@ -16,7 +16,7 @@ import sisl
 import hashlib
 
 
-class scf(object):
+class HubbardSCF(object):
     '''
     TBHam : sisl.Hamiltonian instance
         A spin-polarized tight-Binding Hamiltonian
@@ -189,7 +189,7 @@ class scf(object):
         kT = 0.00001
         # Create fermi-level determination distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-        Ef = self.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
         dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
 
