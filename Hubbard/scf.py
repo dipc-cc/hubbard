@@ -32,7 +32,6 @@ class scf(object):
       will be evaluated
     '''
 
-
     def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, kmesh=[1, 1, 1]):
         self.U = U # Hubbard onsite Coulomb parameter
         self.Nup = Nup # Total number of up-electrons
@@ -52,12 +51,13 @@ class scf(object):
                     self.kmesh.append([kx, ky, kz])
         self.H = TBHam
         self.geom = self.H.geometry
-        self.sites = len(self.H.geometry)
+        self.sites = len(self.geom)
+        self.e0 = TBHam.Hk().diagonal()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
 
-    def eigh(self, k=[0,0,0], eigvals_only=False):
-        return self.H.eigh(k=k, eigvals_only=eigvals_only)
+    def eigh(self, k=[0,0,0], eigvals_only=False, spin=0):
+        return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
     
     def eigenstate(self, k, spin=0):
         return self.H.eigenstate(k, spin=spin)
@@ -73,18 +73,12 @@ class scf(object):
         for atom, ias in g.atoms.iter(True):
             # charge on neutral atom
             n0 = atom.Z - 5
-            if atom.Z == 5:
-                e0 = self.eB
-            elif atom.Z == 7:
-                e0 = self.eN
-            else:
-                e0 = 0.
 
             # Faster to do it for more than one element at a time
-            E[ias, :] += e0 - self.U * n0
+            E[ias, :] -= self.U * n0
 
             for ia in ias:
-                self.H[ia, ia, [0, 1]] = E[ia]
+                self.H[ia, ia, [0, 1]] = E[ia] + self.e0[ia]
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
