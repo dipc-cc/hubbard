@@ -16,7 +16,7 @@ import sisl
 import hashlib
 
 
-class sp2(sisl.Hamiltonian):
+class sp2(object):
     """ sisl-type object
 
     Parameters:
@@ -45,7 +45,7 @@ class sp2(sisl.Hamiltonian):
 
     def __init__(self, ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
                   kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=1, N=0):
-        """ Initialize HubbardHamiltonian """
+        """ Initialize Tight Binding Hamiltonian for sp2 Carbon systems"""
         self.ext_geom = ext_geom # Keep the extended/complete geometry
         # Key parameters
         self.t1 = t1 # Nearest neighbor hopping
@@ -91,7 +91,7 @@ class sp2(sisl.Hamiltonian):
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
         # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=dim)
+        self.H = sisl.Hamiltonian(pi_geom, orthogonal=orthogonal, dim=dim)
         # Initialize elements
         self.init_hamiltonian_elements()
 
@@ -105,7 +105,7 @@ class sp2(sisl.Hamiltonian):
         # Radii defining 1st, 2nd, and 3rd neighbors
         R = [0.1, 1.6, 2.6, 3.1]
         # Build hamiltonian for backbone
-        g = self.geom
+        g = self.H.geom
         for ia in g:
             idx = g.close(ia, R=R)
             # NB: I found that ':' is necessary in the following lines, but I don't understand why...
@@ -138,6 +138,9 @@ class sp2(sisl.Hamiltonian):
 
 
 class Zak(object):
+    '''
+    Not sure where to put these functions
+    '''
 
     def get_Zak_phase_open_contour(self, Nx=51, sub='filled', eigvals=False):
         """ This algorithm seems to return correct results, but may be prone
