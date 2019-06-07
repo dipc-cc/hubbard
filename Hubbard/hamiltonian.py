@@ -11,9 +11,7 @@ Function for the meanfield Hubbard Hamiltonian
 
 from __future__ import print_function
 import numpy as np
-import netCDF4 as NC
 import sisl
-import hashlib
 
 
 class HubbardHamiltonian(sisl.Hamiltonian):
@@ -303,8 +301,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Store total energy
         self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
 
-        # TODO in my opinion one should only return dn
-        #      Etot is stored in the object, so why not use it from there?
         return dn
 
     def iterate3(self, mix=1.0, q_up=None, q_dn=None):
@@ -369,8 +365,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Store total energy
         self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
 
-        # TODO in my opinion one should only return dn
-        #      Etot is stored in the object, so why not use it from there?
         return dn
 
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0):
@@ -405,98 +399,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    '''
-    These function should be deleted since they now belong to another class
-
-    def init_nc(self, fn, ncgroup):
-        try:
-            self.ncf = NC.Dataset(fn, 'a')
-            print('Appending to', fn)
-        except:
-            print('Initiating', fn)
-            self.ncf = NC.Dataset(fn, 'w')
-        self.init_ncgrp(ncgroup)
-
-    def init_ncgrp(self, ncgroup):
-        if ncgroup not in self.ncf.groups:
-            # create croup
-            self.ncf.createGroup(ncgroup)
-            self.ncf[ncgroup].createDimension('unl', None)
-            self.ncf[ncgroup].createDimension('spin', 2)
-            self.ncf[ncgroup].createDimension('sites', len(self.geom))
-            self.ncf[ncgroup].createVariable('hash', 'i8', ('unl',))
-            self.ncf[ncgroup].createVariable('U', 'f8', ('unl',))
-            self.ncf[ncgroup].createVariable('Nup', 'i4', ('unl',))
-            self.ncf[ncgroup].createVariable('Ndn', 'i4', ('unl',))
-            self.ncf[ncgroup].createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
-            self.ncf[ncgroup].createVariable('Etot', 'f8', ('unl',))
-            self.ncf.sync()
-
-    def gethash(self):
-        s = ''
-        s += 't1=%.2f '%self.t1
-        s += 't2=%.2f '%self.t2
-        s += 't3=%.2f '%self.t3
-        s += 'U=%.2f '%self.U
-        s += 'eB=%.2f '%self.eB
-        s += 'eN=%.2f '%self.eN
-        s += 'Nup=%.2f '%self.Nup
-        s += 'Ndn=%.2f '%self.Ndn
-        myhash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)
-        return myhash, s
-
-    def save(self, fn, ncgroup='default'):
-        self.init_nc(fn, ncgroup)
-        myhash, s = self.gethash()
-        i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
-        if len(i) == 0:
-            i = len(self.ncf[ncgroup]['hash'][:])
-        else:
-            i = i[0]
-        self.ncf[ncgroup]['hash'][i] = myhash
-        self.ncf[ncgroup]['U'][i] = self.U
-        self.ncf[ncgroup]['Nup'][i] = self.Nup
-        self.ncf[ncgroup]['Ndn'][i] = self.Ndn
-        self.ncf[ncgroup]['Density'][i, 0] = self.nup
-        self.ncf[ncgroup]['Density'][i, 1] = self.ndn
-        self.ncf[ncgroup]['Etot'][i] = self.Etot
-        self.ncf.sync()
-        print('Wrote (U,Nup,Ndn)=(%.2f,%i,%i) data to %s{%s}'%(self.U, self.Nup, self.Ndn, fn, ncgroup))
-
-    def read(self, fn, ncgroup='default'):
-        print('Reading', fn)
-        self.ncf = NC.Dataset(fn, 'r')
-        myhash, s = self.gethash()
-        i = np.where(self.ncf[ncgroup]['hash'][:] == myhash)[0]
-        if len(i) == 0:
-            print('Hash not found:')
-            print('...', s)
-            self.random_density()
-        else:
-            print('Found:')
-            print('... %s in %s.nc{%s}' % (s, fn, ncgroup))
-            i = i[0]
-            self.U = self.ncf[ncgroup]['U'][i]
-            self.nup = self.ncf[ncgroup]['Density'][i][0]
-            self.ndn = self.ncf[ncgroup]['Density'][i][1]
-            self.Etot = self.ncf[ncgroup]['Etot'][i]
-        self.ncf.close()
-        self.update_hamiltonian()
-    '''
-
-    def get_Zak_phase_open_contour(self, Nx=51, sub='filled', eigvals=False):
-        """ This algorithm seems to return correct results, but may be prone
-        to random phases associated with the eigenstates for the first and last
-        k-point.
-        """
-        # Discretize kx over [-0.5, 0.5] in Nx-1 segments (1BZ)
-        def func(sc, frac):
-            return [-0.5+float(Nx)/(Nx-1)*frac, 0, 0]
-        bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
-        if sub == 'filled':
-            # Sum up over occupied bands:
-            sub = range(self.Nup)
-        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, closed=False)
 
     def get_Zak_phase(self, Nx=51, sub='filled', eigvals=False):
         """ Compute Zak phase for 1D systems oriented along the x-axis.
@@ -512,18 +414,6 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             sub = range(self.Nup)
         return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
 
-    def get_singlepoint_Zak_phase(self, k=[0, 0, 0], spin=0):
-        """ Singlepoint Zak phase? """
-        ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
-        xyz = self.geom.xyz
-        rcell = self.sc.rcell
-        phase = np.exp(1j*np.sum(np.dot(xyz, rcell), axis=1))
-        print(phase)
-        for i, evi in enumerate(ev):
-            v = evec[:, i]
-            vd = np.conjugate(v)
-            sp_zak = np.angle(vd.dot(np.dot(v.T, np.diag(phase))))
-            print(i, evi, sp_zak)
 
     def get_bond_order(self, format='csr'):
         """ Compute Huckel bond order

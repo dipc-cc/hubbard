@@ -98,6 +98,34 @@ def analyze_edge(n,m,w):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
+def band_inv(n,m,w):
+    # Computes the parity of the VB and CB at Gamma and the edge of the BZ (X)
+    geom = cgnr(n,m,w)
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
+    # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
+    evec_0 = np.zeros((2, len(H),len(H)), dtype=np.complex128)
+    ev, evec_0[0,:,:] = H.H.eigh(k=[0,0,0], eigvals_only=False,spin=0)
+    ev, evec_0[1,:,:] = H.H.eigh(k=[0.5,0,0], eigvals_only=False,spin=0)
+    # Obtain sites of rotated symmetry
+    geom_rot = geom.rotate(180, v=[0,0,1])
+    geom_rot = geom_rot.move(-geom_rot.center())
+    atom_list = []
+    for ia in geom_rot:
+        for ib in geom:
+            if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
+                atom_list.append(ib)
+    # Dot product between VB and CB of the rotated (by 180^o) and not rotated systems
+    VB_G = (evec_0[0, atom_list, H.Nup-1] * evec_0[0, :, H.Nup-1]).sum()
+    VB_K = (evec_0[1, atom_list, H.Nup-1] * evec_0[1, :, H.Nup-1]).sum()
+    CB_G = (evec_0[0, atom_list, H.Nup] * evec_0[0, :, H.Nup]).sum()
+    CB_K = (evec_0[1, atom_list, H.Nup] * evec_0[1, :, H.Nup]).sum()
+    print(' Band     Gamma        X \n')
+    print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_K.real, VB_K.imag))
+    print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_K.real, CB_K.imag))
+    # Return whether VB has been inverted or not
+    return VB_G.real*VB_K.real
+
+
 n = 3
 m = 1
 g = analyze(n, m, 4)
