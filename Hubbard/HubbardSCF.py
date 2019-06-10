@@ -118,6 +118,40 @@ class HubbardSCF(object):
         self.normalize_charge()
 
     def iterate(self, mix=1.0):
+        '''This iterate method is only valid for orthogonal atomic basis'''
+        nup = self.nup
+        ndn = self.ndn
+        Nup = self.Nup
+        Ndn = self.Ndn
+        # Solve eigenvalue problems
+        niup = 0*nup
+        nidn = 0*ndn
+        HOMO = -1e10
+        LUMO = 1e10
+        for ik, k in enumerate(self.kmesh):
+            ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
+            ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
+            # Compute new occupations
+            niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+            nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
+            HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
+            LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
+        niup = niup/len(self.kmesh)
+        nidn = nidn/len(self.kmesh)
+        # Determine midgap energy reference
+        self.midgap = (LUMO+HOMO)/2
+        # Measure of density change
+        dn = np.sum(abs(nup-niup)+abs(ndn-nidn))
+        # Update occupations
+        self.nup = mix*niup+(1.-mix)*nup
+        self.ndn = mix*nidn+(1.-mix)*ndn
+        # Update spin hamiltonian
+        self.update_hamiltonian()
+        # Compute total energy
+        self.Etot = np.sum(ev_up[:int(Nup)]) + np.sum(ev_dn[:int(Ndn)]) - self.U*np.sum(self.nup*self.ndn)
+        return dn
+
+    def iterate2(self, mix=1.0):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
