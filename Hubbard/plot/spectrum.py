@@ -95,7 +95,7 @@ class DOS_distribution(GeometryPlot):
 
         if 'realspace' in keywords:
             self.__realspace__(DOS, density=True, vmin=0, **keywords)
-            self.imshow.set_cmap(plt.cm.hot)
+            self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
             self.axes.scatter(x, y, f*DOS, 'b')
