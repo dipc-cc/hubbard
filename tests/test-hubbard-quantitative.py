@@ -15,7 +15,7 @@ molecule.sc.set_nsc([1,1,1])
 calc = ncdf.read('mol-ref/mol-ref.nc')
 # Build Hamiltonian of sp2 carbon system
 Hsp2 = sp2(molecule, dim=2)
-H = HubbardSCF(Hsp2, U=3.5)
+H = HubbardSCF(Hsp2.H, U=3.5)
 H.U = calc.U
 H.Nup, H.Ndn = calc.Nup, calc.Ndn
 H.nup, H.ndn = calc.nup, calc.ndn
