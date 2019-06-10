@@ -18,26 +18,29 @@ for ia in geom:
 
 nx = 100
 
-
 def func(sc, frac):
-    return [-0.5+frac, 0, 0]
+    #f = [-0.5+frac, 0, 0]
+    # Avoid high-symmetry points X and Gamma:
+    f = [-0.5+.5/nx+frac, 0, 0]
+    return f
 # Closed loop, show that this leads to incorrect results
 bzCl = sisl.BrillouinZone(H).parametrize(H, func, nx)
 #print(bzCl.k)
 
-
 def func2(sc, frac):
-    return [-0.5+1.*nx/(nx-1)*frac, 0, 0]
+    f = [-.5+1.*nx/(nx-1)*frac, 0, 0]
+    return f
 # Open loop, correct integration contour for Zak phase
 bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
 #print(bzOp.k)
 
-for band in [0, 1, [0,1]]:
+# Loop over first two bands, and all occupied ones:
+for band in [0, 1, range(len(H)/2)]:
     print('\nBand index =', band)
-    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, method='Zak')
-    print('Zak (closed) : %.4f rad' % zak)
     zak = sisl.electron.berry_phase(bzOp, sub=band, closed=False)
     print('Zak (open)   : %.4f rad' % zak)
+    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, method='Zak')
+    print('Zak (closed) : %.4f rad' % zak)
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
     print('Z2 invariant =', z2)
 
