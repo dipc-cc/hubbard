@@ -132,6 +132,21 @@ def band_inv(geom):
     bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
     return bg, VB_G.real*VB_X.real
 
+def plot_states(geom):
+    band_lab = ['VB', 'CB']
+    k_lab = ['G', 'X']
+    k_lab2 = ['\Gamma', 'X']
+    for ik, k in enumerate([0,0.5]):
+        H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0)
+        VB, CB = H.Nup-1, H.Nup
+        ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
+        for ib, band in enumerate([VB, CB]):
+            p = plot.Wavefunction(H, 3000*evec[:, band], colorbar=True)
+            symm = band_symm(H, band=band, k=[k,0,0])
+            p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000))
+            p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
+            p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
+
 def gap_exp(geom, L=np.arange(1,31)):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
