@@ -21,7 +21,7 @@ class HubbardSCF(object):
     TBHam : sisl.Hamiltonian instance
         A spin-polarized tight-Binding Hamiltonian
     U : float, optional
-        on-site Coulomb repulsionç
+        on-site Coulomb repulsion
     Nup : int, optional
         Number of up-electrons
     Ndn : int, optional
