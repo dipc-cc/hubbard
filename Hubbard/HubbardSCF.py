@@ -213,7 +213,7 @@ class HubbardSCF(object):
 
         return dn
 
-    def iterate3(self, mix=1.0, q_up=None, q_dn=None):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, distribution='fermi_dirac'):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
@@ -226,10 +226,10 @@ class HubbardSCF(object):
         # calculate the fermi-level:
         kT = 0.00001
         # Create fermi-level determination distribution
-        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+        dist = sisl.get_distribution(distribution, smearing=kT)
         Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
-        dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
+        dist_up = sisl.get_distribution(distribution, smearing=kT, x0=Ef[0])
+        dist_dn = sisl.get_distribution(distribution, smearing=kT, x0=Ef[1])
 
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
