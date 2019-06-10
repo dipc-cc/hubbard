@@ -27,7 +27,7 @@ for nx in Nx:
         return [-0.5+frac+0.5/nx, 0, 0]
     # Closed loop, show that this leads to incorrect results
     bzCl = sisl.BrillouinZone(H).parametrize(H, func, nx)
-    print(bzCl.k)
+    #print(bzCl.k)
 
 
     def func2(sc, frac):
