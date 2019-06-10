@@ -26,12 +26,7 @@ def cgnr(n, m, w, d=1.42):
     gr = gr.move(-gr.center())
     return gr
 
-def analyze(n, m, w, nx=1001):
-    directory = '%i-%i-%i'%(n, m, w)
-    print('Doing', directory)
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
-    geom = cgnr(n, m, w)
+def analyze(geom, nx=1001):
     geom.write(directory+'/cgnr.xyz')
     geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
@@ -56,13 +51,9 @@ def analyze(n, m, w, nx=1001):
         p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
-def analyze_edge(n,m,w):
-    directory = '%i-%i-%i'%(n, m, w)
-    print('Doing', directory)
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
+def analyze_edge(geom):
     # Create 15 length ribbon
-    geom = cgnr(n,m,w).tile(15, axis=0)
+    geom = geom.tile(15, axis=0)
     # Identify edge sites along the lower ribbon border
     sites = []
     for ia in geom:
@@ -98,9 +89,8 @@ def analyze_edge(n,m,w):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
-def band_inv(n,m,w):
+def band_inv(geom):
     # Computes the parity of the VB and CB at Gamma and the edge of the BZ (X)
-    geom = cgnr(n,m,w)
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
     evec_0 = np.zeros((2, len(H),len(H)), dtype=np.complex128)
@@ -125,8 +115,7 @@ def band_inv(n,m,w):
     # Return whether VB has been inverted or not
     return VB_G.real*VB_K.real
 
-def gap_exp(n,m,w, L=np.arange(1,31)):
-    geom = cgnr(n,m,w)
+def gap_exp(geom, L=np.arange(1,31)):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
@@ -167,9 +156,16 @@ def gap_exp(n,m,w, L=np.arange(1,31)):
     p.savefig(directory+'/gap_fit.pdf')
 
 n = 3
-m = 1
-g = analyze(n, m, 4)
-g = analyze(n, m, 6)
-g = analyze(n, m, 8)
-g = analyze(n, m, 10)
-analyze_edge(n, m, 6)
+m = [1,2]
+w = [4,6,8]
+
+for m_i in m:
+    for w_i in w:
+        geom = cgnr(n,m_i,w_i)
+        directory = '%i-%i-%i'%(n,m_i,w_i)
+        print('Doing', directory)
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+        analyze_edge(geom)
+        analyze(geom)
+        gap_exp(geom)
