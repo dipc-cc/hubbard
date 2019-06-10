@@ -125,6 +125,46 @@ def band_inv(n,m,w):
     # Return whether VB has been inverted or not
     return VB_G.real*VB_K.real
 
+def gap_exp(n,m,w, L=np.arange(1,31)):
+    geom = cgnr(n,m,w)
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
+    ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
+    for ik, k in enumerate(np.linspace(0,0.5,51)):
+        ev[ik,:] = H.H.eigh(k=[k,0,0],spin=0)
+    bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
+    HL = []
+    HL_1 = []
+    for pu in L:
+        ribbon = geom.tile(pu, axis=0)
+        ribbon.set_nsc([1,1,1])
+        H = hh.HubbardHamiltonian(ribbon, t1=2.7, t2=0., t3=0., U=0.)
+        ev = H.H.eigh(spin=0)
+        HL.append(ev[H.Nup]-ev[H.Nup-1])
+        HL_1.append(ev[H.Nup+1]-ev[H.Nup-2])
+    
+    p = plot.Plot(figsize=(10,6))
+    p.set_title('HOMO-LUMO gap fitting [%s]'%(directory))
+    p.axes.axhline(y=bg, linestyle='--', color='k', linewidth=0.75, label='Inf. Bandgap: %.3f eV'%(bg))
+    from scipy.optimize import curve_fit
+    # Define fitting functions
+    def exp_fit(x, a, b):
+        return -a * x - b
+    def pol_fit(x, a, b, c):
+        return a * x**(-b) + c
+     
+    x, y = L, HL
+    p.axes.plot(x, y, 'ok', label='LUMO-HOMO')
+    #p.axes.plot(x, HL_1, '^b', label='(L+1)-(H-1)')
+    popt, pcov = curve_fit(pol_fit, x, y)
+    p.axes.plot(x, pol_fit(x, *popt), color='r', label=r'fit $ax^{-b}+c$: a=%.3f, b=%.3f, c=%.3f'%tuple(popt))
+    popt, pcov = curve_fit(exp_fit, x[3:], np.log(y[3:]))
+    p.axes.plot(x[3:], np.exp(-x[3:]*popt[0] - popt[1]), color='g', label=r'fit: $e^{-\alpha x - \beta}: \alpha=%.3f, \beta=%.3f$'%tuple(popt))
+    p.axes.legend(fontsize=16)
+    p.set_xlabel(r'ch-GNR Length [p.u.]')
+    p.axes.set_xticks(np.arange(2,max(L),max(L)/6))
+    p.set_ylabel(r'Energy Gap [eV]')
+    p.axes.set_yscale('log')
+    p.savefig(directory+'/gap_fit.pdf')
 
 n = 3
 m = 1
