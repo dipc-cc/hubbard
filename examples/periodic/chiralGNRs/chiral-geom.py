@@ -89,13 +89,11 @@ def analyze_edge(geom):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
-def band_inv(geom):
-    # Computes the parity of the VB and CB at Gamma and the edge of the BZ (X)
-    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
+def band_symm(H, band=None, k=[0,0,0]):
+    # It returns the parity of a band at Gamma and the edge of the BZ (X)
+    geom = H.geom
     # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
-    evec_0 = np.zeros((2, len(H),len(H)), dtype=np.complex128)
-    ev, evec_0[0,:,:] = H.H.eigh(k=[0,0,0], eigvals_only=False,spin=0)
-    ev, evec_0[1,:,:] = H.H.eigh(k=[0.5,0,0], eigvals_only=False,spin=0)
+    ev, evec_0 = H.H.eigh(k=k, eigvals_only=False,spin=0)
     # Obtain sites of rotated symmetry
     geom_rot = geom.rotate(180, v=[0,0,1])
     geom_rot = geom_rot.move(-geom_rot.center())
@@ -104,16 +102,35 @@ def band_inv(geom):
         for ib in geom:
             if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
                 atom_list.append(ib)
-    # Dot product between VB and CB of the rotated (by 180^o) and not rotated systems
-    VB_G = (evec_0[0, atom_list, H.Nup-1] * evec_0[0, :, H.Nup-1]).sum()
-    VB_K = (evec_0[1, atom_list, H.Nup-1] * evec_0[1, :, H.Nup-1]).sum()
-    CB_G = (evec_0[0, atom_list, H.Nup] * evec_0[0, :, H.Nup]).sum()
-    CB_K = (evec_0[1, atom_list, H.Nup] * evec_0[1, :, H.Nup]).sum()
+
+    if not band:
+        band = len(H)/2-1 # VB
+    symm = (evec_0[atom_list, band] * evec_0[:, band]).sum()
+    return symm 
+
+def band_inv(geom):
+    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
+    VB = len(H)/2-1
+    CB = len(H)/2
+    VB_G = band_symm(H,k=[0.0,0,0], band=VB)
+    VB_X = band_symm(H,k=[0.5,0,0], band=VB)
+    CB_G = band_symm(H,k=[0.0,0,0], band=CB)
+    CB_X = band_symm(H,k=[0.5,0,0], band=CB)
+    VB_1_G = band_symm(H,k=[0.0,0,0], band=VB-1)
+    VB_1_X = band_symm(H,k=[0.5,0,0], band=VB-1)
+    CB_1_G = band_symm(H,k=[0.0,0,0], band=CB+1)
+    CB_1_K = band_symm(H,k=[0.5,0,0], band=CB+1)
     print(' Band     Gamma        X \n')
-    print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_K.real, VB_K.imag))
-    print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_K.real, CB_K.imag))
-    # Return whether VB has been inverted or not
-    return VB_G.real*VB_K.real
+    print(' VB-1 : %.2f+%.2fi %.2f+%.2fi \n'%(VB_1_G.real, VB_1_G.imag, VB_1_X.real, VB_1_X.imag))
+    print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_X.real, VB_X.imag))
+    print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_X.real, CB_X.imag))
+    print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_K.real, CB_1_K.imag))
+    ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
+    for ik, k in enumerate(np.linspace(0,0.5,51)):
+        ev[ik,:] = H.H.eigh(k=[k,0,0],spin=0)
+
+    bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
+    return bg, VB_G.real*VB_X.real
 
 def gap_exp(geom, L=np.arange(1,31)):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
@@ -168,4 +185,5 @@ for m_i in m:
             os.mkdir(directory)
         analyze_edge(geom)
         analyze(geom)
+        plot_states(geom)
         gap_exp(geom)
