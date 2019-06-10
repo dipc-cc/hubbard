@@ -72,6 +72,8 @@ def analyze_edge(geom):
     y1 = np.absolute(evec[sites, H.Nup-1] )**2
     y2 = np.absolute(evec[sites, H.Nup] )**2
     x = geom.xyz[sites, 0]
+    zipped = zip(x, y1, y2)
+    zipped.sort(key = lambda t: t[0])
     p.axes.plot(x, y1, '-or', label=r'HOMO')
     p.axes.plot(x, y2, '--ob', label=r'LUMO')
     p.axes.legend(fontsize=13)
