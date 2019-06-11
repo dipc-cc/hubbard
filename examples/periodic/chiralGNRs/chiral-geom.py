@@ -92,12 +92,12 @@ def analyze_edge(geom):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
-def band_symm(H, band=None, k=[0,0,0]):
-    # It returns the parity of a band at Gamma and the edge of the BZ (X)
+def band_sym(H, band=None, k=[0,0,0]):
+    # It returns the parity of a band at a desired k-point
     geom = H.geom
-    # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
+    # Diagonalize Hamiltonian and store the eigenvectors obtained at the desired k-point
     ev, evec_0 = H.H.eigh(k=k, eigvals_only=False,spin=0)
-    # Obtain sites of rotated symmetry
+    # Obtain sites of rotated geometry
     geom_rot = geom.rotate(180, v=[0,0,1])
     geom_rot = geom_rot.move(-geom_rot.center())
     atom_list = []
@@ -105,35 +105,28 @@ def band_symm(H, band=None, k=[0,0,0]):
         for ib in geom:
             if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
                 atom_list.append(ib)
-
     if not band:
         band = len(H)/2-1 # VB
-    symm = (evec_0[atom_list, band] * evec_0[:, band]).sum()
-    return symm 
+    sym = (evec_0[atom_list, band] * evec_0[:, band]).sum()
+    return sym
 
-def band_inv(geom):
+def print_band_sym(geom):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     VB = len(H)/2-1
     CB = len(H)/2
-    VB_G = band_symm(H,k=[0.0,0,0], band=VB)
-    VB_X = band_symm(H,k=[0.5,0,0], band=VB)
-    CB_G = band_symm(H,k=[0.0,0,0], band=CB)
-    CB_X = band_symm(H,k=[0.5,0,0], band=CB)
-    VB_1_G = band_symm(H,k=[0.0,0,0], band=VB-1)
-    VB_1_X = band_symm(H,k=[0.5,0,0], band=VB-1)
-    CB_1_G = band_symm(H,k=[0.0,0,0], band=CB+1)
-    CB_1_K = band_symm(H,k=[0.5,0,0], band=CB+1)
+    VB_G = band_sym(H,k=[0.0,0,0], band=VB)
+    VB_X = band_sym(H,k=[0.5,0,0], band=VB)
+    CB_G = band_sym(H,k=[0.0,0,0], band=CB)
+    CB_X = band_sym(H,k=[0.5,0,0], band=CB)
+    VB_1_G = band_sym(H,k=[0.0,0,0], band=VB-1)
+    VB_1_X = band_sym(H,k=[0.5,0,0], band=VB-1)
+    CB_1_G = band_sym(H,k=[0.0,0,0], band=CB+1)
+    CB_1_K = band_sym(H,k=[0.5,0,0], band=CB+1)
     print(' Band     Gamma        X \n')
     print(' VB-1 : %.2f+%.2fi %.2f+%.2fi \n'%(VB_1_G.real, VB_1_G.imag, VB_1_X.real, VB_1_X.imag))
     print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_X.real, VB_X.imag))
     print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_X.real, CB_X.imag))
-    print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_K.real, CB_1_K.imag))
-    ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
-    for ik, k in enumerate(np.linspace(0,0.5,51)):
-        ev[ik,:] = H.H.eigh(k=[k,0,0],spin=0)
-
-    bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
-    return bg, VB_G.real*VB_X.real
+    print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_K.real, CB_1_K.imag))   
 
 def plot_states(geom):
     band_lab = ['VB', 'CB']
@@ -145,9 +138,9 @@ def plot_states(geom):
         ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(H, 3000*evec[:, band], colorbar=True)
-            symm = band_symm(H, band=band, k=[k,0,0])
+            sym = band_sym(H, band=band, k=[k,0,0])
             p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000))
-            p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
+            p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
 
 def gap_exp(geom, L=np.arange(1,31)):
