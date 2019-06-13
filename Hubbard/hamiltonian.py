@@ -63,6 +63,12 @@ class HubbardHamiltonian(object):
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
 
+    def eigh(self, k=[0,0,0], eigvals_only=False, spin=0):
+        return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
+    
+    def eigenstate(self, k, spin=0):
+        return self.H.eigenstate(k, spin=spin)
+
     def update_hamiltonian(self):
         # Update spin Hamiltonian
         g = self.geom
@@ -125,8 +131,8 @@ class HubbardHamiltonian(object):
         HOMO = -1e10
         LUMO = 1e10
         for ik, k in enumerate(self.kmesh):
-            ev_up, evec_up = self.H.eigh(k=k, eigvals_only=False, spin=0)
-            ev_dn, evec_dn = self.H.eigh(k=k, eigvals_only=False, spin=1)
+            ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
+            ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
             niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
             nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
@@ -166,8 +172,8 @@ class HubbardHamiltonian(object):
         # Solve eigenvalue problems
         def calc_occ(k, weight, HOMO, LUMO):
             """ My wrap function for calculating occupations """
-            es_up = self.H.eigenstate(k, spin=0)
-            es_dn = self.H.eigenstate(k, spin=1)
+            es_up = self.eigenstate(k, spin=0)
+            es_dn = self.eigenstate(k, spin=1)
 
             # Update HOMO, LUMO
             HOMO = max(HOMO, es_up.eig[Nup-1], es_dn.eig[Ndn-1])
@@ -235,8 +241,8 @@ class HubbardHamiltonian(object):
         # Solve eigenvalue problems
         def calc_occ(k, weight):
             """ My wrap function for calculating occupations """
-            es_up = self.H.eigenstate(k, spin=0)
-            es_dn = self.H.eigenstate(k, spin=1)
+            es_up = self.eigenstate(k, spin=0)
+            es_dn = self.eigenstate(k, spin=1)
 
             # Reduce to occupied stuff
             occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
@@ -300,7 +306,7 @@ class HubbardHamiltonian(object):
         return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
-        ev, evec = self.H.eigh(k=k, eigvals_only=False, spin=spin)
+        ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
         # Compute orbital charge overlaps
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
@@ -340,12 +346,12 @@ class HubbardHamiltonian(object):
         R = [0.1, 1.6]
         for ik, k in enumerate(self.kmesh):
             # spin-up first
-            ev, evec = self.H.eigh(k=k, eigvals_only=False, spin=0)
+            ev, evec = self.eigh(k=k, eigvals_only=False, spin=0)
             ev -= self.midgap
             idx = np.where(ev < 0.)[0]
             bo = np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
             # add spin-down
-            ev, evec = self.H.eigh(k=k, eigvals_only=False, spin=1)
+            ev, evec = self.eigh(k=k, eigvals_only=False, spin=1)
             ev -= self.midgap
             idx = np.where(ev < 0.)[0]
             bo += np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
@@ -380,8 +386,8 @@ class HubbardHamiltonian(object):
         S = .5*(Nalpha - Nbeta) * ( (Nalpha - Nbeta)*.5 + 1)
 
         # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
-        ev_up, evec_up = self.H.eigh(eigvals_only=False, spin=0)
-        ev_dn, evec_dn = self.H.eigh(eigvals_only=False, spin=1)
+        ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
+        ev_dn, evec_dn = self.eigh(eigvals_only=False, spin=1)
 
         # No need to tell which matrix of eigenstates correspond to alpha or beta, 
         # the sisl function spin_squared already takes this into account
@@ -414,7 +420,7 @@ class HubbardHamiltonian(object):
         # Obtain DOS
         DOS = 0
         for ispin in spin:
-            ev, evec = self.H.eigh(eigvals_only=False, spin=ispin)
+            ev, evec = self.eigh(eigvals_only=False, spin=ispin)
             ev -= self.midgap
 
             id1 = np.ones(ev.shape,np.float)
