@@ -14,7 +14,7 @@ import numpy as np
 import sisl
 
 
-class HubbardHamiltonian(sisl.Hamiltonian):
+class HubbardHamiltonian(object):
     """ sisl-type object
 
     Parameters:
@@ -48,9 +48,8 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
 
-        ntot = len(TBHam)
-
         # Use default (low-spin) filling?
+        ntot = len(TBHam)
         if Ndn <= 0:
             self.Ndn = int(ntot/2)
         if Nup <= 0:
@@ -62,12 +61,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             for ky in np.arange(0, 1, 1./ny):
                 for kz in np.arange(0, 1, 1./nz):
                     self.kmesh.append([kx, ky, kz])
-        # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
+        
+        # Copy TB Hamiltonian to store the converged one in a different variable
+        self.H = TBHam.copy()
+        self.geom = TBHam.geometry
+        self.sites = len(self.geom)
+        self.e0 = TBHam.Hk().diagonal()
         # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self, kmesh)
-        # Initialize elements
-        self.init_hamiltonian_elements()
+        self.mp = sisl.MonkhorstPack(self.H, kmesh)
 
     def init_hamiltonian_elements(self):
         """ Setup the initial Hamiltonian
