@@ -19,23 +19,16 @@ class HubbardHamiltonian(object):
 
     Parameters:
     -----------
-    ext_geom : Geometry (sisl) object
-        complete geometry that hosts also the SuperCell
-        information (for instance the direction of periodicity, etc.)
-    t1 : float, optional
-      nearest neighbor hopping matrix element
-    t2 : float, optional
-      second nearest neighbor hopping matrix element
-    t3 : float, optional
-      third nearest neigbor hopping matrix element
+    TBHam : sisl.Hamiltonian instance
+        A spin-polarized tight-Binding Hamiltonian
     U : float, optional
-      on-site Coulomb repulsion
-    eB : float, optional
-      on-site energy for Boron atoms
-    eN : float, optional
-      on-site energy for Nitrogen atoms  
+        on-site Coulomb repulsion
+    Nup : int, optional
+        Number of up-electrons
+    Ndn : int, optional
+        Number of down electrons
     kmesh : array_like, optional
-      number of k-points in the interval [0, 1] (units
+        Number of k-points in (x,y,z) direction in the interval [0, 1] (units
       of [pi/a]) along each direction in which the Hamiltonian 
       will be evaluated
 
