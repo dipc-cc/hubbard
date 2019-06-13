@@ -26,7 +26,7 @@ def cgnr(n, m, w, d=1.42):
     gr = gr.move(-gr.center())
     return gr
 
-def analyze(geom, nx=1001):
+def analyze(geom, directory, nx=1001):
     geom.write(directory+'/cgnr.xyz')
     geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
@@ -51,7 +51,7 @@ def analyze(geom, nx=1001):
         p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
-def analyze_edge(geom):
+def analyze_edge(geom, directory):
     # Create 15 length ribbon
     geom = geom.tile(15, axis=0)
     # Identify edge sites along the lower ribbon border
@@ -128,7 +128,7 @@ def print_band_sym(geom):
     print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_X.real, CB_X.imag))
     print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_K.real, CB_1_K.imag))   
 
-def plot_states(geom):
+def plot_states(geom, directory):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
@@ -143,7 +143,7 @@ def plot_states(geom):
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
 
-def gap_exp(geom, L=np.arange(1,31)):
+def gap_exp(geom, directory, L=np.arange(1,31)):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
@@ -182,3 +182,4 @@ def gap_exp(geom, L=np.arange(1,31)):
     p.set_ylabel(r'Energy Gap [eV]')
     p.axes.set_yscale('log')
     p.savefig(directory+'/gap_fit.pdf')
+
