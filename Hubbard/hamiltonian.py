@@ -70,42 +70,6 @@ class HubbardHamiltonian(object):
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
 
-    def init_hamiltonian_elements(self):
-        """ Setup the initial Hamiltonian
-        
-        Set Hamiltonian matrix elements H_ij, where ij are pairs of atoms separated by a distance defined as:
-        R = [on-site, 1NN, 2NN, 3NN]
-        
-        """
-        # Radii defining 1st, 2nd, and 3rd neighbors
-        R = [0.1, 1.6, 2.6, 3.1]
-        # Build hamiltonian for backbone
-        g = self.geom
-        for ia in g:
-            idx = g.close(ia, R=R)
-            # NB: I found that ':' is necessary in the following lines, but I don't understand why...
-            if g.atoms[ia].Z == 5:
-                self.H[ia, ia, :] = self.eB # set onsite for B sites
-            elif g.atoms[ia].Z == 7:
-                self.H[ia, ia, :] = self.eN # set onsite for N sites
-            # set hoppings
-            self.H[ia, idx[1], :] = -self.t1
-            if self.t2 != 0:
-                self.H[ia, idx[2], :] = -self.t2
-            if self.t3 != 0:
-                self.H[ia, idx[3], :] = -self.t3
-            if not self.H.orthogonal:
-                self.H.S[ia, ia] = self.s0
-                self.H.S[ia, idx[1]] = self.s1
-                self.H.S[ia, idx[2]] = self.s2
-                self.H.S[ia, idx[3]] = self.s3
-        # Determine midgap with U=0
-        ev = self.H.eigh(spin=0)
-        N = max(self.Nup, self.Ndn)
-        HOMO = ev[N-1]
-        LUMO = ev[N]
-        self.midgap = (LUMO+HOMO)/2
-
     def update_hamiltonian(self):
         # Update spin Hamiltonian
         g = self.geom
