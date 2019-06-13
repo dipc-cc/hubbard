@@ -12,5 +12,4 @@ Package for mean-field Hubbard approximation
 from .hamiltonian import *
 from . import plot
 from .ncdf import *
-from .HubbardSCF import *
 from .sp2 import *
