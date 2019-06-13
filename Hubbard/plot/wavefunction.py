@@ -37,12 +37,12 @@ class Wavefunction(GeometryPlot):
             assert len(x) == len(wf)
 
             fun, phase = np.absolute(wf), np.angle(wf)
-            # Make phases -pi -> pi
-            phase[np.where(phase+np.pi < 1e-5)] = np.pi 
 
             import matplotlib.colors as mcolors
-            custom_map = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['b', 'red'], N=100)
-            ax = self.axes.scatter(x, y, s=fun, c=phase, cmap=custom_map)
+            cmap = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['lightgrey', 'green', 'blue', 'lightgrey'], N=500)
+            # Cyclic colormap: cmap = 'hsv'
+
+            ax = self.axes.scatter(x, y, s=fun, c=phase, cmap=cmap, vmax=np.pi, vmin=-np.pi)
 
             # Colorbars
             if 'colorbar' in keywords:
