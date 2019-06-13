@@ -141,15 +141,8 @@ class HubbardHamiltonian(object):
             ev_up, evec_up = self.H.eigh(k=k, eigvals_only=False, spin=0)
             ev_dn, evec_dn = self.H.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
-            if self.H.orthogonal:
-                niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
-                nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
-            else:
-                S = self.H.Sk().todense()
-                Dup = np.einsum('ia,ja->ij', evec_up[:, :int(Nup)], evec_up[:, :int(Nup)]).real
-                Ddn = np.einsum('ia,ja->ij', evec_dn[:, :int(Ndn)], evec_dn[:, :int(Ndn)]).real
-                niup += 0.5*(np.einsum('ij,ij->i', Dup, S) + np.einsum('ji,ji->i', Dup.T, S.T))
-                nidn += 0.5*(np.einsum('ij,ij->i', Ddn, S) + np.einsum('ji,ji->i', Ddn.T, S.T))
+            niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+            nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         niup = niup/len(self.kmesh)
@@ -243,7 +236,7 @@ class HubbardHamiltonian(object):
         kT = 0.00001
         # Create fermi-level determination distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-        Ef = self.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
         dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
 
