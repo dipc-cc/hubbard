@@ -41,54 +41,15 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
     """
 
-    def __init__(self, ext_geom, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
-                  kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0):
+    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, kmesh=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
-        self.ext_geom = ext_geom # Keep the extended/complete geometry
-        # Key parameters
-        self.t1 = t1 # Nearest neighbor hopping
-        self.t2 = t2
-        self.t3 = t3
-        self.s0 = s0 # Self overlap matrix element
-        self.s1 = s1 # Overlap matrix element between 1NN
-        self.s2 = s2 # Overlap matrix element between 2NN
-        self.s3 = s3 # Overlap matrix element between 3NN
-        if self.s1 != 0:
-            orthogonal = False
-        else:
-            orthogonal = True
+        
         self.U = U # Hubbard onsite Coulomb parameter
-        self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
-        self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
-        # Determine pz sites
-        aux = []
-        sp3 = []
-        for ia in ext_geom:
-            if ext_geom.atoms[ia].Z not in [5, 6, 7]:
-                aux.append(ia)
-            idx = ext_geom.close(ia, R=[0.1, 1.6])
-            if len(idx[1])==4: # Search for atoms with 4 neighbors
-                if ext_geom.atoms[ia].Z == 6:
-                    sp3.append(ia)
-        # Remove all sites not carbon-type
-        pi_geom = ext_geom.remove(aux+sp3)
-        self.sites = len(pi_geom)
-        print('Found %i pz sites' %self.sites)
-        # Set pz orbital for each pz site
-        r = np.linspace(0, 1.6, 700)
-        func = 5 * np.exp(-r * 5)
-        pz = sisl.SphericalOrbital(1, (r, func))
-        for ia in pi_geom:
-            pi_geom.atom[ia].orbital[0] = pz
-        # Count number of pi-electrons:
-        nB = len(np.where(pi_geom.atoms.Z == 5)[0])
-        nC = len(np.where(pi_geom.atoms.Z == 6)[0])
-        nN = len(np.where(pi_geom.atoms.Z == 7)[0])
-        ntot = 0*nB+1*nC+2*nN
-        print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
-        print('Neutral system corresponds to a total of %i electrons' %ntot)
+
+        ntot = len(TBHam)
+
         # Use default (low-spin) filling?
         if Ndn <= 0:
             self.Ndn = int(ntot/2)
