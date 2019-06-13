@@ -183,6 +183,36 @@ def gap_exp(geom, L=np.arange(1,31)):
     p.axes.set_yscale('log')
     p.savefig(directory+'/gap_fit.pdf')
 
+
+def open_boundary(h, directory, xlim=0.1):
+    # Obtain the bulk and surface states of a Hamiltonian h
+    H = h.copy()
+    H.set_nsc([1,1,1])
+    se_A = sisl.RecursiveSI(h, '-A')
+    se_B = sisl.RecursiveSI(h, '+A')
+    egrid = np.linspace(-xlim,xlim,500)
+    import scipy.linalg as la
+    dos_surf = []
+    DOS_bulk = []
+    for E in egrid:
+        SEr_A = se_A.self_energy(E, eps=1e-50)
+        SEr_B = se_B.self_energy(E, eps=1e-50)
+        gs_A = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A) )
+        dos_surf.append(-(1/np.pi)*np.trace(gs_A).imag )
+        #G = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A+SEr_B) )
+        G = se_A.green(E) # Sisl function to obtain BULK greens function
+        DOS_bulk.append( -(1/np.pi)*np.trace(G).imag )
+
+    p = plot.Plot()
+    p.axes.plot(egrid, dos_surf, label='Surface DOS')
+    p.axes.plot(egrid, DOS_bulk, label='Bulk DOS')
+    p.axes.legend()
+    #p.set_ylim(0,50)
+    p.set_xlabel(r'Energy [eV]')
+    p.set_ylabel(r'DOS [eV$^{-1}$]')
+    p.set_title(r'Density of states [%s]'%directory)
+    p.savefig(directory+'/DOS.pdf')
+
 n = 3
 m = [1,2]
 w = [4,6,8]
@@ -198,3 +228,27 @@ for m_i in m:
         analyze(geom)
         plot_states(geom)
         gap_exp(geom)
+
+        h = sisl.Hamiltonian(geom)
+        for ia in geom:
+            idx = geom.close(ia, R=[0., 1.43])
+            h[ia, idx[0]] = 0
+            h[ia, idx[1]] = -2.7
+        # Plot surface and bulk density of states
+        open_boundary(h, directory, xlim=0.5)
+
+if False:
+    # Plot bulk and surface DOS of 1D chain to test the funcion
+    directory='./'
+    print('Doing', directory)
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+
+    geom = sisl.Geometry([[0,0,0]], atom='C', sc=[1.42,10,10])
+    geom.set_nsc([3,1,1])
+    h = sisl.Hamiltonian(geom)
+    for ia in geom:
+        idx = geom.close(ia, R=[0., 1.43])
+        h[ia, idx[0]] = 0
+        h[ia, idx[1]] = -2.7
+    open_boundary(h, directory, xlim=7)
