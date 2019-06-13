@@ -39,8 +39,7 @@ class Wavefunction(GeometryPlot):
             fun, phase = np.absolute(wf), np.angle(wf)
 
             import matplotlib.colors as mcolors
-            cmap = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['lightgrey', 'green', 'blue', 'lightgrey'], N=500)
-            # Cyclic colormap: cmap = 'hsv'
+            cmap = mcolors.LinearSegmentedColormap.from_list(name='custom_map', colors =['red', 'yellow', 'green', 'blue', 'red'], N=500)
 
             ax = self.axes.scatter(x, y, s=fun, c=phase, cmap=cmap, vmax=np.pi, vmin=-np.pi)
 
