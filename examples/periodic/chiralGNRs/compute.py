@@ -17,10 +17,10 @@ for m_i in m:
         print('Doing', directory)
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        ch.analyze_edge(geom)
-        ch.analyze(geom)
-        ch.plot_states(geom)
-        ch.gap_exp(geom)
+        ch.analyze_edge(geom, directory)
+        ch.analyze(geom, directory)
+        ch.plot_states(geom, directory)
+        ch.gap_exp(geom, directory)
 
         h = sisl.Hamiltonian(geom)
         for ia in geom:
