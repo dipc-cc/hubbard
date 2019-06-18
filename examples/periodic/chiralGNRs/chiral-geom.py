@@ -107,28 +107,6 @@ def band_sym(geom, evec_0):
     sym = (np.conjugate(evec_0[atom_list]).T * evec_0).sum()
     return sym
 
-def print_band_sym(geom):
-    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
-    ev_G, evec_G = H.eigh(k=[0,0,0],eigvals_only=False, spin=0)
-    ev_X, evec_X = H.eigh(k=[0.5,0,0],eigvals_only=False, spin=0)
-    
-    VB = len(H)/2-1
-    CB = len(H)/2
-    
-    VB_G = band_sym(geom, evec_G[:,VB])
-    VB_X = band_sym(geom, evec_X[:,VB])
-    CB_G = band_sym(geom, evec_G[:,CB])
-    CB_X = band_sym(geom, evec_X[:,CB])
-    VB_1_G = band_sym(geom, evec_G[:,VB-1])
-    VB_1_X = band_sym(geom, evec_X[:,VB-1])
-    CB_1_G = band_sym(geom, evec_G[:,CB+1])
-    CB_1_X = band_sym(geom, evec_X[:,CB+1])
-    print(' Band     Gamma        X \n')
-    print(' VB-1 : %.2f+%.2fi %.2f+%.2fi \n'%(VB_1_G.real, VB_1_G.imag, VB_1_X.real, VB_1_X.imag))
-    print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_X.real, VB_X.imag))
-    print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_X.real, CB_X.imag))
-    print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_X.real, CB_1_X.imag))   
-
 def plot_states(geom, directory):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
