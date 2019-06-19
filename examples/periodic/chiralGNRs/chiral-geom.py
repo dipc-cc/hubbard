@@ -5,8 +5,6 @@ import numpy as np
 import os
 
 def analyze(geom, directory, nx=1001):
-    geom.write(directory+'/cgnr.xyz')
-    geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
     ymax = 8.0
     p = plot.Bandstructure(H, ymax=ymax)
