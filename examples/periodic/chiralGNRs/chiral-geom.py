@@ -4,29 +4,7 @@ import Hubbard.plot as plot
 import numpy as np
 import os
 
-def cgnr(n, m, w, d=1.42):
-    "Generation of chiral GNR geometry (periodic along x-axis)"
-    g0 = sisl.geom.graphene()
-    g = sisl.geom.graphene(orthogonal='True')
-    g = g.tile(n+1, 1)
-    g = g.remove(3).remove(0)
-    g = g.repeat(w/2, 0)
-    g.cell[1] += g0.cell[1]
-    if m > 1:
-        g.cell[1, 0] += 3*(m-1)*d
-    cs = np.cos(np.pi/3)
-    sn = np.sin(np.pi/3)
-    A1 = d*(1.+cs)*(2.*(m-1)+1.)
-    A2 = d*(n+0.5)*sn*2.
-    theta = np.arctan(A2/A1)
-    gr = g.rotate(theta*360/(2*np.pi), v=[0,0,1])
-    gr.set_sc([A2*np.sin(theta)+A1*np.cos(theta), 10, 10])
-    gr.set_nsc([3,1,1])
-    # Move center-of-mass to origo
-    gr = gr.move(-gr.center())
-    return gr
-
-def analyze(geom, nx=1001):
+def analyze(geom, directory, nx=1001):
     geom.write(directory+'/cgnr.xyz')
     geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
@@ -51,7 +29,7 @@ def analyze(geom, nx=1001):
         p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
-def analyze_edge(geom):
+def analyze_edge(geom, directory):
     # Create 15 length ribbon
     geom = geom.tile(15, axis=0)
     # Identify edge sites along the lower ribbon border
@@ -92,58 +70,37 @@ def analyze_edge(geom):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
-def band_sym(H, band=None, k=[0,0,0]):
-    # It returns the parity of a band at a desired k-point
-    geom = H.geom
-    # Diagonalize Hamiltonian and store the eigenvectors obtained at the desired k-point
-    ev, evec_0 = H.H.eigh(k=k, eigvals_only=False,spin=0)
+def band_sym(geom, evec_0):
+    # It returns the parity of vector with respect to
+    # the rotation of geom by 180 degrees
+
     # Obtain sites of rotated geometry
+    geom = geom.move(-geom.center())
     geom_rot = geom.rotate(180, v=[0,0,1])
-    geom_rot = geom_rot.move(-geom_rot.center())
     atom_list = []
     for ia in geom_rot:
         for ib in geom:
             if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
                 atom_list.append(ib)
-    if not band:
-        band = len(H)/2-1 # VB
-    sym = (evec_0[atom_list, band] * evec_0[:, band]).sum()
+    sym = (np.conjugate(evec_0[atom_list]).T * evec_0).sum()
     return sym
 
-def print_band_sym(geom):
-    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
-    VB = len(H)/2-1
-    CB = len(H)/2
-    VB_G = band_sym(H,k=[0.0,0,0], band=VB)
-    VB_X = band_sym(H,k=[0.5,0,0], band=VB)
-    CB_G = band_sym(H,k=[0.0,0,0], band=CB)
-    CB_X = band_sym(H,k=[0.5,0,0], band=CB)
-    VB_1_G = band_sym(H,k=[0.0,0,0], band=VB-1)
-    VB_1_X = band_sym(H,k=[0.5,0,0], band=VB-1)
-    CB_1_G = band_sym(H,k=[0.0,0,0], band=CB+1)
-    CB_1_K = band_sym(H,k=[0.5,0,0], band=CB+1)
-    print(' Band     Gamma        X \n')
-    print(' VB-1 : %.2f+%.2fi %.2f+%.2fi \n'%(VB_1_G.real, VB_1_G.imag, VB_1_X.real, VB_1_X.imag))
-    print(' VB : %.2f+%.2fi %.2f+%.2fi \n'%(VB_G.real, VB_G.imag, VB_X.real, VB_X.imag))
-    print(' CB : %.2f+%.2fi %.2f+%.2fi \n'%(CB_G.real, CB_G.imag, CB_X.real, CB_X.imag))
-    print(' CB+1 : %.2f+%.2fi %.2f+%.2fi \n'%(CB_1_G.real, CB_1_G.imag, CB_1_K.real, CB_1_K.imag))   
-
-def plot_states(geom):
+def plot_states(geom, directory):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
-    for ik, k in enumerate([0,0.5]):
+    for ik, k in enumerate([0, 0.5]):
         H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0)
         VB, CB = H.Nup-1, H.Nup
         ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(H, 3000*evec[:, band], colorbar=True)
-            sym = band_sym(H, band=band, k=[k,0,0])
+            sym = band_sym(H, evec[:, band])
             p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000))
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
 
-def gap_exp(geom, L=np.arange(1,31)):
+def gap_exp(geom, directory, L=np.arange(1,31)):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.)
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
@@ -183,72 +140,3 @@ def gap_exp(geom, L=np.arange(1,31)):
     p.axes.set_yscale('log')
     p.savefig(directory+'/gap_fit.pdf')
 
-
-def open_boundary(h, directory, xlim=0.1):
-    # Obtain the bulk and surface states of a Hamiltonian h
-    H = h.copy()
-    H.set_nsc([1,1,1])
-    se_A = sisl.RecursiveSI(h, '-A')
-    se_B = sisl.RecursiveSI(h, '+A')
-    egrid = np.linspace(-xlim,xlim,500)
-    import scipy.linalg as la
-    dos_surf = []
-    DOS_bulk = []
-    for E in egrid:
-        SEr_A = se_A.self_energy(E, eps=1e-50)
-        SEr_B = se_B.self_energy(E, eps=1e-50)
-        gs_A = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A) )
-        dos_surf.append(-(1/np.pi)*np.trace(gs_A).imag )
-        #G = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A+SEr_B) )
-        G = se_A.green(E) # Sisl function to obtain BULK greens function
-        DOS_bulk.append( -(1/np.pi)*np.trace(G).imag )
-
-    p = plot.Plot()
-    p.axes.plot(egrid, dos_surf, label='Surface DOS')
-    p.axes.plot(egrid, DOS_bulk, label='Bulk DOS')
-    p.axes.legend()
-    #p.set_ylim(0,50)
-    p.set_xlabel(r'Energy [eV]')
-    p.set_ylabel(r'DOS [eV$^{-1}$]')
-    p.set_title(r'Density of states [%s]'%directory)
-    p.savefig(directory+'/DOS.pdf')
-
-n = 3
-m = [1,2]
-w = [4,6,8]
-
-for m_i in m:
-    for w_i in w:
-        geom = cgnr(n,m_i,w_i)
-        directory = '%i-%i-%i'%(n,m_i,w_i)
-        print('Doing', directory)
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
-        analyze_edge(geom)
-        analyze(geom)
-        plot_states(geom)
-        gap_exp(geom)
-
-        h = sisl.Hamiltonian(geom)
-        for ia in geom:
-            idx = geom.close(ia, R=[0., 1.43])
-            h[ia, idx[0]] = 0
-            h[ia, idx[1]] = -2.7
-        # Plot surface and bulk density of states
-        open_boundary(h, directory, xlim=0.5)
-
-if False:
-    # Plot bulk and surface DOS of 1D chain to test the funcion
-    directory='./'
-    print('Doing', directory)
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
-
-    geom = sisl.Geometry([[0,0,0]], atom='C', sc=[1.42,10,10])
-    geom.set_nsc([3,1,1])
-    h = sisl.Hamiltonian(geom)
-    for ia in geom:
-        idx = geom.close(ia, R=[0., 1.43])
-        h[ia, idx[0]] = 0
-        h[ia, idx[1]] = -2.7
-    open_boundary(h, directory, xlim=7)

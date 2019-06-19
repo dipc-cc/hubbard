@@ -1,53 +1,49 @@
+import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
+import Hubbard.geometry as geom 
 import numpy as np
-import sys
 import os
-import sisl
 
-U = float(sys.argv[1])
+ch = __import__('chiral-geom')
+op = __import__('open_boundary')
 
+n = 3
+m = [1,2]
+w = [4,6,8]
 
-def compute(fn):
-    head, tail = os.path.split(fn)
-    
-    # Build sisl Geometry object
-    geom = sisl.get_sile(fn).read_geometry()
-    geom = geom.move(-geom.center(what='xyz'))
+for m_i in m:
+    for w_i in w:
+        geom = geom.cgnr(n,m_i,w_i).uc
+        directory = '%i-%i-%i'%(n,m_i,w_i)
+        print('Doing', directory)
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+        ch.analyze_edge(geom, directory)
+        ch.analyze(geom, directory)
+        ch.plot_states(geom, directory)
+        ch.gap_exp(geom, directory)
+
+        h = sisl.Hamiltonian(geom)
+        for ia in geom:
+            idx = geom.close(ia, R=[0., 1.43])
+            h[ia, idx[0]] = 0
+            h[ia, idx[1]] = -2.7
+        # Plot surface and bulk density of states
+        op.open_boundary(h, directory, xlim=0.5)
+
+if False:
+    # Plot bulk and surface DOS of 1D chain to test the funcion
+    directory='./'
+    print('Doing', directory)
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+
+    geom = sisl.Geometry([[0,0,0]], atom='C', sc=[1.42,10,10])
     geom.set_nsc([3,1,1])
-
-    H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0, t3=0, U=U, kmesh=[51, 1, 1])
-    try:
-        c = ncdf.read(fn[:-3]+'.nc') # Try reading, if we already have density on file
-        H.nup, H.ndn = c.nup, c.ndn
-    except:
-        H.random_density()
-    dn = H.iterate()
-    if dn > 0.1:
-        # We don't have a good solution, try polarizing one edge:
-        H.set_polarization([1, 6])
-    if U > 0:
-        H.converge(steps=25)
-        ncdf.write(H, fn[:-3]+'.nc')
-
-    p = plot.SpinPolarization(H, colorbar=True, figsize=(6, 10), vmax=0.2)
-    #p.annotate()
-    p.set_title(r'$U=%.2f$ eV [%s]'%(U, head))
-    p.savefig(head+'/pol_U%.3i.pdf'%(U*100))
-
-    ymax = 4.0
-    p = plot.Bandstructure(H, ymax=ymax)
-    p.set_title(r'$U=%.2f$ eV [%s]'%(U, head))
-    # Sum over filled bands:
-    zak = H.get_Zak_phase(Nx=100)
-    p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
-    z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
-    tol = 0.05
-    if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
-        # Only append Z2 when appropriate:
-        p.axes.annotate(r'$\mathbf{Z_2=%i}$'%z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
-    p.savefig(head+'/bands_U%.3i.pdf'%(U*100))
-
-for fn in sys.argv[2:]:
-    compute(fn)
+    h = sisl.Hamiltonian(geom)
+    for ia in geom:
+        idx = geom.close(ia, R=[0., 1.43])
+        h[ia, idx[0]] = 0
+        h[ia, idx[1]] = -2.7
+    op.open_boundary(h, directory, xlim=7)

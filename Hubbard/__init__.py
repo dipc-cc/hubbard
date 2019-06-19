@@ -13,3 +13,4 @@ from .hamiltonian import *
 from . import plot
 from .ncdf import *
 from .sp2 import *
+from . import geometry
