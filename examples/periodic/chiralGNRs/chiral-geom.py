@@ -4,28 +4,6 @@ import Hubbard.plot as plot
 import numpy as np
 import os
 
-def cgnr(n, m, w, d=1.42):
-    "Generation of chiral GNR geometry (periodic along x-axis)"
-    g0 = sisl.geom.graphene()
-    g = sisl.geom.graphene(orthogonal='True')
-    g = g.tile(n+1, 1)
-    g = g.remove(3).remove(0)
-    g = g.repeat(w/2, 0)
-    g.cell[1] += g0.cell[1]
-    if m > 1:
-        g.cell[1, 0] += 3*(m-1)*d
-    cs = np.cos(np.pi/3)
-    sn = np.sin(np.pi/3)
-    A1 = d*(1.+cs)*(2.*(m-1)+1.)
-    A2 = d*(n+0.5)*sn*2.
-    theta = np.arctan(A2/A1)
-    gr = g.rotate(theta*360/(2*np.pi), v=[0,0,1])
-    gr.set_sc([A2*np.sin(theta)+A1*np.cos(theta), 10, 10])
-    gr.set_nsc([3,1,1])
-    # Move center-of-mass to origo
-    gr = gr.move(-gr.center())
-    return gr
-
 def analyze(geom, directory, nx=1001):
     geom.write(directory+'/cgnr.xyz')
     geom.repeat(3, 0).write(directory+'/cgnr-rep.xyz')
