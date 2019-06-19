@@ -4,7 +4,6 @@ import Hubbard.plot as plot
 import numpy as np
 from scipy import linalg as la
 import os
-ch = __import__('chiral-geom')
 
 def open_boundary(h, directory, xlim=0.1):
     # Obtain the bulk and surface states of a Hamiltonian h
