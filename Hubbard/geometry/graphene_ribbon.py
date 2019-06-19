@@ -76,7 +76,14 @@ class cgnr(object):
         "Generation of chiral GNR geometry (periodic along x-axis)"
         g = zgnr(w, bond=bond).uc
         g = g.tile(n+1, axis=0)
-        g = g.remove(np.where(g.xyz[:,0] == min(g.xyz[:,0])))
+        if w %2 == 0 :
+            g = g.remove(np.where(g.xyz[:,0] == min(g.xyz[:,0])))
+        else:
+            natoms = w - (2*m + 1)
+            g = g.remove([0,-1])
+            g_max = np.where(g.xyz[:,0] == max(g.xyz[:,0]))[0]
+            g_min = np.where(g.xyz[:,0] == min(g.xyz[:,0]))[0]
+            g = g.remove([list(g_min[:natoms/2])+list(g_max[-natoms/2:])])
         v1 = bond*(1.+cs)*(2.*(m-1)+1.)
         v2 = bond*(n+0.5)*sn*2.
         self.theta = np.arctan(v1/v2)
