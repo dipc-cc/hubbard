@@ -39,7 +39,7 @@ class write(object):
         try:
             ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
-        except not os.path.isfile(fn):
+        except IOError:
             print('Initiating', fn)
             ncf = NC.Dataset(fn, 'w')
         g = self.init_ncgrp(H, ncf, ncgroup)
