@@ -1,8 +1,10 @@
 import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.geometry as geom 
 import numpy as np
 import os
+
 ch = __import__('chiral-geom')
 op = __import__('open_boundary')
 
@@ -12,7 +14,7 @@ w = [4,6,8]
 
 for m_i in m:
     for w_i in w:
-        geom = ch.cgnr(n,m_i,w_i)
+        geom = geom.cgnr(n,m_i,w_i).uc
         directory = '%i-%i-%i'%(n,m_i,w_i)
         print('Doing', directory)
         if not os.path.isdir(directory):
