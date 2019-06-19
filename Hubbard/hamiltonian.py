@@ -37,6 +37,9 @@ class HubbardHamiltonian(object):
     def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, kmesh=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
         
+        if not TBHam.spin.is_polarized:
+            raise ValueError(self.__class__.__name__ + ' requires as spin-polarized system')
+
         self.U = U # Hubbard onsite Coulomb parameter
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
