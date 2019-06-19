@@ -70,21 +70,6 @@ def analyze_edge(geom, directory):
         p.set_title(r'Edge sites of [%s]'%directory)
         p.savefig(directory+'/edge_sites.pdf')
 
-def band_sym(geom, evec_0):
-    # It returns the parity of vector with respect to
-    # the rotation of geom by 180 degrees
-
-    # Obtain sites of rotated geometry
-    geom = geom.move(-geom.center())
-    geom_rot = geom.rotate(180, v=[0,0,1])
-    atom_list = []
-    for ia in geom_rot:
-        for ib in geom:
-            if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
-                atom_list.append(ib)
-    sym = (np.conjugate(evec_0[atom_list]).T * evec_0).sum()
-    return sym
-
 def plot_states(geom, directory):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
@@ -95,7 +80,7 @@ def plot_states(geom, directory):
         ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(H, 3000*evec[:, band], colorbar=True)
-            sym = band_sym(H, evec[:, band])
+            sym = H.band_sym(evec[:, band])[0]
             p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000))
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
