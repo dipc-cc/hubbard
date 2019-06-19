@@ -486,6 +486,29 @@ class HubbardHamiltonian(sisl.Hamiltonian):
 
         return S, S_MFH
 
+    def band_sym(self, eigenstate):
+        '''
+        Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees
+        '''
+        geom0 = self.geom
+        geom180 = geom0.rotate(180, [0, 0, 1], geom0.center())
+        sites180 = []
+        for ia in geom180:
+            for ib in geom0:
+                if np.allclose(geom0.xyz[ib], geom180.xyz[ia]):
+                    sites180.append(ib)
+        if isinstance(eigenstate, sisl.physics.electron.EigenstateElectron):
+            # In eigenstate instance dimensions are: (En, sites)
+            v1 = np.conjugate(eigenstate.state)
+            v2 = eigenstate.state[:, sites180].T
+        else:
+            if len(eigenstate.shape) == 1:
+                eigenstate = eigenstate.reshape(eigenstate.shape[0], 1) 
+            v1 = np.conjugate(eigenstate).T
+            v2 = eigenstate[sites180]
+        sym = np.diag(np.dot(v1, v2))
+        return sym
+
     def DOS(self, egrid, eta=1e-3, spin=[0,1]):
         """
         Obtains the Density Of States of the system convoluted with a Lorentzian function
