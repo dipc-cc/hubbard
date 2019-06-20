@@ -401,7 +401,7 @@ class HubbardHamiltonian(object):
 
         return S, S_MFH
 
-    def band_sym(self, eigenstate):
+    def band_sym(self, eigenstate, diag=True):
         '''
         Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees
         '''
@@ -421,7 +421,9 @@ class HubbardHamiltonian(object):
                 eigenstate = eigenstate.reshape(eigenstate.shape[0], 1) 
             v1 = np.conjugate(eigenstate).T
             v2 = eigenstate[sites180]
-        sym = np.diag(np.dot(v1, v2))
+        sym = np.dot(v1, v2)
+        if diag:
+            sym = np.diag(np.dot(v1, v2))
         return sym
 
     def DOS(self, egrid, eta=1e-3, spin=[0,1]):
