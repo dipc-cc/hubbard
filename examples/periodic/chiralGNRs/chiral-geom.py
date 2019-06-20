@@ -41,7 +41,7 @@ def analyze_edge(geom, directory):
     y1 = np.absolute(evec[sites, H.Nup-1] )**2
     y2 = np.absolute(evec[sites, H.Nup] )**2
     x = geom.xyz[sites, 0]
-    zipped = zip(x, y1, y2)
+    zipped = list(zip(x, y1, y2))
     zipped.sort(key = lambda t: t[0])
     x, y1, y2 = np.array(zipped)[:,0], np.array(zipped)[:,1], np.array(zipped)[:,2]
     p.axes.plot(x, y1, '-or', label=r'HOMO')
