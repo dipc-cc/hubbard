@@ -415,15 +415,20 @@ class HubbardHamiltonian(object):
         if isinstance(eigenstate, sisl.physics.electron.EigenstateElectron):
             # In eigenstate instance dimensions are: (En, sites)
             v1 = np.conjugate(eigenstate.state)
-            v2 = eigenstate.state[:, sites180].T
+            v2 = eigenstate.state[:, sites180]
         else:
+            # Transpose to have dimensions (En, sites)
             if len(eigenstate.shape) == 1:
-                eigenstate = eigenstate.reshape(eigenstate.shape[0], 1) 
-            v1 = np.conjugate(eigenstate).T
-            v2 = eigenstate[sites180]
-        sym = np.dot(v1, v2)
+                eigenstate = eigenstate.reshape(1, eigenstate.shape[0]) 
+            else:
+                eigenstate = eigenstate.T
+            v1 = np.conjugate(eigenstate)
+            v2 = eigenstate[:, sites180]
+
         if diag:
-            sym = np.diag(np.dot(v1, v2))
+            sym = (v1 * v2).sum(axis=1)
+        else:
+            sym = np.dot(v1, v2.T)
         return sym
 
     def DOS(self, egrid, eta=1e-3, spin=[0,1]):
