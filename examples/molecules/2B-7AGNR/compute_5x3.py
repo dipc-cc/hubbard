@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import Hubbard.ncdf as ncdf
@@ -11,11 +12,12 @@ pol = False
 mol = sisl.get_sile('7AGNR2B_5x3.XV').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz'))
+H_mol = sp2(mol, t1=2.7, t2=0.2, t3=0.18, dim=2).H
 
 up = [[1,99],[1,152],[1,80]]
 dn = [[80,152],[80,99],[99,152]]
 for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
-    H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18, U=5.0)
+    H = hh.HubbardHamiltonian(H_mol, U=5.0)
     try:
         # Try reading from file
         calc = ncdf.read('7AGNR2B_5x3.nc', ncgroup=grp)
