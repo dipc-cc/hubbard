@@ -16,8 +16,6 @@ import sisl
 cs = np.cos(np.pi/3)
 sn = np.sin(np.pi/3)
 
-global cs, sn
-
 class zgnr(object):
     def __init__(self, w, bond=1.42):
 
