@@ -4,27 +4,20 @@ import Hubbard.plot as plot
 import numpy as np
 import os
 
-def analyze(geom, directory, nx=1001):
+def analyze(geom, directory, nx=501):
     H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0.0, kmesh=[nx, 1, 1])
     ymax = 8.0
     p = plot.Bandstructure(H, ymax=ymax)
-    p.set_title(r'%s: $n_x=%i$'%(directory,nx))
-    # Zak one band only
-    zak1 = H.get_Zak_phase(Nx=nx, sub=H.Nup)
-    z21 = int(round(np.abs(1-np.exp(1j*zak1))/2))
-    zak1b = H.get_Zak_phase(Nx=nx+1, sub=H.Nup)
-    z21b = int(round(np.abs(1-np.exp(1j*zak1b))/2))
-    assert z21 == z21b
     # Zak all filled bands
     zak = H.get_Zak_phase(Nx=nx)
     z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
-    print('%s: z21=%i [z2-all=%i]'%(directory, z21,z2))
-    #assert z21 == z2
+    p.set_title(r'[%s]'%directory)
+    print('%s: z2=%i '%(directory, z2))
     #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
     tol = 0.05
     if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
         # Only append Z2 when appropriate:
-        p.axes.annotate(r'$\mathbf{Z_2=%i (%i)}$'%(z21, z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
+        p.axes.annotate(r'$\mathbf{Z_2=%i}$'%(z2), (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.savefig(directory+'/bands_1NN.pdf')
 
 def analyze_edge(geom, directory):
