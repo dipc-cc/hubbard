@@ -8,6 +8,9 @@ fn = sys.argv[1]
 
 # Read geometry and set up SSH Hamiltonian
 geom = sisl.get_sile(fn).read_geometry()
+geom = geom.tile(int(sys.argv[2]),axis=0)
+geom = geom.move(-geom.center(what='xyz'))
+geom.write('test.xyz')
 geom.set_nsc([3, 1, 1])
 H = sisl.Hamiltonian(geom)
 for ia in geom:
@@ -16,35 +19,20 @@ for ia in geom:
     H[ia, idx[1]] = 1.0 # 1NN
     H[ia, idx[2]] = 0.5 # 2NN
 
-nx = 100
-
 def func(sc, frac):
-    #f = [-0.5+frac, 0, 0]
-    # Avoid high-symmetry points X and Gamma:
-    f = [-0.5+.5/nx+frac, 0, 0]
+    f = [frac, 0, 0]
     return f
-# Closed loop, show that this leads to incorrect results
-bzCl = sisl.BrillouinZone(H).parametrize(H, func, nx)
-#print(bzCl.k)
-
-def func2(sc, frac):
-    f = [-.5+1.*nx/(nx-1)*frac, 0, 0]
-    return f
-# Open loop, correct integration contour for Zak phase
-bzOp = sisl.BrillouinZone(H).parametrize(H, func2, nx)
-#print(bzOp.k)
 
 # Loop over first two bands, and all occupied ones:
-for band in [0, 1, range(len(H)/2)]:
-    print('\nBand index =', band)
-    zak = sisl.electron.berry_phase(bzOp, sub=band, closed=False)
-    print('Zak (open)   : %.4f rad' % zak)
-    zak = sisl.electron.berry_phase(bzCl, sub=band, closed=True, method='Zak')
-    print('Zak (closed) : %.4f rad' % zak)
+for nk in range(10):
+    nx = int(10*1.4**nk)
+    bz = sisl.BrillouinZone(H).parametrize(H, func, nx)
+    band = range(len(H)//2)
+    zak = sisl.electron.berry_phase(bz, sub=band, closed=True, method='Zak')
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
-    print('Z2 invariant =', z2)
+    print(f'Z2={z2} with {nx} k-points')
 
-if False:
+if True:
     band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
     band.set_parent(H)
     bs = band.asarray().eigh()
