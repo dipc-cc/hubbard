@@ -6,7 +6,7 @@ import numpy as np
 import os
  
 n,m,w = 3,1,8
-geom = geom.cgnr(n,m,w).uc
+geom = geom.cgnr(n,m,w)
 
 H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0., t3=0., U=0)
 
