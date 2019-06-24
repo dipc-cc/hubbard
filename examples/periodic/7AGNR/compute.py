@@ -35,20 +35,12 @@ p.savefig('summary/'+fo)
 
 # Bandstructure plot
 ymax = 2
-ev = H.eigh(k=[0, 0, 0])
 batoms = list(np.where(H.geom.atoms.Z == 5)[0])
 p = plot.Bandstructure(H, scale=2, ymax=ymax, projection=batoms)
 p.set_title(r'$\varepsilon_\mathrm{B}=%.2f$ eV, $U=%.2f$ eV'%(eB, U))
-for i, evi in enumerate(ev):
-    if abs(evi-H.midgap) < ymax:
-        zak_open = H.get_Zak_phase_open_contour(Nx=100, sub=i)
-        zak = H.get_Zak_phase(Nx=100, sub=i)
-        print('Zak phase for band %i : %.4f rad closed loop, %.4f rad (open loop): ' % (i, zak, zak_open))
-        p.axes.annotate('\#%i: %.4f'%(i, zak), (0.13*(i%2), evi-H.midgap), size=8)
 
 # Sum over filled bands:
 zak = H.get_Zak_phase(Nx=100)
-p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
 z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
 tol = 0.05
 if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
