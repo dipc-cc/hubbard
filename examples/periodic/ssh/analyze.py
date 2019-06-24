@@ -41,14 +41,13 @@ def analyze(H, nx=501):
     p.axes.set_xticklabels(kl)
     p.set_xlim(0, lk[-1])
     p.set_ylim(-2, 2)
-    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]')
-    p.set_xlabel(r'$ka/\pi$')
-    p.set_title('[SSH-%s]'%phase)
+    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]', fontsize=23)
+    p.set_xlabel(r'$ka/\pi$', fontsize=23)
+    p.set_title('[SSH-%s]'%phase, fontsize=23)
     for bk in bs.T:
         p.axes.plot(lk, bk, 'r')
     tol = 0.05
     if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
-        print(zak)
         # Only append Z2 when appropriate:
         plt.annotate(r'$\mathbf{Z_2=%i}$'%(z2), (0.02, 1.7), size=22, backgroundcolor='k', color='w')
     p.savefig('SSH-%s_bands.pdf'%phase)
@@ -72,9 +71,9 @@ def analyze_edge(H):
     p.axes.plot(x, y1, '-or', label=r'HOMO')
     p.axes.plot(x, y2, '--ob', label=r'LUMO')
     p.axes.legend(fontsize=13)
-    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]')
-    p.set_xlabel(r'$x$ [\AA]')
-    p.set_title(r'[SSH-%s]'%phase)
+    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]', fontsize=23)
+    p.set_xlabel(r'$x$ [\AA]', fontsize=23)
+    p.set_title(r'[SSH-%s]'%phase, fontsize=23)
     p.savefig('SSH-%s_edge_wf.pdf'%phase)
     p.close()
 
@@ -111,7 +110,7 @@ def plot_states(H, kpoints=[0.0,0.5]):
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(Hub, 3000*evec[:, band], colorbar=True, vmin=0)
             symm = band_symm(H, band=band, k=[k,0,0])
-            p.set_title(r'[SSH-%s]: $ E_{%s}=%.1f$ eV'%(phase, k_lab2[ik],ev[band]))
+            p.set_title(r'[SSH-%s]: $ E_{%s}=%.1f$ eV'%(phase, k_lab2[ik],ev[band]), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig('SSH-%s_%s_%s.pdf'%(phase, band_lab[ib], k_lab[ik]))
             p.close()
@@ -131,7 +130,7 @@ def gap_exp(H, L=np.arange(1,31)):
         HL.append(ev[N]-ev[N-1])
     
     p = plot.Plot(figsize=(10,6))
-    p.set_title('HOMO-LUMO gap fitting [SSH-%s]'%phase)
+    p.set_title('HOMO-LUMO gap fitting [SSH-%s]'%phase, fontsize=23)
     p.axes.axhline(y=bg, linestyle='--', color='k', linewidth=0.75, label='Inf. Bandgap: %.3f eV'%(bg))
     from scipy.optimize import curve_fit
     # Define fitting functions
@@ -149,9 +148,9 @@ def gap_exp(H, L=np.arange(1,31)):
     popt, pcov = curve_fit(exp_fit, x[5:], np.log(y[5:]))
     p.axes.plot(x[5:], np.exp(-x[5:]*popt[0] - popt[1]), color='g', label=r'fit: $e^{-\alpha x - \beta}: \alpha=%.3f, \beta=%.3f$'%tuple(popt))
     p.axes.legend(fontsize=16)
-    p.set_xlabel(r'ch-GNR Length [p.u.]')
+    p.set_xlabel(r'ch-GNR Length [p.u.]', fontsize=23)
     p.axes.set_xticks(np.arange(2,max(L),max(L)/6))
-    p.set_ylabel(r'Energy Gap [eV]')
+    p.set_ylabel(r'Energy Gap [eV]', fontsize=23)
     p.axes.set_yscale('log')
     p.savefig('SSH-%s_gap_fit.pdf'%phase)
     p.close()
@@ -180,9 +179,9 @@ def open_boundary(h, xlim=0.1):
     p.axes.plot(egrid, DOS_bulk, label='Bulk DOS')
     p.axes.legend()
     #p.set_ylim(0,50)
-    p.set_xlabel(r'Energy [eV]')
-    p.set_ylabel(r'DOS [eV$^{-1}$]')
-    p.set_title(r'Density of states [SSH-%s]'%phase)
+    p.set_xlabel(r'Energy [eV]', fontsize=23)
+    p.set_ylabel(r'DOS [eV$^{-1}$]', fontsize=23)
+    p.set_title(r'Density of states [SSH-%s]'%phase, fontsize=23)
     p.savefig('SSH-%s_DOS.pdf'%phase)
 
 open_boundary(H, xlim=1.0)
