@@ -26,7 +26,7 @@ def func(sc, frac):
 # Loop over first two bands, and all occupied ones:
 for nk in range(10):
     nx = int(10*1.4**nk)
-    bz = sisl.BrillouinZone(H).parametrize(H, func, nx)
+    bz = sisl.BrillouinZone.parametrize(H, func, nx)
     band = range(len(H)//2)
     zak = sisl.electron.berry_phase(bz, sub=band, closed=True, method='Zak')
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
