@@ -1,11 +1,11 @@
 """
 
-:mod:`Hubbard.plot`
+:mod:`Hubbard.geometry`
 ==================
 
-Functionality for Plotting
+Functionality for geometry
 
-.. currentmodule:: Hubbard.plot
+.. currentmodule:: Hubbard.geometry
 
 """
 

@@ -4,16 +4,18 @@ import numpy as np
 import sys
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.geometry as geometry
 import os
 import matplotlib.pyplot as plt
 
-fn = sys.argv[1]
+phase = sys.argv[1]
+if phase in 'topological':
+    d1, d2 = 2.0, 1.0
+if phase in 'trivial':
+    d1, d2 = 1.0, 2.0
+geom = geometry.ssh(d1=d1, d2=d2)
+geom = geom.move(geom.center(what='xyz'))
 
-# Read geometry and set up SSH Hamiltonian
-geom = sisl.get_sile(fn).read_geometry()
-geom = geom.move(-geom.center())
-geom.set_nsc([3, 1, 1])
-geom.write(fn[:-3]+'.xyz')
 H = sisl.Hamiltonian(geom)
 for ia in geom:
     idx = geom.close(ia, R=[0.1, 1.1, 2.1])
@@ -21,14 +23,14 @@ for ia in geom:
     H[ia, idx[1]] = 1.0 # 1NN
     H[ia, idx[2]] = 0.5 # 2NN
 
-def analyze(H, nx=1001):
+def analyze(H, nx=501):
 
     def func(sc, frac):
         return [-0.5+frac, 0, 0]
     # Closed loop, show that this leads to incorrect results
     bzCl = sisl.BrillouinZone.parametrize(H, func, nx)
 
-    zak = sisl.electron.berry_phase(bzCl, sub=[range(len(H)/2)], closed=True, method='Zak')
+    zak = sisl.electron.berry_phase(bzCl, sub=[range(int(len(H)/2))], closed=True, method='Zak')
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
     band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
     band.set_parent(H)
@@ -39,17 +41,16 @@ def analyze(H, nx=1001):
     p.axes.set_xticklabels(kl)
     p.set_xlim(0, lk[-1])
     p.set_ylim(-2, 2)
-    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]')
-    p.set_xlabel(r'$ka/\pi$')
-    p.set_title('%s'%(fn[:-3]))
+    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]', fontsize=23)
+    p.set_xlabel(r'$ka/\pi$', fontsize=23)
+    p.set_title('[SSH-%s]'%phase, fontsize=23)
     for bk in bs.T:
         p.axes.plot(lk, bk, 'r')
     tol = 0.05
     if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
-        print(zak)
         # Only append Z2 when appropriate:
         plt.annotate(r'$\mathbf{Z_2=%i}$'%(z2), (0.02, 1.7), size=22, backgroundcolor='k', color='w')
-    p.savefig(fn[:-3]+'bands.pdf')
+    p.savefig('SSH-%s_bands.pdf'%phase)
     p.close()
 
 def analyze_edge(H):
@@ -59,21 +60,21 @@ def analyze_edge(H):
     H.set_nsc([1,1,1])
     geom = H.geom
     ev, evec = H.eigh(eigvals_only=False)
-    N = len(H)/2
+    N = int(len(H)/2)
     p = plot.Plot()
     y1 = np.absolute(evec[:, N-1] )**2
     y2 = np.absolute(evec[:, N] )**2
     x = geom.xyz[:, 0]
-    zipped = zip(x, y1, y2)
+    zipped = list(zip(x, y1, y2))
     zipped.sort(key = lambda t: t[0])
     x, y1, y2 = np.array(zipped)[:,0], np.array(zipped)[:,1], np.array(zipped)[:,2]
     p.axes.plot(x, y1, '-or', label=r'HOMO')
     p.axes.plot(x, y2, '--ob', label=r'LUMO')
     p.axes.legend(fontsize=13)
-    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]')
-    p.set_xlabel(r'$x$ [\AA]')
-    p.set_title(r'[%s]: WF of Finite Ribbon'%fn[:-3])
-    p.savefig(fn[:-3]+'_edge_wf.pdf')
+    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]', fontsize=23)
+    p.set_xlabel(r'$x$ [\AA]', fontsize=23)
+    p.set_title(r'[SSH-%s]'%phase, fontsize=23)
+    p.savefig('SSH-%s_edge_wf.pdf'%phase)
     p.close()
 
 def band_symm(H, band=None, k=[0,0,0]):
@@ -91,7 +92,7 @@ def band_symm(H, band=None, k=[0,0,0]):
                 atom_list.append(ib)
     # Dot product between VB and CB of the rotated (by 180^o) and not rotated systems
     if not band:
-        band = len(H)/2-1
+        band = int(len(H)/2)-1
     symm = (np.conjugate(evec_0[atom_list, band]) * evec_0[:, band]).sum()
     return symm 
 
@@ -102,35 +103,34 @@ def plot_states(H, kpoints=[0.0,0.5]):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
-    N = len(H)/2
+    N = int(len(H)/2)
     for ik, k in enumerate(kpoints):
         VB, CB = N-1, N
         ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(Hub, 3000*evec[:, band], colorbar=True, vmin=0)
             symm = band_symm(H, band=band, k=[k,0,0])
-            print(symm)
-            p.set_title(r'[%s]: $ E_{%s}=%.1f$ eV'%(fn[:-3], k_lab2[ik],ev[band]))
+            p.set_title(r'[SSH-%s]: $ E_{%s}=%.1f$ eV'%(phase, k_lab2[ik],ev[band]), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
-            p.savefig(fn[:-3]+'%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
+            p.savefig('SSH-%s_%s_%s.pdf'%(phase, band_lab[ib], k_lab[ik]))
             p.close()
 
 def gap_exp(H, L=np.arange(1,31)):
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
         ev[ik,:] = H.eigh(k=[k,0,0])
-    N = len(H)/2
+    N = int(len(H)/2)
     bg = min(ev[:, N] - ev[:, N-1])
     HL = []
     for pu in L:
         ribbon = H.tile(pu, axis=0)
-        N = len(ribbon)/2
+        N = int(len(ribbon)/2)
         ribbon.set_nsc([1,1,1])
         ev = ribbon.eigh()
         HL.append(ev[N]-ev[N-1])
     
     p = plot.Plot(figsize=(10,6))
-    p.set_title('HOMO-LUMO gap fitting [%s]'%(fn[:-3]))
+    p.set_title('HOMO-LUMO gap fitting [SSH-%s]'%phase, fontsize=23)
     p.axes.axhline(y=bg, linestyle='--', color='k', linewidth=0.75, label='Inf. Bandgap: %.3f eV'%(bg))
     from scipy.optimize import curve_fit
     # Define fitting functions
@@ -142,20 +142,20 @@ def gap_exp(H, L=np.arange(1,31)):
     x, y = L, HL
     p.axes.plot(x, y, 'ok', label='LUMO-HOMO')
     #p.axes.plot(x, HL_1, '^b', label='(L+1)-(H-1)')
-    ribbon.geometry.write(fn[:-3]+'_ribbon.xyz')
+    ribbon.geometry.write('SSH-%s_ribbon.xyz'%phase)
     popt, pcov = curve_fit(pol_fit, x, y)
     p.axes.plot(x, pol_fit(x, *popt), color='r', label=r'fit $ax^{-b}+c$: a=%.3f, b=%.3f, c=%.3f'%tuple(popt))
     popt, pcov = curve_fit(exp_fit, x[5:], np.log(y[5:]))
     p.axes.plot(x[5:], np.exp(-x[5:]*popt[0] - popt[1]), color='g', label=r'fit: $e^{-\alpha x - \beta}: \alpha=%.3f, \beta=%.3f$'%tuple(popt))
     p.axes.legend(fontsize=16)
-    p.set_xlabel(r'ch-GNR Length [p.u.]')
+    p.set_xlabel(r'ch-GNR Length [p.u.]', fontsize=23)
     p.axes.set_xticks(np.arange(2,max(L),max(L)/6))
-    p.set_ylabel(r'Energy Gap [eV]')
+    p.set_ylabel(r'Energy Gap [eV]', fontsize=23)
     p.axes.set_yscale('log')
-    p.savefig(fn[:-3]+'gap_fit.pdf')
+    p.savefig('SSH-%s_gap_fit.pdf'%phase)
     p.close()
 
-def open_boundary(h, directory, xlim=0.1):
+def open_boundary(h, xlim=0.1):
     # Obtain the bulk and surface states of a Hamiltonian h
     from scipy import linalg as la
     H = h.copy()
@@ -179,12 +179,12 @@ def open_boundary(h, directory, xlim=0.1):
     p.axes.plot(egrid, DOS_bulk, label='Bulk DOS')
     p.axes.legend()
     #p.set_ylim(0,50)
-    p.set_xlabel(r'Energy [eV]')
-    p.set_ylabel(r'DOS [eV$^{-1}$]')
-    p.set_title(r'Density of states [%s]'%directory)
-    p.savefig(directory+'DOS.pdf')
+    p.set_xlabel(r'Energy [eV]', fontsize=23)
+    p.set_ylabel(r'DOS [eV$^{-1}$]', fontsize=23)
+    p.set_title(r'Density of states [SSH-%s]'%phase, fontsize=23)
+    p.savefig('SSH-%s_DOS.pdf'%phase)
 
-open_boundary(H, fn[:-3], xlim=1.0)
+open_boundary(H, xlim=1.0)
 gap_exp(H)
 analyze(H)
 analyze_edge(H)

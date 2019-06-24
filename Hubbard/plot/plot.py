@@ -38,8 +38,8 @@ class Plot(object):
     def close(self):
         plt.close('all')
 
-    def set_title(self, title, size=16):
-        self.axes.set_title(title, size=size)
+    def set_title(self, title, fontsize=16):
+        self.axes.set_title(title, size=fontsize)
 
     def set_xlabel(self, label, fontsize=16):
         self.axes.set_xlabel(label, fontsize=fontsize)

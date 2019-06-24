@@ -14,7 +14,7 @@ w = [4,6,8]
 
 for m_i in m:
     for w_i in w:
-        geom = geom.cgnr(n,m_i,w_i)
+        geom = geometry.cgnr(n,m_i,w_i)
         directory = '%i-%i-%i'%(n,m_i,w_i)
         print('Doing', directory)
         if not os.path.isdir(directory):
