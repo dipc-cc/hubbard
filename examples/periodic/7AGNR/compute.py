@@ -35,7 +35,6 @@ p.savefig('summary/'+fo)
 
 # Bandstructure plot
 ymax = 2
-ev = H.eigh(k=[0, 0, 0])
 batoms = list(np.where(H.geom.atoms.Z == 5)[0])
 p = plot.Bandstructure(H, scale=2, ymax=ymax, projection=batoms)
 p.set_title(r'$\varepsilon_\mathrm{B}=%.2f$ eV, $U=%.2f$ eV'%(eB, U))
