@@ -11,8 +11,7 @@ def analyze(geom, directory, nx=501):
     # Zak all filled bands
     zak = H.get_Zak_phase(Nx=nx)
     z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
-    p.set_title(r'[%s]'%directory)
-    print('%s: z2=%i '%(directory, z2))
+    p.set_title(r'[%s]'%directory, fontsize=23)
     #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
     tol = 0.05
     if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
@@ -47,9 +46,9 @@ def analyze_edge(geom, directory):
     p.axes.plot(x, y1, '-or', label=r'HOMO')
     p.axes.plot(x, y2, '--ob', label=r'LUMO')
     p.axes.legend(fontsize=13)
-    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]')
-    p.set_xlabel(r'$x$ [\AA]')
-    p.set_title('[%s]'%directory)
+    p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]', fontsize=23)
+    p.set_xlabel(r'$x$ [\AA]', fontsize=23)
+    p.set_title('[%s]'%directory, fontsize=23)
     p.savefig(directory+'/1NN_edge_wf.pdf')
 
     if True:
@@ -58,7 +57,7 @@ def analyze_edge(geom, directory):
         v[sites] = 1.
         p = plot.GeometryPlot(H, cmap='Reds', figsize=(10,3))
         p.__orbitals__(v, vmax=1.0, vmin=0)
-        p.set_title(r'Edge sites of [%s]'%directory)
+        p.set_title(r'Edge sites of [%s]'%directory, fontsize=23)
         p.savefig(directory+'/edge_sites.pdf')
 
 def plot_states(geom, directory):
@@ -72,7 +71,7 @@ def plot_states(geom, directory):
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(H, 3000*evec[:, band], colorbar=True)
             sym = H.band_sym(evec[:, band])[0]
-            p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000))
+            p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
 
@@ -93,7 +92,7 @@ def gap_exp(geom, directory, L=np.arange(1,31)):
         HL_1.append(ev[H.Nup+1]-ev[H.Nup-2])
     
     p = plot.Plot(figsize=(10,6))
-    p.set_title('HOMO-LUMO gap fitting [%s]'%(directory))
+    p.set_title('HOMO-LUMO gap fitting [%s]'%(directory), fontsize=23)
     p.axes.axhline(y=bg, linestyle='--', color='k', linewidth=0.75, label='Inf. Bandgap: %.3f eV'%(bg))
     from scipy.optimize import curve_fit
     # Define fitting functions
@@ -110,9 +109,9 @@ def gap_exp(geom, directory, L=np.arange(1,31)):
     popt, pcov = curve_fit(exp_fit, x[3:], np.log(y[3:]))
     p.axes.plot(x[3:], np.exp(-x[3:]*popt[0] - popt[1]), color='g', label=r'fit: $e^{-\alpha x - \beta}: \alpha=%.3f, \beta=%.3f$'%tuple(popt))
     p.axes.legend(fontsize=16)
-    p.set_xlabel(r'ch-GNR Length [p.u.]')
+    p.set_xlabel(r'ch-GNR Length [p.u.]', fontsize=23)
     p.axes.set_xticks(np.arange(2,max(L),max(L)/6))
-    p.set_ylabel(r'Energy Gap [eV]')
+    p.set_ylabel(r'Energy Gap [eV]', fontsize=23)
     p.axes.set_yscale('log')
     p.savefig(directory+'/gap_fit.pdf')
 
