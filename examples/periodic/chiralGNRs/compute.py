@@ -1,7 +1,7 @@
 import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.geometry as geom 
+import Hubbard.geometry as geometry 
 import numpy as np
 import os
 
