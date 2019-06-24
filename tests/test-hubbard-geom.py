@@ -8,3 +8,6 @@ agnr.tile(2, axis=0).write('agnr.xyz')
 
 geometry = geom.cgnr(3,2,8)
 geometry.tile(2,axis=0).write('cgnr.xyz')
+
+geometry = geom.ssh()
+geometry.tile(2,axis=0).write('ssh.xyz')
