@@ -3,15 +3,17 @@ import sisl
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+import Hubbard.geometry as geometry
 
-fn = sys.argv[1]
-
-# Read geometry and set up SSH Hamiltonian
-geom = sisl.get_sile(fn).read_geometry()
-geom = geom.tile(int(sys.argv[2]),axis=0)
-geom = geom.move(-geom.center(what='xyz'))
+phase = sys.argv[1]
+if phase in 'topological':
+    d1, d2 = 2.0, 1.0
+if phase in 'trivial':
+    d1, d2 = 1.0, 2.0
+geom = geometry.ssh(d1=d1, d2=d2).tile(int(sys.argv[2]), axis=0)
+geom = geom.move(geom.center(what='xyz'))
 geom.write('test.xyz')
-geom.set_nsc([3, 1, 1])
+
 H = sisl.Hamiltonian(geom)
 for ia in geom:
     idx = geom.close(ia, R=[0.1, 1.1, 2.1])
@@ -26,7 +28,7 @@ def func(sc, frac):
 # Loop over first two bands, and all occupied ones:
 for nk in range(10):
     nx = int(10*1.4**nk)
-    bz = sisl.BrillouinZone(H).parametrize(H, func, nx)
+    bz = sisl.BrillouinZone.parametrize(H, func, nx)
     band = range(len(H)//2)
     zak = sisl.electron.berry_phase(bz, sub=band, closed=True, method='Zak')
     z2 = int(np.abs(1-np.exp(1j*zak))/2)
