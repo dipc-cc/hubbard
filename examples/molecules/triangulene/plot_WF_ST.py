@@ -5,8 +5,11 @@ import sys
 import numpy as np
 import sisl
 
+# Folder name (triangulene-1, -2 or -3)
+fn = sys.argv[1]
+
 # Build sisl Geometry object
-mol = sisl.get_sile('triangulene-2.xyz').read_geometry()
+mol = sisl.get_sile(fn+'/molecule.xyz').read_geometry()
 mol = mol.move(-mol.center(what='xyz'))
 mol.sc.set_nsc([1,1,1])
 
@@ -16,7 +19,7 @@ for u in [0., 3.5]:
 
     # Plot wavefunctions
     try:
-        c = ncdf.read('triangulene.nc', ncgroup='AFM_U%i'%(int(H.U*100))) # Try reading, if we already have density on file
+        c = ncdf.read(molecule+'/triangulene.nc', ncgroup='AFM_U%i'%(int(H.U*100))) # Try reading, if we already have density on file
         H.nup, H.ndn = c.nup, c.ndn
     except:
         H.random_density()
@@ -29,26 +32,26 @@ for u in [0., 3.5]:
 
     p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-1])
     p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-1]*1000, H.U))
-    p.savefig('U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
+    p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
     p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup])
     p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
-    p.savefig('U%i_state%i_up.pdf'%(H.U*100, H.Nup))
+    p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
     p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn-1])
     p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
-    p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
+    p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
     p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn])
     p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
-    p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
+    p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
 # Plot FM-AFM energies
-dat = np.loadtxt('FM-AFM.dat')
+dat = np.loadtxt(fn+'/FM-AFM.dat')
 
 p = plot.Plot()
 p.axes.plot(dat[:,0], dat[:,1], label='FM-AFM')
 p.set_xlabel(r'U [eV]')
 p.set_ylabel(r'Energy [eV]')
 p.axes.legend()
-p.savefig('FM-AFM.pdf')
+p.savefig(fn+'/FM-AFM.pdf')
