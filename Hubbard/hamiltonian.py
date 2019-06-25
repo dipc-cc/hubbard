@@ -213,9 +213,9 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         s = s.replace("'", "")
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
-    def read_density(self, fn):
+    def read_density(self, fn, mode='r'):
         s, group = self._get_hash()
-        fh = nc.ncSileHubbard(fn)
+        fh = nc.ncSileHubbard(fn, mode=mode)
         if group in fh.groups:
             nup, ndn = fh.read_density(group)
             self.nup = nup
