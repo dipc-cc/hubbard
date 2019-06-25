@@ -46,6 +46,9 @@ for u in [0., 3.5]:
     p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
+    p = plot.Spectrum(H)
+    p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
+
 # Plot FM-AFM energies
 dat = np.loadtxt(fn+'/FM-AFM.dat')
 
