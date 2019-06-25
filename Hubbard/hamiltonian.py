@@ -12,7 +12,8 @@ Function for the meanfield Hubbard Hamiltonian
 from __future__ import print_function
 import numpy as np
 import sisl
-
+import Hubbard.ncsile as nc
+import hashlib
 
 class HubbardHamiltonian(sisl.Hamiltonian):
     """ sisl-type object
@@ -200,6 +201,34 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.nup[dn] = 0.
             self.ndn[dn] = 1.
         self.normalize_charge()
+
+    def _get_hash(self):
+        p = {}
+        p['U'] = self.U
+        p['N'] = [self.Nup, self.Ndn]
+        p['t'] = [self.t1, self.t2, self.t3]
+        p['s'] = [self.s0, self.s1, self.s2, self.s3]
+        p['e'] = [self.eB, self.eN]
+        s = str(p)
+        s = s.replace("'", "")
+        return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+
+    def read_density(self, fn):
+        s, group = self._get_hash()
+        fh = nc.ncSileHubbard(fn)
+        if group in fh.groups:
+            nup, ndn = fh.read_density(group)
+            self.nup = nup
+            self.ndn = ndn
+            self.update_hamiltonian()
+        else:
+            print(f'Density not found in {fn}[{group}]')
+            self.random_density()
+
+    def write_density(self, fn, mode='a'):
+        s, group = self._get_hash()
+        fh = nc.ncSileHubbard(fn, mode=mode)
+        fh.write_density(s, group, self.nup, self.ndn)
 
     def iterate(self, mix=1.0):
         nup = self.nup

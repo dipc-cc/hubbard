@@ -28,3 +28,11 @@ print(dn, etot-calc.Etot)
 for d in [H.iterate2(mix=1), H.iterate3(mix=1)]:
     e = H.Etot
     print(d-dn, e-etot)
+
+# Write new data structure
+H.write_density('mol-ref/density.nc', mode='w')
+
+H.read_density('mol-ref/density.nc')
+for d in [H.iterate2(mix=1), H.iterate3(mix=1)]:
+    e = H.Etot
+    print(d-dn, e-etot)
