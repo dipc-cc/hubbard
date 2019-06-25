@@ -35,11 +35,11 @@ for u in [0., 3.5]:
     p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
     p.savefig('U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
-    p = plot.Wavefunction(H, 3000*evec_up[:, H.Ndn-1])
+    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn-1])
     p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
     p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
-    p = plot.Wavefunction(H, 3000*evec_up[:, H.Ndn])
+    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn])
     p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
     p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
