@@ -28,8 +28,8 @@ for u in np.linspace(0.0, 3.5, 15):
     eAFM = H.Etot
     ncdf.write(H, 'triangulene.nc', ncgroup='AFM_U%i'%(int(u*100)))
 
-    p = plot.SpinPolarization(H,  colorbar=True)
-    p.annotate()
+    p = plot.SpinPolarization(H,  colorbar=True, vmax=0.2, vmin=-0.2)
+    p.set_title(r'$U=%.2f$ eV'%H.U)
     p.savefig('AFM-pol-%i.pdf'%(u*100))
 
     # Now FM case
