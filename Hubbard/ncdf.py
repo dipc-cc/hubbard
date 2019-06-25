@@ -42,16 +42,11 @@ class write(object):
         except IOError:
             print('Initiating', fn)
             ncf = NC.Dataset(fn, 'w')
-        g = self.init_ncgrp(H, ncf, ncgroup)
+        self.init_ncgrp(H, ncf, ncgroup)
         myhash = gethash(H).hash
         i = np.where(ncf[ncgroup]['hash'][:] == myhash)[0]
         if len(i) == 0:
             i = len(ncf[ncgroup]['hash'][:])
-            if g:
-                print('Warning! Attempting to save into file that contains different calculation in that ncgroup')
-                # Create new ncgroup to avoid overlap between different cacluations
-                ncgroup = 'new_group'
-                self.init_ncgrp(H, ncf, ncgroup)
         else:
             i = i[0]
         ncf[ncgroup]['hash'][i] = myhash
@@ -81,9 +76,6 @@ class write(object):
             ncf[ncgroup].createVariable('Density', 'f8', ('unl', 'spin', 'sites'))
             ncf[ncgroup].createVariable('Etot', 'f8', ('unl',))
             ncf.sync()
-        else:
-            # Return True in case ncgroup is already an existing group
-            return True
 
 class gethash(object):
 
