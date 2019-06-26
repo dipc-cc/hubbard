@@ -68,7 +68,9 @@ class HubbardHamiltonian(object):
         self.H = TBHam.copy()
         self.geom = TBHam.geometry
         self.sites = len(self.geom)
-        self.e0 = TBHam.Hk().diagonal()
+        e00 = TBHam.Hk(spin=0).diagonal()
+        e01 = TBHam.Hk(spin=1).diagonal()
+        self.e0 = np.array([e00, e01]).T
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
         # Intial midgap
