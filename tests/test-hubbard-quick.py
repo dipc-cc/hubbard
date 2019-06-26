@@ -11,17 +11,13 @@ molecule.sc.set_nsc([1,1,1])
 
 # Run one iteration
 Hsp2 = sp2(molecule)
-H = hh.HubbardHamiltonian(Hsp2, U=5.0)
+H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.random_density()
 dn = H.iterate(mix=.1)
 print(dn, H.Etot)
 
 # Run also one iteration with data from ncfile
-calc = ncdf.read('mol-ref/mol-ref.nc')
-H.U = calc.U
-H.Nup, H.Ndn = calc.Nup, calc.Ndn
-H.nup, H.ndn = calc.nup, calc.ndn
-H.update_hamiltonian()
+H.read_density('mol-ref/density.nc')
 dn = H.iterate(mix=1)
 etot = 1*H.Etot
 print(dn, etot)
