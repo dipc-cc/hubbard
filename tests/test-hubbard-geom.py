@@ -1,13 +1,17 @@
 import Hubbard.geometry as geom
 
-zgnr = geom.zgnr(8)
-zgnr.tile(2, axis=0).write('zgnr.xyz')
+for w in [8, 9]:
 
-agnr = geom.agnr(8)
-agnr.tile(2, axis=0).write('agnr.xyz')
+    zgnr = geom.zgnr(w)
+    zgnr.tile(2, axis=0).write('zgnr-%i.xyz' % w)
 
-geometry = geom.cgnr(3,2,8)
-geometry.tile(2,axis=0).write('cgnr.xyz')
+    agnr = geom.agnr(w)
+    agnr.tile(2, axis=0).write('agnr-%i.xyz' % w)
+
+    for n in [3, 4]:
+        for m in [1, 2]:
+            geometry = geom.cgnr(n, m, w)
+            geometry.tile(2, axis=0).write('cgnr-%i-%i-%i.xyz' % (n, m, w))
 
 geometry = geom.ssh()
-geometry.tile(2,axis=0).write('ssh.xyz')
+geometry.tile(2, axis=0).write('ssh.xyz')
