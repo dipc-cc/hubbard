@@ -67,7 +67,7 @@ class HubbardHamiltonian(object):
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
 
-    def eigh(self, k=[0,0,0], eigvals_only=False, spin=0):
+    def eigh(self, k=[0,0,0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
     
     def eigenstate(self, k, spin=0):
