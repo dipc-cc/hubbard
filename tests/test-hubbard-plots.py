@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.ncdf as ncdf
+import Hubbard.sp2 as sp2
 import numpy as np
 import sisl
 
@@ -11,9 +12,10 @@ import sisl
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0,0,1])
+mol = sp2(molecule, dim=2)
 
 calc = ncdf.read('mol-ref/mol-ref.nc')
-H = hh.HubbardHamiltonian(molecule)
+H = hh.HubbardHamiltonian(mol.H)
 H.U = calc.U
 H.Nup, H.Ndn = calc.Nup, calc.Ndn
 H.nup, H.ndn = calc.nup, calc.ndn
