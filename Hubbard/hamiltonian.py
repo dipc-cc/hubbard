@@ -66,6 +66,8 @@ class HubbardHamiltonian(object):
         self.e0 = TBHam.Hk().diagonal()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, kmesh)
+        # Intial midgap
+        self.find_midgap()
 
     def eigh(self, k=[0,0,0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -123,6 +125,15 @@ class HubbardHamiltonian(object):
             self.nup[dn] = 0.
             self.ndn[dn] = 1.
         self.normalize_charge()
+
+    def find_midgap(self):
+        HOMO, LUMO = -1e10, 1e10
+        for k in self.kmesh:
+            ev_up = self.eigh(k=k, spin=0)
+            ev_dn = self.eigh(k=k, spin=1)
+            HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
+            LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
+        self.midgap = (HOMO + LUMO) * 0.5
 
     def _get_hash(self):
         p = {}
