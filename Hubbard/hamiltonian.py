@@ -41,6 +41,11 @@ class HubbardHamiltonian(object):
         if not TBHam.spin.is_polarized:
             raise ValueError(self.__class__.__name__ + ' requires as spin-polarized system')
 
+        # Use sum of all matrix elements as a basis for hash function calls
+        H0 = TBHam.copy()
+        H0.shift(np.pi) # Apply a shift to incorporate effect of S
+        self.hash_base = H0.H.tocsr().sum()
+
         self.U = U # Hubbard onsite Coulomb parameter
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
@@ -137,8 +142,8 @@ class HubbardHamiltonian(object):
 
     def _get_hash(self):
         s = 'U=%.4f' % self.U
-        s += ' N=%i, %i' % (self.Nup, self.Ndn)
-        print(s)
+        s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
+        s += ' base=%.3f'%self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
     def read_density(self, fn, mode='r'):
