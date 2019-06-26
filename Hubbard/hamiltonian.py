@@ -203,14 +203,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         self.normalize_charge()
 
     def _get_hash(self):
-        p = {}
-        p['U'] = self.U
-        p['N'] = [self.Nup, self.Ndn]
-        p['t'] = [self.t1, self.t2, self.t3]
-        p['s'] = [self.s0, self.s1, self.s2, self.s3]
-        p['e'] = [self.eB, self.eN]
-        s = str(p)
-        s = s.replace("'", "")
+        s = 'U=%.4f' % self.U
+        s += ' N=%i, %i' % (self.Nup, self.Ndn)
+        s += ' t=%.2f, %.2f, %.2f' % (self.t1, self.t2, self.t3)
+        s += ' s=%.2f, %.2f, %.2f, %.2f' % (self.s0, self.s1, self.s2, self.s3)
+        s += ' e=%.2f, %.2f' % (self.eB, self.eN)
+        print(s)
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
     def read_density(self, fn, mode='r'):
