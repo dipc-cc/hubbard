@@ -10,8 +10,8 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Run one iteration
-Hsp2 = sp2(molecule, dim=2)
-H = hh.HubbardHamiltonian(Hsp2.H, U=5.0)
+Hsp2 = sp2(molecule)
+H = hh.HubbardHamiltonian(Hsp2, U=5.0)
 H.random_density()
 dn = H.iterate(mix=.1)
 print(dn, H.Etot)
