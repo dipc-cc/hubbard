@@ -14,13 +14,15 @@ molecule.sc.set_nsc([1,1,1])
 # Try reading from file
 Hsp2 = sp2(molecule)
 H = hh.HubbardHamiltonian(Hsp2)
-H.U = 3.5
-H.read_density('mol-ref/density.nc')
-H.iterate()
+calc = ncdf.read('mol-ref/mol-ref.nc')
+H.U = calc.U
+H.Nup, H.Ndn = calc.Nup, calc.Ndn
+H.nup, H.ndn = calc.nup, calc.ndn
+H.update_hamiltonian()
 
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
-Etot0 = H.Etot*1
+Etot0 = calc.Etot*1
 
 for m in range(1,4):
     # Reset density and iterate
