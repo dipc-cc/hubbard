@@ -222,7 +222,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.ndn = ndn
             self.update_hamiltonian()
         else:
-            print(f'Density not found in {fn}[{group}]')
+            print('Density not found in %s[%s]'%(fn, group))
             self.random_density()
 
     def write_density(self, fn, mode='a'):
