@@ -12,8 +12,8 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Try reading from file
-Hsp2 = sp2(molecule, dim=2)
-H = hh.HubbardHamiltonian(Hsp2.H)
+Hsp2 = sp2(molecule)
+H = hh.HubbardHamiltonian(Hsp2)
 H.U = 3.5
 H.read_density('mol-ref/density.nc')
 H.iterate()
@@ -30,7 +30,7 @@ for m in range(1,4):
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
-    print('Total energy difference: %.4e eV' %(Etot0-Hscf.Etot))
+    print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
 
     # Eigenvalues are easy to check
     if np.allclose(ev1, ev0):
