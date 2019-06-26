@@ -136,11 +136,9 @@ class HubbardHamiltonian(object):
         self.midgap = (HOMO + LUMO) * 0.5
 
     def _get_hash(self):
-        p = {}
-        p['U'] = self.U
-        p['N'] = [self.Nup, self.Ndn]
-        s = str(p)
-        s = s.replace("'", "")
+        s = 'U=%.4f' % self.U
+        s += ' N=%i, %i' % (self.Nup, self.Ndn)
+        print(s)
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
     def read_density(self, fn, mode='r'):
@@ -152,7 +150,7 @@ class HubbardHamiltonian(object):
             self.ndn = ndn
             self.update_hamiltonian()
         else:
-            print(f'Density not found in {fn}[{group}]')
+            print('Density not found in %s[%s]'%(fn, group))
             self.random_density()
 
     def write_density(self, fn, mode='a'):
