@@ -14,12 +14,9 @@ molecule.sc.set_nsc([1,1,1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0,0,1])
 H_mol = sp2(molecule)
 
-calc = ncdf.read('mol-ref/mol-ref.nc')
-H = hh.HubbardHamiltonian(H_mol)
-H.U = calc.U
-H.Nup, H.Ndn = calc.Nup, calc.Ndn
-H.nup, H.ndn = calc.nup, calc.ndn
-H.update_hamiltonian()
+H = hh.HubbardHamiltonian(H_mol, U=3.5)
+H.read_density('mol-ref/density.nc')
+H.iterate()
 H.find_midgap()
 
 p = plot.Charge(H, colorbar=True)
