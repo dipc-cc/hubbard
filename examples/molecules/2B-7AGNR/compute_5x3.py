@@ -6,7 +6,7 @@ import numpy as np
 import Hubbard.ncdf as ncdf
 import sisl
 
-pol = False
+pol = True
 
 # Build sisl Geometry object
 mol = sisl.get_sile('7AGNR2B_5x3.XV').read_geometry()
@@ -14,20 +14,21 @@ mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz'))
 H_mol = sp2(mol, t1=2.7, t2=0.2, t3=0.18, dim=2).H
 
-up = [[1,99],[1,152],[1,80]]
-dn = [[80,152],[80,99],[99,152]]
+pol_up = [[1,99],[1,152],[1,80]]
+pol_dn = [[80,152],[80,99],[99,152]]
 for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
     H = hh.HubbardHamiltonian(H_mol, U=5.0)
     try:
         # Try reading from file
         calc = ncdf.read('7AGNR2B_5x3.nc', ncgroup=grp)
+        assert ncdf.gethash(H).hash == calc.hash
         H.nup, H.ndn = calc.nup, calc.ndn
         H.Nup, H.Ndn = calc.Nup, calc.Ndn
-    except:
+    except:  
+        H.random_density()
         if pol:
-            H.set_polarization(up[ig], dn=dn[ig])
-        else:
-            H.random_density()
+            H.set_polarization(pol_up[ig], dn=pol_dn[ig])
+    
     dn = H.converge()
     ncdf.write(H, '7AGNR2B_5x3.nc', ncgroup=grp)
     p = plot.SpinPolarization(H)

@@ -5,15 +5,15 @@ import numpy as np
 import Hubbard.ncdf as ncdf
 import sisl
 
-pol = False
+pol = True
 
 # Build sisl Geometry object
 mol = sisl.get_sile('7AGNR2B_5x5.XV').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz'))
 
-up = [[3, 99], [3, 178], [3, 82]]
-dn = [[82, 178], [82, 99], [99, 178]]
+pol_up = [[3, 99], [3, 178], [3, 82]]
+pol_dn = [[82, 178], [82, 99], [99, 178]]
 for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
     H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18, U=5.0)
     try:
@@ -22,10 +22,9 @@ for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
         H.nup, H.ndn = calc.nup, calc.ndn
         H.Nup, H.Ndn = calc.Nup, calc.Ndn
     except:
-        if pol:
-            H.set_polarization(up[ig], dn=dn[ig])
-        else:
             H.random_density()
+            if pol:
+                H.set_polarization(pol_up[ig], dn=pol_dn[ig])
     dn = H.converge()
     ncdf.write(H, '7AGNR2B_5x5.nc', ncgroup=grp)
     p = plot.SpinPolarization(H)
