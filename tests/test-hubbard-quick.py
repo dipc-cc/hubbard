@@ -17,7 +17,11 @@ dn = H.iterate(mix=.1)
 print(dn, H.Etot)
 
 # Run also one iteration with data from ncfile
-H.read_density('mol-ref/density.nc')
+calc = ncdf.read('mol-ref/mol-ref.nc')
+H.U = calc.U
+H.Nup, H.Ndn = calc.Nup, calc.Ndn
+H.nup, H.ndn = calc.nup, calc.ndn
+H.update_hamiltonian()
 dn = H.iterate(mix=1)
 etot = 1*H.Etot
 print(dn, etot)
