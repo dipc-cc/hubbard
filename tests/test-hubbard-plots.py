@@ -12,14 +12,15 @@ import sisl
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0,0,1])
-mol = sp2(molecule, dim=2)
+H_mol = sp2(molecule)
 
 calc = ncdf.read('mol-ref/mol-ref.nc')
-H = hh.HubbardHamiltonian(mol.H)
+H = hh.HubbardHamiltonian(H_mol)
 H.U = calc.U
 H.Nup, H.Ndn = calc.Nup, calc.Ndn
 H.nup, H.ndn = calc.nup, calc.ndn
 H.update_hamiltonian()
+H.find_midgap()
 
 p = plot.Charge(H, colorbar=True)
 p.savefig('chg.pdf')
