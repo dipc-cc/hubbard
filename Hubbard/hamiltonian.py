@@ -47,15 +47,25 @@ class HubbardHamiltonian(object):
         self.hash_base = H0.H.tocsr().sum()
 
         self.U = U # Hubbard onsite Coulomb parameter
+
+        # Count number of pi-electrons
+        nB = len(np.where(TBHam.geom.atoms.Z == 5)[0])
+        nC = len(np.where(TBHam.geom.atoms.Z == 6)[0])
+        nN = len(np.where(TBHam.geom.atoms.Z == 7)[0])
+        ntot = 0*nB+1*nC+2*nN
+
+        print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
+        print('Neutral system corresponds to a total of %i electrons' %ntot)
+
         self.Nup = Nup # Total number of up-electrons
         self.Ndn = Ndn # Total number of down-electrons
 
         # Use default (low-spin) filling?
-        ntot = len(TBHam)
         if Ndn <= 0:
             self.Ndn = int(ntot/2)
         if Nup <= 0:
             self.Nup = int(ntot-self.Ndn)
+
         # Generate kmesh
         [nx, ny, nz] = kmesh
         self.kmesh = []

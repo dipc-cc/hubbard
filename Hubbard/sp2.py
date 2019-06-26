@@ -1,7 +1,7 @@
 """
 
-:mod:`Hubbard.hamiltonian`
-==========================
+:mod:`Hubbard.sp2`
+==================
 
 Function for the meanfield Hubbard Hamiltonian
 
@@ -11,12 +11,10 @@ Function for the meanfield Hubbard Hamiltonian
 
 from __future__ import print_function
 import numpy as np
-import netCDF4 as NC
 import sisl
-import hashlib
 
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
-        kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=2, N=0):
+        kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=2):
 
     # Determine pz sites
     aux = []
@@ -28,6 +26,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         if len(idx[1])==4: # Search for atoms with 4 neighbors
             if ext_geom.atoms[ia].Z == 6:
                 sp3.append(ia)
+
     # Remove all sites not carbon-type
     pi_geom = ext_geom.remove(aux+sp3)
     sites = len(pi_geom)
@@ -39,16 +38,6 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     pz = sisl.SphericalOrbital(1, (r, func))
     for ia in pi_geom:
         pi_geom.atom[ia].orbital[0] = pz
-
-    # Count number of pi-electrons:
-    nB = len(np.where(pi_geom.atoms.Z == 5)[0])
-    nC = len(np.where(pi_geom.atoms.Z == 6)[0])
-    nN = len(np.where(pi_geom.atoms.Z == 7)[0])
-    ntot = 0*nB+1*nC+2*nN
-    if N <= 0:
-        N = int(ntot/2)
-    print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
-    print('Neutral system corresponds to a total of %i electrons' %ntot)
 
     # Construct Hamiltonian
     if s1 != 0:
