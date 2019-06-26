@@ -12,25 +12,22 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Try reading from file
-calc = ncdf.read('mol-ref/mol-ref.nc')
-# Build Hamiltonian of sp2 carbon system
 Hsp2 = sp2(molecule, dim=2)
-Hscf = hh.HubbardHamiltonian(Hsp2.H, U=3.5)
-Hscf.U = calc.U
-Hscf.Nup, Hscf.Ndn = calc.Nup, calc.Ndn
-Hscf.nup, Hscf.ndn = calc.nup, calc.ndn
-Hscf.update_hamiltonian()
+H = hh.HubbardHamiltonian(Hsp2.H)
+H.U = 3.5
+H.read_density('mol-ref/density.nc')
+H.iterate()
 
 # Determine reference values for the tests
-ev0, evec0 = Hscf.eigh(eigvals_only=False, spin=0)
-Etot0 = calc.Etot*1
+ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
+Etot0 = H.Etot*1
 
 for m in range(1,4):
     # Reset density and iterate
-    Hscf.random_density()
+    H.random_density()
 
-    dn = Hscf.converge(tol=1e-10, steps=10, method=m)
-    ev1, evec1 = Hscf.eigh(eigvals_only=False, spin=0)
+    dn = H.converge(tol=1e-10, steps=10, method=m)
+    ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
     print('Total energy difference: %.4e eV' %(Etot0-Hscf.Etot))
@@ -41,7 +38,7 @@ for m in range(1,4):
     else:
         # Could be that up and down spins are interchanged
         print('Warning: Engenvalues for up-spins different. Checking down-spins instead')
-        ev1, evec1 = Hscf.eigh(eigvals_only=False, spin=1)
+        ev1, evec1 = H.eigh(eigvals_only=False, spin=1)
         if np.allclose(ev1, ev0):
             print('Eigenvalue check passed')
 

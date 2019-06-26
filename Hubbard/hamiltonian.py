@@ -12,7 +12,8 @@ Function for the meanfield Hubbard Hamiltonian
 from __future__ import print_function
 import numpy as np
 import sisl
-
+import Hubbard.ncsile as nc
+import hashlib
 
 class HubbardHamiltonian(object):
     """ sisl-type object
@@ -123,6 +124,34 @@ class HubbardHamiltonian(object):
             self.ndn[dn] = 1.
         self.normalize_charge()
 
+    def _get_hash(self):
+        p = {}
+        p['U'] = self.U
+        p['N'] = [self.Nup, self.Ndn]
+        p['t'] = [self.t1, self.t2, self.t3]
+        p['s'] = [self.s0, self.s1, self.s2, self.s3]
+        p['e'] = [self.eB, self.eN]
+        s = str(p)
+        s = s.replace("'", "")
+        return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+
+    def read_density(self, fn, mode='r'):
+        s, group = self._get_hash()
+        fh = nc.ncSileHubbard(fn, mode=mode)
+        if group in fh.groups:
+            nup, ndn = fh.read_density(group)
+            self.nup = nup
+            self.ndn = ndn
+            self.update_hamiltonian()
+        else:
+            print(f'Density not found in {fn}[{group}]')
+            self.random_density()
+
+    def write_density(self, fn, mode='a'):
+        s, group = self._get_hash()
+        fh = nc.ncSileHubbard(fn, mode=mode)
+        fh.write_density(s, group, self.nup, self.ndn)
+
     def iterate(self, mix=1.0):
         nup = self.nup
         ndn = self.ndn
@@ -185,8 +214,8 @@ class HubbardHamiltonian(object):
             es_up = es_up.sub(range(Nup))
             es_dn = es_dn.sub(range(Ndn))
 
-            ni_up = es_up.norm(False).sum(0) * weight
-            ni_dn = es_dn.norm(False).sum(0) * weight
+            ni_up = es_up.norm2(False).sum(0) * weight
+            ni_dn = es_dn.norm2(False).sum(0) * weight
 
             # Calculate total energy
             Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
@@ -249,9 +278,9 @@ class HubbardHamiltonian(object):
 
             # Reduce to occupied stuff
             occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            ni_up = (es_up.norm(False) * occ_up).sum(0)
+            ni_up = (es_up.norm2(False) * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            ni_dn = (es_dn.norm(False) * occ_dn).sum(0)
+            ni_dn = (es_dn.norm2(False) * occ_dn).sum(0)
             Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
             # Return values

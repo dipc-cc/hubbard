@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import numpy as np
 import sys
 import sisl
@@ -14,18 +13,23 @@ U = float(sys.argv[2])
 eB = float(sys.argv[3])
 
 H = hh.HubbardHamiltonian(geom, t1=2.7, t2=0.2, t3=.18, U=U, eB=eB, kmesh=[51, 1, 1])
-try:
-    c = ncdf.read(fn[:-3]+'.nc') # Try reading, if we already have density on file
-    H.nup, H.ndn = c.nup, c.ndn
-except:
-    H.random_density()
 
-if U < 0.1:
-    H.converge(premix=1.0)
+ncf = fn.replace('XV', 'nc')
+try:
+    # Assume file exists, open in append mode
+    mode = 'a'
+    H.read_density(ncf, mode=mode)
+except:
+    # File does not exist, we will create it here
+    H.random_density()
+    mode = 'w'
+
+if U == 0:
+    H.iterate()
 else:
     H.converge()
 
-ncdf.write(H, fn[:-3]+'.nc')
+H.write_density(ncf, mode=mode)
 
 # Spin polarization plot
 p = plot.SpinPolarization(H, colorbar=True, vmax=0.1)
