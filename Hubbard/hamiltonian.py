@@ -14,6 +14,7 @@ import numpy as np
 import sisl
 import Hubbard.ncsile as nc
 import hashlib
+import os
 
 class HubbardHamiltonian(object):
     """ sisl-type object
@@ -158,22 +159,29 @@ class HubbardHamiltonian(object):
         s += ' base=%.3f'%self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
-    def read_density(self, fn, mode='r'):
-        s, group = self._get_hash()
-        fh = nc.ncSileHubbard(fn, mode=mode)
-        if group in fh.groups:
-            nup, ndn = fh.read_density(group)
-            self.nup = nup
-            self.ndn = ndn
-            self.update_hamiltonian()
-        else:
-            print('Density not found in %s[%s]'%(fn, group))
-            self.random_density()
+    def read_density(self, fn, mode='a'):
+        if os.path.isfile(fn):
+            s, group = self._get_hash()
+            fh = nc.ncSileHubbard(fn, mode=mode)
+            if group in fh.groups:
+                nup, ndn = fh.read_density(group)
+                self.nup = nup
+                self.ndn = ndn
+                self.update_hamiltonian()
+                print('Read charge from %s' % fn)
+                return True
+            else:
+                print('Density not found in %s[%s]'%(fn, group))
+        self.random_density()
+        return False
 
     def write_density(self, fn, mode='a'):
+        if not os.path.isfile(fn):
+            mode='w'
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.nup, self.ndn)
+        print('Wrote charge to %s' % fn)
 
     def iterate(self, mix=1.0):
         nup = self.nup
