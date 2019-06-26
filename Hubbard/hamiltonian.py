@@ -128,9 +128,6 @@ class HubbardHamiltonian(object):
         p = {}
         p['U'] = self.U
         p['N'] = [self.Nup, self.Ndn]
-        p['t'] = [self.t1, self.t2, self.t3]
-        p['s'] = [self.s0, self.s1, self.s2, self.s3]
-        p['e'] = [self.eB, self.eN]
         s = str(p)
         s = s.replace("'", "")
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
