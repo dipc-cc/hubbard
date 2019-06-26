@@ -77,7 +77,7 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
-        g = self.HH.ext_geom
+        g = self.HH.geom
         for ia in g:
             idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
