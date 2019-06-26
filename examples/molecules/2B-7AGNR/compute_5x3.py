@@ -12,12 +12,14 @@ pol = True
 mol = sisl.get_sile('7AGNR2B_5x3.XV').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz'))
-H_mol = sp2(mol, t1=2.7, t2=0.2, t3=0.18, dim=2).H
+H_mol = sp2(mol, t1=2.7, t2=0.2, t3=0.18, dim=2)
 
 pol_up = [[1,99],[1,152],[1,80]]
 pol_dn = [[80,152],[80,99],[99,152]]
 for ig, grp in enumerate(['AFM-AFM-AFM', 'AFM-FM-AFM', 'FM-AFM-FM']):
     H = hh.HubbardHamiltonian(H_mol, U=5.0)
+    H.Nup -= 1
+    H.Ndn -= 1
     try:
         # Try reading from file
         calc = ncdf.read('7AGNR2B_5x3.nc', ncgroup=grp)
