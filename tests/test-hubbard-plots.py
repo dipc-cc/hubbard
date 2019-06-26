@@ -20,6 +20,7 @@ H.U = calc.U
 H.Nup, H.Ndn = calc.Nup, calc.Ndn
 H.nup, H.ndn = calc.nup, calc.ndn
 H.update_hamiltonian()
+H.find_midgap()
 
 p = plot.Charge(H, colorbar=True)
 p.savefig('chg.pdf')
