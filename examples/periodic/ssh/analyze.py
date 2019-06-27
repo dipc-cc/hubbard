@@ -25,33 +25,21 @@ for ia in geom:
 
 def analyze(H, nx=501):
 
-    def func(sc, frac):
-        return [-0.5+frac, 0, 0]
-    # Closed loop, show that this leads to incorrect results
-    bzCl = sisl.BrillouinZone.parametrize(H, func, nx)
-
-    zak = sisl.electron.berry_phase(bzCl, sub=[range(int(len(H)/2))], closed=True, method='Zak')
-    z2 = int(np.abs(1-np.exp(1j*zak))/2)
-    band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
-    band.set_parent(H)
-    bs = band.asarray().eigh()
-    lk, kt, kl = band.lineark(True)
-    p = plot.Plot()
-    p.axes.set_xticks(kt)
-    p.axes.set_xticklabels(kl)
-    p.set_xlim(0, lk[-1])
-    p.set_ylim(-2, 2)
-    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]', fontsize=23)
-    p.set_xlabel(r'$ka/\pi$', fontsize=23)
-    p.set_title('[SSH-%s]'%phase, fontsize=23)
-    for bk in bs.T:
-        p.axes.plot(lk, bk, 'r')
+    H = hh.HubbardHamiltonian(H, U=0.0, nkpt=[nx, 1, 1])
+    if H.U > 0:
+        H.random_density()
+        H.converge()
+    ymax = 2.0
+    p = plot.Bandstructure(H, ymax=ymax)
+    # Zak all filled bands
+    zak = H.get_Zak_phase(Nx=nx)
+    z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
+    p.set_title(r'[SSH-%s]'%phase)
+    #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
     tol = 0.05
-    if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
-        # Only append Z2 when appropriate:
-        plt.annotate(r'$\mathbf{Z_2=%i}$'%(z2), (0.02, 1.7), size=22, backgroundcolor='k', color='w')
+    p.axes.annotate(r'$\mathbf{Z_2=%i}$' % z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
+    p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
     p.savefig('SSH-%s_bands.pdf'%phase)
-    p.close()
 
 def analyze_edge(H):
 
@@ -77,25 +65,6 @@ def analyze_edge(H):
     p.savefig('SSH-%s_edge_wf.pdf'%phase)
     p.close()
 
-def band_symm(H, band=None, k=[0,0,0]):
-    # It returns the parity of the VB and CB at Gamma and the edge of the BZ (X)
-    geom = H.geom
-    # Diagonalize Hamiltonian and store the eigenvectors obtained at Gamma and X
-    ev, evec_0 = H.H.eigh(k=k, eigvals_only=False,spin=0)
-    # Obtain sites of rotated symmetry
-    geom_rot = geom.rotate(180, v=[0,0,1])
-    geom_rot = geom_rot.move(-geom_rot.center())
-    atom_list = []
-    for ia in geom_rot:
-        for ib in geom:
-            if np.allclose(geom.xyz[ib], geom_rot.xyz[ia]):
-                atom_list.append(ib)
-    # Dot product between VB and CB of the rotated (by 180^o) and not rotated systems
-    if not band:
-        band = int(len(H)/2)-1
-    symm = (np.conjugate(evec_0[atom_list, band]) * evec_0[:, band]).sum()
-    return symm 
-
 def plot_states(H, kpoints=[0.0,0.5]):
     #H = H.tile(2, axis=0)
     Hub = hh.HubbardHamiltonian(H)
@@ -105,10 +74,10 @@ def plot_states(H, kpoints=[0.0,0.5]):
     N = int(len(H)/2)
     for ik, k in enumerate(kpoints):
         VB, CB = N-1, N
-        ev, evec = H.eigh(k=[k,0,0],eigvals_only=False, spin=0)
+        ev, evec = Hub.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(Hub, 3000*evec[:, band], colorbar=True, vmin=0)
-            symm = band_symm(H, band=band, k=[k,0,0])
+            symm = Hub.band_sym(evec[:, band])[0]
             p.set_title(r'[SSH-%s]: $ E_{%s}=%.1f$ eV'%(phase, k_lab2[ik],ev[band]), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig('SSH-%s_%s_%s.pdf'%(phase, band_lab[ib], k_lab[ik]))

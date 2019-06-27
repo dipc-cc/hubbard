@@ -23,16 +23,10 @@ f = open(fn+'/FM-AFM.dat', 'w')
 for u in np.linspace(0.0, 3.5, 15):
     H.U = u
     # AFM case first
-    try:
-        c = ncdf.read(fn+'/triangulene.nc', ncgroup='AFM_U%i'%(u*100)) # Try reading, if we already have density on file
-        assert ncdf.gethash(H).hash == c.hash
-        H.nup, H.ndn = c.nup, c.ndn
-    except:
-        H.random_density()
-
+    H.read_density(fn+'/triangulene-AFM.nc')
     dn = H.converge(tol=1e-10)
     eAFM = H.Etot
-    ncdf.write(H, fn+'/triangulene.nc', ncgroup='AFM_U%i'%(u*100))
+    H.write_density(fn+'/triangulene-AFM.nc')
 
     p = plot.SpinPolarization(H,  colorbar=True)
     p.annotate()
@@ -41,15 +35,11 @@ for u in np.linspace(0.0, 3.5, 15):
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
-    try:
-        c = ncdf.read(fn+'/triangulene.nc', ncgroup='FM_U%i'%(u*100)) # Try reading, if we already have density on file
-        assert ncdf.gethash(H).hash == c.hash
-        H.nup, H.ndn = c.nup, c.ndn
-    except:
-        H.random_density()
+    
+    H.read_density(fn+'/triangulene-FM.nc')
     dn = H.converge(tol=1e-10)
     eFM = H.Etot
-    ncdf.write(H, fn+'/triangulene.nc', ncgroup='FM_U%i'%(u*100))
+    H.write_density(fn+'/triangulene-FM.nc')
 
     # Revert the imbalance for next loop
     H.Nup -= 1
