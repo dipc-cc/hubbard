@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.ncdf as ncdf
+import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import sisl
@@ -14,7 +15,8 @@ mol = mol.move(-mol.center(what='xyz'))
 mol.sc.set_nsc([1,1,1])
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(mol, t1=2.7, t2=.2, t3=.18)
+Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
+H = hh.HubbardHamiltonian(Hsp2)
 
 f = open(fn+'/FM-AFM.dat', 'w')
 
