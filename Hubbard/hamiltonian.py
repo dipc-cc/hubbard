@@ -29,14 +29,11 @@ class HubbardHamiltonian(object):
         Number of up-electrons
     Ndn : int, optional
         Number of down electrons
-    kmesh : array_like, optional
-        Number of k-points in (x,y,z) direction in the interval [0, 1] (units
-      of [pi/a]) along each direction in which the Hamiltonian 
-      will be evaluated
-
+    nkpt : array_like, optional
+        Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, kmesh=[1, 1, 1]):
+    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -67,14 +64,6 @@ class HubbardHamiltonian(object):
         if Nup <= 0:
             self.Nup = int(ntot-self.Ndn)
 
-        # Generate kmesh
-        [nx, ny, nz] = kmesh
-        self.kmesh = []
-        for kx in np.arange(0, 1, 1./nx):
-            for ky in np.arange(0, 1, 1./ny):
-                for kz in np.arange(0, 1, 1./nz):
-                    self.kmesh.append([kx, ky, kz])
-        
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.H = TBHam.copy()
         self.geom = TBHam.geometry
@@ -83,11 +72,11 @@ class HubbardHamiltonian(object):
         e01 = TBHam.Hk(spin=1).diagonal()
         self.e0 = np.array([e00, e01]).T
         # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self.H, kmesh)
+        self.mp = sisl.MonkhorstPack(self.H, nkpt)
         # Intial midgap
         self.find_midgap()
 
-    def eigh(self, k=[0,0,0], eigvals_only=True, spin=0):
+    def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
     
     def eigenstate(self, k, spin=0):
@@ -122,7 +111,7 @@ class HubbardHamiltonian(object):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         self.nup = self.nup / self.nup.sum() * self.Nup
         self.ndn = self.ndn / self.ndn.sum() * self.Ndn
-        print('Normalized charge distributions to Nup=%i, Ndn=%i'%(self.Nup, self.Ndn))
+        print('Normalized charge distributions to Nup=%i, Ndn=%i' % (self.Nup, self.Ndn))
 
     def set_polarization(self, up, dn=[]):
         """ Maximize spin polarization on specific atomic sites.
@@ -146,7 +135,7 @@ class HubbardHamiltonian(object):
 
     def find_midgap(self):
         HOMO, LUMO = -1e10, 1e10
-        for k in self.kmesh:
+        for k in self.mp.k:
             ev_up = self.eigh(k=k, spin=0)
             ev_dn = self.eigh(k=k, spin=1)
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
@@ -156,7 +145,7 @@ class HubbardHamiltonian(object):
     def _get_hash(self):
         s = 'U=%.4f' % self.U
         s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
-        s += ' base=%.3f'%self.hash_base
+        s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
     def read_density(self, fn, mode='a'):
@@ -171,7 +160,7 @@ class HubbardHamiltonian(object):
                 print('Read charge from %s' % fn)
                 return True
             else:
-                print('Density not found in %s[%s]'%(fn, group))
+                print('Density not found in %s[%s]' % (fn, group))
         self.random_density()
         return False
 
@@ -193,16 +182,14 @@ class HubbardHamiltonian(object):
         nidn = 0*ndn
         HOMO = -1e10
         LUMO = 1e10
-        for ik, k in enumerate(self.kmesh):
+        for w, k in zip(self.mp.weight, self.mp.k):
             ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
             ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
-            niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
-            nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
+            niup += w*np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+            nidn += w*np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
-        niup = niup/len(self.kmesh)
-        nidn = nidn/len(self.kmesh)
         # Determine midgap energy reference
         self.midgap = (LUMO+HOMO)/2
         # Measure of density change
@@ -383,7 +370,7 @@ class HubbardHamiltonian(object):
         # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
         def func(sc, frac):
             return [frac, 0, 0]
-        bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
+        bz = sisl.BrillouinZone.parametrize(self.H, func, Nx)
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = range(self.Nup)
@@ -407,7 +394,7 @@ class HubbardHamiltonian(object):
         g = self.geom
         BO = sisl.Hamiltonian(g)
         R = [0.1, 1.6]
-        for ik, k in enumerate(self.kmesh):
+        for w, k in zip(self.mp.weight, self.mp.k):
             # spin-up first
             ev, evec = self.eigh(k=k, eigvals_only=False, spin=0)
             ev -= self.midgap
@@ -426,8 +413,7 @@ class HubbardHamiltonian(object):
                         for ia in g:
                             for ja in g.close_sc(ia, R=R, isc=r)[1]:
                                 bor = bo[ia, ja]*phase
-                                BO[ia, ja] += bor.real
-        BO /= len(self.kmesh)
+                                BO[ia, ja] += w*bor.real
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)
