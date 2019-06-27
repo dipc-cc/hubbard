@@ -23,8 +23,9 @@ def analyze(H0, directory, nx=51):
 
 def analyze_edge(H0, directory):
     # Create 15 length ribbon
-    geom = H0.geometry.tile(15, axis=0)
+    geom = H0.geometry
     # Identify edge sites along the lower ribbon border
+    geom.set_nsc([3,1,1])
     sites = []
     for ia in geom:
         idx = geom.close(ia, R=[0.1, 1.43])
@@ -33,10 +34,8 @@ def analyze_edge(H0, directory):
                 sites.append(ia)
 
     # Eigenvectors and eigenvalues in 1NN model for finite ribbon
-    geom.set_nsc([1, 1, 1])
-    H0 = sp2(geom)
     H = hh.HubbardHamiltonian(H0, U=0.)
-    ev, evec = H.H.eigh(eigvals_only=False, spin=0)
+    ev, evec = H.eigh(eigvals_only=False, spin=0)
     ev -= H.midgap
 
     p = plot.Plot()
@@ -58,15 +57,16 @@ def analyze_edge(H0, directory):
         # Plot edge sites?
         v = np.zeros(len(H.geom))
         v[sites] = 1.
-        p = plot.GeometryPlot(H, cmap='Reds', figsize=(10,3))
+        p = plot.GeometryPlot(H.geom, cmap='Reds', figsize=(10,3))
         p.__orbitals__(v, vmax=1.0, vmin=0)
         p.set_title(r'Edge sites of [%s]'%directory, fontsize=23)
         p.savefig(directory+'/edge_sites.pdf')
 
-def plot_states(H, directory):
+def plot_states(H0, directory):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
+    H = hh.HubbardHamiltonian(H0, U=0.)
     for ik, k in enumerate([0, 0.5]):
         VB, CB = H.Nup-1, H.Nup
         ev, evec = H.eigh(k=[k, 0, 0], eigvals_only=False, spin=0)
@@ -77,18 +77,19 @@ def plot_states(H, directory):
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
 
-def gap_exp(H, directory, L=np.arange(1,31)):
-    ev = np.zeros((len(np.linspace(0,0.5,51)), len(H)))
+def gap_exp(H0, directory, L=np.arange(1,31)):
+    H = hh.HubbardHamiltonian(H0, U=0.)
+    ev = np.zeros((len(np.linspace(0,0.5,51)), len(H0)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
         ev[ik,:] = H.H.eigh(k=[k,0,0],spin=0)
     bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
     HL = []
     HL_1 = []
     for pu in L:
-        ribbon = geom.tile(pu, axis=0)
+        ribbon = H0.tile(pu, axis=0)
         ribbon.set_nsc([1,1,1])
-        H = hh.HubbardHamiltonian(ribbon, t1=2.7, t2=0., t3=0., U=0.)
-        ev = H.H.eigh(spin=0)
+        H = hh.HubbardHamiltonian(ribbon, U=0.)
+        ev = H.eigh(spin=0)
         HL.append(ev[H.Nup]-ev[H.Nup-1])
         HL_1.append(ev[H.Nup+1]-ev[H.Nup-2])
     
