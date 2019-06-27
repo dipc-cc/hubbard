@@ -25,33 +25,21 @@ for ia in geom:
 
 def analyze(H, nx=501):
 
-    def func(sc, frac):
-        return [-0.5+frac, 0, 0]
-    # Closed loop, show that this leads to incorrect results
-    bzCl = sisl.BrillouinZone.parametrize(H, func, nx)
-
-    zak = sisl.electron.berry_phase(bzCl, sub=[range(int(len(H)/2))], closed=True, method='Zak')
-    z2 = int(np.abs(1-np.exp(1j*zak))/2)
-    band = sisl.BandStructure(H, [[0, 0, 0], [0.5, 0, 0]], 100, [r"$\Gamma$", r"$X$"])
-    band.set_parent(H)
-    bs = band.asarray().eigh()
-    lk, kt, kl = band.lineark(True)
-    p = plot.Plot()
-    p.axes.set_xticks(kt)
-    p.axes.set_xticklabels(kl)
-    p.set_xlim(0, lk[-1])
-    p.set_ylim(-2, 2)
-    p.set_ylabel(r'E-E$_{\mathrm{mid}}$ [eV]', fontsize=23)
-    p.set_xlabel(r'$ka/\pi$', fontsize=23)
-    p.set_title('[SSH-%s]'%phase, fontsize=23)
-    for bk in bs.T:
-        p.axes.plot(lk, bk, 'r')
+    H = hh.HubbardHamiltonian(H, U=0.0, nkpt=[nx, 1, 1])
+    if H.U > 0:
+        H.random_density()
+        H.converge()
+    ymax = 2.0
+    p = plot.Bandstructure(H, ymax=ymax)
+    # Zak all filled bands
+    zak = H.get_Zak_phase(Nx=nx)
+    z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
+    p.set_title(r'[SSH-%s]'%phase)
+    #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
     tol = 0.05
-    if np.abs(zak) < tol or np.abs(np.abs(zak)-np.pi) < tol:
-        # Only append Z2 when appropriate:
-        plt.annotate(r'$\mathbf{Z_2=%i}$'%(z2), (0.02, 1.7), size=22, backgroundcolor='k', color='w')
+    p.axes.annotate(r'$\mathbf{Z_2=%i}$' % z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
+    p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
     p.savefig('SSH-%s_bands.pdf'%phase)
-    p.close()
 
 def analyze_edge(H):
 
