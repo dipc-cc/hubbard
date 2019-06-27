@@ -20,7 +20,7 @@ class Wavefunction(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, **keywords)
 
         if 'realspace' in keywords:
             self.__realspace__(wf, **keywords)
