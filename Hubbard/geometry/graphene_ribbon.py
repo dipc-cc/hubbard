@@ -78,7 +78,7 @@ def cgnr(n, m, w, bond=1.42, ch_angle=False):
         g = g.remove([0,-1])
         g_max = np.where(g.xyz[:,0] == max(g.xyz[:,0]))[0]
         g_min = np.where(g.xyz[:,0] == min(g.xyz[:,0]))[0]
-        g = g.remove([list(g_min[:natoms/2])+list(g_max[-natoms/2:])])
+        g = g.remove([list(g_min[:natoms//2])+list(g_max[-natoms//2:])])
     v1 = bond*(1.+cs)*(2.*(m-1)+1.)
     v2 = bond*(n+0.5)*sn*2.
     theta = np.arctan(v1/v2)

@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import sisl
@@ -8,9 +9,10 @@ import sisl
 mol = sisl.get_sile('junction-2-2.XV').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz')).rotate(220, [0,0,1])
+Hsp2 = sp2(mol)
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18, U=0)
+H = hh.HubbardHamiltonian(Hsp2, U=0)
 
 # Plot Eigenspectrum
 p = plot.Spectrum(H, ymax=0.12)

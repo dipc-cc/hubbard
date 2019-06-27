@@ -11,6 +11,7 @@ Function for the meanfield Hubbard Hamiltonian
 
 from __future__ import print_function
 import numpy as np
+import os
 import netCDF4 as NC
 import hashlib
 
@@ -38,7 +39,7 @@ class write(object):
         try:
             ncf = NC.Dataset(fn, 'a')
             print('Appending to', fn)
-        except:
+        except IOError:
             print('Initiating', fn)
             ncf = NC.Dataset(fn, 'w')
         self.init_ncgrp(H, ncf, ncgroup)
@@ -81,12 +82,7 @@ class gethash(object):
     def __init__(self, HubbardHamiltonian):
         H = HubbardHamiltonian
         s = ''
-        s += 't1=%.2f '%H.t1
-        s += 't2=%.2f '%H.t2
-        s += 't3=%.2f '%H.t3
         s += 'U=%.2f '%H.U
-        s += 'eB=%.2f '%H.eB
-        s += 'eN=%.2f '%H.eN
         s += 'Nup=%.2f '%H.Nup
         s += 'Ndn=%.2f '%H.Ndn
         self.hash = int(hashlib.md5(s.encode('utf-8')).hexdigest()[:7], 16)

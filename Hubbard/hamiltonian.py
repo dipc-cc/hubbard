@@ -14,136 +14,83 @@ import numpy as np
 import sisl
 import Hubbard.ncsile as nc
 import hashlib
+import os
 
-class HubbardHamiltonian(sisl.Hamiltonian):
+class HubbardHamiltonian(object):
     """ sisl-type object
 
     Parameters:
     -----------
-    ext_geom : Geometry (sisl) object
-        complete geometry that hosts also the SuperCell
-        information (for instance the direction of periodicity, etc.)
-    t1 : float, optional
-      nearest neighbor hopping matrix element
-    t2 : float, optional
-      second nearest neighbor hopping matrix element
-    t3 : float, optional
-      third nearest neigbor hopping matrix element
+    TBHam : sisl.Hamiltonian instance
+        A spin-polarized tight-Binding Hamiltonian
     U : float, optional
-      on-site Coulomb repulsion
-    eB : float, optional
-      on-site energy for Boron atoms
-    eN : float, optional
-      on-site energy for Nitrogen atoms  
-    kmesh : array_like, optional
-      number of k-points in the interval [0, 1] (units
-      of [pi/a]) along each direction in which the Hamiltonian 
-      will be evaluated
-
+        on-site Coulomb repulsion
+    Nup : int, optional
+        Number of up-electrons
+    Ndn : int, optional
+        Number of down electrons
+    nkpt : array_like, optional
+        Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, ext_geom, t1=2.7, t2=0.2, t3=0.18, U=0.0, eB=3., eN=-3., Nup=0, Ndn=0,
-                  kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0):
+    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
-        self.ext_geom = ext_geom # Keep the extended/complete geometry
-        # Key parameters
-        self.t1 = t1 # Nearest neighbor hopping
-        self.t2 = t2
-        self.t3 = t3
-        self.s0 = s0 # Self overlap matrix element
-        self.s1 = s1 # Overlap matrix element between 1NN
-        self.s2 = s2 # Overlap matrix element between 2NN
-        self.s3 = s3 # Overlap matrix element between 3NN
-        if self.s1 != 0:
-            orthogonal = False
-        else:
-            orthogonal = True
+        
+        if not TBHam.spin.is_polarized:
+            raise ValueError(self.__class__.__name__ + ' requires as spin-polarized system')
+
+        # Use sum of all matrix elements as a basis for hash function calls
+        H0 = TBHam.copy()
+        H0.shift(np.pi) # Apply a shift to incorporate effect of S
+        self.hash_base = H0.H.tocsr().sum()
+
         self.U = U # Hubbard onsite Coulomb parameter
-        self.eB = eB # Boron onsite energy (relative to carbon eC=0.0)
-        self.eN = eN # Nitrogen onsite energy (relative to carbon eC=0.0)
-        self.Nup = Nup # Total number of up-electrons
-        self.Ndn = Ndn # Total number of down-electrons
-        # Determine pz sites
-        aux = []
-        sp3 = []
-        for ia in ext_geom:
-            if ext_geom.atoms[ia].Z not in [5, 6, 7]:
-                aux.append(ia)
-            idx = ext_geom.close(ia, R=[0.1, 1.6])
-            if len(idx[1])==4: # Search for atoms with 4 neighbors
-                if ext_geom.atoms[ia].Z == 6:
-                    sp3.append(ia)
-        # Remove all sites not carbon-type
-        pi_geom = ext_geom.remove(aux+sp3)
-        self.sites = len(pi_geom)
-        print('Found %i pz sites' %self.sites)
-        # Set pz orbital for each pz site
-        r = np.linspace(0, 1.6, 700)
-        func = 5 * np.exp(-r * 5)
-        pz = sisl.SphericalOrbital(1, (r, func))
-        for ia in pi_geom:
-            pi_geom.atom[ia].orbital[0] = pz
-        # Count number of pi-electrons:
-        nB = len(np.where(pi_geom.atoms.Z == 5)[0])
-        nC = len(np.where(pi_geom.atoms.Z == 6)[0])
-        nN = len(np.where(pi_geom.atoms.Z == 7)[0])
+
+        # Count number of pi-electrons
+        nB = len(np.where(TBHam.geom.atoms.Z == 5)[0])
+        nC = len(np.where(TBHam.geom.atoms.Z == 6)[0])
+        nN = len(np.where(TBHam.geom.atoms.Z == 7)[0])
         ntot = 0*nB+1*nC+2*nN
+
         print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
         print('Neutral system corresponds to a total of %i electrons' %ntot)
+
+        self.Nup = Nup # Total number of up-electrons
+        self.Ndn = Ndn # Total number of down-electrons
+
         # Use default (low-spin) filling?
         if Ndn <= 0:
             self.Ndn = int(ntot/2)
         if Nup <= 0:
             self.Nup = int(ntot-self.Ndn)
-        # Generate kmesh
-        [nx, ny, nz] = kmesh
-        self.kmesh = []
-        for kx in np.arange(0, 1, 1./nx):
-            for ky in np.arange(0, 1, 1./ny):
-                for kz in np.arange(0, 1, 1./nz):
-                    self.kmesh.append([kx, ky, kz])
-        # Construct Hamiltonians
-        sisl.Hamiltonian.__init__(self, pi_geom, orthogonal=orthogonal, dim=2)
-        # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self, kmesh)
-        # Initialize elements
-        self.init_hamiltonian_elements()
 
-    def init_hamiltonian_elements(self):
-        """ Setup the initial Hamiltonian
-        
-        Set Hamiltonian matrix elements H_ij, where ij are pairs of atoms separated by a distance defined as:
-        R = [on-site, 1NN, 2NN, 3NN]
-        
-        """
-        # Radii defining 1st, 2nd, and 3rd neighbors
-        R = [0.1, 1.6, 2.6, 3.1]
-        # Build hamiltonian for backbone
-        g = self.geom
-        for ia in g:
-            idx = g.close(ia, R=R)
-            # NB: I found that ':' is necessary in the following lines, but I don't understand why...
-            if g.atoms[ia].Z == 5:
-                self.H[ia, ia, :] = self.eB # set onsite for B sites
-            elif g.atoms[ia].Z == 7:
-                self.H[ia, ia, :] = self.eN # set onsite for N sites
-            # set hoppings
-            self.H[ia, idx[1], :] = -self.t1
-            if self.t2 != 0:
-                self.H[ia, idx[2], :] = -self.t2
-            if self.t3 != 0:
-                self.H[ia, idx[3], :] = -self.t3
-            if not self.H.orthogonal:
-                self.H.S[ia, ia] = self.s0
-                self.H.S[ia, idx[1]] = self.s1
-                self.H.S[ia, idx[2]] = self.s2
-                self.H.S[ia, idx[3]] = self.s3
-        # Determine midgap with U=0
-        ev = self.H.eigh(spin=0)
-        N = max(self.Nup, self.Ndn)
-        HOMO = ev[N-1]
-        LUMO = ev[N]
-        self.midgap = (LUMO+HOMO)/2
+        # Copy TB Hamiltonian to store the converged one in a different variable
+        self.H = TBHam.copy()
+        self.geom = TBHam.geometry
+        self.sites = len(self.geom)
+        e00 = TBHam.Hk(spin=0).diagonal()
+        e01 = TBHam.Hk(spin=1).diagonal()
+        self.e0 = np.array([e00, e01]).T
+        # Generate Monkhorst-Pack
+        self.mp = sisl.MonkhorstPack(self.H, nkpt)
+        # Intial midgap
+        self.find_midgap()
+
+        # Initialize density matrix
+        self.random_density()
+
+
+    def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
+        return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
+    
+    def eigenstate(self, k, spin=0):
+        return self.H.eigenstate(k, spin=spin)
+
+    def tile(self, reps, axis):
+        return self.H.tile(reps, axis)
+
+    def repeat(self, reps, axis):
+        return self.H.repeat(reps, axis)
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
@@ -156,18 +103,12 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         for atom, ias in g.atoms.iter(True):
             # charge on neutral atom
             n0 = atom.Z - 5
-            if atom.Z == 5:
-                e0 = self.eB
-            elif atom.Z == 7:
-                e0 = self.eN
-            else:
-                e0 = 0.
 
             # Faster to do it for more than one element at a time
-            E[ias, :] += e0 - self.U * n0
+            E[ias, :] -= self.U * n0
 
             for ia in ias:
-                self.H[ia, ia, [0, 1]] = E[ia]
+                self.H[ia, ia, [0, 1]] = E[ia] + self.e0[ia]
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
@@ -180,7 +121,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         self.nup = self.nup / self.nup.sum() * self.Nup
         self.ndn = self.ndn / self.ndn.sum() * self.Ndn
-        print('Normalized charge distributions to Nup=%i, Ndn=%i'%(self.Nup, self.Ndn))
+        print('Normalized charge distributions to Nup=%i, Ndn=%i' % (self.Nup, self.Ndn))
 
     def set_polarization(self, up, dn=[]):
         """ Maximize spin polarization on specific atomic sites.
@@ -202,31 +143,43 @@ class HubbardHamiltonian(sisl.Hamiltonian):
             self.ndn[dn] = 1.
         self.normalize_charge()
 
+    def find_midgap(self):
+        HOMO, LUMO = -1e10, 1e10
+        for k in self.mp.k:
+            ev_up = self.eigh(k=k, spin=0)
+            ev_dn = self.eigh(k=k, spin=1)
+            HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
+            LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
+        self.midgap = (HOMO + LUMO) * 0.5
+
     def _get_hash(self):
         s = 'U=%.4f' % self.U
-        s += ' N=%i, %i' % (self.Nup, self.Ndn)
-        s += ' t=%.2f, %.2f, %.2f' % (self.t1, self.t2, self.t3)
-        s += ' s=%.2f, %.2f, %.2f, %.2f' % (self.s0, self.s1, self.s2, self.s3)
-        s += ' e=%.2f, %.2f' % (self.eB, self.eN)
-        print(s)
+        s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
+        s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
-    def read_density(self, fn, mode='r'):
-        s, group = self._get_hash()
-        fh = nc.ncSileHubbard(fn, mode=mode)
-        if group in fh.groups:
-            nup, ndn = fh.read_density(group)
-            self.nup = nup
-            self.ndn = ndn
-            self.update_hamiltonian()
-        else:
-            print('Density not found in %s[%s]'%(fn, group))
-            self.random_density()
+    def read_density(self, fn, mode='a'):
+        if os.path.isfile(fn):
+            s, group = self._get_hash()
+            fh = nc.ncSileHubbard(fn, mode=mode)
+            if group in fh.groups:
+                nup, ndn = fh.read_density(group)
+                self.nup = nup
+                self.ndn = ndn
+                self.update_hamiltonian()
+                print('Read charge from %s' % fn)
+                return True
+            else:
+                print('Density not found in %s[%s]' % (fn, group))
+        return False
 
     def write_density(self, fn, mode='a'):
+        if not os.path.isfile(fn):
+            mode='w'
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.nup, self.ndn)
+        print('Wrote charge to %s' % fn)
 
     def iterate(self, mix=1.0):
         nup = self.nup
@@ -238,23 +191,14 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         nidn = 0*ndn
         HOMO = -1e10
         LUMO = 1e10
-        for ik, k in enumerate(self.kmesh):
+        for w, k in zip(self.mp.weight, self.mp.k):
             ev_up, evec_up = self.eigh(k=k, eigvals_only=False, spin=0)
             ev_dn, evec_dn = self.eigh(k=k, eigvals_only=False, spin=1)
             # Compute new occupations
-            if self.H.orthogonal:
-                niup += np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
-                nidn += np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
-            else:
-                S = self.H.Sk().todense()
-                Dup = np.einsum('ia,ja->ij', evec_up[:, :int(Nup)], evec_up[:, :int(Nup)]).real
-                Ddn = np.einsum('ia,ja->ij', evec_dn[:, :int(Ndn)], evec_dn[:, :int(Ndn)]).real
-                niup += 0.5*(np.einsum('ij,ij->i', Dup, S) + np.einsum('ji,ji->i', Dup.T, S.T))
-                nidn += 0.5*(np.einsum('ij,ij->i', Ddn, S) + np.einsum('ji,ji->i', Ddn.T, S.T))
+            niup += w*np.sum(np.absolute(evec_up[:, :int(Nup)])**2, axis=1).real
+            nidn += w*np.sum(np.absolute(evec_dn[:, :int(Ndn)])**2, axis=1).real
             HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
-        niup = niup/len(self.kmesh)
-        nidn = nidn/len(self.kmesh)
         # Determine midgap energy reference
         self.midgap = (LUMO+HOMO)/2
         # Measure of density change
@@ -344,7 +288,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         kT = 0.00001
         # Create fermi-level determination distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-        Ef = self.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
         dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
 
@@ -435,7 +379,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
         def func(sc, frac):
             return [frac, 0, 0]
-        bz = sisl.BrillouinZone(self).parametrize(self, func, Nx)
+        bz = sisl.BrillouinZone.parametrize(self.H, func, Nx)
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = range(self.Nup)
@@ -459,7 +403,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
         g = self.geom
         BO = sisl.Hamiltonian(g)
         R = [0.1, 1.6]
-        for ik, k in enumerate(self.kmesh):
+        for w, k in zip(self.mp.weight, self.mp.k):
             # spin-up first
             ev, evec = self.eigh(k=k, eigvals_only=False, spin=0)
             ev -= self.midgap
@@ -478,8 +422,7 @@ class HubbardHamiltonian(sisl.Hamiltonian):
                         for ia in g:
                             for ja in g.close_sc(ia, R=R, isc=r)[1]:
                                 bor = bo[ia, ja]*phase
-                                BO[ia, ja] += bor.real
-        BO /= len(self.kmesh)
+                                BO[ia, ja] += w*bor.real
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)

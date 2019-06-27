@@ -1,6 +1,7 @@
 import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.sp2 as sp2
 import Hubbard.geometry as geometry 
 import numpy as np
 import os
@@ -15,14 +16,21 @@ w = [4,6,8]
 for m_i in m:
     for w_i in w:
         geom = geometry.cgnr(n,m_i,w_i)
+        geom.write('test.xyz')
         directory = '%i-%i-%i'%(n,m_i,w_i)
         print('Doing', directory)
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        ch.analyze_edge(geom, directory)
-        ch.analyze(geom, directory)
-        ch.plot_states(geom, directory)
-        ch.gap_exp(geom, directory)
+        # 1NN model
+        H0 = sp2(geom, t1=2.7, t2=0, t3=0)
+
+        ch.analyze(H0, directory)
+        # Make finite ribbon of 15 reps
+        Hfinite = H0.tile(15, axis=0)
+        Hfinite.set_nsc([1,1,1])
+        ch.analyze_edge(Hfinite, directory)
+        ch.plot_states(H0, directory)
+        ch.gap_exp(H0, directory)
 
         h = sisl.Hamiltonian(geom)
         for ia in geom:
@@ -34,7 +42,7 @@ for m_i in m:
             xlim=0.1
         else:
             xlim=0.5
-        op.open_boundary(h, directory, xlim=xlim)
+        #op.open_boundary(h, directory, xlim=xlim)
 
 if False:
     # Plot bulk and surface DOS of 1D chain to test the funcion

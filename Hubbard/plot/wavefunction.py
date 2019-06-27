@@ -8,7 +8,7 @@ import numpy as np
 
 class Wavefunction(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, wf, label=r'Phase', **keywords):
+    def __init__(self, HubbardHamiltonian, wf,  ext_geom=None, label=r'Phase', **keywords):
 
         # Set default keywords
         if 'realspace' in keywords:
@@ -20,7 +20,7 @@ class Wavefunction(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         if 'realspace' in keywords:
             self.__realspace__(wf, **keywords)

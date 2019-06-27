@@ -1,4 +1,5 @@
 import Hubbard.hamiltonian as hh
+import Hubbard.sp2 as sp2
 import Hubbard.ncdf as ncdf
 import numpy as np
 import sisl
@@ -11,8 +12,8 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Try reading from file
-H = hh.HubbardHamiltonian(molecule)
-H.U = 3.5
+Hsp2 = sp2(molecule)
+H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.read_density('mol-ref/density.nc')
 H.iterate()
 

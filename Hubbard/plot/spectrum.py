@@ -75,7 +75,7 @@ class LDOSmap(Plot):
 
 class DOS_distribution(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, E, eta=1e-3, spin=[0,1], f=300, sites=[], **keywords):
+    def __init__(self, HubbardHamiltonian, E, eta=1e-3, spin=[0,1], f=300, sites=[], ext_geom=None, **keywords):
 
         # Set default keywords
         if 'realspace' in keywords:
@@ -87,7 +87,7 @@ class DOS_distribution(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         DOS = HubbardHamiltonian.DOS(E, eta=eta, spin=spin)
         x = HubbardHamiltonian.geom[:, 0]

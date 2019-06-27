@@ -11,7 +11,8 @@ mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz'))
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(mol, t1=2.7, t2=.2, t3=.18)
+Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
+H = hh.HubbardHamiltonian(Hsp2)
 
 f = open('FM-AFM.dat', 'w')
 

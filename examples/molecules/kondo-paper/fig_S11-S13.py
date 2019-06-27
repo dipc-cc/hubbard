@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import Hubbard.ncdf as ncdf
@@ -9,9 +10,10 @@ import sisl
 mol = sisl.get_sile('junction-2-2.XV').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz')).rotate(220, [0,0,1])
+Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18)
+H = hh.HubbardHamiltonian(Hsp2)
 
 for u in [0.0, 3.5]:
     H.U = u
@@ -37,6 +39,7 @@ for u in [0.0, 3.5]:
     N = [H.Nup, H.Ndn]
     for i in range(2):
         ev, evec = H.eigh(eigvals_only=False, spin=i)
+        H.find_midgap()
         ev -= H.midgap
 
         f = 3800

@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.ncdf as ncdf
+import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import sisl
@@ -9,9 +10,10 @@ import sisl
 mol = sisl.get_sile('type1.xyz').read_geometry()
 mol.sc.set_nsc([1,1,1])
 mol = mol.move(-mol.center(what='xyz')).rotate(220, [0,0,1])
-
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(mol, t1=2.7, t2=0.2, t3=.18)
+Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
+
+H = hh.HubbardHamiltonian(Hsp2)
 
 # Plot the single-particle TB (U = 0.0) wavefunction (SO) for Type 1
 H.U = 0.0

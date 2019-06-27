@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.ncdf as ncdf
+import Hubbard.sp2 as sp2
 import numpy as np
 import sisl
 
@@ -11,26 +12,25 @@ import sisl
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0,0,1])
+H_mol = sp2(molecule)
 
-calc = ncdf.read('mol-ref/mol-ref.nc')
-H = hh.HubbardHamiltonian(molecule)
-H.U = calc.U
-H.Nup, H.Ndn = calc.Nup, calc.Ndn
-H.nup, H.ndn = calc.nup, calc.ndn
-H.update_hamiltonian()
+H = hh.HubbardHamiltonian(H_mol, U=3.5)
+H.read_density('mol-ref/density.nc')
+H.iterate()
+H.find_midgap()
 
-p = plot.Charge(H, colorbar=True)
+p = plot.Charge(H, ext_geom=molecule, colorbar=True)
 p.savefig('chg.pdf')
 
-p = plot.ChargeDifference(H)
+p = plot.ChargeDifference(H, ext_geom=molecule)
 p.savefig('chgdiff.pdf')
 
-p = plot.SpinPolarization(H)
+p = plot.SpinPolarization(H, ext_geom=molecule)
 p.annotate()
 p.savefig('pol.pdf')
 
 ev, evec = H.eigh(eigvals_only=False, spin=0)
-p = plot.Wavefunction(H, 500*evec[:, 10], colorbar=True)
+p = plot.Wavefunction(H, 500*evec[:, 10], ext_geom=molecule, colorbar=True)
 p.savefig('wf.pdf')
 
 p = plot.Spectrum(H)
@@ -39,7 +39,7 @@ p.savefig('spectrum.pdf')
 p = plot.LDOSmap(H)
 p.savefig('ldos_map.pdf')
 
-p = plot.DOS_distribution(H, 0.15, f=300, sites=[60])
+p = plot.DOS_distribution(H, 0.10, f=300, sites=[60], ext_geom=molecule)
 p.savefig('dos_dist.pdf')
 
 p = plot.DOS(H, np.linspace(-0.2,0.2,101))

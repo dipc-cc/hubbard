@@ -1,7 +1,8 @@
 from __future__ import print_function
 
-import Hubbard.hamiltonian as hh
 import Hubbard.ncdf as ncdf
+import Hubbard.hamiltonian as hh
+import Hubbard.sp2 as sp2
 import sisl
 
 # Build sisl Geometry object
@@ -9,7 +10,8 @@ molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1,1,1])
 
 # Run one iteration
-H = hh.HubbardHamiltonian(molecule, U=3.5)
+Hsp2 = sp2(molecule)
+H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.random_density()
 dn = H.iterate(mix=.1)
 print(dn, H.Etot)
