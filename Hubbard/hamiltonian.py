@@ -76,6 +76,10 @@ class HubbardHamiltonian(object):
         # Intial midgap
         self.find_midgap()
 
+        # Initialize density matrix
+        self.random_density()
+
+
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
     
@@ -161,7 +165,6 @@ class HubbardHamiltonian(object):
                 return True
             else:
                 print('Density not found in %s[%s]' % (fn, group))
-        self.random_density()
         return False
 
     def write_density(self, fn, mode='a'):
