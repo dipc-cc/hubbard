@@ -14,7 +14,7 @@ import numpy as np
 import sisl
 
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
-        kmesh=[1, 1, 1], s0=1.0, s1=0, s2=0, s3=0, dim=2):
+        s0=1.0, s1=0, s2=0, s3=0, dim=2):
 
     # Determine pz sites
     aux = []
@@ -23,14 +23,14 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         if ext_geom.atoms[ia].Z not in [5, 6, 7]:
             aux.append(ia)
         idx = ext_geom.close(ia, R=[0.1, 1.6])
-        if len(idx[1])==4: # Search for atoms with 4 neighbors
+        if len(idx[1]) == 4: # Search for atoms with 4 neighbors
             if ext_geom.atoms[ia].Z == 6:
                 sp3.append(ia)
 
     # Remove all sites not carbon-type
-    pi_geom = ext_geom.remove(aux+sp3)
+    pi_geom = ext_geom.remove(aux + sp3)
     sites = len(pi_geom)
-    print('Found %i pz sites' %sites)
+    print('Found %i pz sites' % sites)
 
     # Set pz orbital for each pz site
     r = np.linspace(0, 1.6, 700)
