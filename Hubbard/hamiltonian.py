@@ -86,6 +86,12 @@ class HubbardHamiltonian(object):
     def eigenstate(self, k, spin=0):
         return self.H.eigenstate(k, spin=spin)
 
+    def tile(self, reps, axis):
+        return self.H.tile(reps, axis)
+
+    def repeat(self, reps, axis):
+        return self.H.repeat(reps, axis)
+
     def update_hamiltonian(self):
         # Update spin Hamiltonian
         g = self.geom
