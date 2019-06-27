@@ -16,7 +16,7 @@ if phase in 'trivial':
 geom = geometry.ssh(d1=d1, d2=d2)
 geom = geom.move(geom.center(what='xyz'))
 
-H = sisl.Hamiltonian(geom)
+H = sisl.Hamiltonian(geom, dim=2)
 for ia in geom:
     idx = geom.close(ia, R=[0.1, 1.1, 2.1])
     H[ia, idx[0]] = 0.
@@ -98,8 +98,7 @@ def band_symm(H, band=None, k=[0,0,0]):
 
 def plot_states(H, kpoints=[0.0,0.5]):
     #H = H.tile(2, axis=0)
-    geom = H.geom
-    Hub = hh.HubbardHamiltonian(geom)
+    Hub = hh.HubbardHamiltonian(H)
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
