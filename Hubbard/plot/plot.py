@@ -59,11 +59,11 @@ Plot()
 
 class GeometryPlot(Plot):
 
-    def __init__(self, HubbardHamiltonian, **keywords):
+    def __init__(self, geometry, **keywords):
 
         Plot.__init__(self, **keywords)
 
-        self.HH = HubbardHamiltonian
+        self.geom = geometry
         self.set_axes()
         # Relevant keywords
         kw = {}
@@ -77,7 +77,7 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
-        g = self.HH.geom
+        g = self.geom
         for ia in g:
             idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
@@ -137,37 +137,37 @@ class GeometryPlot(Plot):
             import sisl
 
             # Create a temporary copy of the geometry 
-            H = self.HH.geom.copy()
+            g = self.geom.copy()
             
             # Set new sc to create real-space grid
             sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
-            H.set_sc(sc)
+            g.set_sc(sc)
         
             # Shift negative xy coordinates within the supercell
-            ix = np.where(H.xyz[:, 0] < 0)
-            iy = np.where(H.xyz[:, 1] < 0)
-            H.xyz[ix, 0] = H.axyz(isc=[1, 0, 0])[ix, 0]
-            H.xyz[iy, 1] = H.axyz(isc=[0, 1, 0])[iy, 1]
+            ix = np.where(g.xyz[:, 0] < 0)
+            iy = np.where(g.xyz[:, 1] < 0)
+            g.xyz[ix, 0] = g.axyz(isc=[1, 0, 0])[ix, 0]
+            g.xyz[iy, 1] = g.axyz(isc=[0, 1, 0])[iy, 1]
             # Make z~0 -> z = 0                      
-            H.xyz[np.where(np.abs(H.xyz[:, 2]) < 1e-3), 2] = 0
+            g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
 
             # Create the real-space grid
-            grid = sisl.Grid(grid_unit, sc=H.sc, geometry=H)
+            grid = sisl.Grid(grid_unit, sc=g.sc, geometry=g)
 
             if density:
-                D = sisl.physics.DensityMatrix(H)
-                for ia in H:
+                D = sisl.physics.DensityMatrix(g)
+                for ia in g:
                     D.D[ia, ia] = v[ia]
                 D.density(grid)
             else:
                 if isinstance(v, sisl.physics.electron.EigenstateElectron):
                     # Set parent geometry equal to the temporary one
-                    v.parent = H
+                    v.parent = g
                     v.wavefunction(grid)
                 else:
                     # In case v is a vector
-                    sisl.electron.wavefunction(v, grid, geometry=H)
-            del H
+                    sisl.electron.wavefunction(v, grid, geometry=g)
+            del g
             return grid
 
         if 'vmin' in keywords:
@@ -188,7 +188,7 @@ class GeometryPlot(Plot):
                 self.add_colorbar(self.imshow, label=label)
 
     def set_axes(self, bdx=2):
-        g = self.HH.geom
+        g = self.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         self.xmin = min(x)-bdx
@@ -210,7 +210,7 @@ class GeometryPlot(Plot):
 
     def annotate(self, size=6):
         """ Annotate the site indices in the pi-network """
-        g = self.HH.geom
+        g = self.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         for ia in g:
