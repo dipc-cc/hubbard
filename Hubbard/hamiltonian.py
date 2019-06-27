@@ -338,7 +338,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         if method == 2:
@@ -360,6 +360,8 @@ class HubbardHamiltonian(object):
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
+                if fn:
+                    self.write_density(fn)
 
         print('   found solution in %i iterations'%i)
         return dn
