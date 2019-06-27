@@ -23,10 +23,10 @@ f = open(fn+'/FM-AFM.dat', 'w')
 for u in np.linspace(0.0, 3.5, 15):
     H.U = u
     # AFM case first
-    H.read_density('triangulene-AFM.nc')
+    H.read_density(fn+'/triangulene-AFM.nc')
     dn = H.converge(tol=1e-10)
     eAFM = H.Etot
-    H.write_density('triangulene-AFM.nc')
+    H.write_density(fn+'/triangulene-AFM.nc')
 
     p = plot.SpinPolarization(H,  colorbar=True)
     p.annotate()
@@ -36,10 +36,10 @@ for u in np.linspace(0.0, 3.5, 15):
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
     
-    H.read_density('triangulene-FM.nc')
+    H.read_density(fn+'/triangulene-FM.nc')
     dn = H.converge(tol=1e-10)
     eFM = H.Etot
-    H.write_density('triangulene-FM.nc')
+    H.write_density(fn+'/triangulene-FM.nc')
 
     # Revert the imbalance for next loop
     H.Nup -= 1
