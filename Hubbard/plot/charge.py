@@ -8,7 +8,7 @@ import numpy as np
 
 class Charge(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
         # Set default keywords
         if 'realspace' in keywords:
             if 'facecolor' not in keywords:
@@ -23,7 +23,7 @@ class Charge(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow+Q_\downarrow$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute total charge on each site
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
@@ -36,7 +36,7 @@ class Charge(GeometryPlot):
 
 class ChargeDifference(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
         if 'realspace' in keywords:
@@ -52,7 +52,7 @@ class ChargeDifference(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute total charge on each site, subtract neutral atom charge
         charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
@@ -67,7 +67,7 @@ class ChargeDifference(GeometryPlot):
 
 class SpinPolarization(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
         if 'realspace' in keywords:
@@ -83,7 +83,7 @@ class SpinPolarization(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow-Q_\downarrow$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute charge difference between up and down channels
         charge = HubbardHamiltonian.nup - HubbardHamiltonian.ndn

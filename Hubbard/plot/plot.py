@@ -59,7 +59,7 @@ Plot()
 
 class GeometryPlot(Plot):
 
-    def __init__(self, geometry, **keywords):
+    def __init__(self, geometry, ext_geom=None, **keywords):
 
         Plot.__init__(self, **keywords)
 
@@ -77,7 +77,10 @@ class GeometryPlot(Plot):
         # Patches
         pi = []
         aux = []
-        g = self.geom
+        if ext_geom:
+            g = ext_geom
+        else:
+            g = self.geom
         for ia in g:
             idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
