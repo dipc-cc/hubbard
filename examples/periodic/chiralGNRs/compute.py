@@ -32,17 +32,12 @@ for m_i in m:
         ch.plot_states(H0, directory)
         ch.gap_exp(H0, directory)
 
-        h = sisl.Hamiltonian(geom)
-        for ia in geom:
-            idx = geom.close(ia, R=[0., 1.43])
-            h[ia, idx[0]] = 0
-            h[ia, idx[1]] = -2.7
         # Plot surface and bulk density of states
         if m_i == 1 and w_i == 8:
             xlim=0.1
         else:
             xlim=0.5
-        #op.open_boundary(h, directory, xlim=xlim)
+        op.open_boundary(H0, directory, xlim=xlim)
 
 if False:
     # Plot bulk and surface DOS of 1D chain to test the funcion
