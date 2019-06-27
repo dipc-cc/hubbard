@@ -12,7 +12,6 @@ op = __import__('open_boundary')
 n = 3
 m = [1,2]
 w = [4,6,8]
-w = [8]
 
 for m_i in m:
     for w_i in w:
@@ -22,12 +21,16 @@ for m_i in m:
         print('Doing', directory)
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        H0 = sp2(geom)
+        # 1NN model
+        H0 = sp2(geom, t1=2.7, t2=0, t3=0)
 
         ch.analyze(H0, directory)
-        #ch.analyze_edge(geom, directory)
-        #ch.plot_states(geom, directory)
-        #ch.gap_exp(geom, directory)
+        # Make finite ribbon of 15 reps
+        Hfinite = H0.tile(15, axis=0)
+        Hfinite.set_nsc([1,1,1])
+        ch.analyze_edge(Hfinite, directory)
+        ch.plot_states(H0, directory)
+        ch.gap_exp(H0, directory)
 
         h = sisl.Hamiltonian(geom)
         for ia in geom:
