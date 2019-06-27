@@ -87,7 +87,7 @@ class DOS_distribution(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geom, **keywords)
 
         DOS = HubbardHamiltonian.DOS(E, eta=eta, spin=spin)
         x = HubbardHamiltonian.geom[:, 0]
