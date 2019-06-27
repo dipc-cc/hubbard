@@ -143,6 +143,15 @@ class HubbardHamiltonian(object):
             self.ndn[dn] = 1.
         self.normalize_charge()
 
+    def polarize_sublattices(self):
+        # This is just a quick way to polarize the lattice
+        # without checking that consequtive atoms actually belong to
+        # different sublattices
+        for i in range(len(self.nup)):
+            self.nup[i] = i%2
+            self.ndn[i] = 1-i%2
+        self.normalize_charge()
+
     def find_midgap(self):
         HOMO, LUMO = -1e10, 1e10
         for k in self.mp.k:
