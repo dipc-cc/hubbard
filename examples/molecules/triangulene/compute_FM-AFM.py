@@ -28,7 +28,7 @@ for u in np.linspace(0.0, 3.5, 15):
     eAFM = H.Etot
     H.write_density(fn+'/triangulene-AFM.nc')
 
-    p = plot.SpinPolarization(H,  colorbar=True)
+    p = plot.SpinPolarization(H,  colorbar=True, vmax=0.4)
     p.annotate()
     p.savefig(fn+'/AFM-pol-%i.pdf'%(u*100))
 
@@ -40,6 +40,10 @@ for u in np.linspace(0.0, 3.5, 15):
     dn = H.converge(tol=1e-10)
     eFM = H.Etot
     H.write_density(fn+'/triangulene-FM.nc')
+
+    p = plot.SpinPolarization(H,  colorbar=True, vmax=0.4)
+    p.annotate()
+    p.savefig(fn+'/FM-pol-%i.pdf'%(u*100))
 
     # Revert the imbalance for next loop
     H.Nup -= 1
