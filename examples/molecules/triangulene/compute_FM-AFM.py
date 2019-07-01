@@ -17,6 +17,7 @@ mol.sc.set_nsc([1,1,1])
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
 H = hh.HubbardHamiltonian(Hsp2)
+H.polarize_sublattices()
 f = open(fn+'/FM-AFM.dat', 'w')
 
 nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
@@ -39,7 +40,7 @@ for u in np.linspace(5.0, 0.0, 21):
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
-    
+
     H.nup, H.ndn = nup_FM, ndn_FM
     H.read_density(fn+'/triangulene-FM.nc')
     dn = H.converge(tol=1e-10)
