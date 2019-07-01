@@ -16,11 +16,11 @@ mol.sc.set_nsc([1,1,1])
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
-H = hh.HubbardHamiltonian(Hsp2)
-
 f = open(fn+'/FM-AFM.dat', 'w')
 
-for u in np.linspace(0.0, 3.5, 15):
+for u in np.linspace(0.0, 5.0, 21):
+    H = hh.HubbardHamiltonian(Hsp2)
+
     H.U = u
     # AFM case first
     H.read_density(fn+'/triangulene-AFM.nc')
