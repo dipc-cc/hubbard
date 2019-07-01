@@ -29,7 +29,7 @@ class Spectrum(Plot):
         self.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
         self.set_xlim(-xmax, xmax)
         if ymax == 0:
-            self.set_ylim(0, lmax)
+            self.set_ylim(0, lmax+0.01)
         else:
             self.set_ylim(0, ymax)
 

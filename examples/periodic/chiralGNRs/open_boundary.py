@@ -5,30 +5,39 @@ import numpy as np
 from scipy import linalg as la
 import os
 
-def open_boundary(h, directory, xlim=0.1):
+def open_boundary(h, directory, xlim=0.1, U=0):
     # Obtain the bulk and surface states of a Hamiltonian h
-    H = h.copy()
-    H.set_nsc([1,1,1])
-    se_A = sisl.RecursiveSI(h, '-A')
-    se_B = sisl.RecursiveSI(h, '+A')
-    egrid = np.linspace(-xlim,xlim,500)
+    H = hh.HubbardHamiltonian(h, U=U)
+    if U>0:
+        dn = H.converge()
+    Hsurf = H.H.copy()
+    Hsurf.set_nsc([1,1,1])
+    se_A = sisl.RecursiveSI(H.H, '-A')
+    se_B = sisl.RecursiveSI(H.H, '+A')
+    H.find_midgap()
+    egrid = np.linspace(H.midgap-xlim, H.midgap+xlim,500)
     dos_surf = []
     DOS_bulk = []
     for E in egrid:
-        SEr_A = se_A.self_energy(E, eps=1e-50)
-        SEr_B = se_B.self_energy(E, eps=1e-50)
-        gs_A = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A) )
-        dos_surf.append(-(1/np.pi)*np.trace(gs_A).imag )
-        #G = la.inv((E+1e-4j)*np.identity(len(H)) - H.Hk().todense() - (SEr_A+SEr_B) )
-        G = se_A.green(E) # Sisl function to obtain BULK greens function
-        DOS_bulk.append( -(1/np.pi)*np.trace(G).imag )
+        # Find self-energies for both spin channels
+        SEr_A_up = se_A.self_energy(E, eps=1e-50, spin=0)
+        SEr_A_dn = se_A.self_energy(E, eps=1e-50, spin=1)
+        SEr_B_up = se_B.self_energy(E, eps=1e-50, spin=0)
+        SEr_B_dn = se_B.self_energy(E, eps=1e-50, spin=1)
+        # Find surface and bulk Greens function for both spin channels
+        gs_A_up = la.inv((E+1e-4j)*np.identity(len(Hsurf)) - Hsurf.Hk(spin=0).todense() - (SEr_A_up) )
+        gs_A_dn = la.inv((E+1e-4j)*np.identity(len(Hsurf)) - Hsurf.Hk(spin=1).todense() - (SEr_A_dn) )
+        dos_surf.append(-(1/np.pi)*np.trace(gs_A_up).imag-(1/np.pi)*np.trace(gs_A_dn).imag )
+        G_up = la.inv((E+1e-4j)*np.identity(len(Hsurf)) - Hsurf.Hk(spin=0).todense() - (SEr_A_up+SEr_B_up) )
+        G_dn = la.inv((E+1e-4j)*np.identity(len(Hsurf)) - Hsurf.Hk(spin=1).todense() - (SEr_A_dn+SEr_B_dn) )
+        DOS_bulk.append( -(1/np.pi)*np.trace(G_up).imag -(1/np.pi)*np.trace(G_dn).imag)
 
     p = plot.Plot()
-    p.axes.plot(egrid, dos_surf, label='Surface DOS')
-    p.axes.plot(egrid, DOS_bulk, label='Bulk DOS')
+    p.axes.plot(egrid-H.midgap, dos_surf, label='Surface DOS')
+    p.axes.plot(egrid-H.midgap, DOS_bulk, label='Bulk DOS')
     p.axes.legend()
     #p.set_ylim(0,50)
     p.set_xlabel(r'Energy [eV]')
     p.set_ylabel(r'DOS [eV$^{-1}$]')
     p.set_title(r'Density of states [%s]'%directory)
-    p.savefig(directory+'/DOS.pdf')
+    p.savefig(directory+'/DOS_U%i.pdf'%(U*100))
