@@ -18,10 +18,20 @@ mol.sc.set_nsc([1,1,1])
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
 H = hh.HubbardHamiltonian(Hsp2)
 
+if 'triangulene-1' in fn or 'triangulene-2' in fn:
+    H.Nup += 1
+    H.Ndn -= 1
+    fn_nc = fn+'triangulene-FM.nc'
+else:
+    fn_nc = fn+'trianglene-AFM.nc'
+
+H.polarize_sublattices()
 
 for u in [0., 3.5]:
     H.U = u
-    H.read_density(fn+'/triangulene-AFM.nc')
+
+    H.read_density(fn_nc)
+        
     dn = H.converge()
 
     H.find_midgap()
@@ -30,5 +40,7 @@ for u in [0., 3.5]:
     ev_dn = H.eigh(spin=1)
     ev_dn -= H.midgap
 
-    p = plot.DOS_distribution(H, E=ev_up[H.Nup], realspace=True)
+    E = ev_up[H.Nup-2] 
+    p = plot.DOS_distribution(H, E=E, realspace=True)
+    p.set_title('E $= %.2f$ eV'%(E))
     p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
