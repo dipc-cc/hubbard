@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np

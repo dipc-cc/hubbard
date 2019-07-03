@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
@@ -40,34 +39,35 @@ for u in [0., 3.5]:
     ev_dn -= H.midgap
 
     p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-2])
-    p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-2]*1000, H.U))
+    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-2]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-2))
 
     p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-1])
-    p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-1]*1000, H.U))
+    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-1]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
     p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup])
-    p.set_title('$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
+    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
     p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn-1])
-    p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
+    p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
     p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn])
-    p.set_title('$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
+    p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
     p = plot.Spectrum(H)
     p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
+    p.close()
 
 # Plot FM-AFM energies
 dat = np.loadtxt(fn+'/FM-AFM.dat')
 
 p = plot.Plot()
 p.axes.plot(dat[:,0], dat[:,1], label='FM-AFM')
-p.set_xlabel(r'U [eV]')
-p.set_ylabel(r'Energy [eV]')
+p.set_xlabel(r'$U$ [eV]')
+p.set_ylabel(r'$E_\mathrm{FM}-E_\mathrm{AFM}$ [eV]')
 p.axes.legend()
 p.savefig(fn+'/FM-AFM.pdf')

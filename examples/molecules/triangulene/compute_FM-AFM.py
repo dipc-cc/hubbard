@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
@@ -22,35 +21,41 @@ f = open(fn+'/FM-AFM.dat', 'w')
 
 nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
 nup_FM, ndn_FM = H.nup*1, H.ndn*1
+
 for u in np.linspace(5.0, 0.0, 21):
 
     H.U = u
+
     # AFM case first
+    ncf = fn+'/triangulene-AFM.nc'
     H.nup, H.ndn = nup_AFM, ndn_AFM
-    H.read_density(fn+'/triangulene-AFM.nc')
-    dn = H.converge(tol=1e-10)
+    H.read_density(ncf)
+    dn = H.converge(tol=1e-4, fn=ncf)
     eAFM = H.Etot
-    H.write_density(fn+'/triangulene-AFM.nc')
+    H.write_density(ncf)
     nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
 
     p = plot.SpinPolarization(H,  colorbar=True, vmax=0.4)
     p.annotate()
     p.savefig(fn+'/AFM-pol-%i.pdf'%(u*100))
+    p.close()
 
     # Now FM case
+    ncf = fn+'/triangulene-FM.nc'
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
 
     H.nup, H.ndn = nup_FM, ndn_FM
-    H.read_density(fn+'/triangulene-FM.nc')
-    dn = H.converge(tol=1e-10)
+    H.read_density(ncf)
+    dn = H.converge(tol=1e-10, fn=ncf)
     eFM = H.Etot
-    H.write_density(fn+'/triangulene-FM.nc')
+    H.write_density(ncf)
     nup_FM, ndn_FM = H.nup*1, H.ndn*1
 
     p = plot.SpinPolarization(H,  colorbar=True, vmax=0.4)
     p.annotate()
     p.savefig(fn+'/FM-pol-%i.pdf'%(u*100))
+    p.close()
 
     # Revert the imbalance for next loop
     H.Nup -= 1
