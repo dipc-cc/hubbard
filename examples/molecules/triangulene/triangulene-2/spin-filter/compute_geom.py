@@ -23,6 +23,6 @@ mol = mol.move([5*np.sin(np.pi/3)*2*1.42, 1.42*3*(np.cos(np.pi/2)*2+2),0 ])
 gnr1 = gnr1.add(mol)
 
 # Add second cgnr 
-gnr2 = gnr.move([12*np.sin(np.pi/3)*2*1.42,1.42*2*(np.cos(np.pi/2)*2+2)-np.cos(np.pi/3)*1.42,0 ])
+gnr2 = gnr.move([12*np.sin(np.pi/3)*2*1.42, 1.42*(2+3*np.cos(np.pi/3)),0 ])
 gnr2 = gnr1.add(gnr2)
 gnr2.write('3-1-%i-spin-filter.xyz'%w)
