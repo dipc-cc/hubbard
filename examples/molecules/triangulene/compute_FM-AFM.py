@@ -30,7 +30,7 @@ for u in np.linspace(5.0, 0.0, 21):
     ncf = fn+'/triangulene-AFM.nc'
     H.nup, H.ndn = nup_AFM, ndn_AFM
     H.read_density(ncf)
-    dn = H.converge(tol=1e-4, fn=ncf)
+    dn = H.converge(tol=1e-10, fn=ncf)
     eAFM = H.Etot
     H.write_density(ncf)
     nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
