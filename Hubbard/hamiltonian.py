@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -77,9 +77,11 @@ class HubbardHamiltonian(object):
         self.find_midgap()
 
         # Initialize density matrix
-        self.DM = sisl.DensityMatrix(self.geom, dim=2)
-        self.random_density()
-
+        if not DM:
+            self.DM = sisl.DensityMatrix(self.geom, dim=2)
+            self.random_density()
+        else:
+            self.DM = DM
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
