@@ -88,10 +88,18 @@ class HubbardHamiltonian(object):
         return self.H.eigenstate(k, spin=spin)
 
     def tile(self, reps, axis):
-        return self.H.tile(reps, axis)
+        self.geom = self.geom.tile(reps, axis)
+        self.H = self.H.tile(reps, axis)
+        self.DM = self.DM.tile(reps, axis)
+        self.nup = np.diag(self.DM.Dk(spin=0).todense())
+        self.ndn = np.diag(self.DM.Dk(spin=1).todense())
 
     def repeat(self, reps, axis):
-        return self.H.repeat(reps, axis)
+        self.geom = self.geom.repeat(reps, axis)
+        self.H = self.H.repeat(reps, axis)
+        self.DM = self.DM.repeat(reps, axis)
+        self.nup = np.diag(self.DM.Dk(spin=0).todense())
+        self.ndn = np.diag(self.DM.Dk(spin=1).todense())
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
