@@ -39,16 +39,23 @@ Despite the aparent simplicity of the model it is very hard to solve for most of
 
 \subsection{Mean Field Approximation}
 
-In this approximation it is assumed that the densities fluctuation are negligible, so the two particle operator is approximated by:
+In this approximation it is assumed that the density operator is very close to its expected value, that is $n_{i\sigma} \approx \langle n_{i\sigma}\rangle$. This means that the densities fluctuations (defined as $\delta_{i\sigma} =n_{i\sigma} - \left\langle n_{i\sigma}\right\rangle$) are considered to be small quantities compared to $\left\langle n_{i\sigma}\right\rangle$. The two particle operator in this case would approximated by:
 
-\begin{equation}
-n_{i\uparrow}n_{i\downarrow} = \left(n_{i\uparrow} - \left\langle n_{i\uparrow}\right\rangle \right)\left( n_{i\downarrow} - \left\langle n_{i\downarrow}\right\rangle  \right) =
+\begin{equation}\label{eq:MFH}
+\begin{split}
+n_{i\uparrow}n_{i\downarrow} & = \left( \delta_{i\uparrow}+\left\langle n_{i\uparrow}\right\rangle\right) 
+\left( \delta_{i\downarrow}+\left\langle n_{i\downarrow}\right\rangle\right) = \\
+ & = \delta_{i\uparrow}\delta_{i\downarrow} +  \left\langle n_{i\uparrow}\right\rangle\delta_{i\downarrow} + \delta_{i\uparrow}\left\langle n_{i\downarrow}\right\rangle \approx \\
+ & \approx \left\langle n_{i\uparrow}\right\rangle n_{i\downarrow} + \left\langle n_{i\downarrow}\right\rangle n_{i\uparrow} - 2\left\langle n_{i\uparrow}\right\rangle\left\langle n_{i\downarrow}\right\rangle
+\end{split}
 \end{equation}
+
+Where it has been approximatied that $\delta_{i\uparrow}\delta_{i\downarrow}\approx 0$ compared to the rest of elements in Eq. (\ref{eq:MFH}). 
 
 The code
 
 
-\subsubsection{Calculations}
+\subsection{Linear Combination of Atomic Orbitals}
 
 %Calculation of spin density when non-orthogonal basis is set (taken from Celia Fonseca Guerra et al, J. comput Chem 25: 189-210, 2004):
 %
@@ -61,7 +68,7 @@ The code
 %\left\langle n_{i\sigma}\right\rangle = \sum_{j}S_{ij\sigma}D_{ij\sigma}
 %\end{equation}
 
-In the more general case the problem to solve is:
+In the more general case the problem to solve is the generalized eigenvalue problem:
 
 \begin{equation}
 \textbf{H}\Psi_{\alpha} = E_{\alpha}\textbf{S}\Psi_{\alpha}
@@ -84,28 +91,39 @@ S_{ij} = \left\langle\phi(\textbf{R}_{i}) \right|\left. \phi(\textbf{R}_{j}) \ri
 The system satisfies:
 
 \begin{equation}
-S_{ij}C_{jk}C^{\dagger}_{kl} = \delta_{il} \Rightarrow \textbf{C}\textbf{C}^{\dagger} = \textbf{S}^{-1}
+S_{ij}c_{j\alpha}c^{*}_{\alpha l} = \delta_{il} \Rightarrow \textbf{C}\textbf{C}^{\dagger} = \textbf{S}^{-1}
 \end{equation}
 
-Where $C_{i\alpha} = c_{i\alpha}$ is the matrix of eigenvectors.
+Where $\textbf{C}$ is the matrix of eigenvectors whose components are $c_{\alpha i}$.\\
 
-%
+\medskip
+We define the Density operator $\hat{\rho}$ as:
 
-The occupations will be find as the charge associated with oribtal $i$ explicitly, that is, the ``Mulliken'' populations $n_{i}$ (ref of Hanckock paper?):
+\begin{equation}
+\hat{\rho_{\sigma}} = \sum_{\alpha}f_{\alpha\sigma} \left| \Psi_{\alpha\sigma}\right\rangle \left\langle \Psi_{\alpha\sigma} \right|
+\end{equation}
+
+Where $f_{\alpha\sigma}$ is the weight of state $\alpha$ for spin $\sigma$ (Fermi-Dirac distribution).\\
+
+Since we describe the Hamiltonian (and eigenstates) in the basis of atomic sites, it seems natural to define the Density operator in terms of this basis:
+ 
+\begin{equation}\label{eq:DMatrix}
+D_{ij\sigma} = \sum_{\alpha}^{occ}f_{\alpha\sigma}c_{i \alpha\sigma}c^{*}_{j \alpha\sigma}
+\end{equation}
+
+
+The occupations will be found as the charge associated with oribtal $i$ explicitly, that is, the ``Mulliken'' populations $n_{i}$ (ref of Hanckock paper?):
 
 \begin{equation}
 n_{i\sigma} = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij} = \sum_{j}D_{ij\sigma}S_{ij} =  (\textbf{D}_{\sigma}\textbf{S})_{ii}
 \end{equation}
 
 $\sigma$ index in overlap matrix $\textbf{S}$ is not present because the overlap matrix is the same for both spin components.
-The density matrix $D$ is defined in (\ref{eq:DMatrix}), with $c_{i\mu}$ the coefficients of the wavefunction (see eq. (\ref{eq:TBWF})):
+The density matrix $D$ is defined in (\ref{eq:DMatrix}), with $c_{i\mu}$ the coefficients of the wavefunction (see eq. (\ref{eq:TBWF})).\\
 
-\begin{equation}\label{eq:DMatrix}
-D_{ij\sigma} = \sum_{\alpha}^{occ}f_{\alpha\sigma}c_{i \alpha\sigma}c^{*}_{j \alpha\sigma}
-\end{equation}
+\medskip
 
-
-In the more usual orthogoanl tight binding, replacing by $S_{ij}=\delta_{ij}$  we recover:
+Tipically the tight-binding model we use is described in an orthogonal basis set. This means that $\langle \phi (\mathbf{R}_{i}) | \phi (\mathbf{R}_{j}) \rangle = \delta_{ij}$. Replacing the overlap matrix by $S_{ij}=\delta_{ij}$  we recover:
 
 \begin{equation}
 n_{i\sigma} = \sum_{\alpha}f_{\alpha\sigma}\left| c^{\alpha}_{i\sigma}\right|^{2}
