@@ -122,6 +122,7 @@ class HubbardHamiltonian(object):
         self.nup = np.random.rand(self.sites)
         self.ndn = np.random.rand(self.sites)
         self.normalize_charge()
+        self.update_density_matrix()
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
@@ -148,6 +149,7 @@ class HubbardHamiltonian(object):
             self.nup[dn] = 0.
             self.ndn[dn] = 1.
         self.normalize_charge()
+        self.update_density_matrix()
 
     def polarize_sublattices(self):
         # This is just a quick way to polarize the lattice
@@ -157,6 +159,7 @@ class HubbardHamiltonian(object):
             self.nup[i] = i%2
             self.ndn[i] = 1-i%2
         self.normalize_charge()
+        self.update_density_matrix()
 
     def find_midgap(self):
         HOMO, LUMO = -1e10, 1e10
@@ -181,6 +184,7 @@ class HubbardHamiltonian(object):
                 nup, ndn = fh.read_density(group)
                 self.nup = nup
                 self.ndn = ndn
+                self.update_density_matrix()
                 self.update_hamiltonian()
                 print('Read charge from %s' % fn)
                 return True
@@ -221,6 +225,8 @@ class HubbardHamiltonian(object):
         # Update occupations
         self.nup = mix*niup+(1.-mix)*nup
         self.ndn = mix*nidn+(1.-mix)*ndn
+        # Update density matrix
+        self.update_density_matrix()
         # Update spin hamiltonian
         self.update_hamiltonian()
         # Compute total energy
@@ -281,6 +287,9 @@ class HubbardHamiltonian(object):
         self.nup = mix * ni_up + (1. - mix) * nup
         self.ndn = mix * ni_dn + (1. - mix) * ndn
         
+        # Update density matrix
+        self.update_density_matrix()
+
         # Update spin hamiltonian
         self.update_hamiltonian()
 
@@ -345,6 +354,9 @@ class HubbardHamiltonian(object):
         self.nup = mix * ni_up + (1. - mix) * nup
         self.ndn = mix * ni_dn + (1. - mix) * ndn
         
+        # Update density matrix
+        self.update_density_matrix()
+
         # Update spin hamiltonian
         self.update_hamiltonian()
 
