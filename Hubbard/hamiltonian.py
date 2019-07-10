@@ -77,6 +77,7 @@ class HubbardHamiltonian(object):
         self.find_midgap()
 
         # Initialize density matrix
+        self.DM = sisl.DensityMatrix(self.geom, dim=2)
         self.random_density()
 
 
@@ -109,6 +110,11 @@ class HubbardHamiltonian(object):
 
             for ia in ias:
                 self.H[ia, ia, [0, 1]] = E[ia] + self.e0[ia]
+
+    def update_density_matrix(self):
+        for ia in self.geom:
+            self.DM[ia, ia, 0] = self.nup[ia]
+            self.DM[ia, ia, 1] = self.ndn[ia] 
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
