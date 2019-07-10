@@ -82,6 +82,8 @@ class HubbardHamiltonian(object):
             self.random_density()
         else:
             self.DM = DM
+            self.nup = np.diag(self.DM.Dk(spin=0).todense())
+            self.ndn = np.diag(self.DM.Dk(spin=1).todense())
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
