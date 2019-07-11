@@ -101,8 +101,8 @@ class HubbardHamiltonian(object):
     def repeat(self, reps, axis):
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
-        Nup = (DMtile.Dk(spin=0).todense()).sum()
-        Ndn = (DMtile.Dk(spin=1).todense()).sum() 
+        Nup = (DMrep.Dk(spin=0).todense()).sum()
+        Ndn = (DMrep.Dk(spin=1).todense()).sum() 
         return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(Nup), Ndn=int(Ndn))
 
     def update_hamiltonian(self):
