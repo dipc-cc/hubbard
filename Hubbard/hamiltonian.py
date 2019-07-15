@@ -125,8 +125,7 @@ class HubbardHamiltonian(object):
 
     def update_density_matrix(self):
         for ia in self.geom:
-            self.DM[ia, ia, 0] = self.nup[ia]
-            self.DM[ia, ia, 1] = self.ndn[ia] 
+            self.DM[ia, ia] = (self.nup[ia], self.ndn[ia])
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
