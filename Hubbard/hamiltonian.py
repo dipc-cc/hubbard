@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -77,8 +77,13 @@ class HubbardHamiltonian(object):
         self.find_midgap()
 
         # Initialize density matrix
-        self.random_density()
-
+        if not DM:
+            self.DM = sisl.DensityMatrix(self.geom, dim=2)
+            self.random_density()
+        else:
+            self.DM = DM
+            self.nup = np.diag(self.DM.Dk(spin=0).todense())
+            self.ndn = np.diag(self.DM.Dk(spin=1).todense())
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -87,10 +92,18 @@ class HubbardHamiltonian(object):
         return self.H.eigenstate(k, spin=spin)
 
     def tile(self, reps, axis):
-        return self.H.tile(reps, axis)
+        Htile = self.H.tile(reps, axis)
+        DMtile = self.DM.tile(reps, axis)
+        Nup = (DMtile.Dk(spin=0).todense()).sum()
+        Ndn = (DMtile.Dk(spin=1).todense()).sum() 
+        return self.__class__(Htile, DM=DMtile, U=self.U, Nup=int(Nup), Ndn=int(Ndn))
 
     def repeat(self, reps, axis):
-        return self.H.repeat(reps, axis)
+        Hrep = self.H.repeat(reps, axis)
+        DMrep = self.DM.repeat(reps, axis)
+        Nup = (DMrep.Dk(spin=0).todense()).sum()
+        Ndn = (DMrep.Dk(spin=1).todense()).sum() 
+        return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(Nup), Ndn=int(Ndn))
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
@@ -110,12 +123,17 @@ class HubbardHamiltonian(object):
             for ia in ias:
                 self.H[ia, ia, [0, 1]] = E[ia] + self.e0[ia]
 
+    def update_density_matrix(self):
+        for ia in self.geom:
+            self.DM[ia, ia] = (self.nup[ia], self.ndn[ia])
+
     def random_density(self):
         """ Initialize spin polarization  with random density """
         print('Setting random density')
         self.nup = np.random.rand(self.sites)
         self.ndn = np.random.rand(self.sites)
         self.normalize_charge()
+        self.update_density_matrix()
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
@@ -142,6 +160,7 @@ class HubbardHamiltonian(object):
             self.nup[dn] = 0.
             self.ndn[dn] = 1.
         self.normalize_charge()
+        self.update_density_matrix()
 
     def polarize_sublattices(self):
         # This is just a quick way to polarize the lattice
@@ -151,6 +170,7 @@ class HubbardHamiltonian(object):
             self.nup[i] = i%2
             self.ndn[i] = 1-i%2
         self.normalize_charge()
+        self.update_density_matrix()
 
     def find_midgap(self):
         HOMO, LUMO = -1e10, 1e10
@@ -175,6 +195,7 @@ class HubbardHamiltonian(object):
                 nup, ndn = fh.read_density(group)
                 self.nup = nup
                 self.ndn = ndn
+                self.update_density_matrix()
                 self.update_hamiltonian()
                 print('Read charge from %s' % fn)
                 return True
@@ -244,6 +265,9 @@ class HubbardHamiltonian(object):
         self.nup = mix * ni_up + (1. - mix) * nup
         self.ndn = mix * ni_dn + (1. - mix) * ndn
         
+        # Update density matrix
+        self.update_density_matrix()
+
         # Update spin hamiltonian
         self.update_hamiltonian()
 
@@ -308,6 +332,9 @@ class HubbardHamiltonian(object):
         self.nup = mix * ni_up + (1. - mix) * nup
         self.ndn = mix * ni_dn + (1. - mix) * ndn
         
+        # Update density matrix
+        self.update_density_matrix()
+
         # Update spin hamiltonian
         self.update_hamiltonian()
 
