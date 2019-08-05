@@ -21,7 +21,7 @@ H.iterate()
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
 Etot0 = H.Etot*1
 
-for m in range(1,4):
+for m in range(1,3):
     # Reset density and iterate
     H.random_density()
 
