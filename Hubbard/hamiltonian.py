@@ -46,13 +46,13 @@ class HubbardHamiltonian(object):
 
         self.U = U # Hubbard onsite Coulomb parameter
 
-        # Count number of pi-electrons
-        nB = len(np.where(TBHam.geom.atoms.Z == 5)[0])
-        nC = len(np.where(TBHam.geom.atoms.Z == 6)[0])
-        nN = len(np.where(TBHam.geom.atoms.Z == 7)[0])
-        ntot = 0*nB+1*nC+2*nN
+        # Copy TB Hamiltonian to store the converged one in a different variable
+        self.H = TBHam.copy()
+        self.geom = TBHam.geometry
 
-        print('Found %i B-atoms, %i C-atoms, %i N-atoms' %(nB, nC, nN))
+        # Total initial charge
+        ntot = self.geom.q0
+
         print('Neutral system corresponds to a total of %i electrons' %ntot)
 
         self.Nup = Nup # Total number of up-electrons
@@ -64,9 +64,6 @@ class HubbardHamiltonian(object):
         if Nup <= 0:
             self.Nup = int(ntot-self.Ndn)
 
-        # Copy TB Hamiltonian to store the converged one in a different variable
-        self.H = TBHam.copy()
-        self.geom = TBHam.geometry
         self.sites = len(self.geom)
         e00 = TBHam.Hk(spin=0).diagonal()
         e01 = TBHam.Hk(spin=1).diagonal()
