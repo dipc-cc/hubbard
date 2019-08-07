@@ -19,12 +19,13 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     # Determine pz sites
     aux = []
     sp3 = []
-    for ia in ext_geom:
-        if ext_geom.atoms[ia].Z not in [5, 6, 7]:
+    for ia, atom in enumerate(ext_geom.atoms.iter()):
+        # Append non C-type atoms in aux list
+        if atom.Z not in [5,6,7]:
             aux.append(ia)
         idx = ext_geom.close(ia, R=[0.1, 1.6])
         if len(idx[1]) == 4: # Search for atoms with 4 neighbors
-            if ext_geom.atoms[ia].Z == 6:
+            if atom.Z == 6:
                 sp3.append(ia)
 
     # Remove all sites not carbon-type
@@ -32,12 +33,8 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     sites = len(pi_geom)
     print('Found %i pz sites' % sites)
 
-    # Set pz orbital for each pz site
-    r = np.linspace(0, 1.6, 700)
-    func = 5 * np.exp(-r * 5)
-    pz = sisl.SphericalOrbital(1, (r, func))
-    for ia in pi_geom:
-        pi_geom.atom[ia].orbital[0] = pz
+    for atom in pi_geom.atoms.iter():
+        atom.orbital[0].q0 = atom.Z - 5
 
     # Construct Hamiltonian
     if s1 != 0:
