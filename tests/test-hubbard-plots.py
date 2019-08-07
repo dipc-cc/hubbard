@@ -22,10 +22,10 @@ H.find_midgap()
 p = plot.Charge(H, ext_geom=molecule, colorbar=True)
 p.savefig('chg.pdf')
 
-p = plot.ChargeDifference(H, ext_geom=molecule)
+p = plot.ChargeDifference(H, ext_geom=molecule, colorbar=True)
 p.savefig('chgdiff.pdf')
 
-p = plot.SpinPolarization(H, ext_geom=molecule)
+p = plot.SpinPolarization(H, ext_geom=molecule, colorbar=True, vmax=0.2)
 p.annotate()
 p.savefig('pol.pdf')
 
@@ -51,14 +51,14 @@ p.savefig('ldos.pdf')
 # Test real-space plots?
 if False:
 
-    p = plot.Charge(H, realspace=True, colorbar=True)
+    p = plot.Charge(H, realspace=True, ext_geom=molecule, colorbar=True)
     p.savefig('chg_rs.pdf')
 
-    p = plot.ChargeDifference(H, realspace=True)
+    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True)
     p.savefig('chgdiff_rs.pdf')
 
-    p = plot.SpinPolarization(H, realspace=True)
+    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True)
     p.savefig('pol_rs.pdf')
 
-    p = plot.Wavefunction(H, 10*evec[:, 10], realspace=True)
+    p = plot.Wavefunction(H, 10*evec[:, 10], ext_geom=molecule, realspace=True)
     p.savefig('wf_rs.pdf')
