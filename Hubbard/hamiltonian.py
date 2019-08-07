@@ -107,21 +107,12 @@ class HubbardHamiltonian(object):
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
-        g = self.geom
-
-        # Faster to loop individual species
-        E = np.empty([len(g), 2])
-        E[:, 0] = self.U * self.ndn
-        E[:, 1] = self.U * self.nup
-        for atom, ias in g.atoms.iter(True):
-            # charge on neutral atom
-            n0 = atom.Z - 5
-
-            # Faster to do it for more than one element at a time
-            E[ias, :] -= self.U * n0
-
-            for ia in ias:
-                self.H[ia, ia, [0, 1]] = E[ia] + self.e0[ia]
+        q0 = self.geom.atoms.q0
+        E = self.e0.copy()
+        E[:, 0] += self.U * (self.ndn - q0)
+        E[:, 1] += self.U * (self.nup - q0)
+        a = np.arange(len(self.H))
+        self.H[a, a, [0, 1]] = E
 
     def update_density_matrix(self):
         for ia in self.geom:
