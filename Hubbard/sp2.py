@@ -34,8 +34,11 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     print('Found %i pz sites' % sites)
 
     # Iterate over atomic species to set initial charge
+    r = np.linspace(0, 1.6, 700)
+    func = 5 * np.exp(-r * 5)
     for atom, _ in pi_geom.atoms.iter(True):
-        atom.orbital[0].q0 = atom.Z - 5
+        pz = sisl.AtomicOrbital('pz', (r, func), q0=atom.Z-5)
+        atom.orbital[0] = pz
 
     # Construct Hamiltonian
     if s1 != 0:
