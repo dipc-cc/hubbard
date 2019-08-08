@@ -54,11 +54,11 @@ if False:
     p = plot.Charge(H, realspace=True, ext_geom=molecule, colorbar=True)
     p.savefig('chg_rs.pdf')
 
-    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True)
+    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True, colorbar=True)
     p.savefig('chgdiff_rs.pdf')
 
-    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True)
+    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True, colorbar=True)
     p.savefig('pol_rs.pdf')
 
-    p = plot.Wavefunction(H, 10*evec[:, 10], ext_geom=molecule, realspace=True)
+    p = plot.Wavefunction(H, 10*evec[:, 10], ext_geom=molecule, realspace=True, colorbar=True)
     p.savefig('wf_rs.pdf')
