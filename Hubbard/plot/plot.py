@@ -141,13 +141,6 @@ class GeometryPlot(Plot):
 
             # Create a temporary copy of the geometry 
             g = self.geom.copy()
-
-            # Set pz orbital for each pi site
-            r = np.linspace(0, 1.6, 700)
-            func = 5 * np.exp(-r * 5)
-            pz = sisl.SphericalOrbital(1, (r, func))
-            for atom in g.atoms.iter():
-                atom.orbital[0] = pz
             
             # Set new sc to create real-space grid
             sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
