@@ -33,7 +33,8 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     sites = len(pi_geom)
     print('Found %i pz sites' % sites)
 
-    for atom in pi_geom.atoms.iter():
+    # Iterate over atomic species to set initial charge
+    for atom, _ in pi_geom.atoms.iter(True):
         atom.orbital[0].q0 = atom.Z - 5
 
     # Construct Hamiltonian
