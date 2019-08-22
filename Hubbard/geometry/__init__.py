@@ -11,3 +11,4 @@ Functionality for geometry
 
 from .graphene_ribbon import *
 from .ssh import *
+from .add_Hatoms import *
