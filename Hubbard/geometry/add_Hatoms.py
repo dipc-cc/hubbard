@@ -20,8 +20,8 @@ def add_Hatoms(geom, d=1.1):
         idx = geom.close(ia, R=(0.1, 1.43))
         if len(idx[1]) == 2:
             a, b = idx[1]
-            v1 = geom.xyz[a,:] - geom.xyz[ia,:]
-            v2 = geom.xyz[b,:] - geom.xyz[ia,:]
+            v1 = geom.axyz(a) - geom.xyz[ia,:]
+            v2 = geom.axyz(b) - geom.xyz[ia,:]
             p = -1*(v1 + v2)
             p = p * d / ( (p**2).sum() )**0.5
             Hxyz.append(p+geom.xyz[ia, :])
