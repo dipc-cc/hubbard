@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import Hubbard.ncdf as ncdf
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import sisl
