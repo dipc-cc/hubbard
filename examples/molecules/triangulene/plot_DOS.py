@@ -1,5 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.geometry as geom
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
@@ -12,6 +13,7 @@ fn = sys.argv[1]
 mol = sisl.get_sile(fn+'/molecule.xyz').read_geometry()
 mol = mol.move(-mol.center(what='xyz'))
 mol.sc.set_nsc([1,1,1])
+mol = geom.add_Hatoms(mol)
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
@@ -40,6 +42,6 @@ for u in [0., 3.5]:
     ev_dn -= H.midgap
 
     E = ev_up[H.Nup-2] 
-    p = plot.DOS_distribution(H, E=E, realspace=True)
+    p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
     p.set_title('E $= %.2f$ eV'%(E))
     p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
