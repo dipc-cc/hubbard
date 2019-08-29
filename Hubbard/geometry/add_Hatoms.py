@@ -26,7 +26,7 @@ def add_Hatoms(geom, d=1.1, sp3=[]):
             p = p * d / ( (p**2).sum() )**0.5
             Hxyz.append(p+geom.xyz[ia, :])
             if ia in sp3:
-                Hxyz[-1][2] -= 0.9
+                Hxyz[-1][2] -= 1.5
                 p = Hxyz[-1]-geom.xyz[ia, :]
                 p = p * d / ( (p**2).sum() )**0.5
                 Hxyz[-1] = p + geom.xyz[ia, :]
