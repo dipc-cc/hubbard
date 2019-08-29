@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.geometry as geom
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
@@ -13,7 +12,6 @@ fn = sys.argv[1]
 mol = sisl.get_sile(fn+'/molecule.xyz').read_geometry()
 mol = mol.move(-mol.center(what='xyz'))
 mol.sc.set_nsc([1,1,1])
-mol = geom.add_Hatoms(mol)
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
