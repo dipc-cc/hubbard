@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
+import Hubbard.geometry as geom
 import sys
 import numpy as np
 import sisl
@@ -12,6 +13,7 @@ fn = sys.argv[1]
 mol = sisl.get_sile(fn+'/molecule.xyz').read_geometry()
 mol = mol.move(-mol.center(what='xyz'))
 mol.sc.set_nsc([1,1,1])
+mol = geom.add_Hatoms(mol)
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
@@ -38,23 +40,23 @@ for u in [0., 3.5]:
     ev_dn, evec_dn = H.eigh(eigvals_only=False, spin=1)
     ev_dn -= H.midgap
 
-    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-2])
+    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-2], ext_geom=mol)
     p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-2]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-2))
 
-    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-1])
+    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup-1], ext_geom=mol)
     p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-1]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
-    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup])
+    p = plot.Wavefunction(H, 3000*evec_up[:, H.Nup], ext_geom=mol)
     p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
-    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn-1])
+    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn-1], ext_geom=mol)
     p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
-    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn])
+    p = plot.Wavefunction(H, 3000*evec_dn[:, H.Ndn], ext_geom=mol)
     p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
