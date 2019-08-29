@@ -17,7 +17,7 @@ def add_Hatoms(geom, d=1.1, sp3=[]):
     ''' Function to saturate edge C atoms with Hydrogen'''
     Hxyz = []
     for ia in geom:
-        idx = geom.close(ia, R=(0.1, 1.43))
+        idx = geom.close(ia, R=(0.1, 1.6))
         if len(idx[1]) == 2:
             a, b = idx[1]
             v1 = geom.axyz(a) - geom.xyz[ia,:]
