@@ -64,3 +64,13 @@ for u in np.linspace(5.0, 0.0, 21):
     f.write('%.4f %.8f\n'%(H.U, eFM-eAFM))
 
 f.close()
+
+# Plot FM-AFM energies
+dat = np.loadtxt(fn+'/FM-AFM.dat')
+
+p = plot.Plot()
+p.axes.plot(dat[:,0], dat[:,1], label='FM-AFM')
+p.set_xlabel(r'$U$ [eV]')
+p.set_ylabel(r'$E_\mathrm{FM}-E_\mathrm{AFM}$ [eV]')
+p.axes.legend()
+p.savefig(fn+'/FM-AFM.pdf')
