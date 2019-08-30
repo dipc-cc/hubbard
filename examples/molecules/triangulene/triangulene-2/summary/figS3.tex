@@ -1,0 +1,57 @@
+\documentclass{standalone}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{psfrag}
+\usepackage{lpic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+\tikzset{
+dash/.style={line width=.5pt,dash pattern=on 2pt off 1.5pt}
+         }% end of tikzset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\centering
+
+
+\begin{tikzpicture}[>=stealth]
+\node [inner sep=0pt] at (0., 0) {\includegraphics[height=10cm]{../U0_spectrum}};
+\node [inner sep=0pt] at (0, -10.0) {\includegraphics[height=10cm]{../U300_spectrum}};
+
+\node at (13.0, 5.7){\Huge $U=0$};
+
+\node [inner sep=0pt] at (10.3, 2) {\includegraphics[height=6cm]{../U0_state17_up}};
+\node [inner sep=0pt] at (16.5, 2) {\includegraphics[height=6cm]{../U0_state18_up}};
+
+\node at (13, -2.2){\Huge $U=3.0$ eV};
+
+\node [inner sep=0pt] at (10.3, -6) {\includegraphics[height=6cm]{../U300_state18_up}};
+\node [inner sep=0pt] at (16.5, -6) {\includegraphics[height=6cm]{../U300_state19_up}};
+\node [inner sep=0pt] at (10.3, -12) {\includegraphics[height=6cm]{../U300_state16_dn}};
+\node [inner sep=0pt] at (16.5, -12) {\includegraphics[height=6cm]{../U300_state17_dn}};
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Draw symmetry axis %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\node at (-6.25, 5.35){\huge \textbf{a}};
+\node at (-6.25, -5.35){\huge \textbf{b}};
+
+\node at (8.25, 4.35){\huge \textbf{c}};
+\node at (14.45, 4.35){\huge \textbf{d}};
+
+\node at (8.25, -3.75){\huge \textbf{d}};
+\node at (14.45, -3.75){\huge \textbf{e}};
+
+
+\node at (8.25, -9.85){\huge \textbf{g}};
+\node at (14.45, -9.85){\huge \textbf{h}};
+
+\end{tikzpicture}
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
