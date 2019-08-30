@@ -6,7 +6,7 @@ import numpy as np
 import sisl
 
 p = plot.Plot()
-
+pos = [21,18,28,32,34]
 for i, fn in enumerate(['pos-1/', 'pos-2/', 'pos-3/', 'pos-4/', 'pos-5/']):
     # Build sisl Geometry object
     fn = 'H-passivation/'+fn
@@ -37,11 +37,14 @@ for i, fn in enumerate(['pos-1/', 'pos-2/', 'pos-3/', 'pos-4/', 'pos-5/']):
         E.append(e)
         H.write_density(ncf)
         nup, ndn = H.nup*1, H.ndn*1
-
-        p_pol = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p_pol.savefig(fn+'/pol-%i.pdf'%(u*100))
-        p_pol.close()
+        
+        if u == 3.0:
+            p_pol = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
+            #p.annotate()
+            p_pol.axes.set_title('pos-%i'%(i+1), fontsize=50, y=-0.2)
+            p_pol.axes.axis('off')
+            p_pol.savefig(fn+'/pol-%i.pdf'%(u*100))
+            p_pol.close()
 
         f.write('%.4f %.8f\n'%(H.U, e))
 
