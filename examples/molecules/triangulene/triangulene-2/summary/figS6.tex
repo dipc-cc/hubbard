@@ -1,0 +1,48 @@
+\documentclass{standalone}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{psfrag}
+\usepackage{lpic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+\tikzset{
+dash/.style={line width=.5pt,dash pattern=on 2pt off 1.5pt}
+         }% end of tikzset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\centering
+
+
+\begin{tikzpicture}[>=stealth]
+
+\node [inner sep=0pt] at (0, 0) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/2H-pos-1-2/pol-U300}};
+\node [inner sep=0pt] at (14, 0) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/pos-1/pol-U300}};
+\node [inner sep=0pt] at (28, 0) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/pos-2/pol-U300}};
+
+\node [inner sep=0pt] at (0, -10) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/2H-pos-1-2/U300_DOS}};
+\node [inner sep=0pt] at (14, -10) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/pos-1/U300_DOS}};
+\node [inner sep=0pt] at (28, -10) {\includegraphics[height=10cm]{../H-passivation/dimer-pentagon/pos-2/U300_DOS}};
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Draw symmetry axis %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\node at (-4.65, 3.35){\Huge \textbf{a}};
+\node at (9.25, 3.35){\Huge \textbf{b}};
+\node at (23, 3.35){\Huge \textbf{c}};
+
+\node at (-4.65, -5.75){\Huge \textbf{d}};
+\node at (9.25, -5.75){\Huge \textbf{e}};
+\node at (23, -5.75){\Huge \textbf{f}};
+
+
+\end{tikzpicture}
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
