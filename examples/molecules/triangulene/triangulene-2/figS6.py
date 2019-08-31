@@ -32,7 +32,21 @@ for i, fn in enumerate(['2H-pos-1-2/', 'pos-1/', 'pos-2/']):
 
     p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
     #p.annotate()
+    p.axes.axis('off')
     p.savefig(fn+'/pol-U%i.pdf'%(H.U*100))
     p.close()
+
+    H.find_midgap()
+    ev_up, evec_up = H.eigh(spin=0, eigvals_only=False)
+    ev_up -= H.midgap
+    ev_dn, evec_dn = H.eigh(spin=1, eigvals_only=False)
+    ev_dn -= H.midgap
+
+    E = ev_up[H.Nup-1] 
+    p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
+    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
+    p.axes.axis('off')
+    p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
+
 
 
