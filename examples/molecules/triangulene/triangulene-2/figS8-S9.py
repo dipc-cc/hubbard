@@ -38,6 +38,7 @@ for u in np.linspace(5.0, 0.0, 21):
     if u == 3.0:
         p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
         #p.annotate()
+        p.axes.axis('off')
         p.savefig(fn+'/AFM-pol-%i.pdf'%(u*100))
         p.close()
 
@@ -57,6 +58,7 @@ for u in np.linspace(5.0, 0.0, 21):
     if u == 3.0:
         p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
         #p.annotate()
+        p.axes.axis('off')
         p.savefig(fn+'/FM1-pol-%i.pdf'%(u*100))
         p.close()
 
@@ -76,6 +78,7 @@ for u in np.linspace(5.0, 0.0, 21):
     if u == 3.0:
         p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
         #p.annotate()
+        p.axes.axis('off')
         p.savefig(fn+'/FM2-pol-%i.pdf'%(u*100))
         p.close()
 
@@ -89,10 +92,10 @@ f.close()
 
 data = np.loadtxt(fn+'AFM-FM1-FM2.dat')
 p = plot.Plot()
-p.axes.plot(data[:,0], data[:,2]-data[:,1], 'o', label='S$_{1}$-S$_{0}$')
-p.axes.plot(data[:,0], data[:,3]-data[:,1], 'o', label='S$_{2}$-S$_{0}$')
-p.set_xlabel(r'U [eV]')
-p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{0}}$ [eV]')
+p.axes.plot(data[:,0], data[:,1]-data[:,2], 'o', label='S$_{0}$-S$_{1}$')
+p.axes.plot(data[:,0], data[:,3]-data[:,2], 'o', label='S$_{2}$-S$_{1}$')
+p.set_xlabel(r'U [eV]', fontsize=30)
+p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{0}}$ [eV]', fontsize=30)
 p.axes.legend()
 p.savefig(fn+'figS9.pdf')
 
@@ -116,24 +119,24 @@ for u in [0., 3.0]:
     ev_dn, evec_dn = H.eigh(spin=1, eigvals_only=False)
     ev_dn -= H.midgap
 
-    p = plot.Wavefunction(H, evec_up[:, H.Nup-2], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-2]*1000, H.U))
-    p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-2))
-
     p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup-1]*1000, H.U))
+    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup-1]), fontsize=30, y=-0.1)
+    p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
     p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.set_title(r'$E_{\uparrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_up[H.Nup]*1000, H.U))
+    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup]), fontsize=30, y=-0.1)
+    p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
     p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn-1]*1000, H.U))
+    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn-1]), fontsize=30, y=-0.1)
+    p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
     p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.set_title(r'$E_{\downarrow}=%.2f$ meV, $U=%.1f$ eV'%(ev_dn[H.Ndn]*1000, H.U))
+    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn]), fontsize=30, y=-0.1)
+    p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
     p = plot.Spectrum(H)
@@ -142,5 +145,6 @@ for u in [0., 3.0]:
 
     E = ev_up[H.Nup-1] 
     p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
-    p.set_title('E $= %.2f$ eV'%(E))
+    p.axes.axis('off')
+    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
     p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
