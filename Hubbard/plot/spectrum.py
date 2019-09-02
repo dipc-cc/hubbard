@@ -8,7 +8,7 @@ import numpy as np
 
 class Spectrum(Plot):
 
-    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, **keywords):
+    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **keywords):
 
         Plot.__init__(self, **keywords)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
@@ -25,8 +25,8 @@ class Spectrum(Plot):
                     for i in range(len(ev)):
                         self.axes.annotate(i, (ev[i], L[i]), fontsize=6)
         self.axes.legend()
-        self.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)')
-        self.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$')
+        self.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)', fontsize=fontsize)
+        self.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$', fontsize=fontsize)
         self.set_xlim(-xmax, xmax)
         if ymax == 0:
             self.set_ylim(ymin, lmax+0.01)
