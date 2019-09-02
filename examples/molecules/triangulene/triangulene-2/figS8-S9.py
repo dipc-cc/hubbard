@@ -139,7 +139,9 @@ for u in [0., 3.0]:
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
-    p = plot.Spectrum(H)
+    p = plot.Spectrum(H, ymin=0.01, fontsize=25)
+    p.axes.set_yticklabels(['%.2f'%i for i in p.axes.get_yticks()], fontsize=20)
+    p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
     p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
     p.close()
 

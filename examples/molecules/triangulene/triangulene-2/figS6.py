@@ -36,11 +36,19 @@ for i, fn in enumerate(['2H-pos-1-2/', 'pos-1/', 'pos-2/']):
     p.savefig(fn+'/pol-U%i.pdf'%(H.U*100))
     p.close()
 
-    H.find_midgap()
     ev_up, evec_up = H.eigh(spin=0, eigvals_only=False)
-    ev_up -= H.midgap
     ev_dn, evec_dn = H.eigh(spin=1, eigvals_only=False)
+    H.find_midgap()
+    if (H.Nup+H.Ndn) %2 != 0:
+        H.midgap = max(ev_up[H.Nup-1], ev_dn[H.Ndn-1])
+    ev_up -= H.midgap
     ev_dn -= H.midgap
+
+    p = plot.Spectrum(H, ymin=0.01, fontsize=25)
+    p.axes.set_yticklabels(['%.2f'%i for i in p.axes.get_yticks()], fontsize=20)
+    p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
+    p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
+    p.close()
 
     E = ev_up[H.Nup-1] 
     p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)

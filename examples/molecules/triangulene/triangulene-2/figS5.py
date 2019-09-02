@@ -53,7 +53,10 @@ for i, fn in enumerate(['pos-1/', 'pos-2/', 'pos-3/', 'pos-4/', 'pos-5/']):
         E0 = np.loadtxt('H-passivation/pos-1/tot_energy.dat')[:,1]
     else:
         p.axes.plot(U, E-E0, 'o', label='pos$_{%i}$-pos$_{1}$'%(i+1))
-        p.set_xlabel(r'U [eV]')
-        p.set_ylabel(r'E$_{i}$-E$_{1}$ [eV]')
+        p.set_xlabel(r'U [eV]', fontsize=25)
+        p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
+        p.axes.set_yticklabels(['%.1f'%i for i in p.axes.get_yticks()], fontsize=20)
+        p.set_ylabel(r'E$_{i}$-E$_{1}$ [eV]', fontsize=25)
+        p.set_xlim(-0.1,4.1)
 p.axes.legend()
 p.savefig('figS5.pdf')
