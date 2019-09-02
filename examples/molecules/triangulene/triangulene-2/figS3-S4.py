@@ -4,15 +4,10 @@ import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import sisl
+import funcs
 
-# Build sisl Geometry object
-mol = sisl.get_sile('molecule.xyz').read_geometry()
-mol = mol.move(-mol.center(what='xyz'))
-mol.sc.set_nsc([1,1,1])
+mol, H = funcs.read('./') 
 
-# 3NN tight-binding model
-Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
-H = hh.HubbardHamiltonian(Hsp2)
 H.polarize_sublattices()
 f = open('AFM-FM.dat', 'w')
 
@@ -33,11 +28,7 @@ for u in np.linspace(5.0, 0.0, 21):
     nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
 
     if u == 3.0:
-        p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p.axes.axis('off')
-        p.savefig('AFM-pol-%i.pdf'%(u*100))
-        p.close()
+        funcs.plot_spin(H, mol, 'AFM-pol-%i.pdf'%(u*100))
 
 
     # Now FM1 case
@@ -53,12 +44,7 @@ for u in np.linspace(5.0, 0.0, 21):
     nup_FM, ndn_FM = H.nup*1, H.ndn*1
 
     if u == 3.0:
-        p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p.axes.axis('off')
-        p.savefig('FM-pol-%i.pdf'%(u*100))
-        p.close()
-
+        funcs.plot_spin(H, mol, 'FM-pol-%i.pdf'%(u*100))
 
     # Revert imbalance
     H.Nup -= 1
@@ -92,44 +78,4 @@ for u in [0., 3.0]:
 
     H.U = u
 
-    H.read_density('triangulene-FM.nc')
-        
-    dn = H.converge()
-
-    H.find_midgap()
-    ev_up, evec_up = H.eigh(spin=0, eigvals_only=False)
-    ev_up -= H.midgap
-    ev_dn, evec_dn = H.eigh(spin=1, eigvals_only=False)
-    ev_dn -= H.midgap
-
-    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.001)
-    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup-1]), fontsize=30, y=-0.15)
-    p.axes.axis('off')
-    p.savefig('U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
-
-    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.001)
-    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup]), fontsize=30, y=-0.15)
-    p.axes.axis('off')
-    p.savefig('U%i_state%i_up.pdf'%(H.U*100, H.Nup))
-
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.001)
-    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn-1]), fontsize=30, y=-0.15)
-    p.axes.axis('off')
-    p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
-    
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.001)
-    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn]), fontsize=30, y=-0.15)
-    p.axes.axis('off')
-    p.savefig('U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
-
-    p = plot.Spectrum(H, ymax=0.13, ymin=0.03, fontsize=25)
-    p.axes.set_yticklabels(['%.2f'%i for i in p.axes.get_yticks()], fontsize=20)
-    p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
-    p.savefig('U%i_spectrum.pdf'%(H.U*100))
-    p.close()
-
-    E = ev_up[H.Nup-1] 
-    p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
-    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
-    p.axes.axis('off')
-    p.savefig('U%i_DOS.pdf'%(H.U*100))
+    funcs.plot_spectrum('./', H, mol, 'triangulene-FM.nc')

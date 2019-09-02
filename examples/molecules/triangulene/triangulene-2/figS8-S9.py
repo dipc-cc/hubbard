@@ -4,18 +4,12 @@ import Hubbard.sp2 as sp2
 import sys
 import numpy as np
 import sisl
+import funcs
 
-# Build sisl Geometry object
 fn = 'dimer-pentagon/'
-mol = sisl.get_sile(fn+'molecule.XV').read_geometry()
-mol = mol.move(-mol.center(what='xyz'))
-mol = mol.rotate(180, v=[0,1,0]) # Rotate molecule to coincide with the experimental image
-mol.sc.set_nsc([1,1,1])
-
-# 3NN tight-binding model
-Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
-H = hh.HubbardHamiltonian(Hsp2)
+mol, H = funcs.read(fn, file='molecule.XV')
 H.polarize_sublattices()
+
 f = open(fn+'/AFM-FM1-FM2.dat', 'w')
 
 nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
@@ -36,12 +30,7 @@ for u in np.linspace(5.0, 0.0, 21):
     nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
 
     if u == 3.0:
-        p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p.axes.axis('off')
-        p.savefig(fn+'/AFM-pol-%i.pdf'%(u*100))
-        p.close()
-
+        funcs.plot_spin(H, mol, fn+'/AFM-pol-%i.pdf'%(u*100))
 
     # Now FM1 case
     ncf = fn+'/triangulene-FM1.nc'
@@ -56,12 +45,7 @@ for u in np.linspace(5.0, 0.0, 21):
     nup_FM1, ndn_FM1 = H.nup*1, H.ndn*1
 
     if u == 3.0:
-        p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p.axes.axis('off')
-        p.savefig(fn+'/FM1-pol-%i.pdf'%(u*100))
-        p.close()
-
+        funcs.plot_spin(H, mol, fn+'/FM1-pol-%i.pdf'%(u*100))
 
     # Now FM2 case
     ncf = fn+'/triangulene-FM2.nc'
@@ -76,11 +60,7 @@ for u in np.linspace(5.0, 0.0, 21):
     nup_FM2, ndn_FM2 = H.nup*1, H.ndn*1
 
     if u == 3.0:
-        p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-        #p.annotate()
-        p.axes.axis('off')
-        p.savefig(fn+'/FM2-pol-%i.pdf'%(u*100))
-        p.close()
+        funcs.plot_spin(H, mol, fn+'/FM2-pol-%i.pdf'%(u*100))
 
     # Revert imbalance
     H.Nup -= 2
@@ -95,7 +75,11 @@ p = plot.Plot()
 p.axes.plot(data[:,0], data[:,1]-data[:,2], 'o', label='S$_{0}$-S$_{1}$')
 p.axes.plot(data[:,0], data[:,3]-data[:,2], 'o', label='S$_{2}$-S$_{1}$')
 p.set_xlabel(r'U [eV]', fontsize=30)
-p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{0}}$ [eV]', fontsize=30)
+p.set_xlim(-0.1, 4.1)
+p.axes.set_xticks([0,1,2,3,4])
+p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
+p.axes.set_yticklabels(['%.1f'%i for i in p.axes.get_yticks()], fontsize=20)
+p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{0}}$ [eV]', fontsize=25)
 p.axes.legend()
 p.savefig(fn+'figS9.pdf')
 
@@ -109,44 +93,5 @@ for u in [0., 3.0]:
         
     H.U = u
 
-    H.read_density(fn+'/triangulene-FM1.nc')
-        
-    dn = H.converge()
-
-    H.find_midgap()
-    ev_up, evec_up = H.eigh(spin=0, eigvals_only=False)
-    ev_up -= H.midgap
-    ev_dn, evec_dn = H.eigh(spin=1, eigvals_only=False)
-    ev_dn -= H.midgap
-
-    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup-1]), fontsize=30, y=-0.1)
-    p.axes.axis('off')
-    p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
-
-    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup]), fontsize=30, y=-0.1)
-    p.axes.axis('off')
-    p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
-
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn-1]), fontsize=30, y=-0.1)
-    p.axes.axis('off')
-    p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
+    funcs.plot_spectrum(fn, H, mol, '/triangulene-FM1.nc')
     
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.0006)
-    p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn]), fontsize=30, y=-0.1)
-    p.axes.axis('off')
-    p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
-
-    p = plot.Spectrum(H, ymin=0.01, fontsize=25)
-    p.axes.set_yticklabels(['%.2f'%i for i in p.axes.get_yticks()], fontsize=20)
-    p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
-    p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
-    p.close()
-
-    E = ev_up[H.Nup-1] 
-    p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
-    p.axes.axis('off')
-    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
-    p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
