@@ -1,0 +1,42 @@
+\documentclass{standalone}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{psfrag}
+\usepackage{lpic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+\tikzset{
+dash/.style={line width=.5pt,dash pattern=on 2pt off 1.5pt}
+         }% end of tikzset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\centering
+
+
+\begin{tikzpicture}[>=stealth]
+
+\node [inner sep=0pt] at (-2.8, 0) {\includegraphics[height=10cm]{../dimer-pentagon/AFM-pol-300}};
+\node [inner sep=0pt] at (8.25, 0) {\includegraphics[height=10cm]{../dimer-pentagon/FM1-pol-300}};
+\node [inner sep=0pt] at (19.3, 0) {\includegraphics[height=10cm]{../dimer-pentagon/FM2-pol-300}};
+
+\node [inner sep=0pt] at (7.5, -14) {\includegraphics[height=19cm]{../dimer-pentagon/figS9}};
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Draw symmetry axis %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\node at (-7.5, 3.75){\Huge \textbf{a}};
+\node at (3.55, 3.75){\Huge \textbf{b}};
+\node at (14.6, 3.75){\Huge \textbf{c}};
+\node at (-4.25, -5.5){\Huge \textbf{d}};
+
+
+\end{tikzpicture}
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
