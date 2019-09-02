@@ -31,7 +31,6 @@ for i, fn in enumerate(['2H-pos-1-2/', 'pos-1/', 'pos-2/']):
     nup, ndn = H.nup*1, H.ndn*1
 
     p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
-    #p.annotate()
     p.axes.axis('off')
     p.savefig(fn+'/pol-U%i.pdf'%(H.U*100))
     p.close()
@@ -50,11 +49,9 @@ for i, fn in enumerate(['2H-pos-1-2/', 'pos-1/', 'pos-2/']):
     p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
     p.close()
 
-    E = ev_up[H.Nup-1] 
-    p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
-    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
+    HOMO = max(ev_up[H.Nup-1], ev_dn[H.Ndn-1]) 
+    p = plot.DOS_distribution(H, ext_geom=mol, E=HOMO, realspace=True)
+    p.set_title('E $= %.2f$ eV'%(HOMO), fontsize=30)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
-
-
 

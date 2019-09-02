@@ -130,6 +130,6 @@ for u in [0., 3.0]:
 
     E = ev_up[H.Nup-1] 
     p = plot.DOS_distribution(H, ext_geom=mol, E=E, realspace=True)
-    p.set_title('E $= %.2f$ eV'%(E))
+    p.set_title('E $= %.2f$ eV'%(E), fontsize=30)
     p.axes.axis('off')
     p.savefig('U%i_DOS.pdf'%(H.U*100))
