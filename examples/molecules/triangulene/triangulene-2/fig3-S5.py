@@ -68,5 +68,6 @@ for i, fn in enumerate(['pos-3/', 'pos-1/', 'pos-2/', 'pos-4/', 'pos-5/']):
         p.axes.set_yticklabels(['%.1f'%i for i in p.axes.get_yticks()], fontsize=20)
         p.set_ylabel(r'E$_{i}$-E$_{1}$ [eV]', fontsize=25)
         p.set_xlim(-0.1,4.1)
-p.axes.legend()
+p.axes.legend(ncol=2, bbox_to_anchor=(0.8,0.4))
+p.fig.tight_layout()
 p.savefig('figS5.pdf')
