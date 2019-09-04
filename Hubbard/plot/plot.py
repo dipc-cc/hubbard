@@ -226,6 +226,9 @@ class GeometryPlot(Plot):
     def set_colorbar_yticks(self, ticks):
         self.colorbar.ax.set_yticks(ticks)
 
+    def get_colorbar_yticks(self):
+        return self.colorbar.ax.get_yticks()
+
     def set_colorbar_yticklabels(self, labels=None, fontsize=20):
         if not labels:
             labels = self.colorbar.ax.get_yticks()
@@ -233,6 +236,9 @@ class GeometryPlot(Plot):
 
     def set_colorbar_xlabel(self, label, fontsize=20):
         self.colorbar.ax.set_xlabel(label, fontsize=fontsize)
+
+    def get_colorbar_xticks(self):
+        return self.colorbar.ax.get_xticks()
 
     def set_colorbar_xticks(self, ticks):
         self.colorbar.ax.set_xticks(ticks)
