@@ -115,7 +115,7 @@ class GeometryPlot(Plot):
         self.paux = paux
         self.axes.add_collection(self.paux)
         
-    def __orbitals__(self, v, label=None, **keywords):
+    def __orbitals__(self, v, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(v)
 
@@ -132,9 +132,11 @@ class GeometryPlot(Plot):
         # Colorbars
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
-                self.add_colorbar(self.ppi, label=label)
+                self.add_colorbar(self.ppi)
+                if 'label' in keywords:
+                    self.set_colorbar_ylabel(keywords['label'])
 
-    def __realspace__(self, v, z=1.1, vmax=0.00006, grid_unit=0.05, density=False, label=None, **keywords):
+    def __realspace__(self, v, z=1.1, grid_unit=0.05, density=False, **keywords):
 
         def real_space_grid(v, grid_unit, density):
             import sisl
@@ -173,10 +175,15 @@ class GeometryPlot(Plot):
             del g
             return grid
 
+        if 'vmax' in keywords:
+            vmax = keywords['vmax']
+        else:
+            vmax = None
+
         if 'vmin' in keywords:
             vmin = keywords['vmin']
         else:
-            vmin = -vmax
+            vmin = None
 
         grid = real_space_grid(v, grid_unit, density)
         index =  grid.index([0, 0, z])
@@ -188,7 +195,9 @@ class GeometryPlot(Plot):
         # Colorbars
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
-                self.add_colorbar(self.imshow, label=label)
+                self.add_colorbar(self.imshow)
+                if 'label' in keywords:
+                    self.set_colorbar_ylabel(keywords['label'])
 
     def set_axes(self, bdx=2):
         g = self.geom
@@ -205,11 +214,33 @@ class GeometryPlot(Plot):
         self.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
 
-    def add_colorbar(self, layer, label):
+    def add_colorbar(self, layer, pos='right', size='5%'):
         divider = make_axes_locatable(self.axes)
-        cax = divider.append_axes("right", size="5%", pad=0.1)
-        cb = plt.colorbar(layer, label=label, cax=cax)
+        cax = divider.append_axes(pos, size=size, pad=0.1)
+        self.colorbar = plt.colorbar(layer, cax=cax)
         plt.subplots_adjust(right=0.8)
+
+    def set_colorbar_ylabel(self, label, fontsize=20):
+        self.colorbar.ax.set_ylabel(label, fontsize=fontsize)
+    
+    def set_colorbar_yticks(self, ticks):
+        self.colorbar.ax.set_yticks(ticks)
+
+    def set_colorbar_yticklabels(self, labels=None, fontsize=20):
+        if not labels:
+            labels = self.colorbar.ax.get_yticks()
+        self.colorbar.ax.set_yticklabels(labels, fontsize=fontsize)
+
+    def set_colorbar_xlabel(self, label, fontsize=20):
+        self.colorbar.ax.set_xlabel(label, fontsize=fontsize)
+
+    def set_colorbar_xticks(self, ticks):
+        self.colorbar.ax.set_xticks(ticks)
+
+    def set_colorbar_xticklabels(self, labels=None, fontsize=20):
+        if not labels:
+            labels = self.colorbar.ax.get_xticks()
+        self.colorbar.ax.set_xticklabels(labels, fontsize=fontsize)
 
     def annotate(self, size=6):
         """ Annotate the site indices in the pi-network """
