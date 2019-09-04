@@ -20,7 +20,8 @@ def read(fn, file='/molecule.xyz'):
     return mol, H
 
 def plot_spin(H, mol, label):
-    p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4)
+    p = plot.SpinPolarization(H, ext_geom=mol, colorbar=True, vmax=0.4, vmin=-0.4)
+    p.set_colorbar_yticklabels(['%.1f'%i for i in p.get_colorbar_yticks()], fontsize=25)
     p.axes.axis('off')
     p.savefig(label)
     p.close()
@@ -40,22 +41,22 @@ def plot_spectrum(fn, H, mol, ncfile):
     ev_up -= H.midgap
     ev_dn -= H.midgap
 
-    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.0006)
+    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
     p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup-1]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
-    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.0006)
+    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
     p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.0006)
+    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
     p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn-1]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.0006)
+    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
     p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
@@ -68,7 +69,10 @@ def plot_spectrum(fn, H, mol, ncfile):
 
     # Plot DOS at E=HOMO
     HOMO = max(ev_up[H.Nup-1], ev_dn[H.Ndn-1])
-    p = plot.DOS_distribution(H, ext_geom=mol, E=HOMO, realspace=True)
+    DOS = H.DOS(HOMO, eta=1e-3, spin=[0,1])
+    p = plot.DOS_distribution(H, DOS, ext_geom=mol, realspace=True, z=1.1, colorbar=True)
+    p.set_colorbar_ylabel(label=r'$\rho(\textbf{r})$ [$e$\AA$^{-2}$]', fontsize=30)
+    p.set_colorbar_yticklabels([format(i, ".0e") for i in p.get_colorbar_yticks()], fontsize=25)
     p.axes.axis('off')
     p.set_title('E $= %.2f$ eV'%(HOMO), fontsize=30)
     p.savefig(fn+'/U%i_DOS.pdf'%(H.U*100))
