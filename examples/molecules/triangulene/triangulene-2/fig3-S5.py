@@ -52,7 +52,7 @@ for i, fn in enumerate(['pos-3/', 'pos-1/', 'pos-2/', 'pos-4/', 'pos-5/']):
         if u == 3.0:
             funcs.plot_spin(H, mol, fn+'/pol-%i.pdf'%(u*100))
 
-            if i==2:
+            if i==0:
                 funcs.plot_spectrum(fn, H, mol, fn+'/triangulene.nc')
 
         f.write('%.4f %.8f\n'%(H.U, e))
@@ -61,7 +61,7 @@ for i, fn in enumerate(['pos-3/', 'pos-1/', 'pos-2/', 'pos-4/', 'pos-5/']):
     if i == 0:
         E0 = np.loadtxt('H-passivation/pos-3/tot_energy.dat')[:,1]
     else:
-        p.axes.plot(U, E-E0, 'o', label='pos$_{%i}$-pos$_{3}$'%(i+1))
+        p.axes.plot(U, E-E0, 'o', label='pos$_{%s}$-pos$_{3}$'%fn[-2:-1])
         p.set_xlabel(r'U [eV]', fontsize=25)
         p.axes.set_xticks([0,1,2,3,4])
         p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
