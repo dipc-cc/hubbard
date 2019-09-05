@@ -79,7 +79,7 @@ p.set_xlim(-0.1, 4.1)
 p.axes.set_xticks([0,1,2,3,4])
 p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
 p.axes.set_yticklabels(['%.1f'%i for i in p.axes.get_yticks()], fontsize=20)
-p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{0}}$ [eV]', fontsize=25)
+p.set_ylabel(r'E$_{S_{i}}$-E$_{S_{1}}$ [eV]', fontsize=25)
 p.axes.legend()
 p.savefig(fn+'figS9.pdf')
 
