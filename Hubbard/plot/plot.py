@@ -244,7 +244,7 @@ class GeometryPlot(Plot):
         self.colorbar.ax.set_xticks(ticks)
 
     def set_colorbar_xticklabels(self, labels=None, fontsize=20):
-        if not labels:
+        if labels != None:
             labels = self.colorbar.ax.get_xticks()
         self.colorbar.ax.set_xticklabels(labels, fontsize=fontsize)
 
