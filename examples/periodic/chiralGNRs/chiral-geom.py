@@ -1,6 +1,8 @@
 import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.sp2 as sp2
+import netCDF4 as NC
 import numpy as np
 import os
 
@@ -117,3 +119,88 @@ def gap_exp(H0, directory, L=np.arange(1,31)):
     p.axes.set_yscale('log')
     p.savefig(directory+'/gap_fit.pdf')
 
+def phase_diagram(w=8):
+
+    import Hubbard.geometry as geometry
+
+    def get_Zak_phase(geom):
+        H0 = sp2(geom, t1=2.7, t2=0., t3=0.)
+        H = hh.HubbardHamiltonian(H0, U=0.)
+        zak = H.get_Zak_phase(Nx=101)
+        if not (abs(zak)>1e-3 or abs(abs(zak)-np.pi)>1e-3):
+            print('zak:', zak)
+            print('Warning: Zak phase not quantized!')
+        z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
+        # Obtain band gap
+        ev = np.zeros((len(np.linspace(0,0.5,51)), len(H.geom)))
+        for ik, k in enumerate(np.linspace(0,0.5,51)):
+            ev[ik,:] = H.eigh(k=[k,0,0],spin=0)
+
+        bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
+        return bg, z2
+
+    nlist = np.arange(2, 11)
+    mlist = np.arange(1,int(w/2)+1)
+
+    # Build empty matrix to store bandgap and Z2
+    band_gap_matrix = np.zeros((len(nlist), len(mlist),  2))
+    for i_n, n in enumerate(nlist):
+        for i_m, m in enumerate(mlist):
+            print(n,m,w)
+            geom = geometry.cgnr(n,m,w)
+            bg, z2  = get_Zak_phase(geom)
+            band_gap_matrix[i_n, i_m, 0] = bg
+            band_gap_matrix[i_n, i_m, 1] = z2
+    
+    fn = 'band_gap_zak_W%i.nc'%w
+    ncf = NC.Dataset(fn, 'w')
+
+    # Create dimensions
+    ncf.createDimension('nlen', len(nlist))
+    ncf.createDimension('mlen', len(mlist))
+    ncf.createDimension('data', 2)
+    # Create variables
+    ncf.createVariable('BG', 'f8', ('nlen', 'mlen', 'data'))
+    ncf.createVariable('mlist', 'i8', ('mlen'))
+    ncf.createVariable('nlist', 'i8', ('nlen'))
+
+    ncf['BG'][:] = band_gap_matrix 
+    ncf['mlist'][:] = mlist
+    ncf['nlist'][:] = nlist
+
+    ncf.close()
+
+def plot_band_gap_imshow(w=8, figsize=(8,7)):
+    fn = 'band_gap_zak_W%i.nc'%w
+    try:
+        ncf = NC.Dataset(fn, 'r')
+    except:
+        phase_diagram(w=w)
+        ncf = NC.Dataset(fn, 'r')
+    band_gap_matrix = ncf['BG'][:]
+    m = ncf['mlist'][:]
+    n = ncf['nlist'][:]
+
+    p = plot.Plot(figsize=figsize)
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    divider = make_axes_locatable(p.axes)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+
+    import matplotlib.colors as mcolors
+    bg = band_gap_matrix[:,:,0]
+    z2 = band_gap_matrix[:,:,1]
+
+    bg = ((-1)**z2)*bg # multiply band gap by (-1)^z2
+    lim = max(abs(np.max(bg)), abs(np.min(bg)))
+    extent = [0, len(n), 0, len(m)]
+    sc = p.axes.imshow(bg.T, cmap='seismic', origin='lower', vmax=lim, vmin=-lim, extent=extent, 
+                        norm=mcolors.SymLogNorm(linthresh=0.03), aspect='equal')
+    p.set_xlabel('n', fontsize=25)
+    p.set_ylabel('m', fontsize=25)
+    p.axes.set_xticks(np.arange(0, len(n))+0.5)
+    p.axes.set_xticklabels(range(int(min(n)), int(max(n))+1), fontsize=20)
+    p.axes.set_yticks(np.arange(0, len(m))+0.5)
+    p.axes.set_yticklabels(range(int(min(m)), int(max(m))+1), fontsize=20)
+    p.fig.colorbar(sc, cax=cax, label=r'$E$ [eV]')
+    p.set_title(r'Band gap for $W=%i$'%w, fontsize=25)
+    p.savefig('W%i_band_gap_imshow.pdf'%w)
