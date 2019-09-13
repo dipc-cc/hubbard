@@ -9,6 +9,11 @@ import os
 ch = __import__('chiral-geom')
 op = __import__('open_boundary')
 
+# Compute and plot the bandgap as a function of (n,m) for a paritcular ribbon width
+if False:
+    W=8
+    ch.plot_band_gap_imshow(w=W, figsize=(10,6))
+
 n = 3
 m = [1,2]
 w = [4,6,8]
