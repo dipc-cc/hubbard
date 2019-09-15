@@ -139,7 +139,7 @@ def phase_diagram(w=8):
         bg = min(ev[:, H.Nup] - ev[:, H.Nup-1])
         return bg, z2
 
-    nlist = np.arange(2, 11)
+    nlist = np.arange(1, 11)
     mlist = np.arange(1,int(w/2)+1)
 
     # Build empty matrix to store bandgap and Z2
