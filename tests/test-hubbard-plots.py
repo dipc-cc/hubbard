@@ -1,6 +1,5 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import Hubbard.sp2 as sp2
 import numpy as np
 import sisl
@@ -51,14 +50,14 @@ p.savefig('ldos.pdf')
 # Test real-space plots?
 if False:
 
-    p = plot.Charge(H, realspace=True, ext_geom=molecule, colorbar=True)
+    p = plot.Charge(H, realspace=True, ext_geom=molecule, vmax=1e-4, vmin=-1e-4, colorbar=True)
     p.savefig('chg_rs.pdf')
 
-    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True, colorbar=True)
+    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True, vmax=3e-5, vmin=-3e-5, colorbar=True)
     p.savefig('chgdiff_rs.pdf')
 
-    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True, colorbar=True)
+    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True, vmax=3e-5, vmin=-3e-5, colorbar=True)
     p.savefig('pol_rs.pdf')
 
-    p = plot.Wavefunction(H, 10*evec[:, 10], ext_geom=molecule, realspace=True, colorbar=True)
+    p = plot.Wavefunction(H, evec[:, 10], ext_geom=molecule, realspace=True, vmax=1.5e-3, vmin=-1.5e-3, colorbar=True)
     p.savefig('wf_rs.pdf')
