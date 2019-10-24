@@ -331,6 +331,63 @@ class HubbardHamiltonian(object):
 
         return dn
 
+    def iterate3(self, elecs, elec_indx, mix=1.0):
+        """
+        Iterative method for solving open systems self-consistently
+        It computes the spin densities from the Neq Green's function
+        So far it is implemented for an equilibrium calculation
+
+        Parameters
+        ----------
+        elecs : list of sisl.Hamiltonian instances
+            list of (already converged) electrode Hamiltonians present in the system
+        elec_indx : list, numpy array
+            list of the atomic indices of the electrodes in the device region
+
+        """
+        from scipy import linalg as scila
+
+        nup = self.nup
+        ndn = self.ndn
+
+        # Read complex contour (CC) and weights (w) from transiesta run
+        contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
+        CC = contour_weight[0] + contour_weight[1]*1j
+        w =  contour_weight[2] + contour_weight[3]*1j
+
+        # Loop over each point of the CC, and integrate the Green functions
+        G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128) 
+        for ispin in [0,1]:    
+            HC = self.H.Hk(spin=ispin).todense()
+            
+            for cc, wi in np.array([CC, w]).T:
+                # self energies (this has to be generalized to N terminals), so far it can deal with 2
+                se_L = sisl.RecursiveSI(elecs, '-A')
+                se_R = sisl.RecursiveSI(elecs, '+A')
+                # Map self energies into the device region
+                self_energy = np.zeros((len(HC), len(HC)), dtype=np.complex128)
+                self_energy[np.ix_(elec_indx[0], elec_indx[0])] += se_L.self_energy(cc, spin=ispin)
+                self_energy[np.ix_(elec_indx[1], elec_indx[1])] += se_R.self_energy(cc, spin=ispin)
+
+                # Greens function evaluated at each point of the CC
+                G[:, :, ispin] += scila.inv(np.identity(len(HC))*cc - HC - self_energy)*wi
+
+        # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
+        ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
+        ni_dn = -(1/np.pi)*np.diag(G[:,:,1].imag)
+
+        # Measure of density change
+        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+
+        # Update occupations on sites with mixing
+        self.nup = mix * ni_up + (1. - mix) * nup
+        self.ndn = mix * ni_dn + (1. - mix) * ndn
+
+        # Update spin Hamiltonians 
+        self.update_hamiltonian()
+
+        return dn
+
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
