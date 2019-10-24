@@ -5,7 +5,7 @@ def configuration(parent_package='', top_path=None):
 
     config.add_subpackage('plot')
     config.make_config_py()
-
+    config.add_data_files('EQCONTOUR')
     return config
 
 if __name__ == '__main__':
