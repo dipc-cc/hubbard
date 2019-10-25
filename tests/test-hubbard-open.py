@@ -7,26 +7,34 @@ import Hubbard.geometry as geometry
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 
-# Build one dimensional chain geometry
-one_dim_chain = sisl.Geometry([[0,0,0], [1.0,0,0]], atom=sisl.Atom(6), sc=sisl.SuperCell([1.0, 10, 10], nsc=[3,1,1]))
-# and Hamiltonian
-H_elec = sp2(one_dim_chain, t1=1.0, t2=0, t3=0)
+# Set U for the whole calculation
+U = 0.0
 
+# Build zigzag GNR
+ZGNR = geometry.zgnr(2)
+
+# and 1NN TB Hamiltonian
+H_elec = sp2(ZGNR, t1=2.7, t2=0, t3=0)
+  
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=0)
+MFH_elec = hh.HubbardHamiltonian(H_elec, U=U)
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge()
+dn = MFH_elec.converge(method=2)
 
-# Central region is a repetition of the electrodes
-HC = H_elec.tile(3,axis=0)
-HC.set_nsc([1,1,1])
-MFH_HC = hh.HubbardHamiltonian(HC, U=0)
+# Central region is a repetition of the electrodes without PBC
+HC = MFH_elec.tile(3,axis=0)
+HC.H.sc.set_nsc([1,1,1])
+
+# MFH object
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U)
 
 # Map electrodes in the device region
-elec_indx = [range(len(H_elec)),range(len(HC)-len(H_elec), len(HC))]
+elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
-# Pass the electrode Hamiltonians as input
-dn = MFH_HC.iterate3(MFH_elec.H, elec_indx)
+# Pass the electrode Hamiltonians as input and do one iteration
+dn = MFH_HC.iterate3(MFH_elec, elec_indx)
+
+# Check if the total number of electrons is correct
 print('Nup: ', MFH_HC.nup.sum())
 print('Ndn: ', MFH_HC.ndn.sum())
