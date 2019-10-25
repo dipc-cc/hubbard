@@ -331,15 +331,15 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, elecs, elec_indx, mix=1.0):
+    def iterate3(self, elecs, elec_indx, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
-        So far it is implemented for an equilibrium calculation
+        So far it is implemented for an equilibrium calculation (it reads the equilibrium contour)
 
         Parameters
         ----------
-        elecs : list of sisl.Hamiltonian instances
+        elecs : list of HubbardHamiltonian instances
             list of (already converged) electrode Hamiltonians present in the system
         elec_indx : list, numpy array
             list of the atomic indices of the electrodes in the device region
@@ -350,6 +350,23 @@ class HubbardHamiltonian(object):
         nup = self.nup
         ndn = self.ndn
 
+        if q_up is None:
+            q_up = self.Nup
+        if q_dn is None:
+            q_dn = self.Ndn
+
+        # Create fermi-level distribution
+        kT = 1e-5
+        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+
+        # Shift central region Hamiltonian with EF
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        self.H.shift(-Ef)
+
+        # Shift electrodes with their Fermi energy
+        Ef_elecs = elecs.H.fermi_level(elecs.mp, q=[elecs.Nup, elecs.Ndn], distribution=dist)
+        elecs.H.shift(-Ef_elecs)
+
         # Read complex contour (CC) and weights (w) from transiesta run
         contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
         CC = contour_weight[0] + contour_weight[1]*1j
@@ -359,18 +376,22 @@ class HubbardHamiltonian(object):
         G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128) 
         for ispin in [0,1]:    
             HC = self.H.Hk(spin=ispin).todense()
-            
+
             for cc, wi in np.array([CC, w]).T:
-                # self energies (this has to be generalized to N terminals), so far it can deal with 2
-                se_L = sisl.RecursiveSI(elecs, '-A')
-                se_R = sisl.RecursiveSI(elecs, '+A')
-                # Map self energies into the device region
+                # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
+                se_L = sisl.RecursiveSI(elecs.H, '-A')
+                se_R = sisl.RecursiveSI(elecs.H, '+A')
+                # Map self-energies into the device region and sum contributions from all terminals
                 self_energy = np.zeros((len(HC), len(HC)), dtype=np.complex128)
                 self_energy[np.ix_(elec_indx[0], elec_indx[0])] += se_L.self_energy(cc, spin=ispin)
                 self_energy[np.ix_(elec_indx[1], elec_indx[1])] += se_R.self_energy(cc, spin=ispin)
 
-                # Greens function evaluated at each point of the CC
-                G[:, :, ispin] += scila.inv(np.identity(len(HC))*cc - HC - self_energy)*wi
+                # Evaluate the Fermi distribution at cc, now Fermi level should lie at zero
+                nf = sisl.physics.distribution.fermi_dirac(cc, kT=kT, mu=0)
+                if np.isnan(nf):
+                    nf=0.
+                # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
+                G[:, :, ispin] += scila.inv(np.identity(len(HC))*cc - HC - self_energy)*wi*nf
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
         ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
