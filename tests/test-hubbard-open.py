@@ -15,9 +15,9 @@ ZGNR = geometry.zgnr(2)
 
 # and 1NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0, t3=0)
-  
+
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U)
+MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[101, 1, 1])
 
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(method=2)
