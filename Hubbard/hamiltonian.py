@@ -295,9 +295,9 @@ class HubbardHamiltonian(object):
 
             # Reduce to occupied stuff
             occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            ni_up = (es_up.norm2(False) * occ_up).sum(0)
+            ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            ni_dn = (es_dn.norm2(False) * occ_dn).sum(0)
+            ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
             Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
             # Return values
@@ -356,7 +356,7 @@ class HubbardHamiltonian(object):
             q_dn = self.Ndn
 
         # Create fermi-level distribution
-        kT = 1e-5
+        kT = 0.025
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 
         # Shift central region Hamiltonian with EF
@@ -373,25 +373,28 @@ class HubbardHamiltonian(object):
         w =  contour_weight[2] + contour_weight[3]*1j
 
         # Loop over each point of the CC, and integrate the Green functions
-        G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128) 
-        for ispin in [0,1]:    
+        G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128, order='F')
+
+        # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
+        se_L = sisl.RecursiveSI(elecs.H, '-A')
+        se_R = sisl.RecursiveSI(elecs.H, '+A')
+        dist = sisl.physics.get_distribution('fermi', smearing=kT, x0=0.)
+
+        no = len(self.H)
+        inv_GF = np.empty([no, no], dtype=np.complex128)
+        for ispin in [0, 1]:
             HC = self.H.Hk(spin=ispin).todense()
 
             for cc, wi in np.array([CC, w]).T:
-                # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
-                se_L = sisl.RecursiveSI(elecs.H, '-A')
-                se_R = sisl.RecursiveSI(elecs.H, '+A')
+                inv_GF[:, :] = 0.
+                np.fill_diagonal(inv_GF, cc)
+                inv_GF[:, :] -= HC[:, :]
                 # Map self-energies into the device region and sum contributions from all terminals
-                self_energy = np.zeros((len(HC), len(HC)), dtype=np.complex128)
-                self_energy[np.ix_(elec_indx[0], elec_indx[0])] += se_L.self_energy(cc, spin=ispin)
-                self_energy[np.ix_(elec_indx[1], elec_indx[1])] += se_R.self_energy(cc, spin=ispin)
+                inv_GF[np.ix_(elec_indx[0], elec_indx[0])] -= se_L.self_energy(cc, spin=ispin)
+                inv_GF[np.ix_(elec_indx[1], elec_indx[1])] -= se_R.self_energy(cc, spin=ispin)
 
-                # Evaluate the Fermi distribution at cc, now Fermi level should lie at zero
-                nf = sisl.physics.distribution.fermi_dirac(cc, kT=kT, mu=0)
-                if np.isnan(nf):
-                    nf=0.
                 # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                G[:, :, ispin] += scila.inv(np.identity(len(HC))*cc - HC - self_energy)*wi*nf
+                G[:, :, ispin] += scila.inv(inv_GF) * wi
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
         ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
