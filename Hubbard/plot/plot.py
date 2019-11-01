@@ -53,6 +53,12 @@ class Plot(object):
     def set_ylim(self, ymin, ymax):
         self.axes.set_ylim(ymin, ymax)
 
+    def add_colorbar(self, layer, pos='right', size='5%'):
+        divider = make_axes_locatable(self.axes)
+        cax = divider.append_axes(pos, size=size, pad=0.1)
+        self.colorbar = plt.colorbar(layer, cax=cax)
+        plt.subplots_adjust(right=0.8)
+
 # Generate a dummy plot, this seems to avoid font issues with subsequent instances
 Plot()
 
@@ -213,12 +219,6 @@ class GeometryPlot(Plot):
         self.set_xlabel(r'$x$ (\AA)')
         self.set_ylabel(r'$y$ (\AA)')
         self.axes.set_aspect('equal')
-
-    def add_colorbar(self, layer, pos='right', size='5%'):
-        divider = make_axes_locatable(self.axes)
-        cax = divider.append_axes(pos, size=size, pad=0.1)
-        self.colorbar = plt.colorbar(layer, cax=cax)
-        plt.subplots_adjust(right=0.8)
 
     def set_colorbar_ylabel(self, label, fontsize=20):
         self.colorbar.ax.set_ylabel(label, fontsize=fontsize)

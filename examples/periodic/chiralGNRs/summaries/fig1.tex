@@ -1,0 +1,51 @@
+\documentclass{standalone}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{psfrag}
+\usepackage{lpic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+\tikzset{
+dash/.style={line width=.5pt,dash pattern=on 2pt off 1.5pt}
+         }% end of tikzset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\centering
+
+
+\begin{tikzpicture}[>=stealth]
+
+\node [inner sep=0pt] at (-0.5, 0.5) {\includegraphics[height=2.8cm]{bonds}};
+
+\node [inner sep=0pt] at (-2, 2.1){(\textcolor{blue}{$n$},\textcolor{green}{$m$},\textcolor{red}{$w$})-chGNR};
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Define (n,m,w) %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\draw[<->,color=red] (-2.5,-0.21650)--(-2.05,1.65);
+
+\path (-2.35,-.25) node[circle, fill, inner sep=1, color=red]{};
+\path (-2.3,-0.05) node[circle, fill, inner sep=1, color=red]{};
+\path (-2.2,.32) node[circle, fill, inner sep=1, color=red]{};
+\path (-2.15,.51) node[circle, fill, inner sep=1, color=red]{};
+\path (-2.07,.87) node[circle, fill, inner sep=1, color=red]{};
+\path (-2.02,1.07) node[circle, fill, inner sep=1, color=red]{};
+\path (-1.94,1.45) node[circle, fill, inner sep=1, color=red]{};
+\path (-1.87,1.64) node[circle, fill, inner sep=1, color=red]{};
+
+\path (-1.69,1.68) node[circle, fill, inner sep=1, color=blue]{};
+\path (-1.365,1.6) node[circle, fill, inner sep=1, color=blue]{};
+\path (-1.05,1.51) node[circle, fill, inner sep=1, color=blue]{};
+
+\path (-0.67,1.64) node[circle, fill, inner sep=1, color=green]{};
+
+
+
+\end{tikzpicture}
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

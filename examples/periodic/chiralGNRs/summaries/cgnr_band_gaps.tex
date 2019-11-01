@@ -1,8 +1,10 @@
 \documentclass[amsmath,%draft,
 amssymb,prb,superscriptaddress]{revtex4}
 \usepackage{graphicx}
+\usepackage{standalone}
 \usepackage{lpic}
 \usepackage{xcolor}
+\usepackage{tikz}
 
 \newcommand{\Eqref}[1]{Eq.~(\ref{#1})}
 \newcommand{\Figref}[1]{Fig.~\ref{#1}}
@@ -31,6 +33,10 @@ We study the band gap of ch-GNRs as a function of the chiral parameters $(n,m)$ 
 
 \maketitle
 
+\begin{figure*}
+	\scalebox{2.8}{\input{fig1.tex}}
+	\caption{Three repetitions of the unit cell of a (3,1,8)-chGNR.}
+\end{figure*}
 
 \begin{figure*}
 	\includegraphics[height=5.2cm]{../W6_band_gap_imshow}
