@@ -295,9 +295,9 @@ class HubbardHamiltonian(object):
 
             # Reduce to occupied stuff
             occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            ni_up = (es_up.norm2(False) * occ_up).sum(0)
+            ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            ni_dn = (es_dn.norm2(False) * occ_dn).sum(0)
+            ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
             Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
             # Return values
