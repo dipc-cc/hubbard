@@ -41,27 +41,27 @@ def plot_spectrum(fn, H, mol, ncfile):
     ev_up -= H.midgap
     ev_dn -= H.midgap
 
-    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+    p = plot.Wavefunction(H, evec_up[:, H.Nup-1], ext_geom=mol, realspace=True, vmax=0.002, vmin=-0.002)
     p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup-1]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup-1))
 
-    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+    p = plot.Wavefunction(H, evec_up[:, H.Nup], ext_geom=mol, realspace=True, vmax=0.002, vmin=-0.002)
     p.axes.set_title(r'$E_{\uparrow}=%.2f$ eV'%(ev_up[H.Nup]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_up.pdf'%(H.U*100, H.Nup))
 
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+    p = plot.Wavefunction(H, evec_dn[:, H.Ndn-1], ext_geom=mol, realspace=True, vmax=0.002, vmin=-0.002)
     p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn-1]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn-1))
     
-    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+    p = plot.Wavefunction(H, evec_dn[:, H.Ndn], ext_geom=mol, realspace=True, vmax=0.002, vmin=-0.002)
     p.axes.set_title(r'$E_{\downarrow}=%.2f$ eV'%(ev_dn[H.Ndn]), fontsize=30, y=-0.1)
     p.axes.axis('off')
     p.savefig(fn+'/U%i_state%i_dn.pdf'%(H.U*100,H.Ndn))
 
-    p = plot.Spectrum(H, ymin=0.01, fontsize=25)
+    p = plot.Spectrum(H, ymin=0.02, ymax=0.09, fontsize=25)
     p.axes.set_yticklabels(['%.2f'%i for i in p.axes.get_yticks()], fontsize=20)
     p.axes.set_xticklabels(p.axes.get_xticks(), fontsize=20)
     p.savefig(fn+'/U%i_spectrum.pdf'%(H.U*100))
