@@ -6,18 +6,22 @@ import numpy as np
 import sisl
 import funcs
 
-fnlist = ['2-blocks/molecule.XV', '3-blocks/molecule.xyz', '4-blocks/molecule.XV']
-for fni in fnlist:
+fnlist = ['./molecule.xyz', '2-blocks/molecule.xyz', '3-blocks/molecule.xyz', '4-blocks/molecule.xyz']
+for n, fni in enumerate(fnlist):
     fn = fni.split('/')[0]
-    nblocks = int(fn[0])
-
+    if n>0:
+        nblocks = int(fn[0])
+    else:
+        nblocks=1
     mol, H = funcs.read(fni)
-
+    H.geom.write('tmp.xyz')
     # Set initial polarization for triplet and singlet configurations
-    dn = list(np.arange(19,19+44*(nblocks-1)+1,44)) + list(np.arange(21,21+44*(nblocks-1)+1, 44))
+    dn = list(np.arange(19,19+42*(nblocks-1)+1,42)) + list(np.arange(21,21+42*(nblocks-1)+1, 42))
     dn.sort()
-    up = list(np.arange(43,43+44*(nblocks-1)+1,44)) + list(np.arange(41,41+44*(nblocks-1)+1, 44)) 
+    up = list(np.arange(42,42+42*(nblocks-1)+1,42)) + list(np.arange(40,40+42*(nblocks-1)+1, 42)) 
     up.sort()
+    up[-1] = up[-1]+1
+    up[-2] = up[-2]+1
 
     H.set_polarization(up, dn=dn)
     nup_AFM, ndn_AFM = H.nup*1, H.ndn*1
@@ -76,11 +80,12 @@ for fni in fnlist:
     f.close()
 
     # Plot FM-AFM energies
-    dat = np.loadtxt(fn+'/FM-AFM.dat')
-
+    FM_AFM = np.loadtxt(fn+'/FM-AFM.dat')
+    U_list = dat[np.where(dat[:,0]<4.3)[0], 0] # First column are U values
+    S1 = dat[np.where(dat[:,0]<4.3)[0], 1] # FM energies
+    S0 = dat[np.where(dat[:,0]<4.3)[0], 2] # AFM energies
     p = plot.Plot()
-    p.axes.plot(dat[:,0], dat[:,1]-dat[:,2], 'o', label=r'$Sz_{1}$-$Sz_{0}$')
+    p.axes.plot(U_list, S1-S0, 'o')
     p.set_xlabel(r'$U$ [eV]')
     p.set_ylabel(r'$E_\mathrm{FM}-E_\mathrm{AFM}$ [eV]')
-    p.axes.legend()
     p.savefig(fn+'/FM-AFM.pdf')
