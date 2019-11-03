@@ -3,7 +3,7 @@ import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
-import Hubbard.ncdf as ncdf
+
 import sisl
 
 # Build sisl Geometry object
@@ -21,13 +21,9 @@ for u in [0.0, 3.5]:
         lab = 'Fig_S12'
     else:
         lab = 'Fig_S13'
-        try:
-            c = ncdf.read('fig_S11-S13.nc') # Try reading, if we already have density on file
-            H.nup, H.ndn = c.nup, c.ndn
-        except:
-            H.random_density()
+        H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
         H.converge()
-        ncdf.write(H, 'fig_S11-S13.nc')
+        H.write_density('fig_S11-S13.nc')
 
     # Plot Eigenspectrum
     p = plot.Spectrum(H, ymax=0.12)
@@ -42,18 +38,20 @@ for u in [0.0, 3.5]:
         H.find_midgap()
         ev -= H.midgap
 
-        f = 3800
+        f = 1
 
         v = evec[:, N[i]-1]
         j = np.argmax(abs(v))
         wf = f*v**2*np.sign(v[j])*np.sign(v)
-        p = plot.Wavefunction(H, wf)
+        p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
         p.set_title(r'$E = %.3f$ eV'%(ev[N[i]-1]))
+        p.axes.axis('off')
         p.savefig(lab+'_HOMO-%s.pdf'%spin[i])
 
         v = evec[:, N[i]]
         j = np.argmax(abs(v))
         wf = f*v**2*np.sign(v[j])*np.sign(v)
-        p = plot.Wavefunction(H, wf)
+        p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
         p.set_title(r'$E = %.3f$ eV'%(ev[N[i]]))
+        p.axes.axis('off')
         p.savefig(lab+'_LUMO-%s.pdf'%spin[i])
