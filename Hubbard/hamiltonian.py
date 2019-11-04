@@ -228,8 +228,8 @@ class HubbardHamiltonian(object):
             es_up = es_up.sub(range(Nup))
             es_dn = es_dn.sub(range(Ndn))
 
-            ni_up = es_up.norm2(False).sum(0) * weight
-            ni_dn = es_dn.norm2(False).sum(0) * weight
+            ni_up = (es_up.norm2(False).real).sum(0) * weight
+            ni_dn = (es_dn.norm2(False).real).sum(0) * weight
 
             # Calculate total energy
             Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
