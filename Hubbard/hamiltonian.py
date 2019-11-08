@@ -389,6 +389,7 @@ class HubbardHamiltonian(object):
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
+        Etot = 0
         for ispin in [0, 1]:
             HC = self.H.Hk(spin=ispin).todense()
 
@@ -403,6 +404,9 @@ class HubbardHamiltonian(object):
                 # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                 G[:, :, ispin] += scila.inv(inv_GF) * wi
 
+                # Integrate density of states to obtain the total energy
+                Etot += np.trace(G[:, :, ispin]) * cc
+
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
         ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
         ni_dn = -(1/np.pi)*np.diag(G[:,:,1].imag)
@@ -416,6 +420,8 @@ class HubbardHamiltonian(object):
 
         # Update spin Hamiltonians 
         self.update_hamiltonian()
+
+        self.Etot = etot - self.U * (self.nup*self.ndn).sum()
 
         return dn
 
