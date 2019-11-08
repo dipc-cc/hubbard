@@ -8,13 +8,13 @@ import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 
 # Set U for the whole calculation
-U = 0.0
+U = 3.0
 
 # Build zigzag GNR
 ZGNR = geometry.zgnr(2)
 
-# and 1NN TB Hamiltonian
-H_elec = sp2(ZGNR, t1=2.7, t2=0, t3=0)
+# and 3NN TB Hamiltonian
+H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[101, 1, 1])
@@ -24,17 +24,14 @@ dn = MFH_elec.converge(method=2)
 
 # Central region is a repetition of the electrodes without PBC
 HC = MFH_elec.tile(3,axis=0)
-HC.H.sc.set_nsc([1,1,1])
-
-# MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U)
+HC.H.set_nsc([1,1,1])
 
 # Map electrodes in the device region
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
-# Pass the electrode Hamiltonians as input and do one iteration
-dn = MFH_HC.iterate3(MFH_elec, elec_indx)
+# MFH object
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=MFH_elec, elec_indx=elec_indx)
 
-# Check if the total number of electrons is correct
-print('Nup: ', MFH_HC.nup.sum())
-print('Ndn: ', MFH_HC.ndn.sum())
+# Converge using iterative method 3
+dn = MFH_HC.converge(method=3)
+print(MFH_HC.nup.sum(), MFH_HC.ndn.sum())
