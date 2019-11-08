@@ -23,14 +23,14 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[101, 1, 1])
 dn = MFH_elec.converge(method=2)
 
 # Central region is a repetition of the electrodes without PBC
-HC = MFH_elec.tile(3,axis=0)
-HC.H.set_nsc([1,1,1])
+HC = H_elec.tile(3,axis=0)
+HC.set_nsc([1,1,1])
 
 # Map electrodes in the device region
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=MFH_elec, elec_indx=elec_indx)
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=MFH_elec, elec_indx=elec_indx)
 
 # Converge using iterative method 3
 dn = MFH_HC.converge(method=3)
