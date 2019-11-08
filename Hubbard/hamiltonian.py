@@ -421,7 +421,7 @@ class HubbardHamiltonian(object):
         # Update spin Hamiltonians 
         self.update_hamiltonian()
 
-        self.Etot = etot - self.U * (self.nup*self.ndn).sum()
+        self.Etot = Etot - self.U * (self.nup*self.ndn).sum()
 
         return dn
 
