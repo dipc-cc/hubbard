@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1]):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], elecs=0, elec_indx=0):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -81,6 +81,15 @@ class HubbardHamiltonian(object):
             self.DM = DM
             self.nup = np.diag(self.DM.Dk(spin=0).todense())
             self.ndn = np.diag(self.DM.Dk(spin=1).todense())
+
+        if elecs:
+            kT = 0.025
+            # Shift electrodes with their Fermi energy once
+            dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+            Ef_elecs = elecs.H.fermi_level(elecs.mp, q=[elecs.Nup, elecs.Ndn], distribution=dist)
+            elecs.H.shift(-Ef_elecs)
+            self.elecs = elecs
+            self.elec_indx = elec_indx
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -331,7 +340,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, elecs, elec_indx, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -355,6 +364,9 @@ class HubbardHamiltonian(object):
         if q_dn is None:
             q_dn = self.Ndn
 
+        elecs = self.elecs
+        elec_indx = self.elec_indx
+
         # Create fermi-level distribution
         kT = 0.025
         dist = sisl.get_distribution('fermi_dirac', smearing=kT)
@@ -362,10 +374,6 @@ class HubbardHamiltonian(object):
         # Shift central region Hamiltonian with EF
         Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         self.H.shift(-Ef)
-
-        # Shift electrodes with their Fermi energy
-        Ef_elecs = elecs.H.fermi_level(elecs.mp, q=[elecs.Nup, elecs.Ndn], distribution=dist)
-        elecs.H.shift(-Ef_elecs)
 
         # Read complex contour (CC) and weights (w) from transiesta run
         contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
@@ -378,14 +386,13 @@ class HubbardHamiltonian(object):
         # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
         se_L = sisl.RecursiveSI(elecs.H, '-A')
         se_R = sisl.RecursiveSI(elecs.H, '+A')
-        dist = sisl.physics.get_distribution('fermi', smearing=kT, x0=0.)
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
         for ispin in [0, 1]:
             HC = self.H.Hk(spin=ispin).todense()
 
-            for cc, wi in np.array([CC, w]).T:
+            for cc, wi in zip(CC, w):
                 inv_GF[:, :] = 0.
                 np.fill_diagonal(inv_GF, cc)
                 inv_GF[:, :] -= HC[:, :]
@@ -417,6 +424,8 @@ class HubbardHamiltonian(object):
         print('Iterating towards self-consistency...')
         if method == 2:
             iterate_ = self.iterate2
+        if method == 3:
+            iterate_ = self.iterate3
         else:
             iterate_ = self.iterate
 
