@@ -402,10 +402,11 @@ class HubbardHamiltonian(object):
                 inv_GF[np.ix_(elec_indx[1], elec_indx[1])] -= se_R.self_energy(cc, spin=ispin)
 
                 # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                G[:, :, ispin] += scila.inv(inv_GF) * wi
+                Gf = scila.inv(inv_GF) * wi
+                G[:, :, ispin] += Gf
 
                 # Integrate density of states to obtain the total energy
-                Etot -= (np.trace(G[:, :, ispin]) * cc).imag
+                Etot -= (np.trace(Gf) * cc).imag
         Etot /= np.pi
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
