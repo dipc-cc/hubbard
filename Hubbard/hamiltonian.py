@@ -405,7 +405,8 @@ class HubbardHamiltonian(object):
                 G[:, :, ispin] += scila.inv(inv_GF) * wi
 
                 # Integrate density of states to obtain the total energy
-                Etot += np.trace(G[:, :, ispin]) * cc
+                Etot -= (np.trace(G[:, :, ispin]) * cc).imag
+        Etot /= np.pi
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
         ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
