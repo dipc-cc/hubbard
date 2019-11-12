@@ -15,6 +15,7 @@ import sisl
 import Hubbard.ncsile as nc
 import hashlib
 import os
+import math
 
 class HubbardHamiltonian(object):
     """ sisl-type object
@@ -370,7 +371,7 @@ class HubbardHamiltonian(object):
         # Read complex contour (CC) and weights (w) from transiesta run
         contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
         CC = contour_weight[0] + contour_weight[1]*1j
-        w =  contour_weight[2] + contour_weight[3]*1j
+        w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
         # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
         se_L = sisl.RecursiveSI(elecs.H, '-A')
@@ -380,18 +381,24 @@ class HubbardHamiltonian(object):
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
-        Etot = 0
         while abs(ntot - q_up - q_dn) > qtol:
+            Etot = 0.
 
             if ntot > 0.:
                 # correct fermi-level
                 dq = np.empty([2])
-                dq[0] = - ni[0].sum() / np.pi - q_up
-                dq[1] = - ni[1].sum() / np.pi - q_dn
+                dq[0] = ni[0].sum() - q_up
+                dq[1] = ni[1].sum() - q_dn
                 dE = np.empty([2])
 
                 # Fermi-level is at 0.
-                cc = 0. + 1.e-3 * 1j
+                # The Lorentzian has ~70% of its integral within
+                #   2 * \eta (on both sides)
+                # To cover 200 meV ~ 2400 K in the integration window
+                # and expect the Lorentzian peak to be positioned at
+                # the current Fermi-level we will use eta = 100 meV
+                eta = 0.1
+                cc = 0. + 1j * eta
                 # Calculate charge at the Fermi-level
                 for ispin in [0, 1]:
                     HC = self.H.Hk(spin=ispin).todense()
@@ -403,15 +410,31 @@ class HubbardHamiltonian(object):
                     inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
                     inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
 
-                    dE[ispin] = - dq[ispin] / (np.trace(scila.inv(inv_GF)).imag / np.pi) * 0.5
+                    # Now we need to calculate the new Fermi level based on the
+                    # difference in charge and by estimating the current Fermi level
+                    # as the peak position of a Lorentzian.
+                    # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
+                    #   F(x) - F(0) = arctan(x) / pi = dq
+                    # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
+                    # and consider this a pre-factor
+                    f = - np.trace(scila.inv(inv_GF)).imag / np.pi
+                    # Since x above is in units of eta, we have to multiply with eta
+                    if f > abs(dq[ispin]) * 2.1:
+                        # The factor 2 is an emperically good number
+                        # Probably I am missing a factor 2 somewhere above...
+                        dE[ispin] = eta * math.tan(dq[ispin] / f * np.pi) * 2
+                        #print('tan :', end=' ')
+                    else:
+                        #print('frac:', end=' ')
+                        # Note that the above will *only* work if f > dq[ispin] * 2.1
+                        # Since the support of tan (in this case) is -0.5:0.5
+                        dE[ispin] = dq[ispin] / f
+                        if abs(dE[ispin]) > eta * 2:
+                            dE[ispin] = np.sign(dE[ispin]) * eta
 
-                    if abs(dE[ispin]) > 0.05:
-                        # Maximally shift 0.05 eV
-                        dE[ispin] = np.sign(dE[ispin]) * 0.05
+                    #print((4*'{:12.5e} ').format(dE[ispin], f, dq[ispin], dq[ispin] / f))
 
-                dE *= 0.5
-                print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
-                # Truncate shift by 0.75 to not jump too much back and forth
+                #print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
                 self.H.shift(dE)
 
             for ispin in [0, 1]:
@@ -427,20 +450,19 @@ class HubbardHamiltonian(object):
                     inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
 
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                    Gf = scila.inv(inv_GF) * wi
-                    ni[ispin, :] += np.diag(Gf).imag
+                    # We correct for pi below
+                    Gf_wi = - np.diag(scila.inv(inv_GF)) * wi
+                    ni[ispin, :] += Gf_wi.imag
 
                     # Integrate density of states to obtain the total energy
-                    Etot -= (np.trace(Gf) * cc).imag
+                    Etot += (Gf_wi.sum() * cc).imag
 
             # Calculate new charge
-            ntot = - ni.sum() / np.pi
-
-        Etot /= np.pi
+            ntot = ni.sum()
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
-        ni_up = - ni[0, :] / np.pi
-        ni_dn = - ni[1, :] / np.pi
+        ni_up = ni[0, :]
+        ni_dn = ni[1, :]
 
         # Measure of density change
         dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
