@@ -389,28 +389,31 @@ class HubbardHamiltonian(object):
                 dq[0] = - ni[0].sum() / np.pi - q_up
                 dq[1] = - ni[1].sum() / np.pi - q_dn
                 dE = np.empty([2])
-                
+
+                # Fermi-level is at 0.
+                cc = 0. + 1.e-3 * 1j
                 # Calculate charge at the Fermi-level
                 for ispin in [0, 1]:
                     HC = self.H.Hk(spin=ispin).todense()
 
                     inv_GF[:, :] = 0.
-                    np.fill_diagonal(inv_GF, 0. + 1.e-4 * 1j)
+                    np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
                     inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
                     inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
-                    
-                    # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                    dE[ispin] = - dq[ispin] / (np.trace(scila.inv(inv_GF)).imag / np.pi)
-                    if abs(dE[ispin]) > 0.5:
-                        # Maximally shift 0.5 eV
-                        dE[ispin] = np.sign(dE[ispin]) * 0.5
-                
+
+                    dE[ispin] = - dq[ispin] / (np.trace(scila.inv(inv_GF)).imag / np.pi) * 0.5
+
+                    if abs(dE[ispin]) > 0.05:
+                        # Maximally shift 0.05 eV
+                        dE[ispin] = np.sign(dE[ispin]) * 0.05
+
+                dE *= 0.5
                 print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
-                # Truncate shift by 0.8 to not jump too much back and forth
-                self.H.shift(dE * 0.8)
-            
+                # Truncate shift by 0.75 to not jump too much back and forth
+                self.H.shift(dE)
+
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
 
@@ -422,11 +425,11 @@ class HubbardHamiltonian(object):
                     # Map self-energies into the device region and sum contributions from all terminals
                     inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
                     inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
-                    
+
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                     Gf = scila.inv(inv_GF) * wi
                     ni[ispin, :] += np.diag(Gf).imag
-                    
+
                     # Integrate density of states to obtain the total energy
                     Etot -= (np.trace(Gf) * cc).imag
 
