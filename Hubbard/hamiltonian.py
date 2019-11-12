@@ -385,7 +385,9 @@ class HubbardHamiltonian(object):
 
             if ntot > 0.:
                 # correct fermi-level
-                dq = ntot - q_up - q_dn
+                dq = np.empty([2])
+                dq[0] = - ni[0].sum() / np.pi - q_up
+                dq[1] = - ni[1].sum() / np.pi - q_dn
                 dE = np.empty([2])
                 
                 # Calculate charge at the Fermi-level
@@ -401,13 +403,12 @@ class HubbardHamiltonian(object):
                     
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                     Gf = scila.inv(inv_GF) * wi
-                    ni[ispin, :] = np.diag(Gf).imag
 
-                    dE[ispin] = dq / ni[ispin, :].sum()
+                    dE[ispin] = - dq[ispin] / np.trace(Gf).imag / np.pi
                     if abs(dE[ispin]) > 0.1:
-                        dE[ispin] = np.sign(dE[ispin]) * min(abs(dq), 0.1) * 0.1
-                print('Shifting (dq={:.4f}): Ef_up={:.5f} , Ef_dn{:.5f}'.format(dq, *dE))
-                self.H.shift(dE * 0.1)
+                        dE[ispin] = np.sign(dE[ispin]) * min(abs(dq[ispin]), 0.1) * 0.1
+                print('Shifting (dq={:.4f} , {:.4f}): Ef={:.5f} , {:.5f}'.format(*dq, *dE))
+                self.H.shift(-dE * 0.1)
             
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
