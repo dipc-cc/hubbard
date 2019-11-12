@@ -340,7 +340,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0, qtol=1e-4):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -365,23 +365,12 @@ class HubbardHamiltonian(object):
             q_dn = self.Ndn
 
         elecs = self.elecs
-        elec_indx = self.elec_indx
-
-        # Create fermi-level distribution
-        kT = 0.025
-        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-
-        # Shift central region Hamiltonian with EF
-        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        self.H.shift(-Ef)
+        elec_indx = [np.array(idx).reshape(-1, 1) for idx in self.elec_indx]
 
         # Read complex contour (CC) and weights (w) from transiesta run
         contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
         CC = contour_weight[0] + contour_weight[1]*1j
         w =  contour_weight[2] + contour_weight[3]*1j
-
-        # Loop over each point of the CC, and integrate the Green functions
-        G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128, order='F')
 
         # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
         se_L = sisl.RecursiveSI(elecs.H, '-A')
@@ -389,29 +378,64 @@ class HubbardHamiltonian(object):
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
+        ni = np.empty([2, no], dtype=np.float64)
+        ntot = -1.
         Etot = 0
-        for ispin in [0, 1]:
-            HC = self.H.Hk(spin=ispin).todense()
+        while abs(ntot - q_up - q_dn) > qtol:
 
-            for cc, wi in zip(CC, w):
-                inv_GF[:, :] = 0.
-                np.fill_diagonal(inv_GF, cc)
-                inv_GF[:, :] -= HC[:, :]
-                # Map self-energies into the device region and sum contributions from all terminals
-                inv_GF[np.ix_(elec_indx[0], elec_indx[0])] -= se_L.self_energy(cc, spin=ispin)
-                inv_GF[np.ix_(elec_indx[1], elec_indx[1])] -= se_R.self_energy(cc, spin=ispin)
+            if ntot > 0.:
+                # correct fermi-level
+                dq = ntot - q_up - q_dn
+                dE = np.empty([2])
+                
+                # Calculate charge at the Fermi-level
+                for ispin in [0, 1]:
+                    HC = self.H.Hk(spin=ispin).todense()
 
-                # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                Gf = scila.inv(inv_GF) * wi
-                G[:, :, ispin] += Gf
+                    inv_GF[:, :] = 0.
+                    np.fill_diagonal(inv_GF, 0. + 1.e-4 * 1j)
+                    inv_GF[:, :] -= HC[:, :]
+                    # Map self-energies into the device region and sum contributions from all terminals
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
+                    
+                    # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
+                    Gf = scila.inv(inv_GF) * wi
+                    ni[ispin, :] = np.diag(Gf).imag
 
-                # Integrate density of states to obtain the total energy
-                Etot -= (np.trace(Gf) * cc).imag
+                    dE[ispin] = dq / ni[ispin, :].sum()
+                    if abs(dE[ispin]) > 0.1:
+                        dE[ispin] = np.sign(dE[ispin]) * min(abs(dq), 0.1) * 0.1
+                print('Shifting (dq={:.4f}): Ef_up={:.5f} , Ef_dn{:.5f}'.format(dq, *dE))
+                self.H.shift(dE * 0.1)
+            
+            for ispin in [0, 1]:
+                HC = self.H.Hk(spin=ispin).todense()
+
+                ni[ispin, :] = 0.
+                for cc, wi in zip(CC, w):
+                    inv_GF[:, :] = 0.
+                    np.fill_diagonal(inv_GF, cc)
+                    inv_GF[:, :] -= HC[:, :]
+                    # Map self-energies into the device region and sum contributions from all terminals
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
+                    
+                    # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
+                    Gf = scila.inv(inv_GF) * wi
+                    ni[ispin, :] += np.diag(Gf).imag
+                    
+                    # Integrate density of states to obtain the total energy
+                    Etot -= (np.trace(Gf) * cc).imag
+
+            # Calculate new charge
+            ntot = - ni.sum() / np.pi
+
         Etot /= np.pi
 
         # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
-        ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
-        ni_dn = -(1/np.pi)*np.diag(G[:,:,1].imag)
+        ni_up = - ni[0, :] / np.pi
+        ni_dn = - ni[1, :] / np.pi
 
         # Measure of density change
         dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()

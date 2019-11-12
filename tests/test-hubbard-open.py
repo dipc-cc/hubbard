@@ -32,6 +32,15 @@ elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 # MFH object
 MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=MFH_elec, elec_indx=elec_indx)
 
+# Create fermi-level distribution
+kT = 0.025
+dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+# Shift central region Hamiltonian with EF
+Ef = MFH_HC.H.fermi_level(q=[MFH_HC.Nup, MFH_HC.Ndn], distribution=dist)
+MFH_HC.H.shift(-Ef)
+print(Ef)
+
+
 # Converge using iterative method 3
-dn = MFH_HC.converge(method=3)
+dn = MFH_HC.converge(method=3, steps=10)
 print(MFH_HC.nup.sum(), MFH_HC.ndn.sum())
