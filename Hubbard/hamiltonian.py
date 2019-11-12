@@ -340,7 +340,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0, qtol=1e-4):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0, qtol=1e-5):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -402,13 +402,14 @@ class HubbardHamiltonian(object):
                     inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
                     
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                    Gf = scila.inv(inv_GF) * wi
-
-                    dE[ispin] = - dq[ispin] / np.trace(Gf).imag / np.pi
-                    if abs(dE[ispin]) > 0.1:
-                        dE[ispin] = np.sign(dE[ispin]) * min(abs(dq[ispin]), 0.1) * 0.1
-                print('Shifting (dq={:.4f} , {:.4f}): Ef={:.5f} , {:.5f}'.format(*dq, *dE))
-                self.H.shift(-dE * 0.1)
+                    dE[ispin] = - dq[ispin] / (np.trace(scila.inv(inv_GF)).imag / np.pi)
+                    if abs(dE[ispin]) > 0.5:
+                        # Maximally shift 0.5 eV
+                        dE[ispin] = np.sign(dE[ispin]) * 0.5
+                
+                print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
+                # Truncate shift by 0.8 to not jump too much back and forth
+                self.H.shift(dE * 0.8)
             
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
