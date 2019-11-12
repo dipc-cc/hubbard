@@ -66,9 +66,7 @@ class HubbardHamiltonian(object):
             self.Nup = int(ntot-self.Ndn)
 
         self.sites = len(self.geom)
-        e00 = TBHam.Hk(spin=0).diagonal()
-        e01 = TBHam.Hk(spin=1).diagonal()
-        self.e0 = np.array([e00, e01]).T
+        self._update_e0()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, nkpt)
         # Intial midgap
@@ -112,14 +110,20 @@ class HubbardHamiltonian(object):
         Ndn = (DMrep.Dk(spin=1).todense()).sum() 
         return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(Nup), Ndn=int(Ndn))
 
-    def update_hamiltonian(self):
+    def _update_e0(self):
+        """Internal routine to update e0 """
+        e0 = self.H.Hk(spin=0).diagonal()
+        e1 = self.H.Hk(spin=1).diagonal()
+        self.e0 = np.array([e0, e1])
+
+    def update_hamiltonian(self, Ef=(0, 0)):
         # Update spin Hamiltonian
         q0 = self.geom.atoms.q0
         E = self.e0.copy()
-        E[:, 0] += self.U * (self.ndn - q0)
-        E[:, 1] += self.U * (self.nup - q0)
+        E[0, :] += self.U * (self.ndn - q0) + Ef[0]
+        E[1, :] += self.U * (self.nup - q0) + Ef[1]
         a = np.arange(len(self.H))
-        self.H[a, a, [0, 1]] = E
+        self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
         for ia in self.geom:
@@ -223,7 +227,7 @@ class HubbardHamiltonian(object):
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
         ni_dn = np.zeros(ndn.shape)
-        Etot = 0
+        Etot = 0.
 
         # Solve eigenvalue problems
         def calc_occ(k, weight, HOMO, LUMO):
@@ -295,10 +299,10 @@ class HubbardHamiltonian(object):
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
         ni_dn = np.zeros(ndn.shape)
-        Etot = 0
+        Etot = 0.
 
         # Solve eigenvalue problems
-        def calc_occ(k, weight):
+        def calc_occ(Ef, k, weight):
             """ My wrap function for calculating occupations """
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
@@ -308,14 +312,15 @@ class HubbardHamiltonian(object):
             ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
             ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
+            Etot = ((es_up.eig - Ef[0]) * occ_up.ravel()).sum() + \
+                ((es_dn.eig - Ef[1]) * occ_dn.ravel()).sum()
 
             # Return values
             return ni_up, ni_dn, Etot
 
         # Loop k-points and weights
         for w, k in zip(self.mp.weight, self.mp.k):
-            up, dn, etot = calc_occ(k, w)
+            up, dn, etot = calc_occ(Ef, k, w)
             ni_up += up
             ni_dn += dn
             Etot += etot
@@ -355,7 +360,7 @@ class HubbardHamiltonian(object):
             list of the atomic indices of the electrodes in the device region
 
         """
-        from scipy import linalg as scila
+        from scipy.linalg import inv
 
         nup = self.nup
         ndn = self.ndn
@@ -381,8 +386,8 @@ class HubbardHamiltonian(object):
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
+        Ef = np.zeros([2], dtype=np.float64)
         while abs(ntot - q_up - q_dn) > qtol:
-            Etot = 0.
 
             if ntot > 0.:
                 # correct fermi-level
@@ -417,12 +422,12 @@ class HubbardHamiltonian(object):
                     #   F(x) - F(0) = arctan(x) / pi = dq
                     # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                     # and consider this a pre-factor
-                    f = - np.trace(scila.inv(inv_GF)).imag / np.pi
+                    f = - np.trace(inv(inv_GF)).imag / np.pi
                     # Since x above is in units of eta, we have to multiply with eta
                     if f > abs(dq[ispin]) * 2.1:
                         # The factor 2 is an emperically good number
                         # Probably I am missing a factor 2 somewhere above...
-                        dE[ispin] = eta * math.tan(dq[ispin] / f * np.pi) * 2
+                        dE[ispin] = eta * math.tan(dq[ispin] / f * np.pi)
                         #print('tan :', end=' ')
                     else:
                         #print('frac:', end=' ')
@@ -436,7 +441,9 @@ class HubbardHamiltonian(object):
 
                 #print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
                 self.H.shift(dE)
+                Ef += dE
 
+            Etot = 0.
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
 
@@ -451,7 +458,7 @@ class HubbardHamiltonian(object):
 
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                     # We correct for pi below
-                    Gf_wi = - np.diag(scila.inv(inv_GF)) * wi
+                    Gf_wi = - np.diag(inv(inv_GF)) * wi
                     ni[ispin, :] += Gf_wi.imag
 
                     # Integrate density of states to obtain the total energy
@@ -460,19 +467,15 @@ class HubbardHamiltonian(object):
             # Calculate new charge
             ntot = ni.sum()
 
-        # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
-        ni_up = ni[0, :]
-        ni_dn = ni[1, :]
-
         # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+        dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
 
         # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
+        self.nup = mix * ni[0] + (1. - mix) * nup
+        self.ndn = mix * ni[1] + (1. - mix) * ndn
 
-        # Update spin Hamiltonians 
-        self.update_hamiltonian()
+        # Update spin Hamiltonians and shift the Ef
+        self.update_hamiltonian(Ef * 0.5)
 
         self.Etot = Etot - self.U * (self.nup*self.ndn).sum()
 
@@ -483,7 +486,7 @@ class HubbardHamiltonian(object):
         print('Iterating towards self-consistency...')
         if method == 2:
             iterate_ = self.iterate2
-        if method == 3:
+        elif method == 3:
             iterate_ = self.iterate3
         else:
             iterate_ = self.iterate
