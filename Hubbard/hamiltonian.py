@@ -15,6 +15,7 @@ import sisl
 import Hubbard.ncsile as nc
 import hashlib
 import os
+import math
 
 class HubbardHamiltonian(object):
     """ sisl-type object
@@ -65,9 +66,7 @@ class HubbardHamiltonian(object):
             self.Nup = int(ntot-self.Ndn)
 
         self.sites = len(self.geom)
-        e00 = TBHam.Hk(spin=0).diagonal()
-        e01 = TBHam.Hk(spin=1).diagonal()
-        self.e0 = np.array([e00, e01]).T
+        self._update_e0()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, nkpt)
         # Intial midgap
@@ -111,14 +110,20 @@ class HubbardHamiltonian(object):
         Ndn = (DMrep.Dk(spin=1).todense()).sum() 
         return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(Nup), Ndn=int(Ndn))
 
-    def update_hamiltonian(self):
+    def _update_e0(self):
+        """Internal routine to update e0 """
+        e0 = self.H.Hk(spin=0).diagonal()
+        e1 = self.H.Hk(spin=1).diagonal()
+        self.e0 = np.array([e0, e1])
+
+    def update_hamiltonian(self, Ef=(0, 0)):
         # Update spin Hamiltonian
         q0 = self.geom.atoms.q0
         E = self.e0.copy()
-        E[:, 0] += self.U * (self.ndn - q0)
-        E[:, 1] += self.U * (self.nup - q0)
+        E[0, :] += self.U * (self.ndn - q0) + Ef[0]
+        E[1, :] += self.U * (self.nup - q0) + Ef[1]
         a = np.arange(len(self.H))
-        self.H[a, a, [0, 1]] = E
+        self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
         for ia in self.geom:
@@ -222,7 +227,7 @@ class HubbardHamiltonian(object):
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
         ni_dn = np.zeros(ndn.shape)
-        Etot = 0
+        Etot = 0.
 
         # Solve eigenvalue problems
         def calc_occ(k, weight, HOMO, LUMO):
@@ -294,10 +299,10 @@ class HubbardHamiltonian(object):
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
         ni_dn = np.zeros(ndn.shape)
-        Etot = 0
+        Etot = 0.
 
         # Solve eigenvalue problems
-        def calc_occ(k, weight):
+        def calc_occ(Ef, k, weight):
             """ My wrap function for calculating occupations """
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
@@ -307,14 +312,15 @@ class HubbardHamiltonian(object):
             ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
             ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
+            Etot = ((es_up.eig - Ef[0]) * occ_up.ravel()).sum() + \
+                ((es_dn.eig - Ef[1]) * occ_dn.ravel()).sum()
 
             # Return values
             return ni_up, ni_dn, Etot
 
         # Loop k-points and weights
         for w, k in zip(self.mp.weight, self.mp.k):
-            up, dn, etot = calc_occ(k, w)
+            up, dn, etot = calc_occ(Ef, k, w)
             ni_up += up
             ni_dn += dn
             Etot += etot
@@ -340,7 +346,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0, qtol=1e-5):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -354,7 +360,7 @@ class HubbardHamiltonian(object):
             list of the atomic indices of the electrodes in the device region
 
         """
-        from scipy import linalg as scila
+        from scipy.linalg import inv
 
         nup = self.nup
         ndn = self.ndn
@@ -365,23 +371,12 @@ class HubbardHamiltonian(object):
             q_dn = self.Ndn
 
         elecs = self.elecs
-        elec_indx = self.elec_indx
-
-        # Create fermi-level distribution
-        kT = 0.025
-        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-
-        # Shift central region Hamiltonian with EF
-        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        self.H.shift(-Ef)
+        elec_indx = [np.array(idx).reshape(-1, 1) for idx in self.elec_indx]
 
         # Read complex contour (CC) and weights (w) from transiesta run
         contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
         CC = contour_weight[0] + contour_weight[1]*1j
-        w =  contour_weight[2] + contour_weight[3]*1j
-
-        # Loop over each point of the CC, and integrate the Green functions
-        G = np.zeros((len(self.H), len(self.H), 2), dtype=np.complex128, order='F')
+        w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
         # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
         se_L = sisl.RecursiveSI(elecs.H, '-A')
@@ -389,39 +384,98 @@ class HubbardHamiltonian(object):
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
-        Etot = 0
-        for ispin in [0, 1]:
-            HC = self.H.Hk(spin=ispin).todense()
+        ni = np.empty([2, no], dtype=np.float64)
+        ntot = -1.
+        Ef = np.zeros([2], dtype=np.float64)
+        while abs(ntot - q_up - q_dn) > qtol:
 
-            for cc, wi in zip(CC, w):
-                inv_GF[:, :] = 0.
-                np.fill_diagonal(inv_GF, cc)
-                inv_GF[:, :] -= HC[:, :]
-                # Map self-energies into the device region and sum contributions from all terminals
-                inv_GF[np.ix_(elec_indx[0], elec_indx[0])] -= se_L.self_energy(cc, spin=ispin)
-                inv_GF[np.ix_(elec_indx[1], elec_indx[1])] -= se_R.self_energy(cc, spin=ispin)
+            if ntot > 0.:
+                # correct fermi-level
+                dq = np.empty([2])
+                dq[0] = ni[0].sum() - q_up
+                dq[1] = ni[1].sum() - q_dn
+                dE = np.empty([2])
 
-                # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                Gf = scila.inv(inv_GF) * wi
-                G[:, :, ispin] += Gf
+                # Fermi-level is at 0.
+                # The Lorentzian has ~70% of its integral within
+                #   2 * \eta (on both sides)
+                # To cover 200 meV ~ 2400 K in the integration window
+                # and expect the Lorentzian peak to be positioned at
+                # the current Fermi-level we will use eta = 100 meV
+                eta = 0.1
+                cc = 0. + 1j * eta
+                # Calculate charge at the Fermi-level
+                for ispin in [0, 1]:
+                    HC = self.H.Hk(spin=ispin).todense()
 
-                # Integrate density of states to obtain the total energy
-                Etot -= (np.trace(Gf) * cc).imag
-        Etot /= np.pi
+                    inv_GF[:, :] = 0.
+                    np.fill_diagonal(inv_GF, cc)
+                    inv_GF[:, :] -= HC[:, :]
+                    # Map self-energies into the device region and sum contributions from all terminals
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
 
-        # Use Imaginary part of the diagonal of the Green's function to obtain the occupations
-        ni_up = -(1/np.pi)*np.diag(G[:,:,0].imag)
-        ni_dn = -(1/np.pi)*np.diag(G[:,:,1].imag)
+                    # Now we need to calculate the new Fermi level based on the
+                    # difference in charge and by estimating the current Fermi level
+                    # as the peak position of a Lorentzian.
+                    # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
+                    #   F(x) - F(0) = arctan(x) / pi = dq
+                    # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
+                    # and consider this a pre-factor
+                    f = - np.trace(inv(inv_GF)).imag / np.pi
+                    # Since x above is in units of eta, we have to multiply with eta
+                    if f > abs(dq[ispin]) * 2.1:
+                        # The factor 2 is an emperically good number
+                        # Probably I am missing a factor 2 somewhere above...
+                        dE[ispin] = eta * math.tan(dq[ispin] / f * np.pi)
+                        #print('tan :', end=' ')
+                    else:
+                        #print('frac:', end=' ')
+                        # Note that the above will *only* work if f > dq[ispin] * 2.1
+                        # Since the support of tan (in this case) is -0.5:0.5
+                        dE[ispin] = dq[ispin] / f
+                        if abs(dE[ispin]) > eta * 2:
+                            dE[ispin] = np.sign(dE[ispin]) * eta
+
+                    #print((4*'{:12.5e} ').format(dE[ispin], f, dq[ispin], dq[ispin] / f))
+
+                #print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
+                self.H.shift(dE)
+                Ef += dE
+
+            Etot = 0.
+            for ispin in [0, 1]:
+                HC = self.H.Hk(spin=ispin).todense()
+
+                ni[ispin, :] = 0.
+                for cc, wi in zip(CC, w):
+                    inv_GF[:, :] = 0.
+                    np.fill_diagonal(inv_GF, cc)
+                    inv_GF[:, :] -= HC[:, :]
+                    # Map self-energies into the device region and sum contributions from all terminals
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
+
+                    # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
+                    # We correct for pi below
+                    Gf_wi = - np.diag(inv(inv_GF)) * wi
+                    ni[ispin, :] += Gf_wi.imag
+
+                    # Integrate density of states to obtain the total energy
+                    Etot += (Gf_wi.sum() * cc).imag
+
+            # Calculate new charge
+            ntot = ni.sum()
 
         # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+        dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
 
         # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
+        self.nup = mix * ni[0] + (1. - mix) * nup
+        self.ndn = mix * ni[1] + (1. - mix) * ndn
 
-        # Update spin Hamiltonians 
-        self.update_hamiltonian()
+        # Update spin Hamiltonians and shift the Ef
+        self.update_hamiltonian(Ef * 0.5)
 
         self.Etot = Etot - self.U * (self.nup*self.ndn).sum()
 
@@ -432,7 +486,7 @@ class HubbardHamiltonian(object):
         print('Iterating towards self-consistency...')
         if method == 2:
             iterate_ = self.iterate2
-        if method == 3:
+        elif method == 3:
             iterate_ = self.iterate3
         else:
             iterate_ = self.iterate
