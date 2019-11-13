@@ -302,7 +302,7 @@ class HubbardHamiltonian(object):
         Etot = 0.
 
         # Solve eigenvalue problems
-        def calc_occ(Ef, k, weight):
+        def calc_occ(k, weight):
             """ My wrap function for calculating occupations """
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
@@ -312,15 +312,15 @@ class HubbardHamiltonian(object):
             ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
             ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = ((es_up.eig - Ef[0]) * occ_up.ravel()).sum() + \
-                ((es_dn.eig - Ef[1]) * occ_dn.ravel()).sum()
+            Etot = ((es_up.eig) * occ_up.ravel()).sum() + \
+                ((es_dn.eig) * occ_dn.ravel()).sum()
 
             # Return values
             return ni_up, ni_dn, Etot
 
         # Loop k-points and weights
         for w, k in zip(self.mp.weight, self.mp.k):
-            up, dn, etot = calc_occ(Ef, k, w)
+            up, dn, etot = calc_occ(k, w)
             ni_up += up
             ni_dn += dn
             Etot += etot
