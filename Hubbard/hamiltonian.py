@@ -17,6 +17,8 @@ import hashlib
 import os
 import math
 
+_pi = math.pi
+
 class HubbardHamiltonian(object):
     """ sisl-type object
 
@@ -116,12 +118,12 @@ class HubbardHamiltonian(object):
         e1 = self.H.Hk(spin=1).diagonal()
         self.e0 = np.array([e0, e1])
 
-    def update_hamiltonian(self, Ef=(0, 0)):
+    def update_hamiltonian(self):
         # Update spin Hamiltonian
         q0 = self.geom.atoms.q0
         E = self.e0.copy()
-        E[0, :] += self.U * (self.ndn - q0) + Ef[0]
-        E[1, :] += self.U * (self.nup - q0) + Ef[1]
+        E[0, :] += self.U * (self.ndn - q0)
+        E[1, :] += self.U * (self.nup - q0)
         a = np.arange(len(self.H))
         self.H[a, a, [0, 1]] = E.T
 
@@ -312,8 +314,7 @@ class HubbardHamiltonian(object):
             ni_up = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
             ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = ((es_up.eig) * occ_up.ravel()).sum() + \
-                ((es_dn.eig) * occ_dn.ravel()).sum()
+            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
             # Return values
             return ni_up, ni_dn, Etot
@@ -394,7 +395,6 @@ class HubbardHamiltonian(object):
                 dq = np.empty([2])
                 dq[0] = ni[0].sum() - q_up
                 dq[1] = ni[1].sum() - q_dn
-                dE = np.empty([2])
 
                 # Fermi-level is at 0.
                 # The Lorentzian has ~70% of its integral within
@@ -403,17 +403,17 @@ class HubbardHamiltonian(object):
                 # and expect the Lorentzian peak to be positioned at
                 # the current Fermi-level we will use eta = 100 meV
                 eta = 0.1
-                cc = 0. + 1j * eta
                 # Calculate charge at the Fermi-level
                 for ispin in [0, 1]:
                     HC = self.H.Hk(spin=ispin).todense()
+                    cc = - Ef[ispin] + 1j * eta
 
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
-                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
-                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(1j * eta, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(1j * eta, spin=ispin)
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -422,39 +422,32 @@ class HubbardHamiltonian(object):
                     #   F(x) - F(0) = arctan(x) / pi = dq
                     # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                     # and consider this a pre-factor
-                    f = - np.trace(inv(inv_GF)).imag / np.pi
+                    f = dq[ispin] / (- np.trace(inv(inv_GF)).imag / _pi)
                     # Since x above is in units of eta, we have to multiply with eta
-                    if f > abs(dq[ispin]) * 2.1:
-                        # The factor 2 is an emperically good number
-                        # Probably I am missing a factor 2 somewhere above...
-                        dE[ispin] = eta * math.tan(dq[ispin] / f * np.pi)
+                    if abs(f) < 0.45:
+                        Ef[ispin] += 2 * eta * math.tan(f * _pi)
                         #print('tan :', end=' ')
                     else:
-                        #print('frac:', end=' ')
-                        # Note that the above will *only* work if f > dq[ispin] * 2.1
-                        # Since the support of tan (in this case) is -0.5:0.5
-                        dE[ispin] = dq[ispin] / f
-                        if abs(dE[ispin]) > eta * 2:
-                            dE[ispin] = np.sign(dE[ispin]) * eta
+                        #print('tan2:', end=' ')
+                        Ef[ispin] += 2 * eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
 
-                    #print((4*'{:12.5e} ').format(dE[ispin], f, dq[ispin], dq[ispin] / f))
+                    #print((4*'{:12.5e} ').format(Ef[ispin], dq[ispin] / f, dq[ispin], f))
 
-                #print('Shifting (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *dE))
-                self.H.shift(dE)
-                Ef += dE
+                #print('Ef update (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *Ef))
 
             Etot = 0.
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
 
                 ni[ispin, :] = 0.
-                for cc, wi in zip(CC, w):
+                for cc, wi in zip(CC - Ef[ispin], w):
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
-                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc, spin=ispin)
-                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc, spin=ispin)
+                    cc_se = cc + Ef[ispin]
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc_se, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc_se, spin=ispin)
 
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                     # We correct for pi below
@@ -474,8 +467,8 @@ class HubbardHamiltonian(object):
         self.nup = mix * ni[0] + (1. - mix) * nup
         self.ndn = mix * ni[1] + (1. - mix) * ndn
 
-        # Update spin Hamiltonians and shift the Ef
-        self.update_hamiltonian(Ef * 0.5)
+        # Update spin Hamiltonians
+        self.update_hamiltonian()
 
         self.Etot = Etot - self.U * (self.nup*self.ndn).sum()
 
