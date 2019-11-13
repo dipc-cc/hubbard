@@ -21,6 +21,7 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1])
 
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(method=2)
+print(MFH_elec.Etot)
 
 # Central region is a repetition of the electrodes without PBC
 HC = H_elec.tile(3,axis=0)
@@ -34,10 +35,17 @@ MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=M
 
 # Converge using iterative method 3
 dn = MFH_HC.converge(method=3, steps=1)
-print(MFH_HC.nup.sum(), MFH_HC.ndn.sum())
+assert abs(MFH_HC.nup.sum() - MFH_HC.Nup) < 1e-5
+assert abs(MFH_HC.ndn.sum() - MFH_HC.Ndn) < 1e-5
+print('MFH-NEGF Etot = {:10.5f}'.format(MFH_HC.Etot))
 
 # Reference test for total energy
-HC = H_elec.tile(3,axis=0)
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1])
-dn = MFH_HC.converge(method=2, steps=1)
-print(MFH_HC.nup.sum(), MFH_HC.ndn.sum())
+HC_periodic = H_elec.tile(3,axis=0)
+MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1])
+dn = MFH_HC_periodic.converge(method=2)
+
+assert abs(MFH_HC_periodic.nup.sum() - MFH_HC_periodic.Nup) < 1e-7
+assert abs(MFH_HC_periodic.ndn.sum() - MFH_HC_periodic.Ndn) < 1e-7
+print('MFH-PER Etot = {:10.5f}'.format(MFH_HC_periodic.Etot))
+print('Diff:')
+print(MFH_HC_periodic.Etot - MFH_HC.Etot)
