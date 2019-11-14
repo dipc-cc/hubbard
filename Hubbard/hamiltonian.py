@@ -91,6 +91,10 @@ class HubbardHamiltonian(object):
             elecs.H.shift(-Ef_elecs)
             self.elecs = elecs
             self.elec_indx = elec_indx
+            # Read complex contour (CC) and weights (w) from transiesta run
+            contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
+            self.CC = contour_weight[0] + contour_weight[1]*1j
+            self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -371,13 +375,9 @@ class HubbardHamiltonian(object):
         if q_dn is None:
             q_dn = self.Ndn
 
+        CC, w = self.CC, self.w
         elecs = self.elecs
         elec_indx = [np.array(idx).reshape(-1, 1) for idx in self.elec_indx]
-
-        # Read complex contour (CC) and weights (w) from transiesta run
-        contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
-        CC = contour_weight[0] + contour_weight[1]*1j
-        w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
         # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
         se_L = sisl.RecursiveSI(elecs.H, '-A')
