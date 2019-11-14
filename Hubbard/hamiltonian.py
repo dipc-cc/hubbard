@@ -95,6 +95,9 @@ class HubbardHamiltonian(object):
             contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
             self.CC = contour_weight[0] + contour_weight[1]*1j
             self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
+            # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
+            self.se_L = sisl.RecursiveSI(elecs.H, '-A')
+            self.se_R = sisl.RecursiveSI(elecs.H, '+A')
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -376,12 +379,7 @@ class HubbardHamiltonian(object):
             q_dn = self.Ndn
 
         CC, w = self.CC, self.w
-        elecs = self.elecs
         elec_indx = [np.array(idx).reshape(-1, 1) for idx in self.elec_indx]
-
-        # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
-        se_L = sisl.RecursiveSI(elecs.H, '-A')
-        se_R = sisl.RecursiveSI(elecs.H, '+A')
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
@@ -412,8 +410,8 @@ class HubbardHamiltonian(object):
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
-                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(1j * eta, spin=ispin)
-                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(1j * eta, spin=ispin)
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= self.se_L.self_energy(1j * eta, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= self.se_R.self_energy(1j * eta, spin=ispin)
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -446,8 +444,8 @@ class HubbardHamiltonian(object):
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
                     cc_se = cc + Ef[ispin]
-                    inv_GF[elec_indx[0], elec_indx[0].T] -= se_L.self_energy(cc_se, spin=ispin)
-                    inv_GF[elec_indx[1], elec_indx[1].T] -= se_R.self_energy(cc_se, spin=ispin)
+                    inv_GF[elec_indx[0], elec_indx[0].T] -= self.se_L.self_energy(cc_se, spin=ispin)
+                    inv_GF[elec_indx[1], elec_indx[1].T] -= self.se_R.self_energy(cc_se, spin=ispin)
 
                     # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
                     # We correct for pi below
