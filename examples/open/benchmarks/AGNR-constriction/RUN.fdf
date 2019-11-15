@@ -1,0 +1,29 @@
+SystemLabel device
+
+TBT.HS MFH_HC.nc
+
+%block TBT.Contours
+  window
+%endblock
+
+%block TBT.Contour.window
+ part line
+   from -5.0 eV to 5.0 eV
+    delta 0.007 eV
+     method mid-rule
+%endblock
+
+%include ELEC.fdf
+
+TBT.Voltage    0.00000 eV
+
+%block TBT.ChemPots
+  POT
+%endblock TS.ChemPots
+ 
+%block TBT.ChemPot.POT
+  mu V/2
+%endblock TS.ChemPot.POT
+
+##TBT.Elecs.Eta 1e-3 eV
+TBT.T.EIG 10
