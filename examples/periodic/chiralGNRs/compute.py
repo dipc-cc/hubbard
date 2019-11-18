@@ -9,10 +9,16 @@ import os
 ch = __import__('chiral-geom')
 op = __import__('open_boundary')
 
+# Choose model (1NN, 3NN):
+model = '1NN'
+if model == '3NN':
+    t2, t3 = 0.2, 0.18
+else:
+    t2 = t3 = 0
+
 # Compute and plot the bandgap as a function of (n,m) for a paritcular ribbon width
-if False:
-    W=8
-    ch.plot_band_gap_imshow(w=W, figsize=(10,6))
+if True:
+    ch.plot_band_gap_imshow(w=8, figsize=(10,6), model=model)
 
 n = 3
 m = [1,2]
@@ -26,23 +32,23 @@ for m_i in m:
         print('Doing', directory)
         if not os.path.isdir(directory):
             os.mkdir(directory)
-        # 1NN model
-        H0 = sp2(geom, t1=2.7, t2=0, t3=0)
+        # TB model
+        H0 = sp2(geom, t1=2.7, t2=t2, t3=t3)
 
-        ch.analyze(H0, directory)
+        ch.analyze(H0, directory, model=model)
         # Make finite ribbon of 15 reps
         Hfinite = H0.tile(15, axis=0)
         Hfinite.set_nsc([1,1,1])
-        ch.analyze_edge(Hfinite, directory)
-        ch.plot_states(H0, directory)
-        ch.gap_exp(H0, directory)
+        ch.analyze_edge(Hfinite, directory, model=model)
+        ch.plot_states(H0, directory, model=model)
+        ch.gap_exp(H0, directory, model=model)
 
         # Plot surface and bulk density of states
         if m_i == 1 and w_i == 8:
             xlim=0.1
         else:
             xlim=0.5
-        op.open_boundary(H0, directory, xlim=xlim)
+        op.open_boundary(H0, directory, xlim=xlim, model=model)
 
 if False:
     # Plot bulk and surface DOS of 1D chain to test the funcion
