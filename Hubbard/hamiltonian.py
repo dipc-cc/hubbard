@@ -424,15 +424,8 @@ class HubbardHamiltonian(object):
                     # Since x above is in units of eta, we have to multiply with eta
                     if abs(f) < 0.45:
                         Ef[ispin] += 2 * eta * math.tan(f * _pi)
-                        #print('tan :', end=' ')
                     else:
-                        #print('tan2:', end=' ')
                         Ef[ispin] += 2 * eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
-
-                    #print((4*'{:12.5e} ').format(Ef[ispin], dq[ispin] / f, dq[ispin], f))
-
-                #print('Ef update (dq={:.3e} , {:.3e}): Ef={:9.6f} , {:9.6f}'.format(*dq, *Ef))
-
             Etot = 0.
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
@@ -447,8 +440,7 @@ class HubbardHamiltonian(object):
                     inv_GF[elec_indx[0], elec_indx[0].T] -= self.se_L.self_energy(cc_se, spin=ispin)
                     inv_GF[elec_indx[1], elec_indx[1].T] -= self.se_R.self_energy(cc_se, spin=ispin)
 
-                    # Greens function evaluated at each point of the CC multiplied by the weight and Fermi distribution
-                    # We correct for pi below
+                    # Greens function evaluated at each point of the CC multiplied by the weight
                     Gf_wi = - np.diag(inv(inv_GF)) * wi
                     ni[ispin, :] += Gf_wi.imag
 
