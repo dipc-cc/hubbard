@@ -31,7 +31,7 @@ HC.set_nsc([1,1,1])
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=MFH_elec, elec_indx=elec_indx)
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'])
 
 # Converge using iterative method 3
 dn = MFH_HC.converge(method=3, steps=1)
