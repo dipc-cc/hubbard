@@ -84,21 +84,27 @@ class HubbardHamiltonian(object):
             self.ndn = np.diag(self.DM.Dk(spin=1).todense())
 
         if elecs:
-            kT = 0.025
-            # Shift electrodes with their Fermi energy once
-            dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-            self.se = []
-            for i, elec in enumerate(elecs):
-                Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
-                elec.H.shift(-Ef_elec)
-                self.se.append(sisl.RecursiveSI(elec.H, elec_dir[i]))
-            self.elecs = elecs
-            self.elec_indx = elec_indx
             # Read complex contour (CC) and weights (w) from transiesta run
             contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
             self.CC = contour_weight[0] + contour_weight[1]*1j
             self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
-            # self-energies (this has to be generalized to N terminals, so far it can deal with 2)
+
+            self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
+
+            kT = 0.025
+            # Shift electrodes with their Fermi energy once
+            dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+            self.se = []
+            self.cc_self_energy = np.empty((len(elecs), 2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
+            for i, elec in enumerate(elecs):
+                Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
+                elec.H.shift(-Ef_elec)
+                self.se.append(sisl.RecursiveSI(elec.H, elec_dir[i]))
+                for ic, cc in enumerate(self.CC):
+                    for ispin in [0,1]:
+                        self.cc_self_energy[i, ispin, ic, self.elec_indx[i], self.elec_indx[i].T] = \
+                            self.se[i].self_energy(cc, spin=ispin)
+            self.elecs = elecs
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -380,7 +386,6 @@ class HubbardHamiltonian(object):
             q_dn = self.Ndn
 
         CC, w = self.CC, self.w
-        elec_indx = [np.array(idx).reshape(-1, 1) for idx in self.elec_indx]
 
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
@@ -412,7 +417,7 @@ class HubbardHamiltonian(object):
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
                     for i, se in enumerate(self.se):
-                        inv_GF[elec_indx[i], elec_indx[i].T] -= se.self_energy(1j * eta, spin=ispin)
+                        inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= se.self_energy(1j * eta, spin=ispin)
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -432,14 +437,13 @@ class HubbardHamiltonian(object):
                 HC = self.H.Hk(spin=ispin).todense()
 
                 ni[ispin, :] = 0.
-                for cc, wi in zip(CC - Ef[ispin], w):
+                for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], w)):
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
                     # Map self-energies into the device region and sum contributions from all terminals
-                    cc_se = cc + Ef[ispin]
                     for i_elec in range(len(self.elecs)):
-                        inv_GF[elec_indx[i_elec], elec_indx[i_elec].T] -= self.se[i_elec].self_energy(cc_se, spin=ispin)
+                        inv_GF -= self.cc_self_energy[i_elec, ispin, ic]
 
                     # Greens function evaluated at each point of the CC multiplied by the weight
                     Gf_wi = - np.diag(inv(inv_GF)) * wi
