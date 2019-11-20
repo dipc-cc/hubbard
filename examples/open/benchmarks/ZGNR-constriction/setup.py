@@ -53,7 +53,7 @@ HC.geom.write('device.xyz')
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object of the device
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=MFH_elec, elec_indx=elec_indx)
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx)
 # Initial densities
 if os.path.isfile('HC_density.nc'):
     MFH_HC.read_density('HC_density.nc')
