@@ -93,18 +93,20 @@ class HubbardHamiltonian(object):
             self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
             kT = 0.025
-            # Shift electrodes with their Fermi energy once
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
             self.se = []
-            self.cc_self_energy = np.empty((len(elecs), 2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
+            self.cc_self_energy = np.empty((2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
+                # Shift each electrode with its Fermi-level
                 elec.H.shift(-Ef_elec)
-                self.se.append(sisl.RecursiveSI(elec.H, elec_dir[i]))
+                se = sisl.RecursiveSI(elec.H, elec_dir[i])
+                self.se.append(se)
                 for ic, cc in enumerate(self.CC):
                     for ispin in [0,1]:
-                        self.cc_self_energy[i, ispin, ic, self.elec_indx[i], self.elec_indx[i].T] = \
-                            self.se[i].self_energy(cc, spin=ispin)
+                        # Map self-energy of each electrode into the device region
+                        self.cc_self_energy[ispin, ic, self.elec_indx[i], self.elec_indx[i].T] = \
+                            se.self_energy(cc, spin=ispin)
             self.elecs = elecs
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
@@ -441,9 +443,7 @@ class HubbardHamiltonian(object):
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
-                    # Map self-energies into the device region and sum contributions from all terminals
-                    for i_elec in range(len(self.elecs)):
-                        inv_GF -= self.cc_self_energy[i_elec, ispin, ic]
+                    inv_GF -= self.cc_self_energy[ispin, ic]
 
                     # Greens function evaluated at each point of the CC multiplied by the weight
                     Gf_wi = - np.diag(inv(inv_GF)) * wi
@@ -455,7 +455,7 @@ class HubbardHamiltonian(object):
             # Calculate new charge
             ntot = ni.sum()
 
-        # Save Fermi level of the device
+        # Save Fermi-level of the device
         self.Ef = -Ef
 
         # Measure of density change
