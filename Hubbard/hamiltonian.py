@@ -16,6 +16,7 @@ import Hubbard.ncsile as nc
 import hashlib
 import os
 import math
+from scipy.linalg import inv
 
 _pi = math.pi
 
@@ -375,7 +376,6 @@ class HubbardHamiltonian(object):
             list of the atomic indices of the electrodes in the device region
 
         """
-        from scipy.linalg import inv
 
         nup = self.nup
         ndn = self.ndn
