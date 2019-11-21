@@ -94,17 +94,20 @@ class HubbardHamiltonian(object):
 
             kT = 0.025
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-            self.se = []
-            self.cc_self_energy = np.empty((2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
+            self.eta = 0.1
+            self.fermi_self_energy = np.zeros((2, len(self.H), len(self.H)), dtype=np.complex128)
+            self.cc_self_energy = np.zeros((2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
                 # Shift each electrode with its Fermi-level
                 elec.H.shift(-Ef_elec)
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
-                self.se.append(se)
-                for ic, cc in enumerate(self.CC):
-                    for ispin in [0,1]:
-                        # Map self-energy of each electrode into the device region
+                for ispin in [0,1]:
+                    # Map self-energy at the Fermi-level of each electrode into the device region
+                    self.fermi_self_energy[ispin, self.elec_indx[i], self.elec_indx[i].T] = \
+                        se.self_energy(1j * self.eta, spin=ispin)
+                    for ic, cc in enumerate(self.CC):
+                        # Do it also for each point in the CC
                         self.cc_self_energy[ispin, ic, self.elec_indx[i], self.elec_indx[i].T] = \
                             se.self_energy(cc, spin=ispin)
             self.elecs = elecs
@@ -408,18 +411,15 @@ class HubbardHamiltonian(object):
                 # To cover 200 meV ~ 2400 K in the integration window
                 # and expect the Lorentzian peak to be positioned at
                 # the current Fermi-level we will use eta = 100 meV
-                eta = 0.1
                 # Calculate charge at the Fermi-level
                 for ispin in [0, 1]:
                     HC = self.H.Hk(spin=ispin).todense()
-                    cc = - Ef[ispin] + 1j * eta
+                    cc = - Ef[ispin] + 1j * self.eta
 
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
-                    # Map self-energies into the device region and sum contributions from all terminals
-                    for i, se in enumerate(self.se):
-                        inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= se.self_energy(1j * eta, spin=ispin)
+                    inv_GF -= self.fermi_self_energy[ispin]
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -431,9 +431,9 @@ class HubbardHamiltonian(object):
                     f = dq[ispin] / (- np.trace(inv(inv_GF)).imag / _pi)
                     # Since x above is in units of eta, we have to multiply with eta
                     if abs(f) < 0.45:
-                        Ef[ispin] += 2 * eta * math.tan(f * _pi)
+                        Ef[ispin] += 2 * self.eta * math.tan(f * _pi)
                     else:
-                        Ef[ispin] += 2 * eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
+                        Ef[ispin] += 2 * self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
             Etot = 0.
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin).todense()
