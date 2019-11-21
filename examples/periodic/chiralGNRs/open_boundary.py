@@ -5,7 +5,7 @@ import numpy as np
 from scipy import linalg as la
 import os
 
-def open_boundary(h, directory, xlim=0.1, U=0):
+def open_boundary(h, directory, xlim=0.1, U=0, model='1NN'):
     # Obtain the bulk and surface states of a Hamiltonian h
     H = hh.HubbardHamiltonian(h, U=U)
     if U>0:
@@ -40,4 +40,4 @@ def open_boundary(h, directory, xlim=0.1, U=0):
     p.set_xlabel(r'Energy [eV]')
     p.set_ylabel(r'DOS [eV$^{-1}$]')
     p.set_title(r'Density of states [%s]'%directory)
-    p.savefig(directory+'/DOS_U%i.pdf'%(U*100))
+    p.savefig(directory+'/%s_DOS_U%i.pdf'%(model, U*100))

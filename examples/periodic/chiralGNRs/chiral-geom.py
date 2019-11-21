@@ -1,12 +1,13 @@
 import sisl
 import Hubbard.hamiltonian as hh
+import Hubbard.geometry as geometry
 import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
 import netCDF4 as NC
 import numpy as np
 import os
 
-def analyze(H0, directory, nx=51):
+def analyze(H0, directory, nx=51, model='1NN'):
     H = hh.HubbardHamiltonian(H0, U=0.0, nkpt=[nx, 1, 1])
     if H.U > 0:
         H.random_density()
@@ -21,9 +22,9 @@ def analyze(H0, directory, nx=51):
     tol = 0.05
     p.axes.annotate(r'$\mathbf{Z_2=%i}$' % z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
-    p.savefig(directory+'/bands_1NN.pdf')
+    p.savefig(directory+'/%s_bands.pdf'%(model))
 
-def analyze_edge(H0, directory):
+def analyze_edge(H0, directory, model='1NN'):
     # Create 15 length ribbon
     geom = H0.geometry
     # Identify edge sites along the lower ribbon border
@@ -53,7 +54,7 @@ def analyze_edge(H0, directory):
     p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]', fontsize=23)
     p.set_xlabel(r'$x$ [\AA]', fontsize=23)
     p.set_title('[%s]'%directory, fontsize=23)
-    p.savefig(directory+'/1NN_edge_wf.pdf')
+    p.savefig(directory+'/%s_edge_wf.pdf'%model)
 
     if True:
         # Plot edge sites?
@@ -64,7 +65,7 @@ def analyze_edge(H0, directory):
         p.set_title(r'Edge sites of [%s]'%directory, fontsize=23)
         p.savefig(directory+'/edge_sites.pdf')
 
-def plot_states(H0, directory):
+def plot_states(H0, directory, model='1NN'):
     band_lab = ['VB', 'CB']
     k_lab = ['G', 'X']
     k_lab2 = ['\Gamma', 'X']
@@ -77,9 +78,9 @@ def plot_states(H0, directory):
             sym = H.band_sym(evec[:, band])[0]
             p.set_title(r'[%s]: $ E_{%s}=%.1f$ meV'%(directory, k_lab2[ik],ev[band]*1000), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(sym), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
-            p.savefig(directory+'/%s_%s.pdf'%(band_lab[ib], k_lab[ik]))
+            p.savefig(directory+'/%s_%s_%s.pdf'%(model, band_lab[ib], k_lab[ik]))
 
-def gap_exp(H0, directory, L=np.arange(1,31)):
+def gap_exp(H0, directory, L=np.arange(1,31), model='1NN'):
     H = hh.HubbardHamiltonian(H0, U=0.)
     ev = np.zeros((len(np.linspace(0,0.5,51)), len(H0)))
     for ik, k in enumerate(np.linspace(0,0.5,51)):
@@ -117,14 +118,15 @@ def gap_exp(H0, directory, L=np.arange(1,31)):
     p.axes.set_xticks(np.arange(2,max(L),max(L)/6))
     p.set_ylabel(r'Energy Gap [eV]', fontsize=23)
     p.axes.set_yscale('log')
-    p.savefig(directory+'/gap_fit.pdf')
+    p.savefig(directory+'/%s_gap_fit.pdf'%model)
 
-def phase_diagram(w=8):
-
-    import Hubbard.geometry as geometry
-
+def phase_diagram(w=8, model='1NN'):
+    if model == '3NN':
+        t2, t3 = 0.2, 0.18
+    else:
+        t2=t3=0
     def get_Zak_phase(geom):
-        H0 = sp2(geom, t1=2.7, t2=0., t3=0.)
+        H0 = sp2(geom, t1=2.7, t2=t2, t3=t3)
         H = hh.HubbardHamiltonian(H0, U=0.)
         zak = H.get_Zak_phase(Nx=101)
         if not (abs(zak)>1e-3 or abs(abs(zak)-np.pi)>1e-3):
@@ -152,7 +154,7 @@ def phase_diagram(w=8):
             band_gap_matrix[i_n, i_m, 0] = bg
             band_gap_matrix[i_n, i_m, 1] = z2
     
-    fn = 'band_gap_zak_W%i.nc'%w
+    fn = '%s_band_gap_zak_W%i.nc'%(model, w)
     ncf = NC.Dataset(fn, 'w')
 
     # Create dimensions
@@ -170,12 +172,12 @@ def phase_diagram(w=8):
 
     ncf.close()
 
-def plot_band_gap_imshow(w=8, figsize=(8,7)):
-    fn = 'band_gap_zak_W%i.nc'%w
+def plot_band_gap_imshow(w=8, figsize=(8,7), model='1NN'):
+    fn = '%s_band_gap_zak_W%i.nc'%(model, w)
     try:
         ncf = NC.Dataset(fn, 'r')
     except:
-        phase_diagram(w=w)
+        phase_diagram(w=w, model=model)
         ncf = NC.Dataset(fn, 'r')
     band_gap_matrix = ncf['BG'][:]
     m = ncf['mlist'][:]
@@ -191,10 +193,10 @@ def plot_band_gap_imshow(w=8, figsize=(8,7)):
     z2 = band_gap_matrix[:,:,1]
 
     bg = ((-1)**z2)*bg # multiply band gap by (-1)^z2
-    lim = max(abs(np.max(bg)), abs(np.min(bg)))
+    lim = 1.0
     extent = [0, len(n), 0, len(m)]
-    sc = p.axes.imshow(bg.T, cmap='seismic', origin='lower', vmax=lim, vmin=-lim, extent=extent, 
-                        norm=mcolors.SymLogNorm(linthresh=0.03), aspect='equal')
+    sc = p.axes.imshow(bg.T, cmap='seismic_r', origin='lower', vmax=lim, vmin=-lim, extent=extent, 
+                    aspect='equal')
     p.set_xlabel('n', fontsize=25)
     p.set_ylabel('m', fontsize=25)
     p.axes.set_xticks(np.arange(0, len(n))+0.5)
@@ -203,4 +205,4 @@ def plot_band_gap_imshow(w=8, figsize=(8,7)):
     p.axes.set_yticklabels(range(int(min(m)), int(max(m))+1), fontsize=20)
     p.fig.colorbar(sc, cax=cax, label=r'$E$ [eV]')
     p.set_title(r'Band gap for $W=%i$'%w, fontsize=25)
-    p.savefig('W%i_band_gap_imshow.pdf'%w)
+    p.savefig('%s_W%i_band_gap_imshow.pdf'%(model,w))
