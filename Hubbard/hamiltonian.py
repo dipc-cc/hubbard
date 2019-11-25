@@ -90,7 +90,7 @@ class HubbardHamiltonian(object):
             self.CC = contour_weight[0] + contour_weight[1]*1j
             self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
-            self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
+            elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
             kT = 0.025
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
@@ -104,13 +104,12 @@ class HubbardHamiltonian(object):
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
                 for ispin in [0,1]:
                     # Map self-energy at the Fermi-level of each electrode into the device region
-                    self.fermi_self_energy[ispin, self.elec_indx[i], self.elec_indx[i].T] = \
+                    self.fermi_self_energy[ispin, elec_indx[i], elec_indx[i].T] = \
                         se.self_energy(1j * self.eta, spin=ispin)
                     for ic, cc in enumerate(self.CC):
                         # Do it also for each point in the CC
-                        self.cc_self_energy[ispin, ic, self.elec_indx[i], self.elec_indx[i].T] = \
+                        self.cc_self_energy[ispin, ic, elec_indx[i], elec_indx[i].T] = \
                             se.self_energy(cc, spin=ispin)
-            self.elecs = elecs
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
