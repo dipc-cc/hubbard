@@ -248,10 +248,12 @@ class GeometryPlot(Plot):
             labels = self.colorbar.ax.get_xticks()
         self.colorbar.ax.set_xticklabels(labels, fontsize=fontsize)
 
-    def annotate(self, size=6):
+    def annotate(self, sites=[], size=6):
         """ Annotate the site indices in the pi-network """
         g = self.geom
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
-        for ia in g:
+        if not sites:
+            sites = g
+        for ia in sites:
             self.axes.annotate(ia, (x[ia], y[ia]), size=size)
