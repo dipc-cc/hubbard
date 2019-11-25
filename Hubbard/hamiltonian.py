@@ -203,8 +203,8 @@ class HubbardHamiltonian(object):
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
-        Nup = int(self.Nup)
-        Ndn = int(self.Ndn)
+        Nup = int(round(self.Nup))
+        Ndn = int(round(self.Ndn))
 
         # Initialize HOMO/LUMO variables
         HOMO = -1e10
