@@ -17,8 +17,9 @@ else:
     t2 = t3 = 0
 
 # Compute and plot the bandgap as a function of (n,m) for a paritcular ribbon width
-if True:
-    ch.plot_band_gap_imshow(w=8, figsize=(10,6), model=model)
+if False:
+    m = [1,2,3,4,5]
+    ch.plot_band_gap_imshow(m=m, figsize=(8,4), model=model, lim=1.0)
 
 n = 3
 m = [1,2]
@@ -49,19 +50,3 @@ for m_i in m:
         else:
             xlim=0.5
         op.open_boundary(H0, directory, xlim=xlim, model=model)
-
-if False:
-    # Plot bulk and surface DOS of 1D chain to test the funcion
-    directory='./'
-    print('Doing', directory)
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
-
-    geom = sisl.Geometry([[0,0,0]], atom='C', sc=[1.42,10,10])
-    geom.set_nsc([3,1,1])
-    h = sisl.Hamiltonian(geom)
-    for ia in geom:
-        idx = geom.close(ia, R=[0., 1.43])
-        h[ia, idx[0]] = 0
-        h[ia, idx[1]] = -2.7
-    op.open_boundary(h, directory, xlim=7)

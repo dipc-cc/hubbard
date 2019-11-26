@@ -18,10 +18,8 @@ def analyze(H0, directory, nx=51, model='1NN'):
     zak = H.get_Zak_phase(Nx=nx)
     z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
     p.set_title(r'[%s]'%directory)
-    #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
-    tol = 0.05
     p.axes.annotate(r'$\mathbf{Z_2=%i}$' % z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
-    p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
+    #p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
     p.savefig(directory+'/%s_bands.pdf'%(model))
 
 def analyze_edge(H0, directory, model='1NN'):
@@ -120,7 +118,7 @@ def gap_exp(H0, directory, L=np.arange(1,31), model='1NN'):
     p.axes.set_yscale('log')
     p.savefig(directory+'/%s_gap_fit.pdf'%model)
 
-def phase_diagram(w=8, model='1NN'):
+def phase_diagram(m=1, model='1NN'):
     if model == '3NN':
         t2, t3 = 0.2, 0.18
     else:
@@ -142,67 +140,84 @@ def phase_diagram(w=8, model='1NN'):
         return bg, z2
 
     nlist = np.arange(1, 11)
-    mlist = np.arange(1,int(w/2)+1)
+    wmin = max(2*m, 4)
+    wlist = np.arange(wmin, 13, 2)
 
     # Build empty matrix to store bandgap and Z2
-    band_gap_matrix = np.zeros((len(nlist), len(mlist),  2))
+    band_gap_matrix = np.zeros((len(nlist), len(wlist),  2))
     for i_n, n in enumerate(nlist):
-        for i_m, m in enumerate(mlist):
+        for i_w, w in enumerate(wlist):
             print(n,m,w)
             geom = geometry.cgnr(n,m,w)
             bg, z2  = get_Zak_phase(geom)
-            band_gap_matrix[i_n, i_m, 0] = bg
-            band_gap_matrix[i_n, i_m, 1] = z2
+            band_gap_matrix[i_n, i_w, 0] = bg
+            band_gap_matrix[i_n, i_w, 1] = z2
     
-    fn = '%s_band_gap_zak_W%i.nc'%(model, w)
+    fn = '%s_band_gap_zak_m%i.nc'%(model, m)
     ncf = NC.Dataset(fn, 'w')
 
     # Create dimensions
     ncf.createDimension('nlen', len(nlist))
-    ncf.createDimension('mlen', len(mlist))
+    ncf.createDimension('wlen', len(wlist))
     ncf.createDimension('data', 2)
     # Create variables
-    ncf.createVariable('BG', 'f8', ('nlen', 'mlen', 'data'))
-    ncf.createVariable('mlist', 'i8', ('mlen'))
+    ncf.createVariable('BG', 'f8', ('nlen', 'wlen', 'data'))
+    ncf.createVariable('wlist', 'i8', ('wlen'))
     ncf.createVariable('nlist', 'i8', ('nlen'))
 
     ncf['BG'][:] = band_gap_matrix 
-    ncf['mlist'][:] = mlist
+    ncf['wlist'][:] = wlist
     ncf['nlist'][:] = nlist
 
     ncf.close()
 
-def plot_band_gap_imshow(w=8, figsize=(8,7), model='1NN'):
-    fn = '%s_band_gap_zak_W%i.nc'%(model, w)
-    try:
-        ncf = NC.Dataset(fn, 'r')
-    except:
-        phase_diagram(w=w, model=model)
-        ncf = NC.Dataset(fn, 'r')
-    band_gap_matrix = ncf['BG'][:]
-    m = ncf['mlist'][:]
-    n = ncf['nlist'][:]
+def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
+    if not isinstance(m, list):
+        m = [m]
 
     p = plot.Plot(figsize=figsize)
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
-    divider = make_axes_locatable(p.axes)
-    cax = divider.append_axes('right', size='5%', pad=0.05)
+    from mpl_toolkits.axes_grid1 import ImageGrid
+    grid = ImageGrid(p.fig, 111,
+                 nrows_ncols=(1, len(m)),
+                 axes_pad=0.15,
+                 share_all=False,
+                 cbar_location="right",
+                 cbar_mode="single",
+                 cbar_size="10%",
+                 cbar_pad=0.15,
+                 )
 
-    import matplotlib.colors as mcolors
-    bg = band_gap_matrix[:,:,0]
-    z2 = band_gap_matrix[:,:,1]
+    for i, ax in enumerate(grid):
+        fn = '%s_band_gap_zak_m%i.nc'%(model, m[i])
+        try:
+            ncf = NC.Dataset(fn, 'r')
+        except:
+            phase_diagram(m=m[i], model=model)
+            ncf = NC.Dataset(fn, 'r')
+        band_gap_matrix = ncf['BG'][:]
+        w = ncf['wlist'][:]
+        n = ncf['nlist'][:]
 
-    bg = ((-1)**z2)*bg # multiply band gap by (-1)^z2
-    lim = 1.0
-    extent = [0, len(n), 0, len(m)]
-    sc = p.axes.imshow(bg.T, cmap='seismic_r', origin='lower', vmax=lim, vmin=-lim, extent=extent, 
-                    aspect='equal')
-    p.set_xlabel('n', fontsize=25)
-    p.set_ylabel('m', fontsize=25)
-    p.axes.set_xticks(np.arange(0, len(n))+0.5)
-    p.axes.set_xticklabels(range(int(min(n)), int(max(n))+1), fontsize=20)
-    p.axes.set_yticks(np.arange(0, len(m))+0.5)
-    p.axes.set_yticklabels(range(int(min(m)), int(max(m))+1), fontsize=20)
-    p.fig.colorbar(sc, cax=cax, label=r'$E$ [eV]')
-    p.set_title(r'Band gap for $W=%i$'%w, fontsize=25)
-    p.savefig('%s_W%i_band_gap_imshow.pdf'%(model,w))
+        bg = band_gap_matrix[:,:,0]
+        z2 = band_gap_matrix[:,:,1]
+
+        bg = ((-1)**z2)*bg # multiply band gap by (-1)^z2
+        lim = lim
+        extent = [0, len(w), 0, len(n)]
+        imshow = ax.imshow(bg, cmap='seismic_r', origin='upper', vmax=lim, vmin=-lim, 
+                            extent=extent, aspect='equal')
+        ax.set_ylabel(r'$n$', fontsize=18)
+        ax.set_xlabel(r'$w$', fontsize=18)
+        ax.axes.set_yticks(np.arange(0, len(n))+0.5)
+        ax.axes.set_yticklabels(range(int(max(n)), int(min(n))-1, -1), fontsize=12)
+        ax.axes.set_xticks(np.arange(0, len(w))+0.5)
+        ax.axes.set_xticklabels(range(int(min(w)), int(max(w))+1, 2), fontsize=12)
+    
+    # Colorbar
+    cbar = ax.cax.colorbar(imshow, ticks=[-1.0, 0., 1.0])
+    cbar.ax.tick_params(labelsize=15)
+    ax.cax.toggle_label(True)
+
+    # Eliminate figure axis and save
+    p.axes.set_axis_off()
+    p.fig.savefig('%s_band_gap_imshow.pdf'%(model), bbox_inches='tight')
