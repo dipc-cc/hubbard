@@ -19,6 +19,9 @@ class Bandstructure(Plot):
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)
 
+        self.add_bands(HubbardHamiltonian, nk=nk, projection=projection, spin=spin, scale=scale, c=c)
+
+    def add_bands(self, HubbardHamiltonian, nk=51, projection=None, spin=0, scale=1, c='r'):
         # Get TB bands
         ka = np.linspace(0, 0.5, nk)
         ev = np.empty([len(ka), 2, HubbardHamiltonian.sites])
