@@ -8,7 +8,7 @@ import numpy as np
 
 class Charge(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0,1], **keywords):
         # Set default keywords
         if 'realspace' in keywords:
             if 'facecolor' not in keywords:
@@ -26,7 +26,11 @@ class Charge(GeometryPlot):
         GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute total charge on each site
-        charge = HubbardHamiltonian.nup + HubbardHamiltonian.ndn
+        n = np.array([HubbardHamiltonian.nup, HubbardHamiltonian.ndn])
+        if not isinstance(spin, list):
+            spin = [spin]
+
+        charge = n[spin].sum(axis=0)
 
         if 'realspace' in keywords:
             self.__realspace__(charge, density=True, **keywords)
