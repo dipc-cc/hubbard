@@ -13,7 +13,24 @@ TBT.HS MFH_HC.nc
      method mid-rule
 %endblock
 
-%include ELEC.fdf
+%block TS.Elecs
+  HGNRA
+  HGNRB
+%endblock TS.Elecs
+
+%block TS.Elec.HGNRA
+  TSHS MFH_elec.nc
+  chem-pot POT
+  semi-inf-dir -a1
+  elec-pos begin 1
+%endblock TS.Elec.HGNRA
+
+%block TS.Elec.HGNRB
+  TSHS MFH_elec.nc
+  chem-pot POT
+  semi-inf-dir +a1
+  elec-pos end -1
+%endblock TS.Elec.HGNRB
 
 TBT.Voltage    0.00000 eV
 
@@ -25,5 +42,3 @@ TBT.Voltage    0.00000 eV
   mu V/2
 %endblock TS.ChemPot.POT
 
-##TBT.Elecs.Eta 1e-3 eV
-TBT.T.EIG 10
