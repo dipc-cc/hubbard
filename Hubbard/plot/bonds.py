@@ -55,12 +55,14 @@ class BondHoppings(Plot):
     def __init__(self, H, **keywords):
         
         Plot.__init__(self, **keywords)
-
+        H = H.H
+        H.set_nsc([1,1,1])
         for ia in H.geom:
             x0, y0 = H.geom.xyz[ia, 0], H.geom.xyz[ia, 1] 
-            for ib in H.geom:
+            edges = H.edges(ia)
+            for ib in edges:
                 x1, y1 = H.geom.xyz[ib, 0], H.geom.xyz[ib, 1] 
-                t = H[ia, ib][0,0]
+                t = H[ia, ib, 0]
                 if abs(t) == 2.7:
                     self.axes.plot([x0,x1], [y0,y1], '-', markersize=2, color='blue', linewidth=1.2)
                 elif abs(t) == 0.2:
