@@ -10,6 +10,7 @@ import Hubbard.plot as plot
 
 # Set U for the whole calculation
 U = 3.0
+kT = 0.025
 
 # Build zigzag GNR
 ZGNR = geometry.zgnr(2)
@@ -18,12 +19,12 @@ ZGNR = geometry.zgnr(2)
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1])
+MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(method=2)
 
-dist = sisl.get_distribution('fermi_dirac', smearing=0.025)
+dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=[MFH_elec.Nup, MFH_elec.Ndn], distribution=dist)
 # Shift each electrode with its Fermi-level and write it to netcdf file
 MFH_elec.H.shift(-Ef_elec)
@@ -37,7 +38,7 @@ HC.set_nsc([1,1,1])
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'])
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT)
 
 # Converge using iterative method 3
 dn = MFH_HC.converge(method=3, steps=1, tol=1e-5)
