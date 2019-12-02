@@ -134,8 +134,8 @@ class HubbardHamiltonian(object):
 
     def _update_e0(self):
         """Internal routine to update e0 """
-        e0 = self.H.Hk(spin=0).diagonal()
-        e1 = self.H.Hk(spin=1).diagonal()
+        e0 = self.H.tocsr(0).diagonal()
+        e1 = self.H.tocsr(1).diagonal()
         self.e0 = np.array([e0, e1])
 
     def update_hamiltonian(self):
