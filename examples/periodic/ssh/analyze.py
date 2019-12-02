@@ -36,7 +36,6 @@ def analyze(H, nx=501):
     z2 = int(round(np.abs(1-np.exp(1j*zak))/2))
     p.set_title(r'[SSH-%s]'%phase)
     #p.axes.annotate(r'$\gamma=%.4f$'%zak, (0.4, 0.50), size=22, backgroundcolor='w')
-    tol = 0.05
     p.axes.annotate(r'$\mathbf{Z_2=%i}$' % z2, (0., 0.9*ymax), size=22, backgroundcolor='k', color='w')
     p.axes.annotate(r'$\phi/\pi=%.2f$' % (zak/np.pi), (0.5, 0.9*ymax), size=16)
     p.savefig('SSH-%s_bands.pdf'%phase)
@@ -77,7 +76,7 @@ def plot_states(H, kpoints=[0.0,0.5]):
         ev, evec = Hub.eigh(k=[k,0,0],eigvals_only=False, spin=0)
         for ib, band in enumerate([VB, CB]):
             p = plot.Wavefunction(Hub, 3000*evec[:, band], colorbar=True, vmin=0)
-            symm = Hub.band_sym(evec[:, band])[0]
+            symm = Hub.band_sym(evec[:, band])[0].real
             p.set_title(r'[SSH-%s]: $ E_{%s}=%.1f$ eV'%(phase, k_lab2[ik],ev[band]), fontsize=23)
             p.axes.annotate(r'$\mathbf{Sym}=%.1f$'%(symm), (p.xmin+0.2, 0.87*p.ymax), size=18, backgroundcolor='k', color='w')
             p.savefig('SSH-%s_%s_%s.pdf'%(phase, band_lab[ib], k_lab[ik]))
