@@ -65,9 +65,7 @@ class HubbardHamiltonian(object):
             self.Nup = int(ntot-self.Ndn)
 
         self.sites = len(self.geom)
-        e00 = TBHam.Hk(spin=0).diagonal()
-        e01 = TBHam.Hk(spin=1).diagonal()
-        self.e0 = np.array([e00, e01]).T
+        self._update_e0()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, nkpt)
         # Intial midgap
@@ -101,6 +99,12 @@ class HubbardHamiltonian(object):
         Nup = (DMrep.Dk(spin=0).todense()).sum()
         Ndn = (DMrep.Dk(spin=1).todense()).sum() 
         return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(round(Nup)), Ndn=int(round(Ndn)))
+
+    def _update_e0(self):
+        """Internal routine to update e0 """
+        e0 = self.H.tocsr(0).diagonal()
+        e1 = self.H.tocsr(1).diagonal()
+        self.e0 = np.array([e0, e1])
 
     def update_hamiltonian(self):
         # Update spin Hamiltonian
