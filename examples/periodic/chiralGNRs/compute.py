@@ -17,7 +17,7 @@ else:
     t2 = t3 = 0
 
 # Compute and plot the bandgap as a function of (n,m) for a paritcular ribbon width
-if False:
+if True:
     m = [1,2,3,4,5]
     ch.plot_band_gap_imshow(m=m, figsize=(8,4), model=model, lim=1.0)
 

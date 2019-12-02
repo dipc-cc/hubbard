@@ -216,6 +216,7 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
     # Colorbar
     cbar = ax.cax.colorbar(imshow, ticks=[-1.0, 0., 1.0])
     cbar.ax.tick_params(labelsize=15)
+    cbar.ax.set_ylabel(r'$E_{g}$ [eV]')
     ax.cax.toggle_label(True)
 
     # Eliminate figure axis and save
