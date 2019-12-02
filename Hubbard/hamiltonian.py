@@ -37,7 +37,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], elecs=0, elec_indx=0, elec_dir=['-A', '+A']):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=0, elecs=0, elec_indx=0, elec_dir=['-A', '+A'], CC=None):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -72,8 +72,8 @@ class HubbardHamiltonian(object):
         self._update_e0()
         # Generate Monkhorst-Pack
         self.mp = sisl.MonkhorstPack(self.H, nkpt)
-        # Intial midgap
-        self.find_midgap()
+
+        self.kT = kT
 
         # Initialize density matrix
         if not DM:
@@ -86,13 +86,14 @@ class HubbardHamiltonian(object):
 
         if elecs:
             # Read complex contour (CC) and weights (w) from transiesta run
-            contour_weight = sisl.io.tableSile(os.path.split(__file__)[0]+'/EQCONTOUR').read_data()
+            if not CC:
+                CC = os.path.split(__file__)[0]+'/EQCONTOUR'
+            contour_weight = sisl.io.tableSile(CC).read_data()
             self.CC = contour_weight[0] + contour_weight[1]*1j
             self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
 
             elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
-            kT = 0.025
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
             self.eta = 0.1
             self.fermi_self_energy = np.zeros((2, len(self.H), len(self.H)), dtype=np.complex128)
@@ -308,14 +309,11 @@ class HubbardHamiltonian(object):
         if q_dn is None:
             q_dn = self.Ndn
 
-        # To do metallic systems one should use this thing to
-        # calculate the fermi-level:
-        kT = 0.00001
         # Create fermi-level determination distribution
-        dist = sisl.get_distribution('fermi_dirac', smearing=kT)
+        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
         Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        dist_up = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[0])
-        dist_dn = sisl.get_distribution('fermi_dirac', smearing=kT, x0=Ef[1])
+        dist_up = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[0])
+        dist_dn = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[1])
 
         # Initialize new occupations and total energy with Hubbard U
         ni_up = np.zeros(nup.shape)
@@ -366,7 +364,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate3(self, mix=1.0, q_up=None, q_dn=None, mu_L=0, mu_R=0, qtol=1e-5):
+    def iterate3(self, mix=1.0, q_up=None, q_dn=None, qtol=1e-5):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -476,10 +474,16 @@ class HubbardHamiltonian(object):
         print('Iterating towards self-consistency...')
         if method == 2:
             iterate_ = self.iterate2
+            # Use finite T close to zero
+            if self.kT == 0:
+                self.kT = 0.00001
         elif method == 3:
             iterate_ = self.iterate3
         else:
-            iterate_ = self.iterate
+            if self.kT == 0:
+                iterate_ = self.iterate
+            else:
+                iterate_ = self.iterate2
 
         dn = 1.0
         i = 0
