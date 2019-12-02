@@ -1,0 +1,48 @@
+\documentclass{standalone}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{psfrag}
+\usepackage{lpic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+\tikzset{
+dash/.style={line width=.5pt,dash pattern=on 2pt off 1.5pt}
+         }% end of tikzset
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\centering
+
+
+\begin{tikzpicture}[>=stealth]
+
+\node [inner sep=0pt] at (0, 0) {\includegraphics[height=3.5cm]{../1NN_band_gap_imshow}};
+
+\node [inner sep=0pt] at (0, -3.2) {\includegraphics[height=3.5cm]{../3NN_band_gap_imshow}};
+
+
+\node [inner sep=0pt] at (-3.6, 1.5){1NN};
+\node [inner sep=0pt] at (-2.1, -0.9){\tiny $m=1$};
+\node [inner sep=0pt] at (-.4, -0.9){\tiny $2$};
+\node [inner sep=0pt] at (.8, -0.9){\tiny $3$};
+\node [inner sep=0pt] at (1.76, -0.9){\tiny $4$};
+\node [inner sep=0pt] at (2.45, -0.9){\tiny $5$};
+
+
+\node [inner sep=0pt] at (-3.6, -1.7){3NN};
+\node [inner sep=0pt] at (-2.1, -4.1){\tiny $m=1$};
+\node [inner sep=0pt] at (-.4, -4.1){\tiny $2$};
+\node [inner sep=0pt] at (.8, -4.1){\tiny $3$};
+\node [inner sep=0pt] at (1.76, -4.1){\tiny $4$};
+\node [inner sep=0pt] at (2.45, -4.1){\tiny $5$};
+
+\end{tikzpicture}
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
