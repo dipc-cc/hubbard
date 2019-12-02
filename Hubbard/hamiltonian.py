@@ -81,8 +81,8 @@ class HubbardHamiltonian(object):
             self.random_density()
         else:
             self.DM = DM
-            self.nup = np.diag(self.DM.Dk(spin=0).todense())
-            self.ndn = np.diag(self.DM.Dk(spin=1).todense())
+            self.nup = self.DM.tocsr(0).diagonal()
+            self.ndn = self.DM.tocsr(1).diagonal()
 
         if elecs:
             # Read complex contour (CC) and weights (w) from transiesta run
@@ -121,15 +121,15 @@ class HubbardHamiltonian(object):
     def tile(self, reps, axis):
         Htile = self.H.tile(reps, axis)
         DMtile = self.DM.tile(reps, axis)
-        Nup = (DMtile.Dk(spin=0).todense()).sum()
-        Ndn = (DMtile.Dk(spin=1).todense()).sum() 
+        Nup = (DMtile.tocsr(0).diagonal()).sum()
+        Ndn = (DMtile.tocsr(1).diagonal()).sum()
         return self.__class__(Htile, DM=DMtile, U=self.U, Nup=int(round(Nup)), Ndn=int(round(Ndn)))
 
     def repeat(self, reps, axis):
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
-        Nup = (DMrep.Dk(spin=0).todense()).sum()
-        Ndn = (DMrep.Dk(spin=1).todense()).sum() 
+        Nup = (DMrep.tocsr(0).diagonal()).sum()
+        Ndn = (DMrep.tocsr(1).diagonal()).sum()
         return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(round(Nup)), Ndn=int(round(Ndn)))
 
     def _update_e0(self):
