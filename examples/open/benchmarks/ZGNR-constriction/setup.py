@@ -21,14 +21,14 @@ kT = 0.025
 ZGNR = geometry.zgnr(5)
 
 # and 3NN TB Hamiltonian
-H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18).tile(2,axis=0)
+H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=0.025)
+MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Initial densities
 success = MFH_elec.read_density('elec_density.nc')
 if not success:
-    MFH_elec.set_polarization([0,10], dn=[9,19])
+    MFH_elec.set_polarization([0], dn=[9])
     
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(method=2)
@@ -45,7 +45,7 @@ MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
 # Build central region TB Hamiltonian 
-HC = H_elec.tile(8,axis=0)
+HC = H_elec.tile(16,axis=0)
 HC = HC.remove([69,79,89,78,88,66,77,76,87,86,65,74,75,84,85])
 HC.set_nsc([1,1,1])
 HC.geom.write('device.xyz')
