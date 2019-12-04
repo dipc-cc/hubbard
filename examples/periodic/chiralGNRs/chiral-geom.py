@@ -171,7 +171,7 @@ def phase_diagram(m=1, model='1NN'):
 
     ncf.close()
 
-def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
+def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0, scale='linear'):
     if not isinstance(m, list):
         m = [m]
 
@@ -183,9 +183,15 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
                  share_all=False,
                  cbar_location="right",
                  cbar_mode="single",
-                 cbar_size="10%",
+                 cbar_size="15%",
                  cbar_pad=0.15,
                  )
+    import matplotlib.colors as colors
+    
+    if scale == 'log':
+        norm = colors.SymLogNorm(linthresh=0.03, vmin=-lim,vmax=lim)
+    else:
+        norm = colors.Normalize(vmin=-lim,vmax=lim)
 
     for i, ax in enumerate(grid):
         fn = '%s_band_gap_zak_m%i.nc'%(model, m[i])
@@ -202,9 +208,8 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
         z2 = band_gap_matrix[:,:,1]
 
         bg = ((-1)**z2)*bg # multiply band gap by (-1)^z2
-        lim = lim
         extent = [0, len(w), 0, len(n)]
-        imshow = ax.imshow(bg, cmap='seismic_r', origin='upper', vmax=lim, vmin=-lim, 
+        imshow = ax.imshow(bg, cmap='seismic_r', origin='upper', norm=norm, 
                             extent=extent, aspect='equal')
         ax.set_ylabel(r'$n$', fontsize=18)
         ax.set_xlabel(r'$w$', fontsize=18)
@@ -214,11 +219,12 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0):
         ax.axes.set_xticklabels(range(int(min(w)), int(max(w))+1, 2), fontsize=12)
     
     # Colorbar
-    cbar = ax.cax.colorbar(imshow, ticks=[-1.0, 0., 1.0])
-    cbar.ax.tick_params(labelsize=15)
+    cbar = p.fig.colorbar(imshow, cax=ax.cax)
+    cbar.ax.tick_params(labelsize=10)
     cbar.ax.set_ylabel(r'$E_{g}$ [eV]')
     ax.cax.toggle_label(True)
 
     # Eliminate figure axis and save
     p.axes.set_axis_off()
-    p.fig.savefig('%s_band_gap_imshow.pdf'%(model), bbox_inches='tight')
+    p.fig.savefig('%s_%s_band_gap_imshow.pdf'%(model, scale), bbox_inches='tight')
+    print('Wrote %s_%s_band_gap_imshow.pdf'%(model, scale))

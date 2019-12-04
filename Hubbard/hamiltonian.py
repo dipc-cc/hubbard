@@ -148,8 +148,8 @@ class HubbardHamiltonian(object):
         self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
-        for ia in self.geom:
-            self.DM[ia, ia] = (self.nup[ia], self.ndn[ia])
+        a = np.arange(len(self.H))
+        self.DM[a, a, [0, 1]] = np.array([self.nup, self.ndn]).T
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
@@ -433,7 +433,7 @@ class HubbardHamiltonian(object):
                         Ef[ispin] += 2 * self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
             Etot = 0.
             for ispin in [0, 1]:
-                HC = self.H.tocsr(ispin)
+                HC = self.H.Hk(spin=ispin, format='array')
 
                 ni[ispin, :] = 0.
                 for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], w)):
@@ -484,7 +484,6 @@ class HubbardHamiltonian(object):
                 iterate_ = self.iterate
             else:
                 iterate_ = self.iterate2
-
         dn = 1.0
         i = 0
         while dn > tol:
