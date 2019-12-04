@@ -433,7 +433,7 @@ class HubbardHamiltonian(object):
                         Ef[ispin] += 2 * self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
             Etot = 0.
             for ispin in [0, 1]:
-                HC = self.H.tocsr(ispin)
+                HC = self.H.Hk(spin=ispin, format='array')
 
                 ni[ispin, :] = 0.
                 for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], w)):
