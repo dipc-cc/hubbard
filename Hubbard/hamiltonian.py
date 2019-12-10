@@ -85,19 +85,46 @@ class HubbardHamiltonian(object):
             self.ndn = self.DM.tocsr(1).diagonal()
 
         if elecs:
-            # Read complex contour (CC) and weights (w) from transiesta run
-            if not CC:
-                CC = os.path.split(__file__)[0]+'/EQCONTOUR'
-            contour_weight = sisl.io.tableSile(CC).read_data()
-            self.CC = contour_weight[0] + contour_weight[1]*1j
-            self.w =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
+            if CC and os.path.isdir(CC):
+                # For bias calculation it reads all the CC from the EQ and NEQ fles
+                import glob
 
-            elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
+                self.CC_eq = []
+                self.w_eq = []
+                for fn in glob.glob(CC + "/*TSCCEQ*"):
+                    contour_weight = sisl.io.tableSile(fn).read_data()
+                    self.CC_eq.append(contour_weight[0] + contour_weight[1]*1j)
+                    self.w_eq.append((contour_weight[2] + contour_weight[3]*1j) / np.pi)
+                self.CC_neq = []
+                self.w_neq = []
+                self.NEQ = True
+                for fn in glob.glob(CC + "/*TSCCNEQ*"):
+                    contour_weight = sisl.io.tableSile(fn).read_data()
+                    self.CC_neq.append(contour_weight[0] + contour_weight[1]*1j)
+                    # Weights are real in the bias window
+                    self.w_neq.append(contour_weight[2])
+
+                self.CC_neq = np.array(self.CC_neq) # Convert list of CC_neq to array
+
+                # Initialize the neq-self-energies matrix
+                self.cc_neq_self_energy = np.zeros((len(self.CC_neq),) + (2, len(self.H), len(self.H)), dtype=np.complex128)
+
+            else:
+                if not CC:
+                    CC = os.path.split(__file__)[0]+'/EQCONTOUR'
+                contour_weight = sisl.io.tableSile(CC).read_data()
+                self.CC_eq = [contour_weight[0] + contour_weight[1]*1j]
+                self.w_eq =  [(contour_weight[2] + contour_weight[3]*1j) / np.pi]
+                self.NEQ = False
+
+            self.CC_eq = np.array(self.CC_eq) # Convert list to array
+            self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
             self.eta = 0.1
             self.fermi_self_energy = np.zeros((2, len(self.H), len(self.H)), dtype=np.complex128)
-            self.cc_self_energy = np.zeros((2, len(self.CC), len(self.H), len(self.H)), dtype=np.complex128)
+            self.cc_eq_self_energy = np.zeros(self.CC_eq.shape + (2, len(self.H), len(self.H)), dtype=np.complex128)
+
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
                 # Shift each electrode with its Fermi-level
@@ -105,12 +132,22 @@ class HubbardHamiltonian(object):
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
                 for ispin in [0,1]:
                     # Map self-energy at the Fermi-level of each electrode into the device region
-                    self.fermi_self_energy[ispin, elec_indx[i], elec_indx[i].T] = \
+                    self.fermi_self_energy[ispin, self.elec_indx[i], self.elec_indx[i].T] = \
                         se.self_energy(1j * self.eta, spin=ispin)
-                    for ic, cc in enumerate(self.CC):
-                        # Do it also for each point in the CC
-                        self.cc_self_energy[ispin, ic, elec_indx[i], elec_indx[i].T] = \
-                            se.self_energy(cc, spin=ispin)
+                    for cc_eq_i, CC_eq in enumerate(self.CC_eq):
+                        for ic, cc in enumerate(CC_eq):
+                            # Do it also for each point in the CC, for all EQ CC
+                            self.cc_eq_self_energy[cc_eq_i, ic, ispin, self.elec_indx[i], self.elec_indx[i].T] = \
+                                se.self_energy(cc, spin=ispin)
+                    if self.NEQ:
+                        # Loop over Non-eq contours
+                        for cc_neq_i, CC_neq in enumerate(self.CC_neq):
+                            # self.CC_neq is a list of NEQ Contours
+                            # cc_neq_i is the index for each contour
+                            for ic, cc in enumerate(CC_neq):
+                                # Do it also for each point in the NEQ-CC
+                                self.cc_neq_self_energy[cc_neq_i, ic, ispin, self.elec_indx[i], self.elec_indx[i].T] = \
+                                    se.self_energy(cc, spin=ispin)
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -387,8 +424,6 @@ class HubbardHamiltonian(object):
         if q_dn is None:
             q_dn = self.Ndn
 
-        CC, w = self.CC, self.w
-
         no = len(self.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
@@ -434,20 +469,32 @@ class HubbardHamiltonian(object):
             Etot = 0.
             for ispin in [0, 1]:
                 HC = self.H.Hk(spin=ispin, format='array')
-
+                D = np.zeros((len(self.CC_eq),)+HC.shape)
                 ni[ispin, :] = 0.
-                for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], w)):
-                    inv_GF[:, :] = 0.
-                    np.fill_diagonal(inv_GF, cc)
-                    inv_GF[:, :] -= HC[:, :]
-                    inv_GF -= self.cc_self_energy[ispin, ic]
+                # Loop over all eq. Contours
+                for cc_eq_i, [CC, w] in enumerate(zip(self.CC_eq, self.w_eq)):
+                    for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], w)):
+                        inv_GF[:, :] = 0.
+                        np.fill_diagonal(inv_GF, cc)
+                        inv_GF[:, :] -= HC[:, :]
+                        inv_GF -= self.cc_eq_self_energy[cc_eq_i, ic, ispin]
 
-                    # Greens function evaluated at each point of the CC multiplied by the weight
-                    Gf_wi = - np.diag(inv(inv_GF)) * wi
-                    ni[ispin, :] += Gf_wi.imag
+                        # Greens function evaluated at each point of the CC multiplied by the weight
+                        Gf_wi = - inv(inv_GF) * wi
+                        D[cc_eq_i] +=  Gf_wi.imag
 
-                    # Integrate density of states to obtain the total energy
-                    Etot += (Gf_wi.sum() * cc).imag
+                        # Integrate density of states to obtain the total energy
+                        # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
+                        Etot += (np.diag(Gf_wi).sum() * cc).imag
+
+                if self.NEQ:
+                    # Correct Density matrix with Non-equilibrium integrals
+                    Delta, w = self.Delta(Ef, spin=ispin)
+                    D = w*(D[0]+Delta[1]) + (1-w)*(D[1]+Delta[0])
+                else:
+                    D = D[0]
+
+                ni[ispin, :] = np.diag(D)
 
             # Calculate new charge
             ntot = ni.sum()
@@ -468,6 +515,30 @@ class HubbardHamiltonian(object):
         self.Etot = Etot - self.U * (self.nup*self.ndn).sum()
 
         return dn
+
+    def Delta(self, Ef, spin=0):
+
+        def spectral(G, self_energy):
+            Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
+            return (1/np.pi) * np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
+
+        no = len(self.H)
+        Delta = np.zeros([len(self.CC_neq), no, no], dtype=np.complex128)
+        HC = self.H.Hk(spin=spin, format='array')
+        inv_GF = np.empty([no, no], dtype=np.complex128)
+        for cc_neq_i, [CC_neq, w_neq] in enumerate(zip(self.CC_neq, self.w_neq)):
+
+            for ic, [cc, wi] in enumerate(zip(CC_neq - Ef, w_neq)):
+                inv_GF[:, :] = 0.
+                np.fill_diagonal(inv_GF, cc)
+                inv_GF[:, :] -= HC[:, :]
+                inv_GF -= self.cc_neq_self_energy[cc_neq_i, spin, ic]
+                Delta[cc_neq_i] += spectral(inv(inv_GF), self.cc_neq_self_energy[cc_neq_i, spin, ic])*wi
+
+        # Firstly implement it for two terminals following PRB 65 165401 (2002)
+        # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
+        weight = Delta[1]**2 / ((Delta**2).sum(axis=0))
+        return Delta, weight
 
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
