@@ -3,6 +3,7 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 from Hubbard.plot import Plot
 from Hubbard.plot import GeometryPlot
+import matplotlib.colors as colors
 import numpy as np
 
 
@@ -37,7 +38,7 @@ class Spectrum(Plot):
 class LDOSmap(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
-                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmax=None,
+                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
                  **keywords):
 
         Plot.__init__(self, **keywords)
@@ -60,7 +61,16 @@ class LDOSmap(Plot):
         intdat = np.sum(dat)*(x[1]-x[0])*(y[1]-y[0])
         print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
-        self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, origin='lower', vmax=vmax)
+
+        if scale == 'log':
+            if vmin == 0:
+                vmin = 1e-4
+            norm = colors.LogNorm(vmin=vmin)
+        else:
+            # Linear scale
+            norm = colors.Normalize(vmin=vmin)
+        self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, \
+                    origin='lower', norm=norm, vmax=vmax)
         if axis==0:
             self.set_xlabel(r'$x$ (\AA)')
         elif axis==1:
