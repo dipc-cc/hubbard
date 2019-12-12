@@ -88,26 +88,30 @@ class HubbardHamiltonian(object):
             if CC and os.path.isdir(CC):
                 # For bias calculation it reads all the CC from the EQ and NEQ fles
                 import glob
-
                 self.CC_eq = []
                 self.w_eq = []
+                elec_lab_eq = []
                 for fn in glob.glob(CC + "/*TSCCEQ*"):
-                    contour_weight = sisl.io.tableSile(fn).read_data()
+                    print('Reading CC from %s'%fn)
+                    contour_weight, comment = sisl.io.tableSile(fn).read_data(ret_comment=True)
+                    elec_lab_eq.append(comment[1].split()[-1])
                     self.CC_eq.append(contour_weight[0] + contour_weight[1]*1j)
                     self.w_eq.append((contour_weight[2] + contour_weight[3]*1j) / np.pi)
                 self.CC_neq = []
                 self.w_neq = []
                 self.NEQ = True
+                sort = []
                 for fn in glob.glob(CC + "/*TSCCNEQ*"):
-                    contour_weight = sisl.io.tableSile(fn).read_data()
+                    print('Reading CC from %s'%fn)
+                    contour_weight, comment = sisl.io.tableSile(fn).read_data(ret_comment=True)
+                    elec_lab_neq = comment[1].split()[-1]
+                    sort.append(np.where(np.array(elec_lab_eq) == elec_lab_neq)[0][0])
                     self.CC_neq.append(contour_weight[0] + contour_weight[1]*1j)
                     # Weights are real in the bias window
                     self.w_neq.append(contour_weight[2])
-
-                self.CC_neq = np.array(self.CC_neq) # Convert list of CC_neq to array
-
+                self.CC_neq = np.array(self.CC_neq)[sort,:] # Convert list of CC_neq to array
                 # Initialize the neq-self-energies matrix
-                self.cc_neq_self_energy = np.zeros((len(self.CC_neq),) + (2, len(self.H), len(self.H)), dtype=np.complex128)
+                self.cc_neq_self_energy = np.zeros( self.CC_neq.shape + (2, len(self.H), len(self.H)), dtype=np.complex128)
 
             else:
                 if not CC:
@@ -489,7 +493,7 @@ class HubbardHamiltonian(object):
 
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(Ef, spin=ispin)
+                    Delta, w = self.Delta(HC, Ef[ispin], spin=ispin)
                     D = w*(D[0]+Delta[1]) + (1-w)*(D[1]+Delta[0])
                 else:
                     D = D[0]
@@ -516,15 +520,14 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def Delta(self, Ef, spin=0):
+    def Delta(self, HC, Ef, spin=0):
 
         def spectral(G, self_energy):
             Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
             return (1/np.pi) * np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
 
-        no = len(self.H)
+        no = len(HC)
         Delta = np.zeros([len(self.CC_neq), no, no], dtype=np.complex128)
-        HC = self.H.Hk(spin=spin, format='array')
         inv_GF = np.empty([no, no], dtype=np.complex128)
         for cc_neq_i, [CC_neq, w_neq] in enumerate(zip(self.CC_neq, self.w_neq)):
 
@@ -532,13 +535,15 @@ class HubbardHamiltonian(object):
                 inv_GF[:, :] = 0.
                 np.fill_diagonal(inv_GF, cc)
                 inv_GF[:, :] -= HC[:, :]
-                inv_GF -= self.cc_neq_self_energy[cc_neq_i, spin, ic]
-                Delta[cc_neq_i] += spectral(inv(inv_GF), self.cc_neq_self_energy[cc_neq_i, spin, ic])*wi
+                inv_GF -= self.cc_neq_self_energy[cc_neq_i, ic, spin]
+                Delta[cc_neq_i] += spectral(inv(inv_GF), self.cc_neq_self_energy[cc_neq_i, ic, spin])*wi
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
-        weight = Delta[1]**2 / ((Delta**2).sum(axis=0))
-        return Delta, weight
+        weight = Delta[0]**2 / ((Delta**2).sum(axis=0))
+
+        # Get rid of the numerical imaginary part (which is ~0)
+        return Delta.real, weight.real
 
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
