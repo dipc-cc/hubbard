@@ -103,14 +103,16 @@ def agnr2(w, bond=1.42):
     g.set_nsc([3, 1, 1])
     return g
 
-def agnr2B(w, n, bond=1.42):
-    """ Create an AGNR with two B-substitutions """
+def agnr2B(w, n, bond=1.42, nB=2):
+    """ Create an AGNR with (up to) two B-substitutions """
     g = agnr2(w, bond=bond).tile(n, axis=0)
     g = g.move(-g.center())
     # Find hexagon near origo
     idx = g.close(np.array([0, 0, 0]), R=[1.1*bond])
     # Set first and last atoms to B
     B = sisl.Atom(Z=5, R=bond, orbs=1)
-    g.atoms[idx[0]] = B
-    g.atoms[idx[-1]] = B
+    if nB > 0:
+        g.atoms[idx[0]] = B
+    if nB > 1:
+        g.atoms[idx[-1]] = B
     return g

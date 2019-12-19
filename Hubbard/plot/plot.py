@@ -92,7 +92,8 @@ class GeometryPlot(Plot):
             if g.atoms[ia].Z == 1: # H
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
             elif g.atoms[ia].Z == 5: # B
-                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+                self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='r', lw=2, fill=False))
+                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 6: # C
                 if len(idx[1]) == 4:
                     # If the C atom has 4 neighbours (sp3 configuration) it will be represented 
@@ -104,7 +105,8 @@ class GeometryPlot(Plot):
                 else:
                     pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 7: # N
-                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=1.0))
+                self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='g', lw=2, fill=False))
+                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z > 10: # Some other atom
                 aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
 
