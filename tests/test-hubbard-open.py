@@ -42,7 +42,7 @@ print('MFH-NEGF Etot = {:10.5f}'.format(MFH_HC.Etot))
 
 # Reference test for total energy
 HC_periodic = H_elec.tile(3,axis=0)
-MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1])
+MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
 dn = MFH_HC_periodic.converge(method=2)
 
 assert abs(MFH_HC_periodic.nup.sum() - MFH_HC_periodic.Nup) < 1e-7
