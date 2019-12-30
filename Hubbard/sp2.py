@@ -21,7 +21,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     sp3 = []
     for ia, atom in enumerate(ext_geom.atoms.iter()):
         # Append non C-type atoms in aux list
-        if atom.Z not in [5,6,7]:
+        if atom.Z not in [5, 6, 7]:
             aux.append(ia)
         idx = ext_geom.close(ia, R=[0.1, 1.6])
         if len(idx[1]) == 4: # Search for atoms with 4 neighbors
