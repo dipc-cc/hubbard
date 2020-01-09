@@ -421,7 +421,7 @@ class HubbardHamiltonian(object):
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
-        Ef = -self.Ef.copy()
+        Ef = self.Ef.copy()
         while abs(ntot - q_up - q_dn) > qtol:
 
             if ntot > 0.:
@@ -464,14 +464,16 @@ class HubbardHamiltonian(object):
             Etot = 0.
             for spin in [0, 1]:
                 HC = self.H.Hk(spin=spin, format='array')
-                D = np.zeros((len(self.CC_eq),)+HC.shape)
+                D = np.zeros([len(self.CC_eq), len(HC)])
                 ni[spin, :] = 0.
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
                     Delta, w = self.Delta(HC, Ef[spin], spin=spin)
+                    # Store only diagonal
+                    w = np.diag(w)
                     # Transfer Delta to D
-                    D[0, :, :] = Delta[1]
-                    D[1, :, :] = Delta[0]
+                    D[0, :] = np.diag(Delta[1])
+                    D[1, :] = np.diag(Delta[0])
                     # TODO We need to also calculate the total energy for NEQ
                     #      this should probably be done in the Delta method
                     del Delta
@@ -489,28 +491,28 @@ class HubbardHamiltonian(object):
                             inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][cc_eq_i][ic]
 
                         # Greens function evaluated at each point of the CC multiplied by the weight
-                        Gf_wi = - inv(inv_GF) * wi
+                        Gf_wi = - np.diag(inv(inv_GF)) * wi
                         D[cc_eq_i] += Gf_wi.imag
 
                         # Integrate density of states to obtain the total energy
                         # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
                         if cc_eq_i == 0:
-                            Etot += (np.diag(w*Gf_wi).sum() * cc).imag
+                            Etot += ((w*Gf_wi).sum() * cc).imag
                         else:
-                            Etot += (np.diag((1-w)*Gf_wi).sum() * cc).imag
+                            Etot += (((1-w)*Gf_wi).sum() * cc).imag
 
                 if self.NEQ:
                     D = w * D[0] + (1-w) * D[1]
                 else:
                     D = D[0]
 
-                ni[spin, :] = np.diag(D)
+                ni[spin, :] = D
 
             # Calculate new charge
             ntot = ni.sum()
 
         # Save Fermi-level of the device
-        self.Ef = -Ef
+        self.Ef = Ef
 
         # Measure of density change
         dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
