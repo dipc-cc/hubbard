@@ -85,6 +85,7 @@ class HubbardHamiltonian(object):
             self.ndn = self.DM.tocsr(1).diagonal()
 
         if elecs:
+            self.Ef = np.zeros([2], np.float64)
             dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 
             self.eta = 0.1
@@ -93,48 +94,53 @@ class HubbardHamiltonian(object):
                 CC = os.path.split(__file__)[0]+'/EQCONTOUR'
             contour_weight = sisl.io.tableSile(CC).read_data()
             self.CC_eq = np.array([contour_weight[0] + contour_weight[1]*1j])
-            self.w_eq =  (contour_weight[2] + contour_weight[3]*1j) / np.pi
-            self.NEQ = False
+            self.w_eq = (contour_weight[2] + contour_weight[3]*1j) / np.pi
+            self.NEQ = V != 0
 
             mu = [V*0.5, -V*0.5]
-            if V !=0:
-                self.NEQ = True
+            if self.NEQ:
                 self.CC_eq = np.array([self.CC_eq[0] + mu[0], self.CC_eq[0] + mu[1]])
 
                 # Integration path for the non-Eq window
-                self.CC_neq, dE = np.linspace(min(mu)-5*kT, max(mu)+5*kT, 81, retstep=True)
+                dE = 0.01
+                self.CC_neq = np.arange(min(mu)-5*kT, max(mu)+5*kT + dE, dE) + 1j * 0.001
                 # Weights for the non-Eq integrals
-                w_neq = dE * ( dist(self.CC_neq - mu[0]) - dist(self.CC_neq - mu[1]) )
+                w_neq = dE * ( dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]) )
                 # Store weights for correction to RIGHT [0] and LEFT [1]
-                self.w_neq = np.array([w_neq, -1*w_neq])
+                self.w_neq = np.array([w_neq, -w_neq]) / np.pi
 
                 # Initialize the neq-self-energies matrix
-                self.cc_neq_self_energy = np.zeros( self.CC_neq.shape + (2, len(self.H), len(self.H)), dtype=np.complex128)
+                # electrode, spin, energy
+                self._cc_neq_SE = [[[None] * len(self.CC_neq)] * 2] * 2
 
             self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
-            self.fermi_self_energy = np.zeros((2, len(self.H), len(self.H)), dtype=np.complex128)
-            self.cc_eq_self_energy = np.zeros(self.CC_eq.shape + (2, len(self.H), len(self.H)), dtype=np.complex128)
+            # electrode, spin
+            self._ef_SE = [[None] * 2] * 2
+            # electrode, spin, EQ-contour, energy
+            self._cc_eq_SE = [[[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2] * 2
 
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
                 # Shift each electrode with its Fermi-level
-                elec.H.shift(-Ef_elec + mu[i])
+                # And also shift the chemical potential
+                # Since the electrodes are *bulk* i.e. the entire electronic structure
+                # is simply shifted we need to subtract since the contour shifts the chemical
+                # potential back.
+                elec.H.shift(-Ef_elec - mu[i])
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
-                for ispin in [0,1]:
+                for spin in [0,1]:
                     # Map self-energy at the Fermi-level of each electrode into the device region
-                    self.fermi_self_energy[ispin, self.elec_indx[i], self.elec_indx[i].T] = \
-                        se.self_energy(1j * self.eta, spin=ispin)
+                    self._ef_SE[i][spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
+
                     for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                         for ic, cc in enumerate(CC_eq):
                             # Do it also for each point in the CC, for all EQ CC
-                            self.cc_eq_self_energy[cc_eq_i, ic, ispin, self.elec_indx[i], self.elec_indx[i].T] = \
-                                se.self_energy(cc, spin=ispin)
+                            self._cc_eq_SE[i][spin][cc_eq_i][ic] = se.self_energy(cc, spin=spin)
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            self.cc_neq_self_energy[ic, ispin, self.elec_indx[i], self.elec_indx[i].T] = \
-                                se.self_energy(cc + 1j*self.eta, spin=ispin)
+                            self._cc_neq_SE[i][spin][ic] = se.self_energy(cc, spin=spin)
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -415,7 +421,7 @@ class HubbardHamiltonian(object):
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
-        Ef = np.zeros([2], dtype=np.float64)
+        Ef = -self.Ef.copy()
         while abs(ntot - q_up - q_dn) > qtol:
 
             if ntot > 0.:
@@ -431,14 +437,15 @@ class HubbardHamiltonian(object):
                 # and expect the Lorentzian peak to be positioned at
                 # the current Fermi-level we will use eta = 100 meV
                 # Calculate charge at the Fermi-level
-                for ispin in [0, 1]:
-                    HC = self.H.Hk(spin=ispin).todense()
-                    cc = - Ef[ispin] + 1j * self.eta
+                for spin in [0, 1]:
+                    HC = self.H.Hk(spin=spin).todense()
+                    cc = - Ef[spin] + 1j * self.eta
 
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
                     inv_GF[:, :] -= HC[:, :]
-                    inv_GF -= self.fermi_self_energy[ispin]
+                    for i, SE in enumerate(self._ef_SE):
+                        inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin]
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -447,41 +454,57 @@ class HubbardHamiltonian(object):
                     #   F(x) - F(0) = arctan(x) / pi = dq
                     # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                     # and consider this a pre-factor
-                    f = dq[ispin] / (- np.trace(inv(inv_GF)).imag / _pi)
+                    f = dq[spin] / (- np.trace(inv(inv_GF)).imag / _pi)
                     # Since x above is in units of eta, we have to multiply with eta
                     if abs(f) < 0.45:
-                        Ef[ispin] += 2 * self.eta * math.tan(f * _pi)
+                        Ef[spin] += self.eta * math.tan(f * _pi)
                     else:
-                        Ef[ispin] += 2 * self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
+                        Ef[spin] += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
+
             Etot = 0.
-            for ispin in [0, 1]:
-                HC = self.H.Hk(spin=ispin, format='array')
+            for spin in [0, 1]:
+                HC = self.H.Hk(spin=spin, format='array')
                 D = np.zeros((len(self.CC_eq),)+HC.shape)
-                ni[ispin, :] = 0.
+                ni[spin, :] = 0.
+                if self.NEQ:
+                    # Correct Density matrix with Non-equilibrium integrals
+                    Delta, w = self.Delta(HC, Ef[spin], spin=spin)
+                    # Transfer Delta to D
+                    D[0, :, :] = Delta[1]
+                    D[1, :, :] = Delta[0]
+                    # TODO We need to also calculate the total energy for NEQ
+                    #      this should probably be done in the Delta method
+                    del Delta
+                else:
+                    # This ensures we can calculate for EQ only calculations
+                    w = 1.
+
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC - Ef[ispin], self.w_eq)):
+                    for ic, [cc, wi] in enumerate(zip(CC - Ef[spin], self.w_eq)):
                         inv_GF[:, :] = 0.
                         np.fill_diagonal(inv_GF, cc)
                         inv_GF[:, :] -= HC[:, :]
-                        inv_GF -= self.cc_eq_self_energy[cc_eq_i, ic, ispin]
+                        for i, SE in enumerate(self._cc_eq_SE):
+                            inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][cc_eq_i][ic]
 
                         # Greens function evaluated at each point of the CC multiplied by the weight
                         Gf_wi = - inv(inv_GF) * wi
-                        D[cc_eq_i] +=  Gf_wi.imag
+                        D[cc_eq_i] += Gf_wi.imag
 
                         # Integrate density of states to obtain the total energy
                         # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
-                        Etot += (np.diag(Gf_wi).sum() * cc).imag
+                        if cc_eq_i == 0:
+                            Etot += (np.diag(w*Gf_wi).sum() * cc).imag
+                        else:
+                            Etot += (np.diag((1-w)*Gf_wi).sum() * cc).imag
 
                 if self.NEQ:
-                    # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, Ef[ispin], spin=ispin)
-                    D = w*(D[0]+Delta[1]) + (1-w)*(D[1]+Delta[0])
+                    D = w * D[0] + (1-w) * D[1]
                 else:
                     D = D[0]
 
-                ni[ispin, :] = np.diag(D)
+                ni[spin, :] = np.diag(D)
 
             # Calculate new charge
             ntot = ni.sum()
@@ -507,11 +530,10 @@ class HubbardHamiltonian(object):
 
         def spectral(G, self_energy, elec):
             # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
-            self_energy = self_energy[self.elec_indx[elec], self.elec_indx[elec].T]
             Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
             G = G[:, self.elec_indx[elec].T[0]]
             # Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)
-            return (1/np.pi) * np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
+            return np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
@@ -519,12 +541,15 @@ class HubbardHamiltonian(object):
 
         for ic, cc in enumerate(self.CC_neq - Ef):
             inv_GF[:, :] = 0.
-            np.fill_diagonal(inv_GF, cc + self.eta*1j)
+            np.fill_diagonal(inv_GF, cc)
             inv_GF[:, :] -= HC[:, :]
-            inv_GF -= self.cc_neq_self_energy[ic, spin]
+            for i, SE in enumerate(self._cc_neq_SE):
+                inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][ic]
+            # Calculate the Green function once
+            inv_GF[:, :] = inv(inv_GF)
             # Elec (0, 1) are (left, right)
-            Delta[0] += spectral(inv(inv_GF), self.cc_neq_self_energy[ic, spin], 0) * self.w_neq[0,ic] # Correction to RIGHT
-            Delta[1] += spectral(inv(inv_GF), self.cc_neq_self_energy[ic, spin], 1) * self.w_neq[1,ic] # Correction to LEFT
+            for i, SE in enumerate(self._cc_neq_SE):
+                Delta[i] += spectral(inv_GF, SE[spin][ic], i) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
@@ -533,7 +558,7 @@ class HubbardHamiltonian(object):
         # Get rid of the numerical imaginary part (which is ~0)
         return Delta.real, weight.real
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         if method == 2:
@@ -554,9 +579,9 @@ class HubbardHamiltonian(object):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = iterate_(mix=premix)
+                dn = iterate_(mix=premix, **func_args)
             else:
-                dn = iterate_(mix=mix)
+                dn = iterate_(mix=mix, **func_args)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
