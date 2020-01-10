@@ -52,6 +52,7 @@ class HubbardHamiltonian(object):
 
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.H = TBHam.copy()
+        self.H.finalize()
         self.geom = TBHam.geometry
 
         # Total initial charge
@@ -83,6 +84,7 @@ class HubbardHamiltonian(object):
             self.DM = DM
             self.nup = self.DM.tocsr(0).diagonal()
             self.ndn = self.DM.tocsr(1).diagonal()
+        self.DM.finalize()
 
         if elecs:
             self.Ef = np.zeros([2], np.float64)
