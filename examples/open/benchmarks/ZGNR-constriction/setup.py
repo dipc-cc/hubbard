@@ -54,7 +54,7 @@ HC.geom.write('device.xyz')
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object of the device
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT, V=0.1)
 # Initial densities
 success = MFH_HC.read_density('HC_density.nc')
 if not success:
@@ -63,7 +63,9 @@ if not success:
     MFH_HC.set_polarization(up, dn=dn)
 
 # Converge using iterative method 3
-dn = MFH_HC.converge(method=3, steps=1, tol=1e-5)
+MFH_HC.converge(method=3, steps=1, tol=0.01, func_args={'qtol': 0.2})
+dn = MFH_HC.converge(method=3, steps=1, tol=1e-5, func_args={'qtol': 1e-4})
+
 print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
 # Write also densities for future calculations
 MFH_HC.write_density('HC_density.nc')
