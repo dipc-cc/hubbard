@@ -11,6 +11,7 @@ amssymb,prb,superscriptaddress]{revtex4}
 \newcommand{\Secref}[1]{Sec.~\ref{#1}}
 
 \newcommand{\eg}[1]{\textit{e.g.}}
+\newcommand{\ie}[1]{\textit{i.e.}}
 
 \begin{document}
 
@@ -29,7 +30,7 @@ Sebasti\'an, Spain}}
 
 \begin{abstract}
 We study the band gaps of ch-GNRs as a function of the chiral parameters $(n,m,w)$. The band gap is multiplied by $(-1)^{Z_{2}}$, where $Z_{2}$ is the topological invariant obtained as $e^{\sum_{n}\gamma_{n}}$ (with $\gamma_{n}$ the Zak phase of each occupied band). We compare the calculations obtained with 1NN and 3NN Tight-Binding models. %Therefore, the ``positive'' values correspond to topologically trivial systems, while the ``negative'' values correspond to topologically non-trivial systems.
-We then focus on the experimental cases $n=3, m=1, 2$ and $w=4,6,8$. We also show the behavior of the HOMO and LUMO wavefunctions along the lower edge of a \emph{finite} ribbon of 15 p.u. and the dependency of the HOMO-LUMO gap as a function of the (finite) chGNR length. We also show the bulk density of states (infinite ribbon) and the surface density of states (semi-infinite ribbon). All calculations here were performed with $U=0$. We conclude by saying that since we find small differences between the phase diagrams of \Figref{fig:phase-diagrams} obtained with 1NN and 3NN models, there are some cases where the topoology is not very robust, and hence they are not the best examples to search for topological properties since their qualitative electronic behavior is sensitive to small details. This argument is supported by \Figref{fig:gap-fit-length}, where it can be seen that the size effect is crucial to find the ingap states for the systems that have a very small bandgap (\eg \ \ $(3,1,8)$-chGNR), while the cases that present a large bandgap seem to have more robust topological properties (\eg \ \ $(3,2,8)$-chGNR).
+We then focus on the experimental cases $n=3, m=1, 2$ and $w=4,6,8$. We also show the behavior of the HOMO and LUMO wavefunctions along the lower edge of a \emph{finite} ribbon of 15 p.u. and the dependency of the HOMO-LUMO gap as a function of the (finite) chGNR length. We also show the bulk density of states (infinite ribbon) and the surface density of states (semi-infinite ribbon). All calculations here were performed with $U=0$. We conclude by saying that since we find small differences between the phase diagrams of \Figref{fig:phase-diagrams-linear} obtained with 1NN and 3NN models, there are some cases where the topoology is not very robust, and hence they are not the best examples to search for topological properties since their qualitative electronic behavior is sensitive to small details. This argument is supported by \Figref{fig:gap-fit-length}, where it can be seen that the size effect is crucial to find the ingap states for the systems that have a very small bandgap (\eg \ \ $(3,1,8)$-chGNR), while the cases that present a large bandgap seem to have more robust topological properties (\eg \ \ $(3,2,8)$-chGNR).
 \end{abstract}
 
 
@@ -50,6 +51,14 @@ We then focus on the experimental cases $n=3, m=1, 2$ and $w=4,6,8$. We also sho
 	\caption{Band gap of $(n,m,w)$-GNRs as a function of the chiral parameters $(n,m,w)$ in linear scale obtained with 1NN (top row) and 3NN (bottom row). The value of the band gap is in each case multiplied by $(-1)^{Z_{2}}$, with $Z_{2}$ the topological invariant. Therefore, the ``positive'' (blue) values correspond to topologically trivial systems, while the ``negative'' (red) values correspond to topologically non-trivial systems.}
 	\label{fig:phase-diagrams-linear}
 \end{figure*}
+
+\begin{figure*}
+	\includegraphics[height=5cm]{../1NN_linear_band_gap_imshow_angle}
+	\includegraphics[height=5cm]{../3NN_linear_band_gap_imshow_angle}
+	\caption{Band gap of $(n,m,w)$-GNRs as a function of the chiral parameters $(\theta_{ch},w)$ in linear scale obtained with 1NN (left) and 3NN (right).  The chiral parameters run between: $n=[1,..,5]$, $w=[4,6,..,12]$ and $m=[1,..,w/2]$. The value of the band gap is in each case multiplied by $(-1)^{Z_{2}}$, with $Z_{2}$ the topological invariant. Therefore, the ``positive'' (blue) values correspond to topologically trivial systems, while the ``negative'' (red) values correspond to topologically non-trivial systems.}
+	\label{fig:phase-diagrams-linear-angle}
+\end{figure*}
+
 
 %\begin{figure*}
 %	\scalebox{1.8}{\input{fig2_log.tex}}
@@ -87,6 +96,36 @@ We then focus on the experimental cases $n=3, m=1, 2$ and $w=4,6,8$. We also sho
 \end{figure*}
 
 \begin{figure*}
+	\includegraphics[height=4.5cm]{../3-1-4/1NN_L15_LDOSmap}
+	\includegraphics[height=4.5cm]{../3-1-6/1NN_L15_LDOSmap}
+	\includegraphics[height=4.5cm]{../3-1-8/1NN_L15_LDOSmap}
+	\includegraphics[height=4.5cm]{../3-2-4/1NN_L15_LDOSmap}
+	\includegraphics[height=4.5cm]{../3-2-6/1NN_L15_LDOSmap}
+	\includegraphics[height=4.5cm]{../3-2-8/1NN_L15_LDOSmap}
+	\caption{LDOS map of the \emph{finite} ribbons of 15 precursor units obtianed with the 1NN model in log scale. The LDOS map was obtained by using $\gamma_{e}=10^{-4}$ eV and $\gamma_{x}=1$ \AA \ for the smearing parameters in the Lorentzian functions.} %$DOS(E, x) = \sum_{ij}\frac{1}{\pi}\left[\frac{\gamma_{e}^{2}}{\gamma_{e}^{2}+(E-\varepsilon_{i})^{2}}\right]\frac{1}{\pi}\left[\frac{|\psi_{j}|^{2}\gamma_{x}^{2}}{\gamma_{x}^{2}+(x-x_{j})^{2}}\right]$, where $\varepsilon_{i}$ is the $i$th eigenvalue, $\psi_{j}$ is the $j$th eigenvector of the Hamiltonian and $x_{j}$ is the $j$th $x$ coordinate in the ribbon, and $\gamma_{e}=10^{-4}$ eV and $\gamma_{x}=1$ \AA \  are the smearing parameters for the Lorentzian functions.}
+\end{figure*}
+
+\begin{figure*}
+	\includegraphics[height=3.5cm]{../3-1-4/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-1-4/1NN_L15_HOMO-1_DOS}
+	\includegraphics[height=3.5cm]{../3-1-6/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-1-6/1NN_L15_HOMO-1_DOS}
+	\includegraphics[height=3.5cm]{../3-1-8/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-1-8/1NN_L15_HOMO-1_DOS}
+	\caption{LDOS distribution in the real space of the \emph{finite} $(3,1,w)$-chGNR ribbons of 15 precursor units obtianed with the 1NN model for $w=4,6,8$ at $E=HOMO$ and $E=HOMO-1$. The LDOS here was obtained as $DOS_{i}=\sum_{\alpha}\frac{1}{\pi}\frac{|\psi_{i\alpha}^{2}|\eta^{2}}{(E-\varepsilon_{\alpha})^{2}+\eta^{2}}$ with $\eta=10^{-4}$ eV the smearing parameter, and by slicing the real-space grid at $z=1$ \AA.}
+\end{figure*}
+
+\begin{figure*}
+	\includegraphics[height=3.5cm]{../3-2-4/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-2-4/1NN_L15_HOMO-1_DOS}
+	\includegraphics[height=3.5cm]{../3-2-6/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-2-6/1NN_L15_HOMO-1_DOS}
+	\includegraphics[height=3.5cm]{../3-2-8/1NN_L15_HOMO_DOS}
+	\includegraphics[height=3.5cm]{../3-2-8/1NN_L15_HOMO-1_DOS}
+	\caption{LDOS distribution in the real space of the \emph{finite} $(3,2,w)$-chGNR ribbons of 15 precursor units obtianed with the 1NN model for $w=4,6,8$ at $E=HOMO$ and $E=HOMO-1$. The LDOS here was obtained as $DOS_{i}=\sum_{\alpha}\frac{1}{\pi}\frac{|\psi_{i\alpha}^{2}|\eta}{(E-\varepsilon_{\alpha})^{2}+\eta^{2}}$ with $\eta=10^{-4}$ eV the smearing parameter, and by slicing the real-space grid at $z=1$ \AA.}
+\end{figure*}
+
+\begin{figure*}
 	%\includegraphics[height=4cm]{../../ssh/SSH-trivial_gap_fit}
 	%\includegraphics[height=4cm]{../../ssh/SSH-topological_gap_fit}
 	\includegraphics[height=4cm]{../3-1-4/1NN_gap_fit}
@@ -108,7 +147,24 @@ We then focus on the experimental cases $n=3, m=1, 2$ and $w=4,6,8$. We also sho
 	\includegraphics[height=4cm]{../3-2-4/1NN_DOS_U0}
 	\includegraphics[height=4cm]{../3-2-6/1NN_DOS_U0}
 	\includegraphics[height=4cm]{../3-2-8/1NN_DOS_U0}
-	\caption{Bulk and surface Density of states of the $(n,m,w)$-chGNRs obtained with the 1NN model. The DOS were obtained as $DOS_{\nu}=-\frac{1}{\pi}\mathrm{Im}\left[\mathrm{Tr}\left[ g_{\nu} \right]\right]$, where $g$ is the Green's function and $\nu$ denotes the surface or bulk.}		
+	\caption{Bulk and surface Density of states of the $(n,m,w)$-chGNRs obtained with the 1NN model. The DOS were obtained as $DOS_{\nu}=-\frac{1}{\pi}\mathrm{Im}\left[\mathrm{Tr}\left[ g_{\nu} \right]\right]$, where $g$ is the Green's function and $\nu$ denotes the surface or bulk.}
+\end{figure*}
+
+
+\begin{figure*}
+	\includegraphics[height=4cm]{../3-1-4/1NN_VB_G}
+	\includegraphics[height=4cm]{../3-1-4/1NN_VB_X}\\
+	\includegraphics[height=4cm]{../3-1-6/1NN_VB_G}
+	\includegraphics[height=4cm]{../3-1-6/1NN_VB_X}\\
+	\includegraphics[height=4cm]{../3-1-8/1NN_VB_G}
+	\includegraphics[height=4cm]{../3-1-8/1NN_VB_X}\\
+	\includegraphics[height=4cm]{../3-2-4/1NN_VB_G}	
+	\includegraphics[height=4cm]{../3-2-4/1NN_VB_X}\\
+	\includegraphics[height=4cm]{../3-2-6/1NN_VB_G}
+	\includegraphics[height=4cm]{../3-2-6/1NN_VB_X}\\
+	\includegraphics[height=4cm]{../3-2-8/1NN_VB_G}
+	\includegraphics[height=4cm]{../3-2-8/1NN_VB_X}
+	\caption{Wave functions of the valence band at $\Gamma$ ($\frac{\pi}{a}=0$) and $X$ ($\frac{\pi}{a}=\pi/a$) with their inversion symmetry eigenvalue annotated in the black rectangle in the left upper corner on each plot, \ie \ $sym=1$ $(sym=-1)$ means that the wavefunction at that particula $k$-point is (anti)symmetric.}
 \end{figure*}
 
 \end{document}
