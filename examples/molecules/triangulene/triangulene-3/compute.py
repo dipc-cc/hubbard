@@ -81,9 +81,9 @@ for n, fni in enumerate(fnlist):
 
     # Plot FM-AFM energies
     FM_AFM = np.loadtxt(fn+'/FM-AFM.dat')
-    U_list = dat[np.where(dat[:,0]<4.3)[0], 0] # First column are U values
-    S1 = dat[np.where(dat[:,0]<4.3)[0], 1] # FM energies
-    S0 = dat[np.where(dat[:,0]<4.3)[0], 2] # AFM energies
+    U_list = FM_AFM[np.where(FM_AFM[:,0]<4.3)[0], 0] # First column are U values
+    S1 = FM_AFM[np.where(FM_AFM[:,0]<4.3)[0], 1] # FM energies
+    S0 = FM_AFM[np.where(FM_AFM[:,0]<4.3)[0], 2] # AFM energies
     p = plot.Plot()
     p.axes.plot(U_list, S1-S0, 'o')
     p.set_xlabel(r'$U$ [eV]')
