@@ -16,14 +16,16 @@ if model == '3NN':
 else:
     t2 = t3 = 0
 
-# Compute and plot the bandgap as a function of (n,m) for a paritcular ribbon width
+# Compute and plot the bandgap as a function of (n,m,w) with Z2
 if True:
     m = [1,2,3,4,5]
-    ch.plot_band_gap_imshow(m=m, figsize=(8,4), model=model, lim=1.0)
+    ch.plot_band_gap_imshow(m=m, figsize=(8,4), model=model, lim=1.0, scale='linear')
+    ch.plot_band_gap_imshow_angle(m=m, figsize=(7,4), model=model, lim=1.0, scale='linear')
 
 n = 3
 m = [1,2]
 w = [4,6,8]
+Nfinite = 15
 
 for m_i in m:
     for w_i in w:
@@ -38,7 +40,7 @@ for m_i in m:
 
         ch.analyze(H0, directory, model=model)
         # Make finite ribbon of 15 reps
-        Hfinite = H0.tile(15, axis=0)
+        Hfinite = H0.tile(Nfinite, axis=0)
         Hfinite.set_nsc([1,1,1])
         ch.analyze_edge(Hfinite, directory, model=model)
         ch.plot_states(H0, directory, model=model)
@@ -47,6 +49,9 @@ for m_i in m:
         # Plot surface and bulk density of states
         if m_i == 1 and w_i == 8:
             xlim=0.1
+            ymax=0.5
         else:
             xlim=0.5
+            ymax=1.0
         op.open_boundary(H0, directory, xlim=xlim, model=model)
+        ch.plot_dos(Hfinite, directory, L=Nfinite, model=model, scale='log', ymax=ymax, only_LDOSmap=False, gamma_e=1e-4)

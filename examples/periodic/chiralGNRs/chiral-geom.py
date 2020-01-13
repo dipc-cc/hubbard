@@ -25,6 +25,7 @@ def analyze(H0, directory, nx=51, model='1NN'):
 def analyze_edge(H0, directory, model='1NN'):
     # Create 15 length ribbon
     geom = H0.geometry
+    geom = geom.move(-geom.center(what='xyz'))
     # Identify edge sites along the lower ribbon border
     geom.set_nsc([3,1,1])
     sites = []
@@ -42,12 +43,16 @@ def analyze_edge(H0, directory, model='1NN'):
     p = plot.Plot()
     y1 = np.absolute(evec[sites, H.Nup-1] )**2
     y2 = np.absolute(evec[sites, H.Nup] )**2
+    y3 = np.absolute(evec[sites, H.Nup-2] )**2
+    y4 = np.absolute(evec[sites, H.Nup+1] )**2
     x = geom.xyz[sites, 0]
-    zipped = list(zip(x, y1, y2))
+    zipped = list(zip(x, y1, y2, y3, y4))
     zipped.sort(key = lambda t: t[0])
-    x, y1, y2 = np.array(zipped)[:,0], np.array(zipped)[:,1], np.array(zipped)[:,2]
+    x, y1, y2, y3, y4 = np.array(zipped).T
+    p.axes.plot(x, y3, '-ok', label=r'HOMO-1')
     p.axes.plot(x, y1, '-or', label=r'HOMO')
     p.axes.plot(x, y2, '--ob', label=r'LUMO')
+    p.axes.plot(x, y4, '--og', label=r'LUMO+1')
     p.axes.legend(fontsize=13)
     p.set_ylabel(r'$|\Psi_{n}(x_{edge})|^{2}$ [a.u.]', fontsize=23)
     p.set_xlabel(r'$x$ [\AA]', fontsize=23)
@@ -118,6 +123,34 @@ def gap_exp(H0, directory, L=np.arange(1,31), model='1NN'):
     p.axes.set_yscale('log')
     p.savefig(directory+'/%s_gap_fit.pdf'%model)
 
+def plot_dos(H0, directory, L=15, model='1NN', gamma_e=0.001, vmax=None, ymax=1, scale='linear', only_LDOSmap=True):
+    H = hh.HubbardHamiltonian(H0, U=0.)
+    
+    ev = H.eigh(spin=0)
+    H.find_midgap()
+    ev -= H.midgap
+
+    if not only_LDOSmap:
+        DOS = H.DOS(ev[H.Nup-1], eta=gamma_e)
+        p = plot.DOS_distribution(H, DOS, realspace=True, z=1.0, colorbar=True, figsize=(10,2), vmax=0.002)
+        p.set_title(r'[%s] $E_{HOMO} = %.2f$ meV'%(directory, ev[H.Nup-1]*1000))
+        p.colorbar.set_label(r'$DOS$ [eV$^{-1}$ \AA$^{-3}$]', fontsize=10)
+        p.savefig(directory+'/%s_L%i_HOMO_DOS.pdf'%(model, L))
+        
+        DOS = H.DOS(ev[H.Nup-2], eta=gamma_e)
+        p = plot.DOS_distribution(H, DOS, realspace=True, z=1.0, colorbar=True, figsize=(10,2), vmax=0.002)
+        p.set_title(r'[%s] $E_{HOMO-1} = %.2f$ meV'%(directory, ev[H.Nup-2]*1000))
+        p.colorbar.set_label(r'$DOS$ [eV$^{-1}$ \AA$^{-3}$]', fontsize=10)
+        p.savefig(directory+'/%s_L%i_HOMO-1_DOS.pdf'%(model, L))
+    
+    if False:
+        p = plot.LDOSmap(H, gamma_e=gamma_e, gamma_x=1.0, ymax=2*ymax, vmin=1e-4, vmax=vmax, scale=scale)
+        p.add_colorbar(p.imshow)
+        p.colorbar.set_label(r'$DOS$ [eV$^{-1}$]')
+        p.set_ylim(-ymax, ymax)
+        p.set_title(r'[%s]'%directory)
+        p.savefig(directory+'/%s_L%i_LDOSmap.pdf'%(model, L))
+
 def phase_diagram(m=1, model='1NN'):
     if model == '3NN':
         t2, t3 = 0.2, 0.18
@@ -152,7 +185,7 @@ def phase_diagram(m=1, model='1NN'):
             bg, z2  = get_Zak_phase(geom)
             band_gap_matrix[i_n, i_w, 0] = bg
             band_gap_matrix[i_n, i_w, 1] = z2
-    
+
     fn = '%s_band_gap_zak_m%i.nc'%(model, m)
     ncf = NC.Dataset(fn, 'w')
 
@@ -187,7 +220,7 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0, scale='line
                  cbar_pad=0.15,
                  )
     import matplotlib.colors as colors
-    
+
     if scale == 'log':
         norm = colors.SymLogNorm(linthresh=0.03, vmin=-lim,vmax=lim)
     else:
@@ -228,3 +261,49 @@ def plot_band_gap_imshow(m=1, figsize=(15,10), model='1NN', lim=1.0, scale='line
     p.axes.set_axis_off()
     p.fig.savefig('%s_%s_band_gap_imshow.pdf'%(model, scale), bbox_inches='tight')
     print('Wrote %s_%s_band_gap_imshow.pdf'%(model, scale))
+
+def plot_band_gap_imshow_angle(m=1, nmax=5, figsize=(8,10), model='1NN', lim=1.0, scale='linear'):
+    if not isinstance(m, list):
+        m = [m]
+    import matplotlib.pyplot as plt
+    p = plot.Plot(figsize=figsize)
+    ax = p.fig.add_subplot(111, polar=True)
+
+    import matplotlib.colors as colors
+    import matplotlib.pyplot as plt
+    
+    if scale == 'log':
+        norm = colors.SymLogNorm(linthresh=0.03, vmin=-lim,vmax=lim)
+    else:
+        norm = colors.Normalize(vmin=-lim,vmax=lim)
+    
+    theta_max = 1e-10
+    for i, m_i in enumerate(m):
+        fn = '%s_band_gap_zak_m%i.nc'%(model, m[i])
+        try:
+            ncf = NC.Dataset(fn, 'r')
+        except:
+            phase_diagram(m=m[i], model=model)
+            ncf = NC.Dataset(fn, 'r')
+
+        band_gap_matrix = ncf['BG'][:]
+        w = ncf['wlist'][:]
+        n = ncf['nlist'][:]
+        ix = np.where(n<=nmax)
+        n = n[ix]
+
+        bg = band_gap_matrix[:,:,0]
+        z2 = band_gap_matrix[:,:,1]
+        bg *= ((-1)**z2)
+        for i_w, w_i in enumerate(w):
+            ch_angle = np.arctan((2*m_i-1)*np.sqrt(3)/(2*n+1))
+            imshow = ax.scatter(ch_angle, w_i*np.ones(len(ch_angle)), c=bg[ix[0], i_w], edgecolors='k', cmap='seismic_r', norm=norm, vmax=1.0, vmin=-1.0)
+        theta_max = max(theta_max, max(ch_angle)*180/np.pi)
+
+    p.add_colorbar(imshow, pos='left')
+    p.colorbar.set_label(r'$E_{g}$ [eV]')
+    ax.set_thetamin(0)
+    ax.set_thetamax(theta_max+3)
+    ax.set_yticks([4,6,8,10,12])
+
+    p.savefig('%s_%s_band_gap_imshow_angle.pdf'%(model, scale))
