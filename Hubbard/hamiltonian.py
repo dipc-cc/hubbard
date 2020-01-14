@@ -113,14 +113,14 @@ class HubbardHamiltonian(object):
 
                 # Initialize the neq-self-energies matrix
                 # electrode, spin, energy
-                self._cc_neq_SE = [[[None] * len(self.CC_neq)] * 2] * 2
+                self._cc_neq_SE = []
 
             self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
             # electrode, spin
-            self._ef_SE = [[None] * 2] * 2
+            self._ef_SE = []
             # electrode, spin, EQ-contour, energy
-            self._cc_eq_SE = [[[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2] * 2
+            self._cc_eq_SE = []
 
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
@@ -131,18 +131,24 @@ class HubbardHamiltonian(object):
                 # potential back.
                 elec.H.shift(-Ef_elec - mu[i])
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
+                _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2 )
+                _ef_SE = np.array([None]*2)
+                _cc_neq_SE = [[None] * len(self.CC_neq)] * 2
                 for spin in [0,1]:
                     # Map self-energy at the Fermi-level of each electrode into the device region
-                    self._ef_SE[i][spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
+                    _ef_SE[spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
 
                     for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                         for ic, cc in enumerate(CC_eq):
                             # Do it also for each point in the CC, for all EQ CC
-                            self._cc_eq_SE[i][spin][cc_eq_i][ic] = se.self_energy(cc, spin=spin)
+                            _cc_eq_SE[spin][cc_eq_i][ic] = se.self_energy(cc, spin=spin)
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            self._cc_neq_SE[i][spin][ic] = se.self_energy(cc, spin=spin)
+                            _cc_neq_SE[i][spin][ic] = se.self_energy(cc, spin=spin)
+                self._ef_SE.append(_ef_SE)
+                self._cc_eq_SE.append(_cc_eq_SE)
+                self._cc_neq_SE.append(_cc_neq_SE)
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
