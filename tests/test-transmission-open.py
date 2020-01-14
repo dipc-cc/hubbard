@@ -35,7 +35,7 @@ HC = H_elec.tile(3,axis=0)
 HC.set_nsc([1,1,1])
 
 # Map electrodes in the device region
-elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
+elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 
 # MFH object
 MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT)
@@ -45,7 +45,7 @@ dn = MFH_HC.converge(method=3, steps=1, tol=1e-5)
 print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
 
 # Shift device with its Fermi level and write nc file
-MFH_HC.H.shift(-MFH_HC.Ef)
+MFH_HC.H.shift(MFH_HC.Ef)
 MFH_HC.H.write('MFH_HC.nc')
 
 print(abs(MFH_elec.tile(3,axis=0).nup - MFH_HC.nup).sum())
