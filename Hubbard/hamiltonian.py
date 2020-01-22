@@ -110,10 +110,8 @@ class HubbardHamiltonian(object):
                 w_neq = dE * ( dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]) )
                 # Store weights for correction to RIGHT [0] and LEFT [1]
                 self.w_neq = np.array([w_neq, -w_neq]) / np.pi
-
-                # Initialize the neq-self-energies matrix
-                # electrode, spin, energy
-                self._cc_neq_SE = []
+            else:
+                self.CC_neq = []
 
             self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
 
@@ -121,6 +119,8 @@ class HubbardHamiltonian(object):
             self._ef_SE = []
             # electrode, spin, EQ-contour, energy
             self._cc_eq_SE = []
+            # electrode, spin, energy
+            self._cc_neq_SE = []
 
             for i, elec in enumerate(elecs):
                 Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
@@ -132,8 +132,8 @@ class HubbardHamiltonian(object):
                 elec.H.shift(-Ef_elec - mu[i])
                 se = sisl.RecursiveSI(elec.H, elec_dir[i])
                 _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2 )
-                _ef_SE = np.array([None]*2)
-                _cc_neq_SE = [[None] * len(self.CC_neq)] * 2
+                _ef_SE = np.array([None] * 2)
+                _cc_neq_SE = np.array([[None] * len(self.CC_neq)] * 2)
                 for spin in [0,1]:
                     # Map self-energy at the Fermi-level of each electrode into the device region
                     _ef_SE[spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
@@ -145,7 +145,7 @@ class HubbardHamiltonian(object):
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            _cc_neq_SE[i][spin][ic] = se.self_energy(cc, spin=spin)
+                            _cc_neq_SE[spin][ic] = se.self_energy(cc, spin=spin)
                 self._ef_SE.append(_ef_SE)
                 self._cc_eq_SE.append(_cc_eq_SE)
                 self._cc_neq_SE.append(_cc_neq_SE)
