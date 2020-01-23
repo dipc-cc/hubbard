@@ -38,6 +38,7 @@ def analyze_edge(H0, directory, model='1NN'):
     # Eigenvectors and eigenvalues in 1NN model for finite ribbon
     H = hh.HubbardHamiltonian(H0, U=0.)
     ev, evec = H.eigh(eigvals_only=False, spin=0)
+    H.find_midgap()
     ev -= H.midgap
 
     p = plot.Plot()
