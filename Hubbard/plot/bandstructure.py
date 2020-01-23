@@ -34,6 +34,7 @@ class Bandstructure(Plot):
                     v = evec[projection]
                     pdos[ik, ispin] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
         # Set energy reference to midgap
+        HubbardHamiltonian.find_midgap()
         ev -= HubbardHamiltonian.midgap
         # Make plot
         x = 2*ka # Units ka/pi
