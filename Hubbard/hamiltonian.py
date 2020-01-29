@@ -52,6 +52,8 @@ class HubbardHamiltonian(object):
 
         # Total initial charge
         ntot = self.geom.q0
+        if ntot == 0:
+            ntot = len(self.geom)
 
         print('Neutral system corresponds to a total of %i electrons' %ntot)
 
