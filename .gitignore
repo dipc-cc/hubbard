@@ -11,3 +11,6 @@ Hubbard/info.py
 *.synctex.gz
 *.bbl
 *.blg
+*TBT*
+*time.json*
+*CLOCK
