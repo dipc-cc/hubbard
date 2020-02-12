@@ -321,19 +321,24 @@ class HubbardHamiltonian(object):
 
         return ni, Etot
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
+    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method='occ_insulator', fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
-        if method == 2:
+
+        m = method.lower().replace('-', '_')
+        if m in ['metal', 'occ_metal', '_occ_metal']:
             _occ = self._occ_metal
             # Use finite T close to zero
             if self.kT == 0:
                 self.kT = 0.00001
-        else:
-            if self.kT == 0:
-                _occ = self._occ_insulator
-            else:
-                _occ = self._occ_metal
+        elif self.kT != 0:
+            _occ = self._occ_metal
+        elif m in ['open', 'occ_open', '_occ_open']:
+            "Save this space for the open-systems"
+            pass
+        elif m in ['insulator', 'occ_insulator', '_occ_insulator']:
+            _occ = self._occ_insulator
+
         dn = 1.0
         i = 0
         while dn > tol:
