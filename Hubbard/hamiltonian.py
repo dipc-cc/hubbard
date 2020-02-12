@@ -262,7 +262,7 @@ class HubbardHamiltonian(object):
 
         # Solve eigenvalue problems
         def calc_occ(k, weight):
-            n = ni * 0
+            n = np.empty_like(ni)
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
 
@@ -299,7 +299,7 @@ class HubbardHamiltonian(object):
 
         # Solve eigenvalue problems
         def calc_occ(k, weight):
-            n = ni * 0
+            n = np.empty_like(ni)
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
 
