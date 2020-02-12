@@ -178,6 +178,12 @@ class HubbardHamiltonian(object):
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         self.midgap = (HOMO + LUMO) * 0.5
 
+    def ferm_level(self, q_up=None, q_dn=None):
+        # Create fermi-level determination distribution
+        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        return Ef
+
     def _get_hash(self):
         s = 'U=%.4f' % self.U
         s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
