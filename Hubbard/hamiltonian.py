@@ -214,60 +214,35 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.nup, self.ndn)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, mix=1.0):
+    def iterate(self, _occ=None, q_up=None, q_dn=None, mix=1.0):
+        """
+        This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
+        The only thing that may change is the way in which we obtain the occupations, or the density matrix
+        """
+
+        if not _occ :
+            _occ = self._occ_insulator
+
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
         Nup = int(round(self.Nup))
         Ndn = int(round(self.Ndn))
 
-        # Initialize HOMO/LUMO variables
-        HOMO = -1e10
-        LUMO = 1e10
+        if q_up is None:
+            q_up = Nup
+        if q_dn is None:
+            q_dn = Ndn
 
-        # Initialize new occupations and total energy with Hubbard U
-        ni_up = np.zeros(nup.shape)
-        ni_dn = np.zeros(ndn.shape)
-        Etot = 0
+        ni, Etot = _occ(self, q_up, q_dn)
 
-        # Solve eigenvalue problems
-        def calc_occ(k, weight, HOMO, LUMO):
-            """ My wrap function for calculating occupations """
-            es_up = self.eigenstate(k, spin=0)
-            es_dn = self.eigenstate(k, spin=1)
-
-            # Update HOMO, LUMO
-            HOMO = max(HOMO, es_up.eig[Nup-1], es_dn.eig[Ndn-1])
-            LUMO = min(LUMO, es_up.eig[Nup], es_dn.eig[Ndn])
-            
-            es_up = es_up.sub(range(Nup))
-            es_dn = es_dn.sub(range(Ndn))
-
-            ni_up = (es_up.norm2(False).real).sum(0) * weight
-            ni_dn = (es_dn.norm2(False).real).sum(0) * weight
-
-            # Calculate total energy
-            Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
-            # Return values
-            return HOMO, LUMO, ni_up, ni_dn, Etot
-
-        # Loop k-points and weights
-        for w, k in zip(self.mp.weight, self.mp.k):
-            HOMO, LUMO, up, dn, etot = calc_occ(k, w, HOMO, LUMO)
-            ni_up += up
-            ni_dn += dn
-            Etot += etot
-
-        # Determine midgap energy reference
-        self.midgap = (LUMO + HOMO) / 2
-        
         # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+        dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
 
         # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
-        
+        self.nup = mix * ni[0] + (1. - mix) * nup
+        self.ndn = mix * ni[1] + (1. - mix) * ndn
+
         # Update density matrix
         self.update_density_matrix()
 
@@ -279,15 +254,39 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def iterate2(self, mix=1.0, q_up=None, q_dn=None):
-        # Create short-hands
-        nup = self.nup
-        ndn = self.ndn
-        if q_up is None:
-            q_up = self.Nup
-        if q_dn is None:
-            q_dn = self.Ndn
+    @staticmethod
+    def _occ_insulator(self, q_up, q_dn):
+        # Initialize new occupations and total energy with Hubbard U
+        ni = np.zeros((2, self.sites))
+        Etot = 0
 
+        # Solve eigenvalue problems
+        def calc_occ(k, weight):
+            n = ni * 0
+            es_up = self.eigenstate(k, spin=0)
+            es_dn = self.eigenstate(k, spin=1)
+
+            es_up = es_up.sub(range(q_up))
+            es_dn = es_dn.sub(range(q_dn))
+
+            n[0] = (es_up.norm2(False).real).sum(0) * weight
+            n[1] = (es_dn.norm2(False).real).sum(0) * weight
+
+            # Calculate total energy
+            Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
+            # Return values
+            return n, Etot
+
+        # Loop k-points and weights
+        for w, k in zip(self.mp.weight, self.mp.k):
+            n, etot = calc_occ(k, w)
+            ni += n
+            Etot += etot
+
+        return ni, Etot
+
+    @staticmethod
+    def _occ_metal(self, q_up, q_dn):
         # Create fermi-level determination distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
         Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
@@ -295,76 +294,55 @@ class HubbardHamiltonian(object):
         dist_dn = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[1])
 
         # Initialize new occupations and total energy with Hubbard U
-        ni_up = np.zeros(nup.shape)
-        ni_dn = np.zeros(ndn.shape)
+        ni = np.zeros((2, self.sites))
         Etot = 0
 
         # Solve eigenvalue problems
         def calc_occ(k, weight):
-            """ My wrap function for calculating occupations """
+            n = ni * 0
             es_up = self.eigenstate(k, spin=0)
             es_dn = self.eigenstate(k, spin=1)
 
             # Reduce to occupied stuff
             occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            ni_up = (es_up.norm2(False).real * occ_up).sum(0)
+            n[0] = (es_up.norm2(False).real * occ_up).sum(0)
             occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
+            n[1] = (es_dn.norm2(False).real * occ_dn).sum(0)
             Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
             # Return values
-            return ni_up, ni_dn, Etot
+            return n, Etot
 
         # Loop k-points and weights
         for w, k in zip(self.mp.weight, self.mp.k):
-            up, dn, etot = calc_occ(k, w)
-            ni_up += up
-            ni_dn += dn
+            n, etot = calc_occ(k, w)
+            ni += n
             Etot += etot
 
-        # Determine midgap energy reference (or simply the fermi-level)
-        self.midgap = Ef.sum() / 2
-        
-        # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
-
-        # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
-        
-        # Update density matrix
-        self.update_density_matrix()
-
-        # Update spin hamiltonian
-        self.update_hamiltonian()
-
-        # Store total energy
-        self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
-
-        return dn
+        return ni, Etot
 
     def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
         if method == 2:
-            iterate_ = self.iterate2
+            _occ = self._occ_metal
             # Use finite T close to zero
             if self.kT == 0:
                 self.kT = 0.00001
         else:
             if self.kT == 0:
-                iterate_ = self.iterate
+                _occ = self._occ_insulator
             else:
-                iterate_ = self.iterate2
+                _occ = self._occ_metal
         dn = 1.0
         i = 0
         while dn > tol:
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = iterate_(mix=premix)
+                dn = self.iterate(_occ=_occ, mix=premix)
             else:
-                dn = iterate_(mix=mix)
+                dn = self.iterate(_occ=_occ, mix=mix)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
