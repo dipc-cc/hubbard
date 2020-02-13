@@ -13,4 +13,5 @@ from .hamiltonian import *
 from . import plot
 from .sp2 import *
 from .ncsile import *
+from .density import *
 from . import geometry
