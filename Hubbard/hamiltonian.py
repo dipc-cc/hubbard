@@ -214,14 +214,11 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.nup, self.ndn)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, _occ=None, q_up=None, q_dn=None, mix=1.0):
+    def iterate(self, occ_method, q_up=None, q_dn=None, mix=1.0):
         """
         This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
         The only thing that may change is the way in which we obtain the occupations, or the density matrix
         """
-
-        if not _occ :
-            _occ = self._occ_insulator
 
         # Create short-hands
         nup = self.nup
@@ -234,7 +231,7 @@ class HubbardHamiltonian(object):
         if q_dn is None:
             q_dn = Ndn
 
-        ni, Etot = _occ(self, q_up, q_dn)
+        ni, Etot = occ_method(self, q_up, q_dn)
 
         # Measure of density change
         dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
@@ -254,90 +251,9 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    @staticmethod
-    def _occ_insulator(self, q_up, q_dn):
-        # Initialize new occupations and total energy with Hubbard U
-        ni = np.zeros((2, self.sites))
-        Etot = 0
-
-        # Solve eigenvalue problems
-        def calc_occ(k, weight):
-            n = np.empty_like(ni)
-            es_up = self.eigenstate(k, spin=0)
-            es_dn = self.eigenstate(k, spin=1)
-
-            es_up = es_up.sub(range(q_up))
-            es_dn = es_dn.sub(range(q_dn))
-
-            n[0] = (es_up.norm2(False).real).sum(0) * weight
-            n[1] = (es_dn.norm2(False).real).sum(0) * weight
-
-            # Calculate total energy
-            Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
-            # Return values
-            return n, Etot
-
-        # Loop k-points and weights
-        for w, k in zip(self.mp.weight, self.mp.k):
-            n, etot = calc_occ(k, w)
-            ni += n
-            Etot += etot
-
-        return ni, Etot
-
-    @staticmethod
-    def _occ_metal(self, q_up, q_dn):
-        # Create fermi-level determination distribution
-        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
-        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        dist_up = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[0])
-        dist_dn = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[1])
-
-        # Initialize new occupations and total energy with Hubbard U
-        ni = np.zeros((2, self.sites))
-        Etot = 0
-
-        # Solve eigenvalue problems
-        def calc_occ(k, weight):
-            n = np.empty_like(ni)
-            es_up = self.eigenstate(k, spin=0)
-            es_dn = self.eigenstate(k, spin=1)
-
-            # Reduce to occupied stuff
-            occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            n[0] = (es_up.norm2(False).real * occ_up).sum(0)
-            occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            n[1] = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
-
-            # Return values
-            return n, Etot
-
-        # Loop k-points and weights
-        for w, k in zip(self.mp.weight, self.mp.k):
-            n, etot = calc_occ(k, w)
-            ni += n
-            Etot += etot
-
-        return ni, Etot
-
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method='occ_insulator', fn=None):
+    def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
-
-        m = method.lower().replace('-', '_')
-        if m in ['metal', 'occ_metal', '_occ_metal']:
-            _occ = self._occ_metal
-            # Use finite T close to zero
-            if self.kT == 0:
-                self.kT = 0.00001
-        elif self.kT != 0:
-            _occ = self._occ_metal
-        elif m in ['open', 'occ_open', '_occ_open']:
-            "Save this space for the open-systems"
-            pass
-        elif m in ['insulator', 'occ_insulator', '_occ_insulator']:
-            _occ = self._occ_insulator
 
         dn = 1.0
         i = 0
@@ -345,9 +261,9 @@ class HubbardHamiltonian(object):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = self.iterate(_occ=_occ, mix=premix)
+                dn = self.iterate(occ_method, mix=premix)
             else:
-                dn = self.iterate(_occ=_occ, mix=mix)
+                dn = self.iterate(occ_method, mix=mix)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
