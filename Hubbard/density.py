@@ -2,7 +2,7 @@ from __future__ import print_function
 import numpy as np
 import sisl
 
-def occ(H, q_up, q_dn):
+def dm(H, q_up, q_dn):
     """ General method to obtain the occupations for periodic or finite systems at a certain temperature"""
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)
@@ -37,7 +37,7 @@ def occ(H, q_up, q_dn):
 
     return ni, Etot
 
-def occ_insulator(H, q_up, q_dn):
+def dm_insulator(H, q_up, q_dn):
     """ Method to obtain the occupations only for the corner case for insulators at T=0 """
     ni = np.zeros((2, H.sites))
     Etot = 0
