@@ -14,6 +14,7 @@ class Spectrum(Plot):
         Plot.__init__(self, **keywords)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
+        HubbardHamiltonian.find_midgap()
         for ispin in range(2):
             ev, L = HubbardHamiltonian.calc_orbital_charge_overlaps(k=k, spin=ispin)
             ev -= HubbardHamiltonian.midgap

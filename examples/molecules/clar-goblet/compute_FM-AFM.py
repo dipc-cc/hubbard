@@ -1,7 +1,8 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
+import Hubbard.density as dm
+import Hubbard.sp2 as sp2
 import sys
-import Hubbard.ncdf as ncdf
 import numpy as np
 import sisl
 
@@ -13,36 +14,40 @@ mol = mol.move(-mol.center(what='xyz'))
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
 H = hh.HubbardHamiltonian(Hsp2)
+H.random_density()
+
+nup_AFM, ndn_AFM = H.nup, H.ndn
 
 f = open('FM-AFM.dat', 'w')
 
-for u in np.linspace(0.0, 3.5, 15):
+for u in np.arange(5, 0, -0.25):
     # We approach the solutions for different U values
     H.U = u
     try:
-        c = ncdf.read('clar-goblet.nc', ncgroup='AFM_U%i'%(H.U*1000)) # Try reading, if we already have density on file
-        # Use // c.hash == ncdf.gethash(H).hash // To ensure that it is following the same calculation  
-        H.nup, H.ndn = c.nup, c.ndn
+        H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     except:
-        H.random_density()
+        H.nup, H.ndn = nup_AFM, ndn_AFM
     
     # AFM case first
-    dn = H.converge(tol=1e-10)
+    dn = H.converge(dm.dm_insulator, tol=1e-10)
     eAFM = H.Etot
-    ncdf.write(H, 'clar-goblet.nc', ncgroup='AFM_U%i'%(H.U*1000))
+    H.write_density('clar-goblet.nc')
+    nup_AFM, ndn_AFM = H.nup, H.ndn
+
+    if u == 3.5:
+        p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
+        p.savefig('spin_pol_U%i.pdf'%(H.U*1000))
 
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
     try:
-        c = ncdf.read('clar-goblet.nc', ncgroup='FM_U%i'%(H.U*1000)) # Try reading, if we already have density on file
-        # Use // c.hash == ncdf.gethash(H).hash // To ensure that it is following the same calculation 
-        H.nup, H.ndn = c.nup, c.ndn
+        H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     except:
         H.random_density()
-    dn = H.converge(tol=1e-10)
+    dn = H.converge(dm.dm_insulator, tol=1e-10)
     eFM = H.Etot
-    ncdf.write(H, 'clar-goblet.nc', ncgroup='FM_U%i'%(H.U*1000))
+    H.write_density('clar-goblet.nc')
 
     # Revert the imbalance for next loop
     H.Nup -= 1
@@ -51,3 +56,10 @@ for u in np.linspace(0.0, 3.5, 15):
     f.write('%.4f %.8f\n'%(H.U, eFM-eAFM))
 
 f.close()
+
+U, FM_AFM = np.loadtxt('FM-AFM.dat').T
+p = plot.Plot()
+p.axes.plot(U, FM_AFM, 'o')
+p.set_ylabel(r'$E_{FM}-E_{AFM}$ [eV]')
+p.set_xlabel(r'$U$ [eV]')
+p.savefig('FM_AFM.pdf')

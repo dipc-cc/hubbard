@@ -1,8 +1,9 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
+import Hubbard.plot as plot
 import sys
 import numpy as np
-import Hubbard.ncdf as ncdf
+import Hubbard.density as dm
 import sisl
 
 # Build sisl Geometry object
@@ -25,25 +26,26 @@ for u in np.linspace(0.0, 4.0, 5):
 
     # AFM case first
     try:
-        c = ncdf.read(mol_file+'.nc', ncgroup='AFM_U%i'%(H.U*1000)) # Try reading, if we already have density on file
-        H.nup, H.ndn = c.nup, c.ndn
+        H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
     except:
         H.random_density()
-    dn = H.converge()
+    dn = H.converge(dm.dm_insulator)
     eAFM = H.Etot
-    ncdf.write(H, mol_file+'.nc', ncgroup='AFM_U%i'%(H.U*1000))
+    H.write_density(mol_file+'.nc')
     
+    p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
+    p.savefig('%s-spin-U%i'%(mol_file, H.U*1000))
+
     # Now FM case
     H.Nup += 1 # change to two more up-electrons than down
     H.Ndn -= 1
     try:
-        c = ncdf.read(mol_file+'.nc', ncgroup='FM_U%i'%(H.U*1000)) # Try reading, if we already have density on file
-        H.nup, H.ndn = c.nup, c.ndn
+        H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
     except:
         H.random_density()
-    dn = H.converge()
+    dn = H.converge(dm.dm_insulator)
     eFM = H.Etot
-    ncdf.write(H, mol_file+'.nc', ncgroup='FM_U%i'%(H.U*1000))
+    H.write_density(mol_file+'.nc')
     
     # Revert the imbalance for next loop
     H.Nup -= 1
@@ -52,3 +54,10 @@ for u in np.linspace(0.0, 4.0, 5):
     f.write('%.4f %.8f\n'%(4.0-u, eFM-eAFM))
 
 f.close()
+
+U, FM_AFM = np.loadtxt('FM-AFM.dat').T
+p = plot.Plot()
+p.axes.plot(U, FM_AFM, 'o')
+p.set_ylabel(r'$E_{FM}-E_{AFM}$ [eV]')
+p.set_xlabel(r'$U$ [eV]')
+p.savefig('%s-FM_AFM.pdf'%(mol_file))
