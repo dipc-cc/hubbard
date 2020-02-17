@@ -21,9 +21,9 @@ def dm(H, q_up, q_dn):
 
         # Reduce to occupied stuff
         occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-        n[0] = np.einsum('ij->j', es_up.norm2(False).real * occ_up)
+        n[0] = np.einsum('ij, ij->j', occ_up, es_up.norm2(False).real)
         occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-        n[1] = np.einsum('ij->j', es_dn.norm2(False).real * occ_dn)
+        n[1] = np.einsum('ij, ij->j', occ_dn, es_dn.norm2(False).real)
         Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
 
         # Return values
@@ -51,8 +51,8 @@ def dm_insulator(H, q_up, q_dn):
         es_up = es_up.sub(range(q_up))
         es_dn = es_dn.sub(range(q_dn))
 
-        n[0] = np.einsum('ij->j', es_up.norm2(False).real) * weight
-        n[1] = np.einsum('ij->j', es_dn.norm2(False).real) * weight
+        n[0] = (es_up.norm2(False).real).sum(0) * weight
+        n[1] = (es_dn.norm2(False).real).sum(0) * weight
 
         # Calculate total energy
         Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
