@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=0):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -178,6 +178,16 @@ class HubbardHamiltonian(object):
             LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
         self.midgap = (HOMO + LUMO) * 0.5
 
+    def fermi_level(self, q_up=None, q_dn=None):
+        # Create fermi-level determination distribution
+        if q_up is None:
+            q_up = self.Nup
+        if q_dn is None:
+            q_dn = self.Ndn
+        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
+        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        return Ef
+
     def _get_hash(self):
         s = 'U=%.4f' % self.U
         s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
@@ -208,124 +218,32 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.nup, self.ndn)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, mix=1.0):
+    def iterate(self, occ_method, q_up=None, q_dn=None, mix=1.0):
+        """
+        This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
+        The only thing that may change is the way in which we obtain the occupations, or the density matrix
+        """
+
         # Create short-hands
         nup = self.nup
         ndn = self.ndn
         Nup = int(round(self.Nup))
         Ndn = int(round(self.Ndn))
 
-        # Initialize HOMO/LUMO variables
-        HOMO = -1e10
-        LUMO = 1e10
-
-        # Initialize new occupations and total energy with Hubbard U
-        ni_up = np.zeros(nup.shape)
-        ni_dn = np.zeros(ndn.shape)
-        Etot = 0
-
-        # Solve eigenvalue problems
-        def calc_occ(k, weight, HOMO, LUMO):
-            """ My wrap function for calculating occupations """
-            es_up = self.eigenstate(k, spin=0)
-            es_dn = self.eigenstate(k, spin=1)
-
-            # Update HOMO, LUMO
-            HOMO = max(HOMO, es_up.eig[Nup-1], es_dn.eig[Ndn-1])
-            LUMO = min(LUMO, es_up.eig[Nup], es_dn.eig[Ndn])
-            
-            es_up = es_up.sub(range(Nup))
-            es_dn = es_dn.sub(range(Ndn))
-
-            ni_up = (es_up.norm2(False).real).sum(0) * weight
-            ni_dn = (es_dn.norm2(False).real).sum(0) * weight
-
-            # Calculate total energy
-            Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
-            # Return values
-            return HOMO, LUMO, ni_up, ni_dn, Etot
-
-        # Loop k-points and weights
-        for w, k in zip(self.mp.weight, self.mp.k):
-            HOMO, LUMO, up, dn, etot = calc_occ(k, w, HOMO, LUMO)
-            ni_up += up
-            ni_dn += dn
-            Etot += etot
-
-        # Determine midgap energy reference
-        self.midgap = (LUMO + HOMO) / 2
-        
-        # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
-
-        # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
-        
-        # Update density matrix
-        self.update_density_matrix()
-
-        # Update spin hamiltonian
-        self.update_hamiltonian()
-
-        # Store total energy
-        self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
-
-        return dn
-
-    def iterate2(self, mix=1.0, q_up=None, q_dn=None):
-        # Create short-hands
-        nup = self.nup
-        ndn = self.ndn
         if q_up is None:
-            q_up = self.Nup
+            q_up = Nup
         if q_dn is None:
-            q_dn = self.Ndn
+            q_dn = Ndn
 
-        # Create fermi-level determination distribution
-        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
-        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
-        dist_up = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[0])
-        dist_dn = sisl.get_distribution('fermi_dirac', smearing=self.kT, x0=Ef[1])
+        ni, Etot = occ_method(self, q_up, q_dn)
 
-        # Initialize new occupations and total energy with Hubbard U
-        ni_up = np.zeros(nup.shape)
-        ni_dn = np.zeros(ndn.shape)
-        Etot = 0
-
-        # Solve eigenvalue problems
-        def calc_occ(k, weight):
-            """ My wrap function for calculating occupations """
-            es_up = self.eigenstate(k, spin=0)
-            es_dn = self.eigenstate(k, spin=1)
-
-            # Reduce to occupied stuff
-            occ_up = es_up.occupation(dist_up).reshape(-1, 1) * weight
-            ni_up = (es_up.norm2(False).real * occ_up).sum(0)
-            occ_dn = es_dn.occupation(dist_dn).reshape(-1, 1) * weight
-            ni_dn = (es_dn.norm2(False).real * occ_dn).sum(0)
-            Etot = (es_up.eig * occ_up.ravel()).sum() + (es_dn.eig * occ_dn.ravel()).sum()
-
-            # Return values
-            return ni_up, ni_dn, Etot
-
-        # Loop k-points and weights
-        for w, k in zip(self.mp.weight, self.mp.k):
-            up, dn, etot = calc_occ(k, w)
-            ni_up += up
-            ni_dn += dn
-            Etot += etot
-
-        # Determine midgap energy reference (or simply the fermi-level)
-        self.midgap = Ef.sum() / 2
-        
         # Measure of density change
-        dn = (np.absolute(nup - ni_up) + np.absolute(ndn - ni_dn)).sum()
+        dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
 
         # Update occupations on sites with mixing
-        self.nup = mix * ni_up + (1. - mix) * nup
-        self.ndn = mix * ni_dn + (1. - mix) * ndn
-        
+        self.nup = mix * ni[0] + (1. - mix) * nup
+        self.ndn = mix * ni[1] + (1. - mix) * ndn
+
         # Update density matrix
         self.update_density_matrix()
 
@@ -337,28 +255,19 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None):
+    def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, fn=None):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
-        if method == 2:
-            iterate_ = self.iterate2
-            # Use finite T close to zero
-            if self.kT == 0:
-                self.kT = 0.00001
-        else:
-            if self.kT == 0:
-                iterate_ = self.iterate
-            else:
-                iterate_ = self.iterate2
+
         dn = 1.0
         i = 0
         while dn > tol:
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = iterate_(mix=premix)
+                dn = self.iterate(occ_method, mix=premix)
             else:
-                dn = iterate_(mix=mix)
+                dn = self.iterate(occ_method, mix=mix)
             # Print some info from time to time
             if i%steps == 0:
                 print('   %i iterations completed:'%i, dn, self.Etot)
