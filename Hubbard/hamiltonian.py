@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=0):
+    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
