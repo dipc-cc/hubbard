@@ -18,7 +18,7 @@ H = hh.HubbardHamiltonian(Hsp2)
 # Plot the single-particle TB (U = 0.0) wavefunction (SO) for Type 1
 H.U = 0.0
 ev, evec = H.eigh(eigvals_only=False, spin=0)
-N = H.Nup
+N = H.q[0]
 ev -= H.midgap
 f = 3800
 v = evec[:,N-1]

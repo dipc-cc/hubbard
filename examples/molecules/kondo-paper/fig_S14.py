@@ -32,8 +32,8 @@ for u in np.linspace(0.0, 1.4, 15):
     H.write_density('fig_S14.nc')
 
     # Now FM case
-    H.Nup += 1 # change to two more up-electrons than down
-    H.Ndn -= 1
+    H.q[0] += 1 # change to two more up-electrons than down
+    H.q[1] -= 1
     try:
         H.read_density('fig_S14.nc') # Try reading, if we already have density on file
     except:
@@ -44,8 +44,8 @@ for u in np.linspace(0.0, 1.4, 15):
     H.write_density('fig_S14.nc')
 
     # Revert the imbalance for next loop
-    H.Nup -= 1
-    H.Ndn += 1
+    H.q[0] -= 1
+    H.q[1] += 1
 
     f.write('%.4f %.8f\n'%(H.U, eFM-eAFM))
 

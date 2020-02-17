@@ -21,7 +21,7 @@ p.savefig('eigenspectrum_U%i.pdf'%(H.U*100))
 
 # Plot HOMO and LUMO level wavefunctions for up- and down-electrons for U=3.5 eV
 spin = ['up', 'dn']
-N = [H.Nup, H.Ndn]
+N = H.q
 for i in range(1):
     ev, evec = H.eigh(eigvals_only=False, spin=i)
 ev -= H.midgap

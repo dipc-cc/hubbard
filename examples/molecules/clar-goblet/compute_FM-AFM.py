@@ -16,7 +16,7 @@ Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
 H = hh.HubbardHamiltonian(Hsp2)
 H.random_density()
 
-nup_AFM, ndn_AFM = H.nup, H.ndn
+dm_AFM = H.dm
 
 f = open('FM-AFM.dat', 'w')
 
@@ -26,12 +26,13 @@ for u in np.arange(5, 0, -0.25):
     try:
         H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     except:
-        H.nup, H.ndn = nup_AFM, ndn_AFM
+        H.dm = dm_AFM.copy()
     
     # AFM case first
     dn = H.converge(dm.dm_insulator, tol=1e-10)
     eAFM = H.Etot
     H.write_density('clar-goblet.nc')
+    dm_AFM = H.dm.copy()
     nup_AFM, ndn_AFM = H.nup, H.ndn
 
     if u == 3.5:
@@ -39,8 +40,8 @@ for u in np.arange(5, 0, -0.25):
         p.savefig('spin_pol_U%i.pdf'%(H.U*1000))
 
     # Now FM case
-    H.Nup += 1 # change to two more up-electrons than down
-    H.Ndn -= 1
+    H.q[0] += 1 # change to two more up-electrons than down
+    H.q[1] -= 1
     try:
         H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     except:
@@ -50,8 +51,8 @@ for u in np.arange(5, 0, -0.25):
     H.write_density('clar-goblet.nc')
 
     # Revert the imbalance for next loop
-    H.Nup -= 1
-    H.Ndn += 1
+    H.q[0] -= 1
+    H.q[1] += 1
 
     f.write('%.4f %.8f\n'%(H.U, eFM-eAFM))
 

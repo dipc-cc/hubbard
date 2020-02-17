@@ -33,7 +33,7 @@ for u in [0.0, 3.5]:
 
     # Plot HOMO and LUMO level wavefunctions for up- and down-electrons
     spin = ['up', 'dn']
-    N = [H.Nup, H.Ndn]
+    N = H.q
     for i in range(2):
         ev, evec = H.eigh(eigvals_only=False, spin=i)
         H.find_midgap()
