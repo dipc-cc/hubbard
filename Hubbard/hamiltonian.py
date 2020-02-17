@@ -180,6 +180,10 @@ class HubbardHamiltonian(object):
 
     def fermi_level(self, q_up=None, q_dn=None):
         # Create fermi-level determination distribution
+        if q_up is None:
+            q_up = self.Nup
+        if q_dn is None:
+            q_dn = self.Ndn
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
         Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
         return Ef
