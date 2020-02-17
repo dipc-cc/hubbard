@@ -1,5 +1,6 @@
 from __future__ import print_function
 import numpy as np
+from numpy import einsum, conj
 import sisl
 
 def dm(H, q):
@@ -21,9 +22,9 @@ def dm(H, q):
 
         # Reduce to occupied stuff
         occ_up = es_up.occupation(dist_up) * weight
-        n[0] = np.einsum('i,ij->j', occ_up, es_up.norm2(False).real)
+        n[0] = einsum('i,ij->j', occ_up, es_up.norm2(False).real)
         occ_dn = es_dn.occupation(dist_dn) * weight
-        n[1] = np.einsum('i,ij->j', occ_dn, es_dn.norm2(False).real)
+        n[1] = einsum('i,ij->j', occ_dn, es_dn.norm2(False).real)
         Etot = es_up.eig.dot(occ_up) + es_dn.eig.dot(occ_dn)
 
         # Return values
@@ -51,14 +52,11 @@ def dm_insulator(H, q):
         es_up = H.eigenstate(k, spin=0)
         es_dn = H.eigenstate(k, spin=1)
 
-        es_up = es_up.sub(iup)
-        es_dn = es_dn.sub(idn)
-
-        n[0] = (es_up.norm2(False).real).sum(0) * weight
-        n[1] = (es_dn.norm2(False).real).sum(0) * weight
+        n[0] = einsum('ij,ij->j', conj(es_up.state[iup]), es_up.state[iup]).real * weight
+        n[1] = einsum('ij,ij->j', conj(es_dn.state[idn]), es_dn.state[idn]).real * weight
 
         # Calculate total energy
-        Etot = (es_up.eig.sum() + es_dn.eig.sum()) * weight
+        Etot = (es_up.eig[iup].sum() + es_dn.eig[idn].sum()) * weight
         # Return values
         return n, Etot
 
