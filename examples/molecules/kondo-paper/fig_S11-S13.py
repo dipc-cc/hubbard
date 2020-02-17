@@ -1,6 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
+import Hubbard.density as dm
 import sys
 import numpy as np
 
@@ -22,7 +23,7 @@ for u in [0.0, 3.5]:
     else:
         lab = 'Fig_S13'
         H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
-        H.converge()
+        H.converge(dm.dm_insulator)
         H.write_density('fig_S11-S13.nc')
 
     # Plot Eigenspectrum

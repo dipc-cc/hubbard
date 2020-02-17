@@ -1,7 +1,7 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.ncdf as ncdf
 import Hubbard.sp2 as sp2
+import Hubbard.density as dm
 import sys
 import numpy as np
 import sisl
@@ -31,13 +31,12 @@ p.savefig('Fig3_SOMO.pdf')
 # Plot MFH spin polarization for U = 3.5 eV
 H.U = 3.5
 try:
-    c = ncdf.read('fig3_type1.nc') # Try reading, if we already have density on file
-    H.nup, H.ndn = c.nup, c.ndn
+    H.read_density('fig3_type1.nc') # Try reading, if we already have density on file
 except:
     H.random_density()
-H.converge()
-ncdf.write(H, 'fig3_type1.nc')
-p = plot.SpinPolarization(H, vmax=0.20)
+H.converge(dm.dm_insulator)
+H.write_density('fig3_type1.nc')
+p = plot.SpinPolarization(H, ext_geom=mol, vmax=0.20)
 p.savefig('fig3_pol.pdf')
 
 
