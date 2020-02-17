@@ -2,6 +2,7 @@ import sisl
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
+import Hubbard.density as dm
 import Hubbard.geometry as geometry 
 import numpy as np
 import os
@@ -19,7 +20,7 @@ for i, geom in enumerate([agnr, zgnr]):
 
     # Find self-consistent solution with MFH
     H = hh.HubbardHamiltonian(H0, U=2, nkpt=[100, 1, 1])
-    dn = H.converge()
+    dn = H.converge(dm.dm)
 
     # Plot banstructure of Hubbard Hamiltonian
     p = plot.Bandstructure(H, ymax=3)
