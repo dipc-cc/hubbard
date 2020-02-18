@@ -9,7 +9,7 @@ import sisl
 
 # Build sisl Geometry object
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-molecule.sc.set_nsc([1,1,1])
+molecule.sc.set_nsc([1, 1, 1])
 
 # Try reading from file
 Hsp2 = sp2(molecule)

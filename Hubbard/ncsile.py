@@ -11,6 +11,7 @@ from __future__ import print_function
 import numpy as np
 import sisl
 
+
 class ncSileHubbard(sisl.SileCDF):
 
     def read_density(self, group):

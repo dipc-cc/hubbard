@@ -175,6 +175,3 @@ texinfo_documents = [
      author, 'Hubbard', 'Python package for meanfield Hubbard model simulations.',
      'Miscellaneous'),
 ]
-
-
-

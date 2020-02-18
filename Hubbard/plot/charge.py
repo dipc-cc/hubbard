@@ -8,7 +8,7 @@ import numpy as np
 
 class Charge(GeometryPlot):
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0,1], **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], **keywords):
         # Set default keywords
         if 'realspace' in keywords:
             if 'facecolor' not in keywords:
@@ -36,6 +36,7 @@ class Charge(GeometryPlot):
 
         else:
             self.__orbitals__(charge, **keywords)
+
 
 class ChargeDifference(GeometryPlot):
 
@@ -68,6 +69,7 @@ class ChargeDifference(GeometryPlot):
         else:
             self.__orbitals__(charge, **keywords)
 
+
 class SpinPolarization(GeometryPlot):
 
     def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
@@ -90,10 +92,9 @@ class SpinPolarization(GeometryPlot):
 
         # Compute charge difference between up and down channels
         charge = np.diff(HubbardHamiltonian.dm, axis=0).ravel()
-        
+
         if 'realspace' in keywords:
             self.__realspace__(charge, density=True, **keywords)
 
         else:
             self.__orbitals__(charge, **keywords)
-

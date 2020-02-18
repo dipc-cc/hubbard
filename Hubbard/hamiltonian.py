@@ -16,13 +16,14 @@ import Hubbard.ncsile as nc
 import hashlib
 import os
 
+
 class HubbardHamiltonian(object):
     """ sisl-type object
 
     Parameters:
     -----------
     TBHam : sisl.Hamiltonian instance
-        A spin-polarized tight-Binding Hamiltonian
+        A spin-polarized tight-binding Hamiltonian
     U : float, optional
         on-site Coulomb repulsion
     q : array_like, optional
@@ -33,7 +34,7 @@ class HubbardHamiltonian(object):
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
-        
+
         if not TBHam.spin.is_polarized:
             raise ValueError(self.__class__.__name__ + ' requires as spin-polarized system')
 
@@ -53,16 +54,16 @@ class HubbardHamiltonian(object):
         if ntot == 0:
             ntot = len(self.geom)
 
-        print('Neutral system corresponds to a total of %i electrons' %ntot)
-        
+        print('Neutral system corresponds to a total of %i electrons' % ntot)
+
         self.q = np.array(q, dtype=np.float64).copy()
         assert len(self.q) == 2 # Users *must* specify two values
 
         # Use default (low-spin) filling?
         if self.q[1] <= 0:
-            self.q[1] = int(ntot/2)
+            self.q[1] = int(ntot / 2)
         if self.q[0] <= 0:
-            self.q[0] = int(ntot-self.q[1])
+            self.q[0] = int(ntot - self.q[1])
 
         self.sites = len(self.geom)
         self._update_e0()
@@ -84,7 +85,7 @@ class HubbardHamiltonian(object):
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
-    
+
     def eigenstate(self, k, spin=0):
         return self.H.eigenstate(k, spin=spin)
 
@@ -202,7 +203,7 @@ class HubbardHamiltonian(object):
 
     def write_density(self, fn, mode='a'):
         if not os.path.isfile(fn):
-            mode='w'
+            mode = 'w'
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
@@ -254,12 +255,12 @@ class HubbardHamiltonian(object):
             else:
                 dn = self.iterate(occ_method, mix=mix)
             # Print some info from time to time
-            if i%steps == 0:
-                print('   %i iterations completed:'%i, dn, self.Etot)
+            if i % steps == 0:
+                print('   %i iterations completed:' % i, dn, self.Etot)
                 if fn:
                     self.write_density(fn)
 
-        print('   found solution in %i iterations'%i)
+        print('   found solution in %i iterations' % i)
         return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
@@ -267,7 +268,6 @@ class HubbardHamiltonian(object):
         # Compute orbital charge overlaps
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
-
 
     def get_Zak_phase(self, Nx=51, sub='filled', eigvals=False):
         """ Compute Zak phase for 1D systems oriented along the x-axis.
@@ -282,7 +282,6 @@ class HubbardHamiltonian(object):
             # Sum up over all occupied bands:
             sub = np.arange(int(round(self.q[0])))
         return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
-
 
     def get_bond_order(self, format='csr'):
         """ Compute Huckel bond order
@@ -316,11 +315,11 @@ class HubbardHamiltonian(object):
                 for iy in (-1, 0, 1):
                     for iz in (-1, 0, 1):
                         r = (ix, iy, iz)
-                        phase = np.exp(-2.j*np.pi*np.dot(k, r))
+                        phase = np.exp(-2.j * np.pi * np.dot(k, r))
                         for ia in g:
                             for ja in g.close_sc(ia, R=R, isc=r)[1]:
-                                bor = bo[ia, ja]*phase
-                                BO[ia, ja] += w*bor.real
+                                bor = bo[ia, ja] * phase
+                                BO[ia, ja] += w * bor.real
         # Add sigma bond at the end
         for ia in g:
             idx = g.close(ia, R=R)
@@ -331,25 +330,25 @@ class HubbardHamiltonian(object):
         """
         Obtains the spin contamination after the MFH calculation
         Ref. Chemical Physics Letters. 183 (5): 423–431.
-        
+
         This function works for non-periodic systems only.
         """
-        # Define Nalpha and Nbeta, where Nalpha >= Nbeta 
+        # Define Nalpha and Nbeta, where Nalpha >= Nbeta
         Nalpha = np.amax(self.q)
         Nbeta = np.amin(self.q)
-        
+
         # Exact Total Spin expected value (< S² >)
-        S = (Nalpha - Nbeta) * ( (Nalpha - Nbeta)*.25 + 0.5)
+        S = (Nalpha - Nbeta) * ((Nalpha - Nbeta)*.25 + 0.5)
 
         # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
         ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
         ev_dn, evec_dn = self.eigh(eigvals_only=False, spin=1)
 
-        # No need to tell which matrix of eigenstates correspond to alpha or beta, 
+        # No need to tell which matrix of eigenstates correspond to alpha or beta,
         # the sisl function spin_squared already takes this into account
         s2alpha, s2beta = sisl.electron.spin_squared(evec_up[:, :int(round(self.q[0]))].T, evec_dn[:, :int(round(self.q[1]))].T)
-        
-        # Spin contamination 
+
+        # Spin contamination
         S_MFH = S + Nbeta - s2beta.sum()
 
         return S, S_MFH
@@ -372,7 +371,7 @@ class HubbardHamiltonian(object):
         else:
             # Transpose to have dimensions (En, sites)
             if len(eigenstate.shape) == 1:
-                eigenstate = eigenstate.reshape(1, eigenstate.shape[0]) 
+                eigenstate = eigenstate.reshape(1, eigenstate.shape[0])
             else:
                 eigenstate = eigenstate.T
             v1 = np.conjugate(eigenstate)
@@ -384,7 +383,7 @@ class HubbardHamiltonian(object):
             sym = np.dot(v1, v2.T)
         return sym
 
-    def DOS(self, egrid, eta=1e-3, spin=[0,1]):
+    def DOS(self, egrid, eta=1e-3, spin=[0, 1]):
         """
         Obtains the Density Of States of the system convoluted with a Lorentzian function
 
@@ -402,17 +401,17 @@ class HubbardHamiltonian(object):
         # Check if egrid is numpy.ndarray
         if not isinstance(egrid, (np.ndarray)):
             egrid = np.array(egrid)
-        
+
         # Obtain DOS
         DOS = 0
         for ispin in spin:
             ev, evec = self.eigh(eigvals_only=False, spin=ispin)
             ev -= self.midgap
 
-            id1 = np.ones(ev.shape,np.float)
-            id2 = np.ones(egrid.shape,np.float)
-            dE = np.outer(id1,egrid)-np.outer(ev,id2)
-            LOR = 2*eta/(dE**2+eta**2)
-            DOS += np.einsum('ai,ai,ij->aj',evec,evec,LOR)/(2*np.pi)
-        
+            id1 = np.ones(ev.shape, np.float)
+            id2 = np.ones(egrid.shape, np.float)
+            dE = np.outer(id1, egrid) - np.outer(ev, id2)
+            LOR = 2 * eta / (dE ** 2 + eta ** 2)
+            DOS += np.einsum('ai,ai,ij->aj', evec, evec, LOR) / (2 * np.pi)
+
         return DOS

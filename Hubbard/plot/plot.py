@@ -96,8 +96,8 @@ class GeometryPlot(Plot):
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
             elif g.atoms[ia].Z == 6: # C
                 if len(idx[1]) == 4:
-                    # If the C atom has 4 neighbours (sp3 configuration) it will be represented 
-                    # as an aux site 
+                    # If the C atom has 4 neighbours (sp3 configuration) it will be represented
+                    # as an aux site
                     aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
                     # Add a blue patch at the H positions
                     Hsp3 = [i for i in idx[1] if g.atoms[i].Z == 1]
@@ -122,7 +122,7 @@ class GeometryPlot(Plot):
         paux.set_clim(-1, 1)
         self.paux = paux
         self.axes.add_collection(self.paux)
-        
+
     def __orbitals__(self, v, **keywords):
         # Set values for the pi-network
         self.ppi.set_array(v)
@@ -149,19 +149,19 @@ class GeometryPlot(Plot):
         def real_space_grid(v, grid_unit, density):
             import sisl
 
-            # Create a temporary copy of the geometry 
+            # Create a temporary copy of the geometry
             g = self.geom.copy()
-            
+
             # Set new sc to create real-space grid
             sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
             g.set_sc(sc)
-        
+
             # Shift negative xy coordinates within the supercell
             ix = np.where(g.xyz[:, 0] < 0)
             iy = np.where(g.xyz[:, 1] < 0)
             g.xyz[ix, 0] = g.axyz(isc=[1, 0, 0])[ix, 0]
             g.xyz[iy, 1] = g.axyz(isc=[0, 1, 0])[iy, 1]
-            # Make z~0 -> z = 0                      
+            # Make z~0 -> z = 0
             g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
 
             # Create the real-space grid
@@ -224,7 +224,7 @@ class GeometryPlot(Plot):
 
     def set_colorbar_ylabel(self, label, fontsize=20):
         self.colorbar.ax.set_ylabel(label, fontsize=fontsize)
-    
+
     def set_colorbar_yticks(self, ticks):
         self.colorbar.ax.set_yticks(ticks)
 

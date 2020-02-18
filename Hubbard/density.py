@@ -3,6 +3,7 @@ import numpy as np
 from numpy import einsum, conj
 import sisl
 
+
 def dm(H, q):
     """ General method to obtain the occupations for periodic or finite systems at a certain temperature"""
     # Create fermi-level determination distribution
@@ -37,6 +38,7 @@ def dm(H, q):
         Etot += etot
 
     return ni, Etot
+
 
 def dm_insulator(H, q):
     """ Method to obtain the occupations only for the corner case for insulators at T=0 """

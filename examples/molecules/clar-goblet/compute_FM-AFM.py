@@ -8,7 +8,7 @@ import sisl
 
 # Build sisl Geometry object
 mol = sisl.get_sile('clar-goblet.xyz').read_geometry()
-mol.sc.set_nsc([1,1,1])
+mol.sc.set_nsc([1, 1, 1])
 mol = mol.move(-mol.center(what='xyz'))
 
 # 3NN tight-binding model
@@ -27,7 +27,7 @@ for u in np.arange(5, 0, -0.25):
         H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     except:
         H.dm = dm_AFM.copy()
-    
+
     # AFM case first
     dn = H.converge(dm.dm_insulator, tol=1e-10)
     eAFM = H.Etot
