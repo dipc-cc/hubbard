@@ -190,8 +190,8 @@ class HubbardHamiltonian(object):
             s, group = self._get_hash()
             fh = nc.ncSileHubbard(fn, mode=mode)
             if group in fh.groups:
-                nup, ndn = fh.read_density(group)
-                self.dm = np.array([nup, ndn], dtype=np.float64).T
+                dm = fh.read_density(group)
+                self.dm = dm
                 self.update_density_matrix()
                 self.update_hamiltonian()
                 print('Read charge from %s' % fn)
@@ -205,7 +205,7 @@ class HubbardHamiltonian(object):
             mode='w'
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
-        fh.write_density(s, group, self.dm[0, :], self.dm[1, :])
+        fh.write_density(s, group, self.dm)
         print('Wrote charge to %s' % fn)
 
     def iterate(self, occ_method, q=None, mix=1.0):
