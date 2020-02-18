@@ -25,15 +25,13 @@ class HubbardHamiltonian(object):
         A spin-polarized tight-Binding Hamiltonian
     U : float, optional
         on-site Coulomb repulsion
-    Nup : int, optional
-        Number of up-electrons
-    Ndn : int, optional
-        Number of down electrons
+    q : array_like, optional
+        Two values specifying up, down electron occupations
     nkpt : array_like, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, Nup=0, Ndn=0, nkpt=[1, 1, 1], kT=1e-5):
+    def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
         
         if not TBHam.spin.is_polarized:
@@ -56,15 +54,15 @@ class HubbardHamiltonian(object):
             ntot = len(self.geom)
 
         print('Neutral system corresponds to a total of %i electrons' %ntot)
-
-        self.Nup = Nup # Total number of up-electrons
-        self.Ndn = Ndn # Total number of down-electrons
+        
+        self.q = np.array(q, dtype=np.float64).copy()
+        assert len(self.q) == 2 # Users *must* specify two values
 
         # Use default (low-spin) filling?
-        if Ndn <= 0:
-            self.Ndn = int(ntot/2)
-        if Nup <= 0:
-            self.Nup = int(ntot-self.Ndn)
+        if self.q[1] <= 0:
+            self.q[1] = int(ntot/2)
+        if self.q[0] <= 0:
+            self.q[0] = int(ntot-self.q[1])
 
         self.sites = len(self.geom)
         self._update_e0()
@@ -82,8 +80,7 @@ class HubbardHamiltonian(object):
             self.random_density()
         else:
             self.DM = DM
-            self.nup = self.DM.tocsr(0).diagonal()
-            self.ndn = self.DM.tocsr(1).diagonal()
+            self.dm = self.DM._csr.diagonal()
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -96,14 +93,14 @@ class HubbardHamiltonian(object):
         DMtile = self.DM.tile(reps, axis)
         Nup = (DMtile.tocsr(0).diagonal()).sum()
         Ndn = (DMtile.tocsr(1).diagonal()).sum()
-        return self.__class__(Htile, DM=DMtile, U=self.U, Nup=int(round(Nup)), Ndn=int(round(Ndn)))
+        return self.__class__(Htile, DM=DMtile, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
 
     def repeat(self, reps, axis):
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
         Nup = (DMrep.tocsr(0).diagonal()).sum()
         Ndn = (DMrep.tocsr(1).diagonal()).sum()
-        return self.__class__(Hrep, DM=DMrep, U=self.U, Nup=int(round(Nup)), Ndn=int(round(Ndn)))
+        return self.__class__(Hrep, DM=DMrep, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
 
     def _update_e0(self):
         """Internal routine to update e0 """
@@ -115,30 +112,27 @@ class HubbardHamiltonian(object):
         # Update spin Hamiltonian
         q0 = self.geom.atoms.q0
         E = self.e0.copy()
-        E[0, :] += self.U * (self.ndn - q0)
-        E[1, :] += self.U * (self.nup - q0)
+        E += self.U * (self.dm[[1, 0], :] - q0)
         a = np.arange(len(self.H))
         self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
         a = np.arange(len(self.H))
-        self.DM[a, a, [0, 1]] = np.array([self.nup, self.ndn]).T
+        self.DM[a, a, [0, 1]] = self.dm.T
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
         print('Setting random density')
-        self.nup = np.random.rand(self.sites)
-        self.ndn = np.random.rand(self.sites)
+        self.dm = np.random.rand(2, self.sites)
         self.normalize_charge()
         self.update_density_matrix()
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
-        self.nup = self.nup / self.nup.sum() * self.Nup
-        self.ndn = self.ndn / self.ndn.sum() * self.Ndn
-        print('Normalized charge distributions to Nup=%i, Ndn=%i' % (self.Nup, self.Ndn))
+        self.dm *= (self.q / self.dm.sum(1)).reshape(-1, 1)
+        print('Normalized charge distributions to Nup=%.4f, Ndn=%.4f' % (self.q[0], self.q[1]))
 
-    def set_polarization(self, up, dn=[]):
+    def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites.
         Optionally, sites with down-polarization can be specified
 
@@ -150,12 +144,10 @@ class HubbardHamiltonian(object):
             atomic sites where the spin-down density is going to be maximized
         """
         print('Setting up-polarization for sites', up)
-        self.nup[up] = 1.
-        self.ndn[up] = 0.
+        self.dm[:, up] = np.array([1., 0.]).reshape(2, 1)
         if len(dn) > 0:
             print('Setting down-polarization for sites', dn)
-            self.nup[dn] = 0.
-            self.ndn[dn] = 1.
+            self.dm[:, dn] = np.array([0., 1.]).reshape(2, 1)
         self.normalize_charge()
         self.update_density_matrix()
 
@@ -163,9 +155,9 @@ class HubbardHamiltonian(object):
         # This is just a quick way to polarize the lattice
         # without checking that consequtive atoms actually belong to
         # different sublattices
-        for i in range(len(self.nup)):
-            self.nup[i] = i%2
-            self.ndn[i] = 1-i%2
+        a = np.arange(len(self.H))
+        self.dm[0, :] = a % 2
+        self.dm[1, :] = 1 - self.dm[0, :]
         self.normalize_charge()
         self.update_density_matrix()
 
@@ -174,23 +166,22 @@ class HubbardHamiltonian(object):
         for k in self.mp.k:
             ev_up = self.eigh(k=k, spin=0)
             ev_dn = self.eigh(k=k, spin=1)
-            HOMO = max(HOMO, ev_up[self.Nup-1], ev_dn[self.Ndn-1])
-            LUMO = min(LUMO, ev_up[self.Nup], ev_dn[self.Ndn])
+            HOMO = max(HOMO, ev_up[int(round(self.q[0]-1))], ev_dn[int(round(self.q[1]-1))])
+            LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
         self.midgap = (HOMO + LUMO) * 0.5
 
-    def fermi_level(self, q_up=None, q_dn=None):
-        # Create fermi-level determination distribution
-        if q_up is None:
-            q_up = self.Nup
-        if q_dn is None:
-            q_dn = self.Ndn
+    def fermi_level(self, q=None):
+        Q = q
+        for i in (0, 1):
+            if Q[i] is None:
+                Q[i] = self.q[i]
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
-        Ef = self.H.fermi_level(self.mp, q=[q_up, q_dn], distribution=dist)
+        Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
         return Ef
 
     def _get_hash(self):
         s = 'U=%.4f' % self.U
-        s += ' N=(%i,%i)' % (self.Nup, self.Ndn)
+        s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
         s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
@@ -199,9 +190,8 @@ class HubbardHamiltonian(object):
             s, group = self._get_hash()
             fh = nc.ncSileHubbard(fn, mode=mode)
             if group in fh.groups:
-                nup, ndn = fh.read_density(group)
-                self.nup = nup
-                self.ndn = ndn
+                dm = fh.read_density(group)
+                self.dm = dm
                 self.update_density_matrix()
                 self.update_hamiltonian()
                 print('Read charge from %s' % fn)
@@ -215,34 +205,29 @@ class HubbardHamiltonian(object):
             mode='w'
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
-        fh.write_density(s, group, self.nup, self.ndn)
+        fh.write_density(s, group, self.dm)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, occ_method, q_up=None, q_dn=None, mix=1.0):
+    def iterate(self, occ_method, q=None, mix=1.0):
         """
         This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
         The only thing that may change is the way in which we obtain the occupations, or the density matrix
         """
+        if q is None:
+            q = self.q
+        else:
+            if q[0] is None:
+                q[0] = int(round(self.q[0]))
+            if q[1] is None:
+                q[1] = int(round(self.q[1]))
 
-        # Create short-hands
-        nup = self.nup
-        ndn = self.ndn
-        Nup = int(round(self.Nup))
-        Ndn = int(round(self.Ndn))
-
-        if q_up is None:
-            q_up = Nup
-        if q_dn is None:
-            q_dn = Ndn
-
-        ni, Etot = occ_method(self, q_up, q_dn)
+        ni, Etot = occ_method(self, q)
 
         # Measure of density change
-        dn = (np.absolute(nup - ni[0]) + np.absolute(ndn - ni[1])).sum()
+        dn = np.absolute(self.dm - ni).sum()
 
         # Update occupations on sites with mixing
-        self.nup = mix * ni[0] + (1. - mix) * nup
-        self.ndn = mix * ni[1] + (1. - mix) * ndn
+        self.dm = mix * ni + (1. - mix) * self.dm
 
         # Update density matrix
         self.update_density_matrix()
@@ -251,7 +236,7 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - self.U * (self.nup * self.ndn).sum()
+        self.Etot = Etot - self.U * np.multiply.reduce(self.dm, axis=0).sum()
 
         return dn
 
@@ -295,7 +280,7 @@ class HubbardHamiltonian(object):
         bz = sisl.BrillouinZone.parametrize(self.H, func, Nx)
         if sub == 'filled':
             # Sum up over all occupied bands:
-            sub = range(self.Nup)
+            sub = np.arange(int(round(self.q[0])))
         return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
 
 
@@ -350,11 +335,11 @@ class HubbardHamiltonian(object):
         This function works for non-periodic systems only.
         """
         # Define Nalpha and Nbeta, where Nalpha >= Nbeta 
-        Nalpha = max(self.Nup, self.Ndn)
-        Nbeta = min(self.Nup, self.Ndn)
+        Nalpha = np.amax(self.q)
+        Nbeta = np.amin(self.q)
         
         # Exact Total Spin expected value (< S² >)
-        S = .5*(Nalpha - Nbeta) * ( (Nalpha - Nbeta)*.5 + 1)
+        S = (Nalpha - Nbeta) * ( (Nalpha - Nbeta)*.25 + 0.5)
 
         # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
         ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
@@ -362,7 +347,7 @@ class HubbardHamiltonian(object):
 
         # No need to tell which matrix of eigenstates correspond to alpha or beta, 
         # the sisl function spin_squared already takes this into account
-        s2alpha, s2beta = sisl.electron.spin_squared(evec_up[:, :self.Nup].T, evec_dn[:, :self.Ndn].T)
+        s2alpha, s2beta = sisl.electron.spin_squared(evec_up[:, :int(round(self.q[0]))].T, evec_dn[:, :int(round(self.q[1]))].T)
         
         # Spin contamination 
         S_MFH = S + Nbeta - s2beta.sum()
