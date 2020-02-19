@@ -3,7 +3,7 @@ import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
 import Hubbard.sp2 as sp2
 import Hubbard.density as dm
-import Hubbard.geometry as geometry 
+import Hubbard.geometry as geometry
 import numpy as np
 import os
 

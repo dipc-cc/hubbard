@@ -9,7 +9,7 @@ import sisl
 # Build sisl Geometry object
 mol_file = '2-anthracene'
 mol = sisl.get_sile(mol_file+'.XV').read_geometry()
-mol.sc.set_nsc([1,1,1])
+mol.sc.set_nsc([1, 1, 1])
 mol = mol.move(-mol.center(what='xyz'))
 
 # 3NN tight-binding model
@@ -32,13 +32,13 @@ for u in np.linspace(0.0, 4.0, 5):
     dn = H.converge(dm.dm_insulator)
     eAFM = H.Etot
     H.write_density(mol_file+'.nc')
-    
+
     p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
     p.savefig('%s-spin-U%i'%(mol_file, H.U*1000))
 
     # Now FM case
-    H.Nup += 1 # change to two more up-electrons than down
-    H.Ndn -= 1
+    H.q[0] += 1 # change to two more up-electrons than down
+    H.q[1] -= 1
     try:
         H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
     except:
@@ -46,10 +46,10 @@ for u in np.linspace(0.0, 4.0, 5):
     dn = H.converge(dm.dm_insulator)
     eFM = H.Etot
     H.write_density(mol_file+'.nc')
-    
+
     # Revert the imbalance for next loop
-    H.Nup -= 1
-    H.Ndn += 1
+    H.q[0] -= 1
+    H.q[1] += 1
 
     f.write('%.4f %.8f\n'%(4.0-u, eFM-eAFM))
 

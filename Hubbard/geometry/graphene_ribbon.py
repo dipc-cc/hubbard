@@ -16,14 +16,15 @@ import sisl
 cs = np.cos(np.pi/3)
 sn = np.sin(np.pi/3)
 
+
 def zgnr(w, bond=1.42):
-    
+
     # ZGNR coordinates
     rA = np.array([0, 0, 0])
     rB = np.array([sn, cs, 0])
     v1 = np.array([sn, 1+cs, 0])
     v2 = np.array([-sn, 1+cs, 0])
-    xyz = [rA,rB]
+    xyz = [rA, rB]
     for i in range(w-1):
         if i%2 == 0:
             xyz.append(xyz[-2] + v1)
@@ -41,8 +42,9 @@ def zgnr(w, bond=1.42):
     uc = sisl.Geometry(list(xyz), atom=sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
     return uc
 
+
 def agnr(w, bond=1.42):
- 
+
     # AGNR coordinates
     rA = np.array([0, 0, 0])
     rB = np.array([1+2*cs, 0, 0])
@@ -66,13 +68,13 @@ def agnr(w, bond=1.42):
     uc = sisl.Geometry(list(xyz), atom=sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
     return uc
 
+
 def cgnr(n, m, w, bond=1.42, ch_angle=False):
-   
     "Generation of chiral GNR geometry (periodic along x-axis)"
     g = zgnr(w, bond=bond)
     g = g.tile(n+1, axis=0)
     if w % 2 == 0:
-        g = g.remove(np.where(g.xyz[:,0] == min(g.xyz[:,0]))[0])
+        g = g.remove(np.where(g.xyz[:, 0] == min(g.xyz[:, 0]))[0])
     else:
         natoms = w - (2*m + 1)
         g = g.remove([0, -1])
@@ -93,6 +95,7 @@ def cgnr(n, m, w, bond=1.42, ch_angle=False):
     else:
         return uc
 
+
 def agnr2(w, bond=1.42):
     """ sisl-style AGNR primitive cell """
     g = sisl.geom.graphene(orthogonal=True).repeat(w//2 + w % 2, axis=1)
@@ -102,6 +105,7 @@ def agnr2(w, bond=1.42):
     g = g.move(-g.center())
     g.set_nsc([3, 1, 1])
     return g
+
 
 def agnr2B(w, n, bond=1.42, nB=2):
     """ Create an AGNR with (up to) two B-substitutions """

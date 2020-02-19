@@ -7,13 +7,13 @@ import sisl
 
 # Build sisl Geometry object
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-molecule.sc.set_nsc([1,1,1])
+molecule.sc.set_nsc([1, 1, 1])
 
 # Run one iteration
 Hsp2 = sp2(molecule)
 H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.random_density()
-dn = H.iterate(dm.dm_insulator,mix=.1)
+dn = H.iterate(dm.dm_insulator, mix=.1)
 print(dn, H.Etot)
 
 # Run also one iteration with data from ncfile

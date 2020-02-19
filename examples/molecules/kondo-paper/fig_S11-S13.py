@@ -9,8 +9,8 @@ import sisl
 
 # Build sisl Geometry object
 mol = sisl.get_sile('junction-2-2.XV').read_geometry()
-mol.sc.set_nsc([1,1,1])
-mol = mol.move(-mol.center(what='xyz')).rotate(220, [0,0,1])
+mol.sc.set_nsc([1, 1, 1])
+mol = mol.move(-mol.center(what='xyz')).rotate(220, [0, 0, 1])
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 
 # 3NN tight-binding model
@@ -33,7 +33,7 @@ for u in [0.0, 3.5]:
 
     # Plot HOMO and LUMO level wavefunctions for up- and down-electrons
     spin = ['up', 'dn']
-    N = [H.Nup, H.Ndn]
+    N = H.q
     for i in range(2):
         ev, evec = H.eigh(eigvals_only=False, spin=i)
         H.find_midgap()

@@ -21,7 +21,7 @@ class Spectrum(Plot):
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
             plt.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
-            
+
             if 'annotate' in keywords:
                 if keywords['annotate'] != False:
                     for i in range(len(ev)):
@@ -113,12 +113,12 @@ class DOS_distribution(GeometryPlot):
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i'%i, fontsize=15, color='r')
 
-    
+
 class DOS(Plot):
-    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0,1], sites=[], **keywords):
+    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **keywords):
 
         Plot.__init__(self, **keywords)
-        
+
         DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
 
         if np.any(sites):
@@ -128,7 +128,7 @@ class DOS(Plot):
 
         else:
             TDOS = DOS.sum(axis=0)
-            plt.plot(egrid,TDOS,label='TDOS')
+            plt.plot(egrid, TDOS, label='TDOS')
 
         self.set_xlabel(r'E-E$_\mathrm{midgap}$ [eV]')
         self.set_ylabel(r'DOS [1/eV]')
