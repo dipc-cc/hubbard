@@ -211,7 +211,7 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.dm)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, occ_method, q=None, mix=1.0):
+    def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
         """
         This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
         The only thing that may change is the way in which we obtain the occupations, or the density matrix
@@ -224,7 +224,7 @@ class HubbardHamiltonian(object):
             if q[1] is None:
                 q[1] = int(round(self.q[1]))
 
-        ni, Etot = occ_method(self, q)
+        ni, Etot = occ_method(self, q, **kwargs)
 
         # Measure of density change
         dn = np.absolute(self.dm - ni).sum()
