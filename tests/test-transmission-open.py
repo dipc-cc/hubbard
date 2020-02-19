@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 import Hubbard.geometry as geometry
+import Hubbard.density as density
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import Hubbard.plot as plot
@@ -22,7 +23,7 @@ H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(method=2)
+dn = MFH_elec.converge(density.dm)
 
 dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=[MFH_elec.Nup, MFH_elec.Ndn], distribution=dist)
@@ -38,18 +39,17 @@ HC.set_nsc([1,1,1])
 elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, kT=kT)
 
-# Converge using iterative method 3
-dn = MFH_HC.converge(method=3, steps=1, tol=1e-5)
+# First create NEGF object
+negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+# Converge using Green's function method to obtain the densities
+dn = MFH_HC.converge(negf.dm_open, steps=1)
 print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
 
 # Shift device with its Fermi level and write nc file
-MFH_HC.H.shift(MFH_HC.Ef)
+MFH_HC.H.shift(negf.Ef)
 MFH_HC.H.write('MFH_HC.nc')
-
-print(abs(MFH_elec.tile(3,axis=0).nup - MFH_HC.nup).sum())
-print(abs(MFH_elec.tile(3,axis=0).ndn - MFH_HC.ndn).sum())
 
 # TBtrans RUN and plot transmission
 import os
