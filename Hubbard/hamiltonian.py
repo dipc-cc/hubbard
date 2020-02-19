@@ -83,7 +83,7 @@ class HubbardHamiltonian(object):
             self.random_density()
         else:
             self.DM = DM
-            self.dm = self.DM._csr.diagonal()
+            self.dm = self.DM._csr.diagonal().T
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
