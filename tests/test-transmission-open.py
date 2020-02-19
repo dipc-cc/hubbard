@@ -26,7 +26,7 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 dn = MFH_elec.converge(density.dm)
 
 dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=[MFH_elec.Nup, MFH_elec.Ndn], distribution=dist)
+Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=MFH_elec.q, distribution=dist)
 # Shift each electrode with its Fermi-level and write it to netcdf file
 MFH_elec.H.shift(-Ef_elec)
 MFH_elec.H.write('MFH_elec.nc')
@@ -45,7 +45,7 @@ MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, kT=kT)
 negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
 # Converge using Green's function method to obtain the densities
 dn = MFH_HC.converge(negf.dm_open, steps=1)
-print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
+print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 
 # Shift device with its Fermi level and write nc file
 MFH_HC.H.shift(negf.Ef)

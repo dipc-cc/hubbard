@@ -40,8 +40,8 @@ negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A
 # Converge using Green's function method to obtain the densities
 dn = MFH_HC.converge(negf.dm_open, steps=1)
 
-assert abs(MFH_HC.nup.sum() - MFH_HC.Nup) < 1e-5
-assert abs(MFH_HC.ndn.sum() - MFH_HC.Ndn) < 1e-5
+assert abs(MFH_HC.dm[0].sum() - MFH_HC.q[0]) < 1e-5
+assert abs(MFH_HC.dm[1].sum() - MFH_HC.q[1]) < 1e-5
 print('MFH-NEGF Etot = {:10.5f}'.format(MFH_HC.Etot))
 
 # Reference test for total energy
@@ -49,8 +49,8 @@ HC_periodic = H_elec.tile(3,axis=0)
 MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
 dn = MFH_HC_periodic.converge(density.dm)
 
-assert abs(MFH_HC_periodic.nup.sum() - MFH_HC_periodic.Nup) < 1e-7
-assert abs(MFH_HC_periodic.ndn.sum() - MFH_HC_periodic.Ndn) < 1e-7
+assert abs(MFH_HC_periodic.dm[0].sum() - MFH_HC_periodic.q[0]) < 1e-7
+assert abs(MFH_HC_periodic.dm[1].sum() - MFH_HC_periodic.q[1]) < 1e-7
 print('MFH-PER Etot = {:10.5f}'.format(MFH_HC_periodic.Etot))
 print('Diff:')
 print(MFH_HC_periodic.Etot - MFH_HC.Etot)
