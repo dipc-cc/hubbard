@@ -5,6 +5,7 @@ import Hubbard.geometry as geometry
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import Hubbard.plot as plot
+import Hubbard.density as density
 import os
 
 '''
@@ -31,7 +32,7 @@ if not success:
     MFH_elec.set_polarization([0], dn=[9])
     
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(method=2)
+dn = MFH_elec.converge(density.dm)
 # Write also densities for future calculations
 MFH_elec.write_density('elec_density.nc')
 # Plot spin polarization of electrodes
@@ -39,8 +40,7 @@ p = plot.SpinPolarization(MFH_elec, colorbar=True)
 p.savefig('spin_elecs.pdf')
 
 # Find Fermi level of reservoirs and write to netcdf file
-dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-Ef_elecs = MFH_elec.H.fermi_level(MFH_elec.mp, q=[MFH_elec.Nup, MFH_elec.Ndn], distribution=dist)
+Ef_elecs = MFH_elec.fermi_level(q=MFH_elec.q)
 MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
@@ -54,19 +54,19 @@ HC.geom.write('device.xyz')
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object of the device
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, elec_dir=['-A', '+A'], kT=kT, V=0.1)
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, kT=kT)
 # Initial densities
 success = MFH_HC.read_density('HC_density.nc')
 if not success:
-    dn = list(np.arange(9,60,10)) + list(np.arange(84,145,10))
-    up = list(np.arange(0,61,10)) + [67,71] + list(np.arange(75,136,10))
-    MFH_HC.set_polarization(up, dn=dn)
+    # Converge without OBC to have initial density
+    MFH_HC.converge(density.dm, tol=1e-5)
 
-# Converge using iterative method 3
-MFH_HC.converge(method=3, steps=1, tol=0.01, func_args={'qtol': 0.2})
-dn = MFH_HC.converge(method=3, steps=1, tol=1e-5, func_args={'qtol': 1e-4})
+# First create NEGF object
+negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'], V=0.1)
+MFH_HC.converge(negf.dm_open, steps=1, tol=0.01, func_args={'qtol': 0.2})
+dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, func_args={'qtol': 1e-4})
 
-print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
+print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 # Write also densities for future calculations
 MFH_HC.write_density('HC_density.nc')
 # Plot spin polarization of electrodes
@@ -74,7 +74,7 @@ p = plot.SpinPolarization(MFH_HC, colorbar=True)
 p.savefig('spin_HC.pdf')
 
 # Shift with Fermi-level of the device and write Hamiltonian into netcdf file
-MFH_HC.H.shift(MFH_HC.Ef)
+MFH_HC.H.shift(negf.Ef)
 MFH_HC.H.write('MFH_HC.nc')
 
 # RUN TBtrans and plot transmissions

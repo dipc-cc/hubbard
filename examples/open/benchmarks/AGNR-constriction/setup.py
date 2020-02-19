@@ -5,6 +5,7 @@ import Hubbard.geometry as geometry
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import Hubbard.plot as plot
+import Hubbard.density as density
 import os
 
 '''
@@ -29,7 +30,7 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1],  kT=0.025)
 MFH_elec.read_density('elec_density.nc')
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(method=2)
+dn = MFH_elec.converge(density.dm)
 
 # Write also densities for future calculations
 MFH_elec.write_density('elec_density.nc')
@@ -39,7 +40,7 @@ p.savefig('spin_elecs.pdf')
 
 # Find Fermi level of reservoirs and write to netcdf file
 dist = sisl.get_distribution('fermi_dirac', smearing=kT)
-Ef_elecs = MFH_elec.H.fermi_level(MFH_elec.mp, q=[MFH_elec.Nup, MFH_elec.Ndn], distribution=dist)
+Ef_elecs = MFH_elec.H.fermi_level(MFH_elec.mp, q=MFH_elec.q, distribution=dist)
 MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
@@ -53,15 +54,21 @@ HC.geom.write('device.xyz')
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, elecs=[MFH_elec, MFH_elec], elec_indx=elec_indx, kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, kT=kT)
 # Initial densities
-MFH_HC.read_density('HC_density.nc')
+success = MFH_HC.read_density('HC_density.nc')
+if not success:
+    # Converge without OBC to have initial density
+    MFH_HC.converge(density, tol=1e-5)
 
-# Converge using iterative method 3 and write Hamiltonian into netcdf file
-dn = MFH_HC.converge(method=3, steps=1, tol=1e-5)
-MFH_HC.H.shift(-MFH_HC.Ef)
+# First create NEGF object
+negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+# Converge using Green's function method to obtain the densities
+dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5)
+
+MFH_HC.H.shift(-negf.Ef)
 MFH_HC.H.write('MFH_HC.nc')
-print('Nup, Ndn: ', MFH_HC.nup.sum(), MFH_HC.ndn.sum())
+print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 # Write also densities for future calculations
 MFH_HC.write_density('HC_density.nc')
 # Plot spin polarization of electrodes
