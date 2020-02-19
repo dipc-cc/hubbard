@@ -91,7 +91,7 @@ class SpinPolarization(GeometryPlot):
         GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute charge difference between up and down channels
-        charge = np.diff(HubbardHamiltonian.dm, axis=0).ravel()
+        charge = np.diff(HubbardHamiltonian.dm[[1,0]], axis=0).ravel()
 
         if 'realspace' in keywords:
             self.__realspace__(charge, density=True, **keywords)
