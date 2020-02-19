@@ -119,7 +119,7 @@ class NEGF():
         self._cc_neq_SE = []
 
         for i, elec in enumerate(Helecs):
-            Ef_elec = elec.H.fermi_level(elec.mp, q=[elec.Nup, elec.Ndn], distribution=dist)
+            Ef_elec = elec.H.fermi_level(elec.mp, q=elec.q, distribution=dist)
             # Shift each electrode with its Fermi-level
             # And also shift the chemical potential
             # Since the electrodes are *bulk* i.e. the entire electronic structure
@@ -146,7 +146,7 @@ class NEGF():
             self._cc_eq_SE.append(_cc_eq_SE)
             self._cc_neq_SE.append(_cc_neq_SE)
 
-    def dm_open(self, H, q_up, q_dn, qtol=1e-5):
+    def dm_open(self, H, q, qtol=1e-5):
         """
         Iterative method for solving open systems self-consistently
         It computes the spin densities from the Neq Green's function
@@ -166,13 +166,12 @@ class NEGF():
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
         Ef = self.Ef.copy()
-        while abs(ntot - q_up - q_dn) > qtol:
+        while abs(ntot - q.sum()) > qtol:
 
             if ntot > 0.:
                 # correct fermi-level
                 dq = np.empty([2])
-                dq[0] = ni[0].sum() - q_up
-                dq[1] = ni[1].sum() - q_dn
+                dq = ni.sum(axis=1) - q
 
                 # Fermi-level is at 0.
                 # The Lorentzian has ~70% of its integral within
