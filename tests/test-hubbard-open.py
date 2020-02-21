@@ -5,6 +5,7 @@ import sys
 import matplotlib.pyplot as plt
 import Hubbard.geometry as geometry
 import Hubbard.density as density
+from Hubbard.negf import NEGF
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 
@@ -36,7 +37,7 @@ elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, kT=kT)
 
 # First create NEGF object
-negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
 # Converge using Green's function method to obtain the densities
 dn = MFH_HC.converge(negf.dm_open, steps=1)
 
