@@ -10,7 +10,7 @@ _pi = math.pi
 
 
 def dm(H, q):
-    """ General method to obtain the occupations for periodic or finite systems at a certain temperature"""
+    """ General method to obtain the occupations for periodic or finite systems at a given temperature"""
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)
     Ef = H.H.fermi_level(H.mp, q=q, distribution=dist)
@@ -46,7 +46,7 @@ def dm(H, q):
 
 
 def dm_insulator(H, q):
-    """ Method to obtain the occupations only for the corner case for insulators at T=0 """
+    """ Method to obtain the occupations only for the corner case for *insulators* at *T=0* """
     ni = np.zeros((2, H.sites))
     Etot = 0
 
@@ -77,7 +77,32 @@ def dm_insulator(H, q):
 
 
 class NEGF():
+    """
+        This class creates the Open Quantum system object for a N-terminal device
 
+        For the Non-equilibrium case (V!=0) the current implementation
+        only can deal with a 2-terminal device
+
+        Parameters
+        ----------
+        Hdev : HubbardHamiltonian instance
+            HubbardHamiltonian object of the device
+        Helecs : list of HubbardHamiltonian instances
+            list of (already converged) Hamiltonians of the electrodes
+        elec_indx : list, array_like
+            list of atomic positions that *each* electrode occupies in the device
+        elec_dir : list, array_like of strings
+            list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
+        CC : string, optional
+            name of the file containing the energy contour in the complex plane
+        V : float, optional
+            applied bias between the two electrodes
+
+        See Also
+        --------
+        sisl.physics.self_energy : the used routine to calculate the self-energies
+
+    """
     def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
 
         self.Ef = np.zeros([2], np.float64)
@@ -148,17 +173,21 @@ class NEGF():
 
     def dm_open(self, H, q, qtol=1e-5):
         """
-        Iterative method for solving open systems self-consistently
-        It computes the spin densities from the Neq Green's function
-        So far it is implemented for an equilibrium calculation (it reads the equilibrium contour)
+        Method to compute the spin densities from the Neq Green's function
 
         Parameters
         ----------
-        elecs : list of HubbardHamiltonian instances
-            list of (already converged) electrode Hamiltonians present in the system
-        elec_indx : list, numpy array
-            list of the atomic indices of the electrodes in the device region
+        H : HubbardHamiltonian instances
+            HubbardHamiltonian of the object that is being iterated
+        q : list, numpy array
+            charge associated to the up and down spin-components
+        qtol : float, optional
+            tolerance to which the charge is going to be converged in the internal loop
+            that finds the potential of the device
 
+        Returns
+        -------
+        ni, Etot
         """
 
         no = len(H.H)
@@ -260,7 +289,22 @@ class NEGF():
         return ni, Etot
 
     def Delta(self, HC, Ef, spin=0):
+        """
+        Finds the non-equilibrium integrals to correct the left and right equilibrium integrals
 
+        Parameters
+        ----------
+        HC : numpy.ndarray
+            Hamiltonian in its matrix form
+        Ef : list of floats
+            Potential of the device
+        spin : int
+            spin index (0=up, 1=dn)
+
+        Returns
+        -------
+        Delta, weight
+        """
         def spectral(G, self_energy, elec):
             # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
             Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
@@ -278,7 +322,7 @@ class NEGF():
             inv_GF[:, :] -= HC[:, :]
             for i, SE in enumerate(self._cc_neq_SE):
                 inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][ic]
-            # Calculate the Green function once
+            # Calculate the Green function
             inv_GF[:, :] = inv(inv_GF)
             # Elec (0, 1) are (left, right)
             for i, SE in enumerate(self._cc_neq_SE):
