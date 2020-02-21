@@ -15,6 +15,10 @@ import sisl
 import Hubbard.ncsile as nc
 import hashlib
 import os
+import math
+from scipy.linalg import inv
+
+_pi = math.pi
 
 
 class HubbardHamiltonian(object):
@@ -47,6 +51,7 @@ class HubbardHamiltonian(object):
 
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.H = TBHam.copy()
+        self.H.finalize()
         self.geom = TBHam.geometry
 
         # Total initial charge
@@ -72,16 +77,13 @@ class HubbardHamiltonian(object):
 
         self.kT = kT
 
-        # Intial midgap
-        self.find_midgap()
-
         # Initialize density matrix
         if not DM:
             self.DM = sisl.DensityMatrix(self.geom, dim=2)
             self.random_density()
         else:
             self.DM = DM
-            self.dm = self.DM._csr.diagonal()
+            self.dm = self.DM._csr.diagonal().T
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
@@ -209,7 +211,7 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.dm)
         print('Wrote charge to %s' % fn)
 
-    def iterate(self, occ_method, q=None, mix=1.0):
+    def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
         """
         This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
         The only thing that may change is the way in which we obtain the occupations, or the density matrix
@@ -222,7 +224,7 @@ class HubbardHamiltonian(object):
             if q[1] is None:
                 q[1] = int(round(self.q[1]))
 
-        ni, Etot = occ_method(self, q)
+        ni, Etot = occ_method(self, q, **kwargs)
 
         # Measure of density change
         dn = np.absolute(self.dm - ni).sum()
@@ -241,7 +243,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, fn=None):
+    def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('Iterating towards self-consistency...')
 
@@ -251,9 +253,9 @@ class HubbardHamiltonian(object):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = self.iterate(occ_method, mix=premix)
+                dn = self.iterate(occ_method, mix=premix, **func_args)
             else:
-                dn = self.iterate(occ_method, mix=mix)
+                dn = self.iterate(occ_method, mix=mix, **func_args)
             # Print some info from time to time
             if i % steps == 0:
                 print('   %i iterations completed:' % i, dn, self.Etot)
