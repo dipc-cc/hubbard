@@ -6,6 +6,7 @@ import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import Hubbard.plot as plot
 import Hubbard.density as density
+from Hubbard.negf import NEGF
 import os
 
 '''
@@ -62,7 +63,7 @@ if not success:
     MFH_HC.converge(density, tol=1e-5)
 
 # First create NEGF object
-negf = density.NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
 # Converge using Green's function method to obtain the densities
 dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5)
 
