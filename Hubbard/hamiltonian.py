@@ -22,18 +22,30 @@ _pi = math.pi
 
 
 class HubbardHamiltonian(object):
-    """ sisl-type object
+    """ A class to create a Self Consistent Field (SCF) object related to the Mean Field Hubbard (MFH) model
+
+    The `HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
+    by solving self-consistently the Mean Field Hubbard Hamiltonian
+
+    It enables the convergence of several tight-binding described systems towards a user-defined tolerance criteria
+
+    It takes an input tight-binding Hamiltonian and updates the corresponding matrix elements according to the MFH model
 
     Parameters:
     -----------
     TBHam : sisl.Hamiltonian instance
         A spin-polarized tight-binding Hamiltonian
+    DM : sisl.DensityMatrix instance, optional
+        A spin-polarized density datrix generated with sisl
+        to use as a initial occupations
     U : float, optional
         on-site Coulomb repulsion
     q : array_like, optional
         Two values specifying up, down electron occupations
     nkpt : array_like, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
+    kT : float, optional
+        Temperature of the system in units of the Boltzmann constant
     """
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
@@ -214,7 +226,30 @@ class HubbardHamiltonian(object):
     def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
         """
         This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
-        The only thing that may change is the way in which we obtain the occupations, or the density matrix
+        The only thing that may change is the way in which the spin-densities (`dm`) and total energy (`Etot`) are obtained
+
+        .. math::
+            \langle n_{\sigma}_{i}\rangle = mix \langle n_{\sigma}_{i}\rangle + (1-mix) mix \langle n_{\sigma}_{i-1}\rangle
+
+        Parameters
+        ----------
+        occ_method : callable
+            method to obtain the spin-densities
+            it *must* return the corresponding spin-densities (`dm`) and the total energy (`Etot`)
+        q : array_like, optional
+            total charge separated in spin-channels, q=[q_up, q_dn]
+        mix : float, optional
+            mixing parameter for the SCF loop
+
+        See Also
+        --------
+        density.dm_insulator : method to obtain the `dm` and `Etot` for the corner case of a tight-binding Hamiltonian of an *insulator* at `kT=0`
+        density.dm : method to obtain `dm` and `Etot` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        negf.dm_open : method to obtain the spin-densities and total energy for tight-binding Hamiltonians with open boundary conditions
+
+        Returns
+        -------
+        dn : difference between the ith and the (i-1)th iteration densities
         """
         if q is None:
             q = self.q
@@ -271,15 +306,38 @@ class HubbardHamiltonian(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def get_Zak_phase(self, Nx=51, sub='filled', eigvals=False):
-        """ Compute Zak phase for 1D systems oriented along the x-axis.
-        Keep in mind that the current implementation does not handle correctly band intersections.
-        Meaningful Zak phases can thus only be computed for the non-crossing bands.
+    def get_Zak_phase(self, func=None, N=51, sub='filled', eigvals=False):
+        """ Computes the Zak phase for 1D (periodic) systems using the sisl function sisl.electron.berry_phase
+
+        Parameters
+        ----------
+        func : callable, optional
+            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
+        N : int, optional
+            number of k-points generated using the parameterization
+        sub : int, optional
+            number of bands that will be summed to obtain the Zak phase
+
+        Notes
+        -----
+        If no `func` is passed it assumes the periodicity along the x-axis
+        If no `sub` is passed it sums up to the last occuppied band (included)
+
+        See Also
+        --------
+        sisl.BrillouinZone.parametrize :  sisl routine to obtain a Brillouin zone parametrization
+        sisl.electron.berry_phase : sisl routine to obtain the Berry phase
+
+        Returns
+        -------
+        float: Zak phase for the 1D system
         """
-        # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
-        def func(sc, frac):
-            return [frac, 0, 0]
-        bz = sisl.BrillouinZone.parametrize(self.H, func, Nx)
+
+        if not func:
+            # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
+            def func(sc, frac):
+                return [frac, 0, 0]
+        bz = sisl.BrillouinZone.parametrize(self.H, func, N)
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = np.arange(int(round(self.q[0])))
@@ -328,12 +386,36 @@ class HubbardHamiltonian(object):
             BO[ia, idx[1]] += 1.
         return BO.Hk(format=format) # Fold to Gamma
 
-    def spin_contamination(self):
+    def spin_contamination(self, ret_exact=False):
         """
-        Obtains the spin contamination after the MFH calculation
+        Obtains the spin contamination after the MFH calculation following
         Ref. Chemical Physics Letters. 183 (5): 423–431.
 
-        This function works for non-periodic systems only.
+        .. math::
+            \langle S^{2} \rangle_{MFH} = \langle S^{2} \rangle_{exact} + N_{\beta} - \sum_{ij}^{occ} |\langle \psi^{\alpha}_{i}|\psi^{\beta}_{j}\rangle |^{2}
+
+        Where the exact spin squared expectation value is obtained as
+
+        .. math::
+            \langle S^{2} \rangle_{exact}=(\frac{ N_{\alpha}-N_{\beta}}{2})(\frac{N_{\alpha}-N_{\beta} }{2} + 1)
+
+        Notes
+        -----
+        The current implementation works for non-periodic systems only.
+
+        Parameters
+        ----------
+        ret_exact : bool, optional
+            If true this method will return also the exact spin squared expectation value
+
+        See Also
+        --------
+        sisl.electron.spin_squared : sisl routine to obtain the spin squared expectation value between two spin states
+
+        Returns
+        -------
+        S_MFH : expectation value for the MFH Hamiltonian
+        S : exact expectation value
         """
         # Define Nalpha and Nbeta, where Nalpha >= Nbeta
         Nalpha = np.amax(self.q)
@@ -353,7 +435,10 @@ class HubbardHamiltonian(object):
         # Spin contamination
         S_MFH = S + Nbeta - s2beta.sum()
 
-        return S, S_MFH
+        if ret_exact:
+            return S_MFH, S
+        else:
+            return S_MFH
 
     def band_sym(self, eigenstate, diag=True):
         '''
