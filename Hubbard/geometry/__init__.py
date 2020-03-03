@@ -1,7 +1,7 @@
 """
 
 :mod:`Hubbard.geometry`
-==================
+=======================
 
 Functionality for geometry
 

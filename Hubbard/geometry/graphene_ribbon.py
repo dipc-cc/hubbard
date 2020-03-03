@@ -1,7 +1,7 @@
 """
 
 :mod:`Hubbard.geometry`
-==========================
+=======================
 
 Function to generate graphene-based geometries
 
