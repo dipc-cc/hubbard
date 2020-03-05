@@ -9,8 +9,7 @@ from scipy.linalg import inv
 _pi = math.pi
 
 class NEGF(object):
-    """
-    This class creates the Open Quantum system object for a N-terminal device
+    """ This class creates the Open Quantum system object for a N-terminal device
 
     For the Non-equilibrium case (V!=0) the current implementation
     only can deal with a 2-terminal device
