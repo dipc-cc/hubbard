@@ -7,8 +7,25 @@ import numpy as np
 
 
 class Wavefunction(GeometryPlot):
+    """ Plot the wavefunction with its complex phase for the `HubbardHamiltonian` object
 
-    def __init__(self, HubbardHamiltonian, wf,  ext_geom=None, label=r'Phase', **keywords):
+    Parameters
+    ----------
+    HubbardHamiltonian: Hubbard.hamiltonian.HubbardHamiltonian instance
+        Hubbard.hamiltonian object of a system
+    wf: array_like
+        vector that contains the eigenstate to plot
+    ext_geom: sisl.Geometry instance
+        external geometry to plot the GeometryPlot behind the wavefunction layer
+        if no ext_geom is passed, it uses the geometry stored in the HubbardHamiltonian object
+
+    Notes
+    -----
+    If `realspace` keyword is passed it plots the wavefunction in a realspace grid
+    In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
+    of the coefficient of `wf` on the atomic sites
+    """
+    def __init__(self, HubbardHamiltonian, wf,  ext_geom=None, cb_label=r'Phase', **keywords):
 
         # Set default keywords
         if 'realspace' in keywords:
@@ -46,7 +63,7 @@ class Wavefunction(GeometryPlot):
             # Colorbars
             if 'colorbar' in keywords:
                 if keywords['colorbar'] != False:
-                    cb = self.fig.colorbar(ax, label=label)
+                    cb = self.fig.colorbar(ax, label=cb_label)
                     if 'ticks' in keywords:
                         cb.set_ticks([np.pi, 3*np.pi/4, np.pi/2, np.pi/4, 0, -np.pi/4., -np.pi/2., -3*np.pi/4, -np.pi, ])
                         cb.set_ticklabels([r'$\pi$', r'$3\pi/4$', r'$\pi/2$', r'$\pi/4$', r'$0$', r'-$\pi/4$', r'-$\pi/2$', r'-$3\pi/4$', r'-$\pi$'])
