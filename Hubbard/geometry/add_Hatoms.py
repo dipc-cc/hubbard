@@ -1,21 +1,24 @@
-"""
-
-:mod:`Hubbard.geometry`
-=======================
-
-Function to generate graphene-based geometries
-
-.. currentmodule:: Hubbard.geometry
-
-"""
-
 from __future__ import print_function
 import numpy as np
 import sisl
 
 
 def add_Hatoms(geom, d=1.1, sp3=[]):
-    ''' Function to saturate edge C atoms with Hydrogen'''
+    ''' Function to saturate edge C atoms with Hydrogen 
+
+    Parameters
+    ----------
+    geom : sisl.Geometry instance
+        geometry of the system that is going to be saturated with H-atoms
+    d : float, optional
+        distance from the saturated C-atom to the H-atom
+    sp3 : array_like, optional
+        atomic indices where an sp3 configuration is desired
+
+    Returns
+    -------
+    objec : sisl.Geometry object of the system saturated with H-atoms
+    '''
     Hxyz = []
     for ia in geom:
         idx = geom.close(ia, R=(0.1, 1.6))
