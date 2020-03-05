@@ -1,20 +1,20 @@
-"""
-
-:mod:`Hubbard.geometry`
-=======================
-
-Function to generate the SSH-chain model
-
-.. currentmodule:: Hubbard.geometry
-
-"""
-
 from __future__ import print_function
 import numpy as np
 import sisl
 
 
 def ssh(d1=1.0, d2=1.5, dy=10):
+    """ Generates the ssh-chain geoemtry along the x-axis direction
+
+    Parameters
+    ----------
+    d1 : float, optional
+        intra-atomic distance
+    d2 : float, optional
+        inter-atomic distance
+    dy : float, optional
+        size of the supercell in the y-axis direction
+    """
     xyz = [[0., 0., 0.], [d1, 0, 0]]
     # Create supercell and geometry
     sc = sisl.SuperCell([d1+d2, dy, 10, 90, 90, 90], nsc=[3, 1, 1])

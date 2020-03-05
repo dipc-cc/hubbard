@@ -1,14 +1,3 @@
-"""
-
-:mod:`Hubbard.geometry`
-=======================
-
-Function to generate graphene-based geometries
-
-.. currentmodule:: Hubbard.geometry
-
-"""
-
 from __future__ import print_function
 import numpy as np
 import sisl
@@ -18,7 +7,7 @@ sn = np.sin(np.pi/3)
 
 
 def zgnr(w, bond=1.42):
-
+    """ Build ZGNR of width `w` unitcell with periodicity along x-axis """
     # ZGNR coordinates
     rA = np.array([0, 0, 0])
     rB = np.array([sn, cs, 0])
@@ -44,6 +33,7 @@ def zgnr(w, bond=1.42):
 
 
 def agnr(w, bond=1.42):
+    """ Build AGNR of width `w` unitcell with periodicity along x-axis """
 
     # AGNR coordinates
     rA = np.array([0, 0, 0])
@@ -70,7 +60,7 @@ def agnr(w, bond=1.42):
 
 
 def cgnr(n, m, w, bond=1.42, ch_angle=False):
-    "Generation of chiral GNR geometry (periodic along x-axis)"
+    "Generation of (`n`,`m`,`w`)-chiral GNR geometry (periodic along x-axis)"
     g = zgnr(w, bond=bond)
     g = g.tile(n+1, axis=0)
     if w % 2 == 0:
@@ -97,7 +87,7 @@ def cgnr(n, m, w, bond=1.42, ch_angle=False):
 
 
 def agnr2(w, bond=1.42):
-    """ sisl-style AGNR primitive cell """
+    """ AGNR primitive cell of width `w` periodic along x-axis """
     g = sisl.geom.graphene(orthogonal=True).repeat(w//2 + w % 2, axis=1)
     if w % 2:
         g = g.remove(-w//2)
