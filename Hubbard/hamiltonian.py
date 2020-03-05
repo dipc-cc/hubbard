@@ -325,7 +325,7 @@ class HubbardHamiltonian(object):
         return False
 
     def write_density(self, fn, mode='a'):
-        """ Write density
+        """ Write density in a binary file
 
         Parameters
         ----------
