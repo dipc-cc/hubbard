@@ -1,14 +1,3 @@
-"""
-
-:mod:`Hubbard.sp2`
-==================
-
-Function for the meanfield Hubbard Hamiltonian
-
-.. currentmodule:: Hubbard.sp2
-
-"""
-
 from __future__ import print_function
 import numpy as np
 import sisl
@@ -16,6 +5,19 @@ import sisl
 
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         s0=1.0, s1=0, s2=0, s3=0, dq=0, dim=2):
+    """ Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems
+
+    It takes advantage of the `sisl` class sisl.physics.Hamiltonian
+
+    It obtains the Hamiltonian for the geometry (`sisl.Geometry` instance) with the parameters
+    for first, second and third nearest neighbors (`t1`,`t2`,`t3`).
+
+    One can also use a non-orthogonal basis of atomic orbitals by passing the parameters for the
+    overlap matrix for first, second and third nearest neighbors (`s1`, `s2`, `s3`).
+
+    The function will also take into account the possible presence of Boron or Nitrogen atoms,
+    for which one would need to specify the on-site energy for those atoms (`eB` and `eN`)
+    """
 
     # Determine pz sites
     aux = []
