@@ -22,18 +22,18 @@ class HubbardHamiltonian(object):
 
     Parameters
     ----------
-    TBHam : sisl.Hamiltonian instance
+    TBHam: sisl.Hamiltonian instance
         A spin-polarized tight-binding Hamiltonian
-    DM : sisl.DensityMatrix instance, optional
+    DM: sisl.DensityMatrix instance, optional
         A spin-polarized density datrix generated with sisl
         to use as a initial occupations
-    U : float, optional
+    U: float, optional
         on-site Coulomb repulsion
-    q : array_like, optional
+    q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt : array_like, optional
+    nkpt: array_like, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
-    kT : float, optional
+    kT: float, optional
         Temperature of the system in units of the Boltzmann constant
 
     See Also
@@ -95,12 +95,12 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        k : array_like, optional
+        k: array_like, optional
             k-point at which the eigenvalue want to be obtained
-        eigvals_only : bool, optional
+        eigvals_only: bool, optional
             if True only eigenvalues are returned, otherwise
             it also returns the eigenvectors
-        spin : int, optional
+        spin: int, optional
             for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
         See Also
@@ -109,7 +109,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        numpy.ndarray : eigenvalues
+        eigenvalues: numpy.ndarray
         """
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
 
@@ -118,9 +118,9 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        k : array_like
+        k: array_like
             k-point at which the eigenstate is going to be obtained
-        spin : int, optional
+        spin: int, optional
             for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
         See Also
@@ -129,18 +129,18 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        object : sisl.physics.EigenstateElectron object
+        object: sisl.physics.EigenstateElectron object
         """
         return self.H.eigenstate(k, spin=spin)
 
     def tile(self, reps, axis):
-        """ Tile a number of repetitions along a specified axis the Hubbard object to obtain a larger one
+        """ Tile the HubbardHamiltonian object along a specified axis to obtain a larger one
 
         Parameters
         ----------
-        reps : int
+        reps: int
            number of tiles (repetitions)
-        axis : int
+        axis: int
             direction of tiling, 0, 1, 2 according to the cell-direction
 
         See Also
@@ -149,7 +149,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        object : A new larger HubbardHamiltonian object
+        A new larger HubbardHamiltonian object
         """
         Htile = self.H.tile(reps, axis)
         DMtile = self.DM.tile(reps, axis)
@@ -158,13 +158,13 @@ class HubbardHamiltonian(object):
         return self.__class__(Htile, DM=DMtile, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
 
     def repeat(self, reps, axis):
-        """ Repeat a number of repetitions along a specified axis the Hubbard object to obtain a larger one
+        """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
 
         Parameters
         ----------
-        reps : int
+        reps: int
            number of repetitions
-        axis : int
+        axis: int
             direction of tiling, 0, 1, 2 according to the cell-direction
 
         See Also
@@ -173,7 +173,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        object : A new larger HubbardHamiltonian object
+        A new larger HubbardHamiltonian object
         """
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
@@ -182,7 +182,7 @@ class HubbardHamiltonian(object):
         return self.__class__(Hrep, DM=DMrep, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
 
     def _update_e0(self):
-        """Internal routine to update e0 """
+        """ Internal routine to update e0 """
         e0 = self.H.tocsr(0).diagonal()
         e1 = self.H.tocsr(1).diagonal()
         self.e0 = np.array([e0, e1])
@@ -205,7 +205,7 @@ class HubbardHamiltonian(object):
         self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
-        """ Updates the full density matrix
+        """ Update the full density matrix
 
         Notes
         -----
@@ -229,14 +229,14 @@ class HubbardHamiltonian(object):
         print('Normalized charge distributions to Nup=%.4f, Ndn=%.4f' % (self.q[0], self.q[1]))
 
     def set_polarization(self, up, dn=tuple()):
-        """ Maximize spin polarization on specific atomic sites.
+        """ Maximize spin polarization on specific atomic sites
         Optionally, sites with down-polarization can be specified
 
         Parameters
         ----------
-        up : array_like
+        up: array_like
             atomic sites where the spin-up density is going to be maximized
-        dn : array_like, optional
+        dn: array_like, optional
             atomic sites where the spin-down density is going to be maximized
         """
         print('Setting up-polarization for sites', up)
@@ -248,7 +248,7 @@ class HubbardHamiltonian(object):
         self.update_density_matrix()
 
     def polarize_sublattices(self):
-        """ This is just a quick way to polarize the lattice
+        """ Quick way to polarize the lattices
         without checking that consequtive atoms actually belong to
         different sublattices """
         a = np.arange(len(self.H))
@@ -258,7 +258,11 @@ class HubbardHamiltonian(object):
         self.update_density_matrix()
 
     def find_midgap(self):
-        """ Find midgap, this method makes sense for insulators (where there is a bandgap) """
+        """ Find the midgap for the system
+        taking into account the up and dn different spectrums
+
+        This method makes sense for insulators (where there is a bandgap)
+        """
         HOMO, LUMO = -1e10, 1e10
         for k in self.mp.k:
             ev_up = self.eigh(k=k, spin=0)
@@ -272,19 +276,19 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        q : array_like, optional
+        q: array_like, optional
             charge for each spin channel. First index for spin up, second index for dn
-        dist : str, optional
+        dist: str, optional
             distribution
 
         See Also
         --------
         sisl.physics.hamiltonian.fermi_level
-        sisl.get_distribution
 
         Returns
         -------
-        Ef : Fermi-level for each spin channel
+        Ef: numpy.array
+            Fermi-level for each spin channel
         """
         Q = q
         for i in (0, 1):
@@ -305,9 +309,9 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        fn : str
+        fn: str
             name of the file that is going to read from
-        mode : str, optional
+        mode: str, optional
             mode in which the file is opened
         """
         if os.path.isfile(fn):
@@ -329,9 +333,9 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        fn : str
+        fn: str
             name of the file in which the densities are going to be stored
-        mode : str, optional
+        mode: str, optional
             mode in which the file is opened
         """
         if not os.path.isfile(fn):
@@ -342,7 +346,8 @@ class HubbardHamiltonian(object):
         print('Wrote charge to %s' % fn)
 
     def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
-        r""" This is the common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation.
+        r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
+
         The only thing that may change is the way in which the spin-densities (`dm`) and total energy (`Etot`) are obtained
         where one needs to use the correct `occ_method` for the particular system.
 
@@ -354,25 +359,29 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        occ_method : callable
+        occ_method: callable
             method to obtain the spin-densities
             it *must* return the corresponding spin-densities (`dm`) and the total energy (`Etot`)
-        q : array_like, optional
+        q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
-        mix : float, optional
+        mix: float, optional
             mixing parameter for the SCF loop
 
         See Also
         --------
         update_hamiltonian
         update_density_matrix
-        density.dm_insulator : method to obtain the `dm` and `Etot` for the corner case of a tight-binding Hamiltonian of an *insulator* at `kT=0`
-        density.dm : method to obtain `dm` and `Etot` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        negf.dm_open : method to obtain the spin-densities and total energy for tight-binding Hamiltonians with open boundary conditions
+        density.dm_insulator
+            method to obtain the `dm` and `Etot` for the corner case of a tight-binding Hamiltonian of an *insulator* at `kT=0`
+        density.dm
+            method to obtain `dm` and `Etot` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        negf.dm_open
+            method to obtain  `dm` and `Etot` for tight-binding Hamiltonians with open boundary conditions
 
         Returns
         -------
-        dn : difference between the ith and the (i-1)th iteration densities
+        dn
+            difference between the ith and the (i-1)th iteration densities
         """
         if q is None:
             q = self.q
@@ -424,7 +433,7 @@ class HubbardHamiltonian(object):
         return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
-        r""" Obtain orbital charge overlaps as
+        r""" Obtain orbital charge overlaps
 
         .. math::
             \int dr |\psi_{\sigma\alpha}|^{4}
@@ -433,15 +442,17 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        k : array_like, optional
+        k: array_like, optional
             k-point at which the eigenstate is going to be obtained
-        spin : int, optional
+        spin: int, optional
             spin index
 
         Returns
         -------
-        ev : eigenvalues
-        L : orbital charge overlaps
+        ev: numpy.array
+            eigenvalues
+        L: numpy.ndarray
+            orbital charge overlaps
         """
         ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
         # Compute orbital charge overlaps
@@ -453,11 +464,11 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        func : callable, optional
+        func: callable, optional
             function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
-        N : int, optional
+        N: int, optional
             number of k-points generated using the parameterization
-        sub : int, optional
+        sub: int, optional
             number of bands that will be summed to obtain the Zak phase
 
         Notes
@@ -467,12 +478,13 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        sisl.electron.berry_phase : sisl routine to obtain the Berry phase
-        sisl.BrillouinZone.parametrize :  sisl routine to obtain a Brillouin zone parametrization
+        sisl.electron.berry_phase
+            sisl routine to obtain the Berry phase
 
         Returns
         -------
-        float : Zak phase for the 1D system
+        Zak: float
+            Zak phase for the 1D system
         """
 
         if not func:
@@ -490,14 +502,14 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        format : {'csr', 'array', 'dense', 'coo', ...}
+        format: {'csr', 'array', 'dense', 'coo', ...}
            the returned format of the matrix, defaulting to the ``scipy.sparse.csr_matrix``,
            however if one always requires operations on dense matrices, one can always
            return in `numpy.ndarray` (`'array'`) or `numpy.matrix` (`'dense'`).
 
         Returns
         -------
-        object : the Huckel bond-order matrix
+        the Huckel bond-order matrix object
         """
         g = self.geom
         BO = sisl.Hamiltonian(g)
@@ -548,17 +560,20 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        ret_exact : bool, optional
+        ret_exact: bool, optional
             If true this method will return also the exact spin squared expectation value
 
         See Also
         --------
-        sisl.electron.spin_squared : sisl routine to obtain the spin squared expectation value between two spin states
+        sisl.electron.spin_squared
+            sisl routine to obtain the spin squared expectation value between two spin states
 
         Returns
         -------
-        S_MFH : expectation value for the MFH Hamiltonian
-        S : exact expectation value
+        S_MFH: float
+            expectation value for the MFH Hamiltonian
+        S: float
+            exact expectation value
         """
         # Define Nalpha and Nbeta, where Nalpha >= Nbeta
         Nalpha = np.amax(self.q)
@@ -618,17 +633,18 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        egrid : array_like
+        egrid: array_like
             Energy grid at which the DOS will be calculated.
-        eta : float, optional
+        eta: float, optional
             Smearing parameter
-        spin : int, optional
+        spin: int, optional
             If spin=0(1) it calculates the DOS for up (down) electrons in the system.
             If spin is not specified it returns DOS_up + DOS_dn.
 
         Returns
         -------
-        DOS : density of states at the given energies for the selected spin
+        DOS: array_like
+            density of states at the given energies for the selected spin
         """
 
         # Check if egrid is numpy.ndarray
