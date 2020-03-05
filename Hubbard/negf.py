@@ -8,32 +8,32 @@ from scipy.linalg import inv
 
 _pi = math.pi
 
-class NEGF():
+class NEGF(object):
     """
-        This class creates the Open Quantum system object for a N-terminal device
+    This class creates the Open Quantum system object for a N-terminal device
 
-        For the Non-equilibrium case (V!=0) the current implementation
-        only can deal with a 2-terminal device
+    For the Non-equilibrium case (V!=0) the current implementation
+    only can deal with a 2-terminal device
 
-        Parameters
-        ----------
-        Hdev : HubbardHamiltonian instance
-            HubbardHamiltonian object of the device
-        Helecs : list of HubbardHamiltonian instances
-            list of (already converged) Hamiltonians of the electrodes
-        elec_indx : list, array_like
-            list of atomic positions that *each* electrode occupies in the device
-        elec_dir : list, array_like of strings
-            list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
-        CC : string, optional
-            name of the file containing the energy contour in the complex plane
-        V : float, optional
-            applied bias between the two electrodes
-        
-        See Also
-        --------
-        sisl.physics.self_energy : the used routine to calculate the self-energies
+    Parameters
+    ----------
+    Hdev: HubbardHamiltonian instance
+        HubbardHamiltonian object of the device
+    Helecs: list of HubbardHamiltonian instances
+        list of (already converged) Hamiltonians of the electrodes
+    elec_indx: list, array_like
+        list of atomic positions that *each* electrode occupies in the device
+    elec_dir: list, array_like of strings
+        list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
+    CC: string, optional
+        name of the file containing the energy contour in the complex plane
+    V: float, optional
+        applied bias between the two electrodes
 
+    See Also
+    --------
+    sisl.physics.self_energy
+        the used routine to calculate the self-energies
     """
     def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
 
@@ -109,17 +109,18 @@ class NEGF():
 
         Parameters
         ----------
-        H : HubbardHamiltonian instances
+        H: HubbardHamiltonian instances
             HubbardHamiltonian of the object that is being iterated
-        q : list, numpy array
+        q: list, numpy array
             charge associated to the up and down spin-components
-        qtol : float, optional
+        qtol: float, optional
             tolerance to which the charge is going to be converged in the internal loop
             that finds the potential of the device
 
         Returns
         -------
-        ni, Etot
+        ni
+        Etot
         """
 
         no = len(H.H)
@@ -226,16 +227,17 @@ class NEGF():
 
         Parameters
         ----------
-        HC : numpy.ndarray
+        HC: numpy.ndarray
             Hamiltonian in its matrix form
-        Ef : list of floats
+        Ef: list of floats
             Potential of the device
-        spin : int
+        spin: int
             spin index (0=up, 1=dn)
 
         Returns
         -------
-        Delta, weight
+        Delta
+        weight
         """
         def spectral(G, self_energy, elec):
             # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
