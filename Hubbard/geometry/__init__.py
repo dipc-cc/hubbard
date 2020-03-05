@@ -1,11 +1,15 @@
 """
+===========================================
+Common geometries (:mod:`Hubbard.geometry`)
+===========================================
 
-:mod:`Hubbard.geometry`
-=======================
+.. module:: Hubbard.geometry
+    :noindex:
 
-Functionality for geometry
+Functions to create particular geometries
 
-.. currentmodule:: Hubbard.geometry
+.. autosummary::
+   :toctree:
 
 """
 

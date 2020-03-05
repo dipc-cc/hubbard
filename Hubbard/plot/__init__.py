@@ -1,11 +1,59 @@
 """
+=======================================================
+Visualizing electronic properties (:mod:`Hubbard.plot`)
+=======================================================
 
-:mod:`Hubbard.plot`
-==================
+.. module:: Hubbard.plot
+    :noindex:
 
-Functionality for Plotting
+Functionality for plotting different physical properties of the
+self-consistent solution for the system.
 
-.. currentmodule:: Hubbard.plot
+Plot spin-resolved quantities
+=============================
+
+.. autosummary::
+   :toctree:
+
+    Charge
+    ChargeDifference
+    SpinPolarization
+
+Plot spectra
+============
+
+.. autosummary::
+   :toctree:
+
+    DOS
+    DOS_distribution
+    LDOSmap
+    Spectrum
+
+Plot wavefunctions for each spin-channel
+========================================
+
+.. autosummary::
+   :toctree:
+
+   Wavefunction
+
+Plot geometrical functions
+==========================
+
+.. autosummary::
+   :toctree:
+
+    BondOrder
+    Bonds
+
+Plot bandstructure of the system
+================================
+
+.. autosummary::
+   :toctree:
+
+    Bandstructure
 
 """
 
