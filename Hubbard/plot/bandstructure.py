@@ -6,6 +6,7 @@ import numpy as np
 
 
 class Bandstructure(Plot):
+    """ Plot the bandstructure for the `HubbardHamiltonian` object of a 1D system """
 
     def __init__(self, HubbardHamiltonian, nk=51, ymax=4., projection=None, spin=0, scale=1, c='r', **keywords):
 

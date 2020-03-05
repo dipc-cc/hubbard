@@ -1,14 +1,3 @@
-"""
-
-:mod:`Hubbard.plot.plot`
-========================
-
-Base classes for plots
-
-.. currentmodule:: Hubbard.plot.plot
-
-"""
-
 from __future__ import print_function
 
 import numpy as np
