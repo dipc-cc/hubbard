@@ -1,9 +1,10 @@
-=================
+.. _api:
+
+
 API documentation
 =================
 
-The Hubbard package consists of a variety of sub packages enabling
-different routines for electronic structure calculations.
+Here we list all the modules of the Hubbard package, where all the routies are contained.
 
 .. toctree::
    :maxdepth: 2

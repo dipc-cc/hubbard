@@ -11,7 +11,7 @@ Welcome to Hubbard's documentation!
 The hubbard package allows to find the self-consistent solution for the Mean Field Hubbard Model 
 for a certain tight-binding Hamiltonian and a certain Coulomb repulsion parameter U
 
--  Easy calculation of spin-resolved quantities. It takes advantage of many routines from sisl_, 
+-  Easy calculation of spin-resolved quantities. It takes advantage of many routines from sisl_ as well as numpy_ and scipy_, 
    which makes it very efficient when handling with thousands of atoms, given the usage of sparse matrices. 
    The goal of this package is to include electron correlations in the tight-binding Hamiltonian by solving self-consistently 
    the Mean Field Hubbard model. Given the simplicity of the model one can find quite fast the solution to problems that are typically 
@@ -30,6 +30,18 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 
 .. toctree::
    :maxdepth: 2
+   :caption: Tutorials
+
+   examples
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
+
+   examples
+
+.. toctree::
+   :maxdepth: 2
    :caption: Publications
 
    publications
@@ -37,11 +49,16 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 .. toctree::
    :maxdepth: 2
    :caption: Contents
-   
+
    api
+
+Indices and tables
+==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
 
 .. _sisl: https://sisl.readthedocs.io/en/latest/introduction.html
+.. _numpy: https://numpy.org/
+.. _scipy: https://www.scipy.org/
