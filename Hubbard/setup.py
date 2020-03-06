@@ -5,8 +5,8 @@ def configuration(parent_package='', top_path=None):
 
     config.add_subpackage('plot')
     config.add_subpackage('geometry')
-    config.make_config_py()
     config.add_data_files('EQCONTOUR')
+    config.make_config_py()
     return config
 
 if __name__ == '__main__':
