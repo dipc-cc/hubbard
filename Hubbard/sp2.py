@@ -2,6 +2,7 @@ from __future__ import print_function
 import numpy as np
 import sisl
 
+__all__ = ['sp2']
 
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         s0=1.0, s1=0, s2=0, s3=0, dq=0, dim=2):
@@ -10,7 +11,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     It takes advantage of the `sisl` class sisl.physics.Hamiltonian
 
     It obtains the Hamiltonian for the geometry (`sisl.Geometry` instance) with the parameters
-    for first, second and third nearest neighbors (`t1`,`t2`,`t3`).
+    for first, second and third nearest neighbors (`t1`, `t2`, `t3`).
 
     One can also use a non-orthogonal basis of atomic orbitals by passing the parameters for the
     overlap matrix for first, second and third nearest neighbors (`s1`, `s2`, `s3`).
