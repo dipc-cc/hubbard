@@ -15,6 +15,7 @@ Self Consistent Field class
    :toctree:
 
     HubbardHamiltonian
+    dm
     NEGF
 
 Read and write in binary files
@@ -25,14 +26,23 @@ Read and write in binary files
 
    ncSileHubbard
 
-"""
+Build the specific TB Hamiltonian for a sp2 system
+==================================================
 
-from .info import git_revision as __git_revision__
-from .info import version as __version__
+.. autosummary::
+   :toctree:
+
+   sp2
+
+
+"""
 
 from .hamiltonian import *
 from . import plot
 from .sp2 import *
 from .ncsile import *
 from .density import *
+from .negf import *
 from . import geometry
+
+__all__ = [s for s in dir() if not s.startswith('_')]
