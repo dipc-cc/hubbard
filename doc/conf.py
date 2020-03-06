@@ -36,9 +36,14 @@ extensions = ['sphinx.ext.mathjax',
               'sphinx.ext.viewcode',
               'sphinx.ext.todo',
               'sphinx.ext.doctest',
-              'numpydoc',
-              'sphinx.ext.inheritance_diagram',
+              'sphinx.ext.napoleon',
+              'sphinx.ext.coverage',
+              'sphinx.ext.extlinks',
+              #'numpydoc',
+              #'sphinx.ext.inheritance_diagram',
               'sphinx.ext.githubpages']
+
+napoleon_numpy_docstring = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,11 +56,19 @@ source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
+# prepend/append this snippet in _all_ sources
+rst_prolog = """
+.. highlight:: python
+"""
+
+#import glob
+#autosummary_generate = glob.glob('*.rst') + glob.glob('*/*.rst')
+#autosummary_generate = [f for f in autosummary_generate if 'api-gen' not in f]
 
 # General information about the project.
 project = u'Hubbard'
-copyright = u'2018, Sofia Sanz and Thomas Frederiksen'
-author = u'Sofia Sanz and Thomas Frederiksen'
+copyright = u'2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
+author = u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -82,12 +95,18 @@ language = None
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# The reST default role (used for this markup: `text`) to use for all
+# documents.
+default_role = 'autolink'
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# If true, '()' will be appended to :func: etc. cross-reference text.
+add_function_parentheses = False
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -95,6 +114,13 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+
+# The name for this set of Sphinx documents.  If None, it defaults to
+# "<project> v<release> documentation".
+html_title = "Hubbard documentation"
+
+# A shorter title for the navigation bar.  Default is the same as html_title.
+html_short_title = "Hubbard"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -118,6 +144,10 @@ html_sidebars = {
         'searchbox.html',
     ]
 }
+
+# If false, no index is generated.
+html_use_modindex = True
+html_use_index = True
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -151,7 +181,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Hubbard.tex', u'Hubbard Documentation',
-     u'Sofia Sanz and Thomas Frederiksen', 'manual'),
+     u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen', 'manual'),
 ]
 
 
@@ -175,3 +205,10 @@ texinfo_documents = [
      author, 'Hubbard', 'Python package for meanfield Hubbard model simulations.',
      'Miscellaneous'),
 ]
+
+# These two options should solve the "toctree contains reference to nonexisting document"
+# problem.
+# See here: numpydoc #69
+class_members_toctree = False
+# If this is false we do not have double method sections
+numpydoc_show_class_members = False
