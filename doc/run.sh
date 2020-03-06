@@ -1,10 +1,7 @@
 #!/bin/bash
 
-#sudo apt install python3-sphinx python3-numpydoc python3-sphinx-rtd-theme
-rm -rf api-gen latest
-make clean
-sphinx-apidoc -fFMeT -o api-gen ../Hubbard ../Hubbard/**/setup.py
+./run_pre.sh
+
+# Create documentation
 make html
-rm -r _build/html/_sources
-mv _build/html latest
-rm -rf api-gen _build _static
+#make coverage

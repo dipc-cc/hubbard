@@ -30,12 +30,6 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials
-
-   examples
-
-.. toctree::
-   :maxdepth: 2
    :caption: Examples
 
    examples

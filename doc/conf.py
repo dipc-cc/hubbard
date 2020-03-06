@@ -61,9 +61,9 @@ rst_prolog = """
 .. highlight:: python
 """
 
-#import glob
-#autosummary_generate = glob.glob('*.rst') + glob.glob('*/*.rst')
-#autosummary_generate = [f for f in autosummary_generate if 'api-gen' not in f]
+import glob
+autosummary_generate = glob.glob('*.rst') + glob.glob('*/*.rst')
+autosummary_generate = [f for f in autosummary_generate if 'api-generated' not in f]
 
 # General information about the project.
 project = u'Hubbard'
@@ -95,6 +95,16 @@ language = None
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# Add __init__ classes to the documentation
+autoclass_content = 'class'
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+}
+
+
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
 default_role = 'autolink'
@@ -102,8 +112,11 @@ default_role = 'autolink'
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# A list of ignored prefixes for module index sorting.
+modindex_common_prefix = ['Hubbard.']
+
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+todo_include_todos = True
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = False
@@ -153,7 +166,7 @@ html_use_index = True
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Hubbarddoc'
+htmlhelp_basename = 'Hubbard'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -212,3 +225,30 @@ texinfo_documents = [
 class_members_toctree = False
 # If this is false we do not have double method sections
 numpydoc_show_class_members = False
+
+
+# -----------------------------------------------------------------------------
+# Intersphinx configuration
+# -----------------------------------------------------------------------------
+# Python, numpy, scipy and matplotlib specify https as the default objects.inv
+# directory. So please retain these links.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/dev', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org', None),
+}
+
+
+def setup(app):
+    import os
+    import subprocess as sp
+    if os.path.isfile('../run_pre.sh'):
+        print("# Running ../run_pre.sh")
+        sp.call(['bash', '../run_pre.sh'])
+        print("\n# Done running ../run_pre.sh")
+    elif os.path.isfile('run_pre.sh'):
+        print("# Running run_pre.sh")
+        sp.call(['bash', 'run_pre.sh'])
+        print("\n# Done running run_pre.sh")
+    print("")
