@@ -3,8 +3,26 @@ import numpy as np
 from numpy import einsum, conj
 import sisl
 
+__all__ = ['dm', 'dm_insulator']
+
 def dm(H, q):
-    """ General method to obtain the occupations for periodic or finite systems at a given temperature"""
+    r""" General method to obtain the spin-densities for periodic or finite systems at a given temperature
+
+    It obtains the densities from the direct diagonalization of the Hamiltonian (`H`) taking into account
+    a possible overlap matrix (`H.S`). It computes the densities as Mulliken populations:
+
+    .. math::
+        \langle n_{i\sigma} \rangle = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij} = \sum_{j}D_{ij\sigma}S_{ij} =  (\textbf{D}_{\sigma}\textbf{S})_{ii}
+
+    Where :math:`f_{\alpha\sigma}` is the weight of eigenstate :math:`\alpha` for spin :math:`\sigma` at temperature `kT` (Fermi-Dirac distribution),
+    :math:`c^{\alpha}_{i\sigma}` are the elements of the eigenstate :math:`\alpha` and spin :math:`\sigma` represented in the basis of atomic orbitals,
+    and :math:`D_{ij\sigma}` is the full density matrix in the basis of atomic orbitals (indices :math:`i,j`)
+
+    See Also
+    --------
+    `sisl.physics.EigenstateElectron.norm2 <http://zerothi.github.io/sisl/docs/latest/api-generated/sisl.physics.EigenstateElectron.html?highlight=norm2#sisl.physics.EigenstateElectron.norm2>`_
+        sisl routine to obtain the dot product with the overlap matrix
+    """
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)
     Ef = H.H.fermi_level(H.mp, q=q, distribution=dist)
@@ -40,7 +58,7 @@ def dm(H, q):
 
 
 def dm_insulator(H, q):
-    """ Method to obtain the occupations only for the corner case for *insulators* at *T=0* """
+    """ Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* """
     ni = np.zeros((2, H.sites))
     Etot = 0
 
