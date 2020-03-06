@@ -1,18 +1,15 @@
-"""
-
-:mod:`Hubbard.ncsile`
-==========================
-
-.. currentmodule:: Hubbard.ncsile
-
-"""
-
 from __future__ import print_function
 import numpy as np
 import sisl
 
 
 class ncSileHubbard(sisl.SileCDF):
+    """ Read and write HubbardHamiltonian object in binary files (netCDF4 support)
+
+    See Also
+    --------
+    sisl.SileCDF
+    """
 
     def read_density(self, group):
         # Find group
