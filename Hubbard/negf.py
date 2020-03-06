@@ -9,9 +9,9 @@ from scipy.linalg import inv
 _pi = math.pi
 
 class NEGF(object):
-    """ This class creates the Open Quantum system object for a N-terminal device
+    r""" This class creates the open quantum system object for a N-terminal device
 
-    For the Non-equilibrium case (V!=0) the current implementation
+    For the Non-equilibrium case :math:`V\neq 0` the current implementation
     only can deal with a 2-terminal device
 
     Parameters
@@ -20,9 +20,9 @@ class NEGF(object):
         HubbardHamiltonian object of the device
     Helecs: list of HubbardHamiltonian instances
         list of (already converged) Hamiltonians of the electrodes
-    elec_indx: list, array_like
+    elec_indx: array_like
         list of atomic positions that *each* electrode occupies in the device
-    elec_dir: list, array_like of strings
+    elec_dir: array_like of strings
         list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
     CC: string, optional
         name of the file containing the energy contour in the complex plane
@@ -31,10 +31,11 @@ class NEGF(object):
 
     See Also
     --------
-    sisl.physics.self_energy
-        the used routine to calculate the self-energies
+    sisl.physics.RecursiveSI
     """
+
     def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
+        """ Initialize NEGF class """
 
         self.Ef = np.zeros([2], np.float64)
         self.kT = Hdev.kT
