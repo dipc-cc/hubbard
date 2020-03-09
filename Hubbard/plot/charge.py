@@ -5,9 +5,21 @@ from Hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
 
+__all__ = ['Charge', 'ChargeDifference', 'SpinPolarization']
 
 class Charge(GeometryPlot):
+    r""" Plot the total charge for the HubbardHamiltonian object
 
+    :math:`\langle n_{\uparrow}\rangle+\langle n_{\downarrow}\rangle`
+
+    or the charge for a particular spin-channel (:math:`\langle n_{\uparrow}\rangle`)
+    by specifying the `spin` index.
+
+    Notes
+    -----
+    If the `realspace` keyword is passed then it will plot it in a realspace grid.
+    In other case it will be plotted as Mulliken populations.
+    """
     def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], **keywords):
         # Set default keywords
         if 'realspace' in keywords:
@@ -39,7 +51,16 @@ class Charge(GeometryPlot):
 
 
 class ChargeDifference(GeometryPlot):
+    r""" Plot the total charge compared to the neutral atom charge in each site for the HubbardHamiltonian object
 
+    :math:`(\langle n_{\uparrow}\rangle+\langle n_{\downarrow}\rangle)- (Z - 5)`
+    Where :math:`Z` is the atomic number
+
+    Notes
+    -----
+    If the `realspace` keyword is passed then it will plot it in a realspace grid.
+    In other case it will be plotted as Mulliken populations.
+    """
     def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
@@ -71,7 +92,13 @@ class ChargeDifference(GeometryPlot):
 
 
 class SpinPolarization(GeometryPlot):
+    r""" Plot charge difference between up and down channels :math:`\langle n_{\uparrow}\rangle-\langle n_{\downarrow}\rangle`
 
+    Notes
+    -----
+    If the `realspace` keyword is passed then it will plot it in a realspace grid.
+    In other case it will be plotted as Mulliken populations.
+    """
     def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
