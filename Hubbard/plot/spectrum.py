@@ -6,8 +6,10 @@ from Hubbard.plot import GeometryPlot
 import matplotlib.colors as colors
 import numpy as np
 
+__all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
 
 class Spectrum(Plot):
+    """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **keywords):
 
@@ -37,6 +39,7 @@ class Spectrum(Plot):
 
 
 class LDOSmap(Plot):
+    """ Plot LDOS map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
                  nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
@@ -85,6 +88,12 @@ class LDOSmap(Plot):
 
 
 class DOS_distribution(GeometryPlot):
+    """ Plot LDOS in the configuration space for the `HubbardHamiltonian` object
+
+    Notes
+    -----
+    If the `realspace` keyword is passed it will plot the DOS in a realspace grid
+    """
 
     def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, **keywords):
 
@@ -115,6 +124,8 @@ class DOS_distribution(GeometryPlot):
 
 
 class DOS(Plot):
+    """ Plot the total DOS as a function of the energy for the `HubbardHamiltonian` object """
+
     def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **keywords):
 
         Plot.__init__(self, **keywords)

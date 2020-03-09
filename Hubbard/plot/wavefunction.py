@@ -5,6 +5,7 @@ from Hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
 
+__all__ = ['Wavefunction']
 
 class Wavefunction(GeometryPlot):
     """ Plot the wavefunction with its complex phase for the `HubbardHamiltonian` object
@@ -25,6 +26,7 @@ class Wavefunction(GeometryPlot):
     In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
     of the coefficient of `wf` on the atomic sites
     """
+
     def __init__(self, HubbardHamiltonian, wf,  ext_geom=None, cb_label=r'Phase', **keywords):
 
         # Set default keywords

@@ -9,6 +9,7 @@ from scipy.linalg import inv
 
 _pi = math.pi
 
+__all__ = ['HubbardHamiltonian']
 
 class HubbardHamiltonian(object):
     """ A class to create a Self Consistent Field (SCF) object related to the Mean Field Hubbard (MFH) model

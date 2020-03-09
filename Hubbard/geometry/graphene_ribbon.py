@@ -5,6 +5,7 @@ import sisl
 cs = np.cos(np.pi/3)
 sn = np.sin(np.pi/3)
 
+__all__ = ['zgnr', 'agnr', 'cgnr', 'agnr2', 'agnr2B']
 
 def zgnr(w, bond=1.42):
     """ Build ZGNR of width `w` unitcell with periodicity along x-axis """

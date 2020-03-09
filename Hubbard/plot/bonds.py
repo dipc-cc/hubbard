@@ -6,8 +6,10 @@ from Hubbard.plot import Plot
 import numpy as np
 import matplotlib as mp
 
+__all__ = ['BondOrder', 'BondHoppings', 'Bonds']
 
 class BondOrder(GeometryPlot):
+    """ Plot the Bond order for the HubbardHamiltonian """
 
     def __init__(self, HubbardHamiltonian, **keywords):
 
@@ -52,6 +54,7 @@ class BondOrder(GeometryPlot):
 
 
 class BondHoppings(Plot):
+    """ Plot hoppings for a sp2 carbon system """
 
     def __init__(self, H, **keywords):
 
@@ -75,6 +78,8 @@ class BondHoppings(Plot):
 
 
 class Bonds(Plot):
+    """ Plot bonds between atoms in geometry """
+
     def __init__(self, H0, annotate=False, maxR=0, minR=0, **keywords):
 
         if 'cmap' not in keywords:

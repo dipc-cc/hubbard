@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Hubbard.plot import Plot
 import numpy as np
 
+__all__ = ['Bandstructure']
 
 class Bandstructure(Plot):
     """ Plot the bandstructure for the `HubbardHamiltonian` object of a 1D system """

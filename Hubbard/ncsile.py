@@ -2,9 +2,10 @@ from __future__ import print_function
 import numpy as np
 import sisl
 
+__all__ = ['ncSileHubbard']
 
 class ncSileHubbard(sisl.SileCDF):
-    """ Read and write HubbardHamiltonian object in binary files (netCDF4 support)
+    """ Read and write `HubbardHamiltonian` object in binary files (netCDF4 support)
 
     See Also
     --------
