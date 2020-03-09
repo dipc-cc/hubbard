@@ -8,6 +8,8 @@ from scipy.linalg import inv
 
 _pi = math.pi
 
+__all__ = ['NEGF']
+
 class NEGF(object):
     r""" This class creates the open quantum system object for a N-terminal device
 
@@ -25,13 +27,18 @@ class NEGF(object):
     elec_dir: array_like of strings
         list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
     CC: string, optional
-        name of the file containing the energy contour in the complex plane
+        name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
         applied bias between the two electrodes
 
     See Also
     --------
-    sisl.physics.RecursiveSI
+    `sisl.physics.RecursiveSI <http://zerothi.github.io/sisl/docs/latest/api-generated/sisl.physics.RecursiveSI.html?highlight=recursivesi#sisl.physics.RecursiveSI>`_
+        sisl routines to create semi-infinite object (obtain self-energy, etc.)
+
+    Notes
+    -----
+    This class has to be generalized to non-orthogonal basis
     """
 
     def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
