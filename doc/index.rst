@@ -27,7 +27,6 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
    :caption: User Guide
    
    installation
-   tutorials
    examples
 
 .. toctree::
