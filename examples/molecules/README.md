@@ -6,9 +6,9 @@ of a finite molecule, and find the self-consistent solution.
 
 We will use as a reference the molecule of ref. [Nature Communications 10, 200 (2019)][Li2019] and compare the simulation with the experimental system.
 
-   - We will start by building the tight-binding Hamiltonian for an sp2
-   carbon-based molecule, by first reading the geometry file stored in [examples/molecules/kondo-paper/junction-2-2.XV][examples/junction]
-   from the main repository, using [sisl][sisl]. You can find the parameters used here in the referenced paper above.
+   - We will start by building the tight-binding (TB) Hamiltonian for an sp2
+   carbon-based molecule, by first reading the geometry file stored in [examples/molecules/kondo-paper/junction-2-2.XV][examples/junction] using [sisl][sisl].
+   You can find the parameters used here to model this sp2 TB Hamiltonian in the referenced paper above.
 
    - We will build the `HubbardHamiltonian` object, which will allow us to use the routines
    stored in this class to converge until we find the self-consistent solution.
