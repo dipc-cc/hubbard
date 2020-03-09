@@ -6,15 +6,15 @@ In this example we will create the `HubbardHamiltonian` object
 of a system with open boundary conditions, and find the self-consistent solution using the mean field Hubbard model.
 
 We will model a perfect system, where we *know* that we must recover a perfect step-like transmission function.
-You can also to navigate through the 
+You can also navigate through the
 `examples/periodic <https://github.com/dipc-cc/hubbard/tree/master/examples/periodic>`_ section, where more examples can be found.
 
 The sysem of this example is composed by a central region coupled to two electrodes (left and right). 
 We have to use the non-equilibrium Green's function formalism to solve the spin-densities. The central region in this case will
-be just a repetition 
+be just a repetition of the unit-cell of the electrodes (perfect system).
 
 We will focus in the equilibrium situation, therefore the temperature and chemical potentials of the electrodes *must coincide*.
-The complex contour that we use to integrate the density matrix in the Hubbard.NEGF class is extracted from a Transiesta calculation
+The complex contour that we use to integrate the density matrix in the `Hubbard.NEGF` class is extracted from a Transiesta calculation
 for a temperature of `kT=0.025` eV, which we will have to set as common for all the composing element calculations.
 
 #. We will start by building the tight-binding (TB) Hamiltonian for the graphene nanoribbons,
@@ -25,8 +25,10 @@ for a temperature of `kT=0.025` eV, which we will have to set as common for all 
 
 #. We will build the `HubbardHamiltonian` object, which will allow us to use the routines
    stored in this class to converge until we find the self-consistent solution.
-   In this case we will have to use a method to obtain the spin-densities based on the non-equilibrium
-   Green's function of the central region, which contains the semi-infinite leads (electrodes).
+
+#. In this case we will have to use a method to obtain the spin-densities based on the non-equilibrium
+   Green's function of the central region, which contains the semi-infinite leads (electrodes). To do so, we can make use of
+   the methods available in the `Hubbard.NEGF` class.
 
 .. code-block:: python
 
@@ -53,10 +55,10 @@ for a temperature of `kT=0.025` eV, which we will have to set as common for all 
 
     # Converge Electrode Hamiltonians
     dn = MFH_elec.converge(density.dm)
-    print(MFH_elec.Etot)
 
-    # Central region is a repetition of the electrodes without PBC
+    # Central region is a repetition of the electrodes
     HC = H_elec.tile(3,axis=0)
+    # without periodic boundary conditions
     HC.set_nsc([1,1,1])
 
     # Map electrodes in the device region, i.e., extract the atomic indices that correspond
@@ -66,7 +68,8 @@ for a temperature of `kT=0.025` eV, which we will have to set as common for all 
     # MFH object of the central region
     MFH_HC = hh.HubbardHamiltonian(HC, U=U, kT=kT)
 
-    # First create NEGF object, where we pass the MFH converged electrodes and the central region HubbardHamiltonian object
+    # First create the NEGF object, where we pass the MFH converged electrodes and
+    # the central region HubbardHamiltonian object
     negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
     
     # Converge using Green's function method to obtain the densities
