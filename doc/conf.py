@@ -237,18 +237,19 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org', None),
+    'sisl': ('https://github.com/zerothi/sisl/tree/gh-pages/docs/latest', None),
 }
 
 
 def setup(app):
     import os
     import subprocess as sp
-    if os.path.isfile('../run_pre.sh'):
-        print("# Running ../run_pre.sh")
-        sp.call(['bash', '../run_pre.sh'])
-        print("\n# Done running ../run_pre.sh")
-    elif os.path.isfile('run_pre.sh'):
-        print("# Running run_pre.sh")
-        sp.call(['bash', 'run_pre.sh'])
-        print("\n# Done running run_pre.sh")
+    if os.path.isfile('../conf_prepare.sh'):
+        print("# Running ../conf_prepare.sh")
+        sp.call(['bash', '../conf_prepale.sh'])
+        print("\n# Done running ../run_prepare.sh")
+    elif os.path.isfile('conf_prepare.sh'):
+        print("# Running conf_prepare.sh")
+        sp.call(['bash', 'conf_prepare.sh'])
+        print("\n# Done running conf_prepare.sh")
     print("")
