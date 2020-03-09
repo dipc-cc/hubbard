@@ -41,7 +41,8 @@ extensions = ['sphinx.ext.mathjax',
               'sphinx.ext.extlinks',
               #'numpydoc',
               #'sphinx.ext.inheritance_diagram',
-              'sphinx.ext.githubpages']
+              'sphinx.ext.githubpages',
+              'recommonmark']
 
 napoleon_numpy_docstring = True
 
@@ -51,8 +52,8 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+#source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
