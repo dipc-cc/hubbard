@@ -24,5 +24,5 @@ Links to external and internal sites.
 -->
 [examples]: https://github.com/dipc-cc/hubbard/tree/master/examples
 [example-kondo]: https://github.com/dipc-cc/hubbard/tree/master/examples/molecules/README.md
-[example-periodic]: https://github.com/dipc-cc/hubbard/tree/master/examples/peiodic/README.md
-[example-open]: https://github.com/dipc-cc/hubbard/tree/master/examples/peiodic/README.md
+[example-periodic]: https://github.com/dipc-cc/hubbard/tree/master/examples/periodic/README.md
+[example-open]: https://github.com/dipc-cc/hubbard/tree/master/examples/open/README.md
