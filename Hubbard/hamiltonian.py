@@ -85,10 +85,9 @@ class HubbardHamiltonian(object):
         # Initialize density matrix
         if not DM:
             self.DM = sisl.DensityMatrix(self.geom, dim=2)
-            self.random_density()
         else:
             self.DM = DM
-            self.dm = self.DM._csr.diagonal().T
+        self.dm = self.DM._csr.diagonal().T
 
     def __str__(self):
         """ Representation of the model """
