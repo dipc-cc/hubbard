@@ -2,9 +2,10 @@
 Examples
 ========
 
-Here we will compute different real examples to show the different functionalities
+Here we will compute some examples to show the different functionalities
 of the Hubbard package. The systems that we will study in the examples section
-can be found in the `examples <https://github.com/dipc-cc/hubbard/tree/master/examples>`_ folder in the main repository.
+can be also found in the `examples <https://github.com/dipc-cc/hubbard/tree/master/examples>`_ folder in the main repository.
+One can also go through this section to explore more examples suitable to solve with the Hubbard package.
 
 .. toctree::
    :maxdepth: 1
