@@ -84,7 +84,7 @@ class HubbardHamiltonian(object):
 
         # Initialize density matrix
         if not DM:
-            self.DM = sisl.DensityMatrix(self.geom, dim=2)
+            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=TBHam.orthogonal)
         else:
             self.DM = DM
         self.dm = self.DM._csr.diagonal().T
@@ -214,10 +214,12 @@ class HubbardHamiltonian(object):
 
         Notes
         -----
-        This method has to be generalized for non-orthogonal LCAO basis also
+        This method can be generalized to return the density matrix with off-diagonal elements
+        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `Hubbard.dm`)
         """
 
-        # TODO Generalize this method for non-orthogonal LCAO basis also
+        # TODO Generalize this method to return the density matrix with off-diagonal elements
+        # for non-orthogonal LCAO basis
         a = np.arange(len(self.H))
         self.DM[a, a, [0, 1]] = self.dm.T
 
