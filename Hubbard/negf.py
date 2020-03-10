@@ -19,14 +19,14 @@ class NEGF(object):
     Parameters
     ----------
     Hdev: HubbardHamiltonian instance
-        HubbardHamiltonian object of the device
+        `Hubbard.HubbardHamiltonian` object of the device
     Helecs: list of HubbardHamiltonian instances
-        list of (already converged) Hamiltonians of the electrodes
+        list of (already converged) `Hubbard.HubbardHamiltonian` objects for the electrodes
     elec_indx: array_like
-        list of atomic positions that *each* electrode occupies in the device
+        list of atomic positions that *each* electrode occupies in the device geometry
     elec_dir: array_like of strings
         list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
-    CC: string, optional
+    CC: str, optional
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
         applied bias between the two electrodes
@@ -117,12 +117,12 @@ class NEGF(object):
         Parameters
         ----------
         H: HubbardHamiltonian instances
-            HubbardHamiltonian of the object that is being iterated
+            `Hubbard.HubbardHamiltonian` of the object that is being iterated
         q: list, numpy array
             charge associated to the up and down spin-components
         qtol: float, optional
             tolerance to which the charge is going to be converged in the internal loop
-            that finds the potential of the device
+            that finds the potential of the device (i.e. that makes the device neutrally charged)
 
         Returns
         -------
@@ -235,7 +235,7 @@ class NEGF(object):
         Parameters
         ----------
         HC: numpy.ndarray
-            Hamiltonian in its matrix form
+            Hamiltonian of the central region in its matrix form
         Ef: list of floats
             Potential of the device
         spin: int

@@ -5,11 +5,11 @@ import sisl
 __all__ = ['ncSileHubbard']
 
 class ncSileHubbard(sisl.SileCDF):
-    """ Read and write `HubbardHamiltonian` object in binary files (netCDF4 support)
+    """ Read and write `Hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 
     See Also
     --------
-    sisl.SileCDF
+    `sisl.SileCDF <https://sisl.readthedocs.io/en/latest/api-generated/sisl.io.SileCDF.html>`_
     """
 
     def read_density(self, group):

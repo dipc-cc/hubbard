@@ -14,10 +14,10 @@ __all__ = ['HubbardHamiltonian']
 class HubbardHamiltonian(object):
     """ A class to create a Self Consistent Field (SCF) object related to the Mean Field Hubbard (MFH) model
 
-    The `HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
+    The `Hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
     by solving self-consistently the Mean Field Hubbard Hamiltonian
 
-    It enables the convergence of several tight-binding described systems towards a user-defined tolerance criteria
+    It enables the convergence of several tight-binding described systems towards a user-defined tolerance criterion
 
     It takes an input tight-binding Hamiltonian and updates the corresponding matrix elements according to the MFH model
 
@@ -39,7 +39,8 @@ class HubbardHamiltonian(object):
 
     See Also
     --------
-    sisl.physics.hamiltonian
+    `sisl.physics.Hamiltonian <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html>`_
+        sisl module to build sparse Hamiltonian matrices
     """
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
@@ -92,7 +93,7 @@ class HubbardHamiltonian(object):
             self.dm = self.DM._csr.diagonal().T
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
-        """ Diagonalize Hamiltonian using the `eigh` routine
+        """ Diagonalize Hamiltonian using the ``eigh`` routine
 
         Parameters
         ----------
@@ -102,11 +103,11 @@ class HubbardHamiltonian(object):
             if True only eigenvalues are returned, otherwise
             it also returns the eigenvectors
         spin: int, optional
-            for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
+            for ``spin`` =0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
         See Also
         --------
-        sisl.physics.SparseOrbitalBZ.eigh
+        `sisl.physics.SparseOrbitalBZ.eigh <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.SparseOrbitalBZ.html#sisl.physics.SparseOrbitalBZ.eigh>`_
 
         Returns
         -------
@@ -126,7 +127,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        sisl.physics.EigenstateElectron
+        `sisl.physics.EigenstateElectron <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.EigenstateElectron.html>`_
 
         Returns
         -------
@@ -146,7 +147,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        sisl.geometry.tile
+        `sisl.Geometry.tile <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.tile>`_
 
         Returns
         -------
@@ -170,7 +171,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        sisl.geometry.repeat
+        `sisl.Geometry.repeat <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.repeat>`_
 
         Returns
         -------
@@ -278,13 +279,13 @@ class HubbardHamiltonian(object):
         Parameters
         ----------
         q: array_like, optional
-            charge for each spin channel. First index for spin up, second index for dn
+            charge per spin channel. First index for spin up, second index for dn
         dist: str, optional
             distribution
 
         See Also
         --------
-        sisl.physics.hamiltonian.fermi_level
+        `sisl.physics.Hamiltonian.fermi_level <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.fermi_level>`_
 
         Returns
         -------
@@ -349,8 +350,8 @@ class HubbardHamiltonian(object):
     def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
 
-        The only thing that may change is the way in which the spin-densities (`dm`) and total energy (`Etot`) are obtained
-        where one needs to use the correct `occ_method` for the particular system.
+        The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
+        where one needs to use the correct ``occ_method`` for the particular system.
 
         The output densities are obtained using a mixing scheme with the previous iteration to help the convergence:
 
@@ -362,7 +363,7 @@ class HubbardHamiltonian(object):
         ----------
         occ_method: callable
             method to obtain the spin-densities
-            it *must* return the corresponding spin-densities (`dm`) and the total energy (`Etot`)
+            it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
         mix: float, optional
@@ -372,12 +373,10 @@ class HubbardHamiltonian(object):
         --------
         update_hamiltonian
         update_density_matrix
-        density.dm_insulator
-            method to obtain the `dm` and `Etot` for the corner case of a tight-binding Hamiltonian of an *insulator* at `kT=0`
-        density.dm
-            method to obtain `dm` and `Etot` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        negf.dm_open
-            method to obtain  `dm` and `Etot` for tight-binding Hamiltonians with open boundary conditions
+        Hubbard.dm
+            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
+        Hubbard.NEGF.dm_open
+            method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
 
         Returns
         -------
@@ -434,10 +433,7 @@ class HubbardHamiltonian(object):
         return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):
-        r""" Obtain orbital charge overlaps
-
-        .. math::
-            \int dr |\psi_{\sigma\alpha}|^{4}
+        r""" Obtain orbital (eigenstate) charge overlaps as :math:`\int dr |\psi_{\sigma\alpha}|^{4}`
 
         Where :math:`\sigma` is the spin index and :math:`\alpha` is the eigenstate index
 
@@ -466,7 +462,7 @@ class HubbardHamiltonian(object):
         Parameters
         ----------
         func: callable, optional
-            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
+            function that creates a list of parametrized k-points to generate a new ``sisl.BrillouinZone`` object parametrized in ``N`` separations
         N: int, optional
             number of k-points generated using the parameterization
         sub: int, optional
@@ -474,12 +470,12 @@ class HubbardHamiltonian(object):
 
         Notes
         -----
-        If no `func` is passed it assumes the periodicity along the x-axis
-        If no `sub` is passed it sums up to the last occuppied band (included)
+        If no ``func`` is passed it assumes the periodicity along the x-axis
+        If no ``sub`` is passed it sums up to the last occuppied band (included)
 
         See Also
         --------
-        sisl.electron.berry_phase
+        `sisl.electron.berry_phase <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.berry_phase.html>`_
             sisl routine to obtain the Berry phase
 
         Returns
@@ -506,7 +502,7 @@ class HubbardHamiltonian(object):
         format: {'csr', 'array', 'dense', 'coo', ...}
            the returned format of the matrix, defaulting to the ``scipy.sparse.csr_matrix``,
            however if one always requires operations on dense matrices, one can always
-           return in `numpy.ndarray` (`'array'`) or `numpy.matrix` (`'dense'`).
+           return in ``numpy.ndarray`` (`'array'`) or ``numpy.matrix`` (`'dense'`).
 
         Returns
         -------
@@ -543,7 +539,7 @@ class HubbardHamiltonian(object):
 
     def spin_contamination(self, ret_exact=False):
         r""" Obtains the spin contamination for the MFH Hamiltonian following
-        Ref. Chemical Physics Letters. 183 (5): 423–431.
+        `Ref. Chemical Physics Letters. 183 (5): 423–431 <https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub>`_.
 
         .. math::
 
@@ -566,7 +562,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        sisl.electron.spin_squared
+        `sisl.electron.spin_squared <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.spin_squared.html>`_
             sisl routine to obtain the spin squared expectation value between two spin states
 
         Returns
