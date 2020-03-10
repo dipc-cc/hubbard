@@ -66,8 +66,6 @@ class HubbardHamiltonian(object):
         if ntot == 0:
             ntot = len(self.geom)
 
-        print('Neutral system corresponds to a total of %i electrons' % ntot)
-
         self.q = np.array(q, dtype=np.float64).copy()
         assert len(self.q) == 2 # Users *must* specify two values
 
@@ -91,6 +89,12 @@ class HubbardHamiltonian(object):
         else:
             self.DM = DM
             self.dm = self.DM._csr.diagonal().T
+
+    def __str__(self):
+        """ Representation of the model """
+        s = self.__class__.__name__ + f'{{q: {self.q}, U: {self.U}, kT: {self.kT}\n'
+        s += str(self.H).replace('\n', '\n ')
+        return s + '\n}'
 
     def eigh(self, k=[0, 0, 0], eigvals_only=True, spin=0):
         """ Diagonalize Hamiltonian using the ``eigh`` routine
@@ -228,7 +232,6 @@ class HubbardHamiltonian(object):
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         self.dm *= (self.q / self.dm.sum(1)).reshape(-1, 1)
-        print('Normalized charge distributions to Nup=%.4f, Ndn=%.4f' % (self.q[0], self.q[1]))
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites

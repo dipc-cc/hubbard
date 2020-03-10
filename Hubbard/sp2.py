@@ -35,8 +35,6 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
 
     # Remove all sites not carbon-type
     pi_geom = ext_geom.remove(aux + sp3)
-    sites = len(pi_geom)
-    print('Found %i pz sites' % sites)
 
     # Iterate over atomic species to set initial charge
     r = np.linspace(0, 1.6, 700)
