@@ -27,7 +27,7 @@ class HubbardHamiltonian(object):
         A spin-polarized tight-binding Hamiltonian
     DM: sisl.DensityMatrix instance, optional
         A spin-polarized density datrix generated with sisl
-        to use as a initial occupations
+        to use as a initial spin-densities
     U: float, optional
         on-site Coulomb repulsion
     q: array_like, optional
@@ -224,7 +224,7 @@ class HubbardHamiltonian(object):
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
-        print('Setting random density')
+        print('HubbardHamiltonian: Setting random density')
         self.dm = np.random.rand(2, self.sites)
         self.normalize_charge()
         self.update_density_matrix()
@@ -244,10 +244,8 @@ class HubbardHamiltonian(object):
         dn: array_like, optional
             atomic sites where the spin-down density is going to be maximized
         """
-        print('Setting up-polarization for sites', up)
         self.dm[:, up] = np.array([1., 0.]).reshape(2, 1)
         if len(dn) > 0:
-            print('Setting down-polarization for sites', dn)
             self.dm[:, dn] = np.array([0., 1.]).reshape(2, 1)
         self.normalize_charge()
         self.update_density_matrix()
@@ -327,10 +325,10 @@ class HubbardHamiltonian(object):
                 self.dm = dm
                 self.update_density_matrix()
                 self.update_hamiltonian()
-                print('Read charge from %s' % fn)
+                print('HubbardHamiltonian: Read charge from %s' % fn)
                 return True
             else:
-                print('Density not found in %s[%s]' % (fn, group))
+                print('HubbardHamiltonian: Density not found in %s[%s]' % (fn, group))
         return False
 
     def write_density(self, fn, mode='a'):
@@ -348,7 +346,7 @@ class HubbardHamiltonian(object):
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
-        print('Wrote charge to %s' % fn)
+        print('HubbardHamiltonian: Wrote charge to %s' % fn)
 
     def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
@@ -415,8 +413,7 @@ class HubbardHamiltonian(object):
 
     def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
-        print('Iterating towards self-consistency...')
-
+        print('HubbardHamiltonian: Iterating towards self-consistency...')
         dn = 1.0
         i = 0
         while dn > tol:
