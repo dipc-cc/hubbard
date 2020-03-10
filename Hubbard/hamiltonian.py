@@ -349,11 +349,11 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.dm)
         print('HubbardHamiltonian: Wrote charge to %s' % fn)
 
-    def iterate(self, occ_method, q=None, mix=1.0, **kwargs):
+    def iterate(self, dm_method, q=None, mix=1.0, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
 
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
-        where one needs to use the correct ``occ_method`` for the particular system.
+        where one needs to use the correct ``dm_method`` for the particular system.
 
         The output densities are obtained using a mixing scheme with the previous iteration to help the convergence:
 
@@ -363,7 +363,7 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        occ_method: callable
+        dm_method: callable
             method to obtain the spin-densities
             it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
         q: array_like, optional
@@ -393,7 +393,7 @@ class HubbardHamiltonian(object):
             if q[1] is None:
                 q[1] = int(round(self.q[1]))
 
-        ni, Etot = occ_method(self, q, **kwargs)
+        ni, Etot = dm_method(self, q, **kwargs)
 
         # Measure of density change
         dn = np.absolute(self.dm - ni).sum()
@@ -412,7 +412,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, occ_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
+    def converge(self, dm_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion """
         print('HubbardHamiltonian: Iterating towards self-consistency...')
         dn = 1.0
@@ -421,9 +421,9 @@ class HubbardHamiltonian(object):
             i += 1
             if dn > 0.1:
                 # precondition when density change is relatively large
-                dn = self.iterate(occ_method, mix=premix, **func_args)
+                dn = self.iterate(dm_method, mix=premix, **func_args)
             else:
-                dn = self.iterate(occ_method, mix=mix, **func_args)
+                dn = self.iterate(dm_method, mix=mix, **func_args)
             # Print some info from time to time
             if i % steps == 0:
                 print('   %i iterations completed:' % i, dn, self.Etot)
