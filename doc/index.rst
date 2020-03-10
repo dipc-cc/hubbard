@@ -41,12 +41,23 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 
    api
 
+Contributing
+============
+
+Contributions are highly appreciated.
+
+-  If you find any bugs plase form a `bug report/issue <https://github.com/dipc-cc/hubbard/issues>`_.
+
+-  If you have a fix please consider adding a `pull request <https://github.com/dipc-cc/hubbard/pulls>`_.
+
+
 Indices and tables
 ==================
 
-* :ref:`genindex`
+The complete package index can be found below:
+
 * :ref:`modindex`
-* :ref:`search`
+* :ref:`genindex`
 
 .. _sisl: https://sisl.readthedocs.io/en/latest/introduction.html
 .. _numpy: https://numpy.org/

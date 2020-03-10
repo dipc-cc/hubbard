@@ -25,6 +25,8 @@ Optional:
 Installation from source
 ------------------------
 
+Simply download as zip or clone the project from the `git repository <https://github.com/dipc-cc/hubbard>`_.
+
 Manual installation is performed with the command
 
 .. code-block:: bash
@@ -40,3 +42,10 @@ for Python 2, and
 for Python 3.
 
 One can also use the auxiliary files `install-py2.sh` and `install-py3.sh`
+
+One may also wish to set the following environment variables
+
+.. code-block:: bash
+
+   export PYTHONPATH=<my-python-home>/lib/python/
+   export PATH=$PATH:<my-python-home>/bin/
