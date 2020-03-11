@@ -22,7 +22,8 @@ H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
-
+# Start with random densities
+MFH_elec.random_density()
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(density.dm)
 

@@ -30,6 +30,8 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Initial densities
 success = MFH_elec.read_density('elec_density.nc')
 if not success:
+    # If no densities saved, start with random densities with maximized polarization at the edges
+    MFH_elec.random_density()
     MFH_elec.set_polarization([0], dn=[9])
 
 # Converge Electrode Hamiltonians
