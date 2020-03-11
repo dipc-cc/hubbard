@@ -10,11 +10,12 @@ and compare the simulation with the experimental system.
 
 You can also navigate through the 
 `molecule examples section <https://github.com/dipc-cc/hubbard/tree/master/examples/molecules>`_,
-where more molecular geometries suitable to compute with the meand field Hubbard model can be found.
+where more molecular geometries suitable to compute with the mean field Hubbard model can be found.
 
 #. We will start by building the tight-binding (TB) Hamiltonian for an sp2 
    carbon-based molecule, by first reading the geometry file stored in this `file <https://github.com/dipc-cc/hubbard/blob/master/examples/molecules/kondo-paper/junction-2-2.XV>`_
-   (which you can download). You can find the parameters used to model this sp2 TB Hamiltonian
+   (which you can download) using `sisl <https://sisl.readthedocs.io/en/latest/index.html>`_.
+   You can find the parameters used to model this sp2 TB Hamiltonian
    in the `Supp. Material <https://www.nature.com/articles/s41467-018-08060-6#Sec12>`_ of the paper referenced above.
 
 #. We will build the `HubbardHamiltonian` object, which will allow us to use the routines
@@ -73,3 +74,19 @@ where more molecular geometries suitable to compute with the meand field Hubbard
 
       # Compare energies between the two calculations
       print('E_FM - E_AFM : ', HH.Etot - E_0, ' eV')
+
+At this point we found that the groundstate of this molecule is the antiferromagnetic solution, since it is lower
+in energy compared to the ferromagnetic state.
+
+Furthermore, we can predict the magnetic groundstate in bipartite lattices by using the `Lieb's theorem <https://link.aps.org/doi/10.1103/PhysRevLett.62.1201>`_.
+This theorem states that the total spin (:math:`S`) of the groundstate for a bipartite lattice is proportional to the
+imbalance between the A and B sublattices:
+
+.. math::
+   S = \frac{1}{2}|N_{A}-N_{B}|
+
+Therefore, if we create an imbalance between the A and B sublattices,
+we will find that the state with lower energy appears for :math:`S>0`.
+
+A real example to this can be found in ref. `arXiv:1912.08298 <https://arxiv.org/abs/1912.08298>`_. Where triangular shaped
+graphene nanoflakes show a groundstate with :math:`S=1`.
