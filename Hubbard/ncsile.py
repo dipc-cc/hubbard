@@ -4,6 +4,7 @@ import sisl
 
 __all__ = ['ncSileHubbard']
 
+
 class ncSileHubbard(sisl.SileCDF):
     """ Read and write `Hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 

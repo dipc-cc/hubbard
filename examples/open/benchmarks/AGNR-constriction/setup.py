@@ -46,9 +46,9 @@ MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
 # Central region is a repetition of the electrodes without PBC
-HC = H_elec.tile(11,axis=0)
-HC = HC.remove([89,106,107,86,85,102,105,104,103,124,120,101,100,123])
-HC.set_nsc([1,1,1])
+HC = H_elec.tile(11, axis=0)
+HC = HC.remove([89, 106, 107, 86, 85, 102, 105, 104, 103, 124, 120, 101, 100, 123])
+HC.set_nsc([1, 1, 1])
 HC.geom.write('device.xyz')
 
 # Map electrodes in the device region
@@ -87,10 +87,10 @@ tbt_up = sisl.get_sile('device.TBT_UP.nc')
 tbt_dn = sisl.get_sile('device.TBT_DN.nc')
 
 p = plot.Plot()
-p.axes.plot(tbt_up.E, tbt_up.transmission(0,1), color='k', label=r'$\sigma=\uparrow$')
-p.axes.plot(tbt_dn.E, tbt_dn.transmission(0,1), '--', color='r', label=r'$\sigma=\downarrow$')
+p.axes.plot(tbt_up.E, tbt_up.transmission(0, 1), color='k', label=r'$\sigma=\uparrow$')
+p.axes.plot(tbt_dn.E, tbt_dn.transmission(0, 1), '--', color='r', label=r'$\sigma=\downarrow$')
 p.axes.legend()
-p.set_xlim(-2,2)
+p.set_xlim(-2, 2)
 p.set_xlabel('Energy [eV]')
 p.set_ylabel('Transmission [a.u.]')
 p.savefig('transmission.pdf')

@@ -8,6 +8,7 @@ import matplotlib as mp
 
 __all__ = ['BondOrder', 'BondHoppings', 'Bonds']
 
+
 class BondOrder(GeometryPlot):
     """ Plot the Bond order for the HubbardHamiltonian """
 

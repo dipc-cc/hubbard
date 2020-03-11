@@ -7,6 +7,7 @@ import numpy as np
 
 __all__ = ['Charge', 'ChargeDifference', 'SpinPolarization']
 
+
 class Charge(GeometryPlot):
     r""" Plot the total charge for the HubbardHamiltonian object
 
@@ -20,6 +21,7 @@ class Charge(GeometryPlot):
     If the `realspace` keyword is passed then it will plot it in a realspace grid.
     In other case it will be plotted as Mulliken populations.
     """
+
     def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], **keywords):
         # Set default keywords
         if 'realspace' in keywords:
@@ -61,6 +63,7 @@ class ChargeDifference(GeometryPlot):
     If the `realspace` keyword is passed then it will plot it in a realspace grid.
     In other case it will be plotted as Mulliken populations.
     """
+
     def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
@@ -99,6 +102,7 @@ class SpinPolarization(GeometryPlot):
     If the `realspace` keyword is passed then it will plot it in a realspace grid.
     In other case it will be plotted as Mulliken populations.
     """
+
     def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
 
         # Set default keywords
@@ -118,7 +122,7 @@ class SpinPolarization(GeometryPlot):
         GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
         # Compute charge difference between up and down channels
-        charge = np.diff(HubbardHamiltonian.dm[[1,0]], axis=0).ravel()
+        charge = np.diff(HubbardHamiltonian.dm[[1, 0]], axis=0).ravel()
 
         if 'realspace' in keywords:
             self.__realspace__(charge, density=True, **keywords)

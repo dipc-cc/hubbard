@@ -31,7 +31,7 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 success = MFH_elec.read_density('elec_density.nc')
 if not success:
     MFH_elec.set_polarization([0], dn=[9])
-    
+
 # Converge Electrode Hamiltonians
 dn = MFH_elec.converge(density.dm)
 # Write also densities for future calculations
@@ -45,10 +45,10 @@ Ef_elecs = MFH_elec.fermi_level(q=MFH_elec.q)
 MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
-# Build central region TB Hamiltonian 
-HC = H_elec.tile(16,axis=0)
-HC = HC.remove([69,79,89,78,88,66,77,76,87,86,65,74,75,84,85])
-HC.set_nsc([1,1,1])
+# Build central region TB Hamiltonian
+HC = H_elec.tile(16, axis=0)
+HC = HC.remove([69, 79, 89, 78, 88, 66, 77, 76, 87, 86, 65, 74, 75, 84, 85])
+HC.set_nsc([1, 1, 1])
 HC.geom.write('device.xyz')
 
 # Map electrodes in the device region
@@ -89,10 +89,10 @@ tbt_up = sisl.get_sile('device.TBT_UP.nc')
 tbt_dn = sisl.get_sile('device.TBT_DN.nc')
 
 p = plot.Plot()
-p.axes.plot(tbt_up.E, tbt_up.transmission(0,1), color='k', label=r'$\sigma=\uparrow$')
-p.axes.plot(tbt_dn.E, tbt_dn.transmission(0,1), '--', color='r', label=r'$\sigma=\downarrow$')
+p.axes.plot(tbt_up.E, tbt_up.transmission(0, 1), color='k', label=r'$\sigma=\uparrow$')
+p.axes.plot(tbt_dn.E, tbt_dn.transmission(0, 1), '--', color='r', label=r'$\sigma=\downarrow$')
 p.axes.legend()
-p.set_xlim(-2,2)
+p.set_xlim(-2, 2)
 p.set_xlabel('Energy [eV]')
 p.set_ylabel('Transmission [a.u.]')
 p.savefig('transmission.pdf')

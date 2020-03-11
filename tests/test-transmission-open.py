@@ -33,14 +33,14 @@ MFH_elec.H.shift(-Ef_elec)
 MFH_elec.H.write('MFH_elec.nc')
 
 # Central region is a repetition of the electrodes without PBC
-HC = H_elec.tile(3,axis=0)
-HC.set_nsc([1,1,1])
+HC = H_elec.tile(3, axis=0)
+HC.set_nsc([1, 1, 1])
 
 # Map electrodes in the device region
 elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3, axis=0), U=U, kT=kT)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
@@ -64,10 +64,10 @@ tbt_up = sisl.get_sile('device.TBT_UP.nc')
 tbt_dn = sisl.get_sile('device.TBT_DN.nc')
 
 p = plot.Plot()
-p.axes.plot(tbt_up.E, tbt_up.transmission(0,1), label=r'$\sigma=\uparrow$')
-p.axes.plot(tbt_dn.E, tbt_dn.transmission(0,1), label=r'$\sigma=\downarrow$')
+p.axes.plot(tbt_up.E, tbt_up.transmission(0, 1), label=r'$\sigma=\uparrow$')
+p.axes.plot(tbt_dn.E, tbt_dn.transmission(0, 1), label=r'$\sigma=\downarrow$')
 p.axes.legend()
-p.set_xlim(-10,10)
+p.set_xlim(-10, 10)
 p.set_xlabel('Energy [eV]')
 p.set_ylabel('Transmission [a.u.]')
 p.savefig('transmission.pdf')

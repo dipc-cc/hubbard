@@ -7,6 +7,7 @@ import numpy as np
 
 __all__ = ['Wavefunction']
 
+
 class Wavefunction(GeometryPlot):
     """ Plot the wavefunction with its complex phase for the `HubbardHamiltonian` object
 

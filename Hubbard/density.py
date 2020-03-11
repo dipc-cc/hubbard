@@ -5,6 +5,7 @@ import sisl
 
 __all__ = ['dm', 'dm_insulator']
 
+
 def dm(H, q):
     r""" General method to obtain the spin-densities for periodic or finite systems at a given temperature
 

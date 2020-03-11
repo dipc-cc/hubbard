@@ -10,6 +10,7 @@ _pi = math.pi
 
 __all__ = ['NEGF']
 
+
 class NEGF(object):
     r""" This class creates the open quantum system object for a N-terminal device
 
@@ -67,7 +68,7 @@ class NEGF(object):
             dE = 0.01
             self.CC_neq = np.arange(min(mu)-5*self.kT, max(mu)+5*self.kT + dE, dE) + 1j * 0.001
             # Weights for the non-Eq integrals
-            w_neq = dE * ( dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]) )
+            w_neq = dE * (dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]))
             # Store weights for correction to RIGHT [0] and LEFT [1]
             self.w_neq = np.array([w_neq, -w_neq]) / np.pi
         else:
@@ -91,10 +92,10 @@ class NEGF(object):
             # potential back.
             elec.H.shift(-Ef_elec - mu[i])
             se = sisl.RecursiveSI(elec.H, elec_dir[i])
-            _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2 )
+            _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2)
             _ef_SE = np.array([None] * 2)
             _cc_neq_SE = np.array([[None] * len(self.CC_neq)] * 2)
-            for spin in [0,1]:
+            for spin in [0, 1]:
                 # Map self-energy at the Fermi-level of each electrode into the device region
                 _ef_SE[spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
 

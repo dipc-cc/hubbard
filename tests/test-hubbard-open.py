@@ -27,14 +27,14 @@ dn = MFH_elec.converge(density.dm)
 print(MFH_elec.Etot)
 
 # Central region is a repetition of the electrodes without PBC
-HC = H_elec.tile(3,axis=0)
-HC.set_nsc([1,1,1])
+HC = H_elec.tile(3, axis=0)
+HC.set_nsc([1, 1, 1])
 
 # Map electrodes in the device region
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3, axis=0), U=U, kT=kT)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
@@ -46,8 +46,8 @@ assert abs(MFH_HC.dm[1].sum() - MFH_HC.q[1]) < 1e-5
 print('MFH-NEGF Etot = {:10.5f}'.format(MFH_HC.Etot))
 
 # Reference test for total energy
-HC_periodic = H_elec.tile(3,axis=0)
-MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3,axis=0), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
+HC_periodic = H_elec.tile(3, axis=0)
+MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, DM=MFH_elec.DM.tile(3, axis=0), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
 dn = MFH_HC_periodic.converge(density.dm)
 
 assert abs(MFH_HC_periodic.dm[0].sum() - MFH_HC_periodic.q[0]) < 1e-7

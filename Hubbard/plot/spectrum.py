@@ -8,6 +8,7 @@ import numpy as np
 
 __all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
 
+
 class Spectrum(Plot):
     """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object """
 

@@ -4,6 +4,7 @@ import sisl
 
 __all__ = ['sp2']
 
+
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         s0=1.0, s1=0, s2=0, s3=0, dq=0, dim=2):
     """ Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems
