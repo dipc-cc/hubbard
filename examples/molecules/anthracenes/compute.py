@@ -25,9 +25,8 @@ for u in np.linspace(0.0, 4.0, 5):
     H.U = 4.0-u
 
     # AFM case first
-    try:
-        H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
-    except:
+    success = H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
+    if not succcess:
         H.random_density()
     dn = H.converge(dm.dm_insulator)
     eAFM = H.Etot

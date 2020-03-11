@@ -26,18 +26,18 @@ for i in range(1):
     ev, evec = H.eigh(eigvals_only=False, spin=i)
 ev -= H.midgap
 f = 1
-v = evec[:, N[i]-1]
+v = evec[:, int(round(N[i]))-1]
 j = np.argmax(abs(v))
 wf = f*v**2*np.sign(v[j])*np.sign(v)
 p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
-p.set_title(r'$E = %.3f$ eV'%(ev[N[i]-1]))
+p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))-1]))
 p.axes.axis('off')
 p.savefig('Fig3_HOMO.pdf')
 
-v = evec[:, N[i]]
+v = evec[:, int(round(N[i]))]
 j = np.argmax(abs(v))
 wf = f*v**2*np.sign(v[j])*np.sign(v)
 p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
-p.set_title(r'$E = %.3f$ eV'%(ev[N[i]]))
+p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))]))
 p.axes.axis('off')
 p.savefig('Fig3_LUMO.pdf')

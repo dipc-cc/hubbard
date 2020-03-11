@@ -22,9 +22,8 @@ for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.4-u
     # AFM case first
-    try:
-        H.read_density('fig_S14.nc') # Try reading, if we already have density on file
-    except:
+    success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
+    if not success:
         H.random_density()
 
     dn = H.converge(dm.dm_insulator)
@@ -34,9 +33,8 @@ for u in np.linspace(0.0, 1.4, 15):
     # Now FM case
     H.q[0] += 1 # change to two more up-electrons than down
     H.q[1] -= 1
-    try:
-        H.read_density('fig_S14.nc') # Try reading, if we already have density on file
-    except:
+    success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
+    if not success:
         H.random_density()
 
     dn = H.converge(dm.dm_insulator)

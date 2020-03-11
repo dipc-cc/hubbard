@@ -19,20 +19,20 @@ H = hh.HubbardHamiltonian(Hsp2)
 H.U = 0.0
 ev, evec = H.eigh(eigvals_only=False, spin=0)
 N = H.q[0]
+H.find_midgap()
 ev -= H.midgap
 f = 3800
-v = evec[:, N-1]
+v = evec[:, int(round(N))-1]
 j = np.argmax(abs(v))
 wf = f*v**2*np.sign(v[j])*np.sign(v)
 p = plot.Wavefunction(H, wf)
-p.set_title(r'$E = %.3f$ eV'%(ev[N-1]))
+p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N))-1]))
 p.savefig('Fig3_SOMO.pdf')
 
 # Plot MFH spin polarization for U = 3.5 eV
 H.U = 3.5
-try:
-    H.read_density('fig3_type1.nc') # Try reading, if we already have density on file
-except:
+success = H.read_density('fig3_type1.nc') # Try reading, if we already have density on file
+if not success:
     H.random_density()
 H.converge(dm.dm_insulator)
 H.write_density('fig3_type1.nc')

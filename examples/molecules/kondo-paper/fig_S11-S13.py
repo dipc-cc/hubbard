@@ -22,7 +22,9 @@ for u in [0.0, 3.5]:
         lab = 'Fig_S12'
     else:
         lab = 'Fig_S13'
-        H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
+        success = H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
+        if not success:
+            H.random_density()
         H.converge(dm.dm_insulator)
         H.write_density('fig_S11-S13.nc')
 
@@ -41,18 +43,18 @@ for u in [0.0, 3.5]:
 
         f = 1
 
-        v = evec[:, N[i]-1]
+        v = evec[:, int(round(N[i]))-1]
         j = np.argmax(abs(v))
         wf = f*v**2*np.sign(v[j])*np.sign(v)
         p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
-        p.set_title(r'$E = %.3f$ eV'%(ev[N[i]-1]))
+        p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))-1]))
         p.axes.axis('off')
         p.savefig(lab+'_HOMO-%s.pdf'%spin[i])
 
-        v = evec[:, N[i]]
+        v = evec[:, int(round(N[i]))]
         j = np.argmax(abs(v))
         wf = f*v**2*np.sign(v[j])*np.sign(v)
         p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
-        p.set_title(r'$E = %.3f$ eV'%(ev[N[i]]))
+        p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))]))
         p.axes.axis('off')
         p.savefig(lab+'_LUMO-%s.pdf'%spin[i])

@@ -1,6 +1,6 @@
 import Hubbard.hamiltonian as hh
 import Hubbard.plot as plot
-import Hubbard.density as dm
+import Hubbard.density as density
 import Hubbard.sp2 as sp2
 import sys
 import numpy as np
@@ -23,17 +23,15 @@ f = open('FM-AFM.dat', 'w')
 for u in np.arange(5, 0, -0.25):
     # We approach the solutions for different U values
     H.U = u
-    try:
-        H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
-    except:
+    success = H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
+    if not success:
         H.dm = dm_AFM.copy()
 
     # AFM case first
-    dn = H.converge(dm.dm_insulator, tol=1e-10)
+    dn = H.converge(density.dm_insulator, tol=1e-10)
     eAFM = H.Etot
     H.write_density('clar-goblet.nc')
     dm_AFM = H.dm.copy()
-    nup_AFM, ndn_AFM = H.nup, H.ndn
 
     if u == 3.5:
         p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
@@ -42,11 +40,10 @@ for u in np.arange(5, 0, -0.25):
     # Now FM case
     H.q[0] += 1 # change to two more up-electrons than down
     H.q[1] -= 1
-    try:
-        H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
-    except:
+    success = H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
+    if not success:
         H.random_density()
-    dn = H.converge(dm.dm_insulator, tol=1e-10)
+    dn = H.converge(density.dm_insulator, tol=1e-10)
     eFM = H.Etot
     H.write_density('clar-goblet.nc')
 
