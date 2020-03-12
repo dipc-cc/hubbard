@@ -413,9 +413,44 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, dm_method, tol=1e-10, steps=100, mix=1.0, premix=0.1, method=0, fn=None, func_args=dict()):
-        """ Iterate Hamiltonian towards a specified tolerance criterion """
-        print('HubbardHamiltonian: Iterating towards self-consistency...')
+    def converge(self, dm_method, tol=1e-10, premix=0.1, mix=1.0, steps=100, fn=None, func_args=dict()):
+        """ Iterate Hamiltonian towards a specified tolerance criterion
+
+        This method calls `iterate` as many times as it needs until it reaches the specified tolerance
+
+        Parameters
+        ----------
+        dm_method: callable
+            method to obtain the spin-densities
+            it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
+        tol: float, optional
+            tolerance criterion
+        premix: float, optional
+            mixing parameter for the SCF loop for the first iterations (if ``dn>0.1``)
+        mix: float, optional
+            mixing parameter for the SCF loop (if ``dn<=0.1``)
+        steps: int, optional
+            the code will print some relevant information about the convergence process whent the number of completed iterations reaches
+            a multiple of the specified ``steps``
+        fn: str, optional
+            optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
+            the specified `steps`), by giving the name of the full name of the *binary file*
+        func_args: dictionary, optional
+            function arguments to pass to dm_method
+
+        See Also
+        --------
+        iterate
+        Hubbard.dm
+            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
+        Hubbard.NEGF
+            class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+
+        Returns
+        -------
+        dn
+            difference between the ith and the (i-1)th iteration densities
+        """
         dn = 1.0
         i = 0
         while dn > tol:
