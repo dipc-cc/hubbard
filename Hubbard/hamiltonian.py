@@ -431,7 +431,7 @@ class HubbardHamiltonian(object):
             mixing parameter for the SCF loop (if ``dn<=0.1``)
         steps: int, optional
             the code will print some relevant information about the convergence process whent the number of completed iterations reaches
-            a multiple of the specified ``steps``
+            a multiple of the specified `steps`
         fn: str, optional
             optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
             the specified `steps`), by giving the name of the full name of the *binary file*
