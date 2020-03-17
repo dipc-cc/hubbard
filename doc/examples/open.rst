@@ -69,6 +69,8 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
 
       # MFH object of the central region
       MFH_HC = hh.HubbardHamiltonian(HC, U=U, kT=kT)
+      # Use initial random density
+      MFH_HC.random_density()
 
       # First create the NEGF object, where we pass the MFH converged electrodes and
       # the central region HubbardHamiltonian object
@@ -76,3 +78,13 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
 
       # Converge using Green's function method to obtain the densities
       dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-6)
+
+As you might probably observed, each iteration using the non-equilibrium Green's function formalism takes much more
+time. This is due to the fact that it has to invert the Green's function matrix for each energy point along the
+integration path in each iteration.
+For this reason, using a good initial guess (initial spin-densities) can be crucial if we want the code to perform
+less iterations to find the self-consistent solution.
+
+Try again the example from above but using a specific initial guess for the spin-densities.
+For instance, you could find the self-consistent solution for the device Hamiltonian with periodic boundary conditions
+and use this spin-densities to start the convergence for the device with open boundary conditions.
