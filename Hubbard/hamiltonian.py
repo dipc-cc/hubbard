@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         on-site Coulomb repulsion
     q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt: array_like, optional
+    nkpt: array_like or sisl.BrillouinZone instance, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
@@ -58,6 +58,7 @@ class HubbardHamiltonian(object):
         self.U = U # Hubbard onsite Coulomb parameter
 
         # Copy TB Hamiltonian to store the converged one in a different variable
+        self.TBHam = TBHam
         self.H = TBHam.copy()
         self.H.finalize()
         self.geom = TBHam.geometry
@@ -78,17 +79,51 @@ class HubbardHamiltonian(object):
 
         self.sites = len(self.geom)
         self._update_e0()
-        # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self.H, nkpt)
+
+        # Set k-mesh
+        self.set_kmesh(nkpt)
 
         self.kT = kT
 
         # Initialize density matrix
-        if not DM:
-            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=TBHam.orthogonal)
-        else:
+        self.set_dm(DM)
+
+    def set_dm(self, DM=0):
+        """ Set the density matrix for the HubbardHamiltonian
+
+        Parameters
+        ----------
+        DM: sisl.DensityMatrix, optional
+            Density matrix to be associated with the HubbardHamiltonian instance
+
+        See Also
+        --------
+        `sisl.physics.DensityMatrix <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.DensityMatrix>`_
+        """
+        if isinstance(DM, sisl.DensityMatrix):
             self.DM = DM
+        else:
+            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=self.TBHam.orthogonal)
         self.dm = self.DM._csr.diagonal().T
+
+    def set_kmesh(self, nkpt=[1, 1, 1]):
+        """ Set the k-mesh for the HubbardHamiltonian
+
+        Parameters
+        ----------
+        nkpt: array_like or sisl.BrillouinZone instance, optional
+            k-mesh to be associated with the HubbardHamiltonian instance
+
+        See Also
+        --------
+        `sisl.physics.Brillouin_Zone <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.BrillouinZone>`_
+        """
+        if isinstance(nkpt, sisl.BrillouinZone):
+            self.mp = nkpt
+        elif isinstance(nkpt, np.ndarray) or isinstance(nkpt, list):
+            self.mp = sisl.MonkhorstPack(self.H, nkpt)
+        else:
+            raise ValueError(self.__class__.__name__ + ' requires an array_like input')
 
     def __str__(self):
         """ Representation of the model """
