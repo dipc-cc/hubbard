@@ -369,7 +369,7 @@ class HubbardHamiltonian(object):
             it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
-        mixer: Mixer
+        mixer: Mixer, optional
             mixing object for the SCF loop
 
         See Also
@@ -380,7 +380,7 @@ class HubbardHamiltonian(object):
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
         Hubbard.NEGF.dm_open
             method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-
+        `sisl.mixing` : sisl tools for mixing
         Returns
         -------
         dn
@@ -401,6 +401,8 @@ class HubbardHamiltonian(object):
         dn = np.absolute(ddm).max()
 
         # Update occupations on sites with mixing algorithm
+        if mixer is None:
+            mixer = sisl.mixing.LinearMixer(0.5)
         self.dm = mixer(self.dm, ddm)
 
         # Update density matrix
