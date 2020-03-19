@@ -21,11 +21,13 @@ H.iterate(dens.dm_insulator)
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
 Etot0 = H.Etot*1
 
+mixer = sisl.mixing.PulayMixer(0.7, history=7)
+
 for m in [dens.dm_insulator, dens.dm]:
     # Reset density and iterate
     H.random_density()
 
-    dn = H.converge(m, tol=1e-10, steps=10)
+    dn = H.converge(m, tol=1e-10, steps=10, mixer=mixer)
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
