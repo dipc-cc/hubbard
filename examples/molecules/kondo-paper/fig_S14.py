@@ -19,17 +19,15 @@ H = hh.HubbardHamiltonian(Hsp2)
 f = open('FM-AFM.dat', 'w')
 
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
-
+H.random_density()
 for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.4-u
     # AFM case first
     success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
-    if not success:
-        H.random_density()
 
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer)
+    dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
     eAFM = H.Etot
     H.write_density('fig_S14.nc')
 
@@ -37,11 +35,9 @@ for u in np.linspace(0.0, 1.4, 15):
     H.q[0] += 1 # change to two more up-electrons than down
     H.q[1] -= 1
     success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
-    if not success:
-        H.random_density()
 
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer)
+    dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
     eFM = H.Etot
     H.write_density('fig_S14.nc')
 
