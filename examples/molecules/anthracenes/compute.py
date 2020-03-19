@@ -20,15 +20,18 @@ H = hh.HubbardHamiltonian(Hsp2)
 # FM and AFM solutions
 f = open('FM-AFM.dat', 'w')
 
+mixer = sisl.mixing.PulayMixer(0.7, history=7)
+
 for u in np.linspace(0.0, 4.0, 5):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.0-u
 
     # AFM case first
     success = H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
-    if not succcess:
+    if not success:
         H.random_density()
-    dn = H.converge(dm.dm_insulator)
+    mixer.clear()
+    dn = H.converge(dm.dm_insulator, mixer=mixer)
     eAFM = H.Etot
     H.write_density(mol_file+'.nc')
 
@@ -42,7 +45,8 @@ for u in np.linspace(0.0, 4.0, 5):
         H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
     except:
         H.random_density()
-    dn = H.converge(dm.dm_insulator)
+    mixer.clear()
+    dn = H.converge(dm.dm_insulator, mixer=mixer)
     eFM = H.Etot
     H.write_density(mol_file+'.nc')
 

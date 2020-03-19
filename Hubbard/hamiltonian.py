@@ -350,7 +350,7 @@ class HubbardHamiltonian(object):
         fh.write_density(s, group, self.dm)
         print('HubbardHamiltonian: Wrote charge to %s' % fn)
 
-    def iterate(self, dm_method, q=None, mix=1.0, **kwargs):
+    def iterate(self, dm_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
 
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
@@ -369,8 +369,8 @@ class HubbardHamiltonian(object):
             it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
-        mix: float, optional
-            mixing parameter for the SCF loop
+        mixer: Mixer
+            mixing object for the SCF loop
 
         See Also
         --------
@@ -397,10 +397,11 @@ class HubbardHamiltonian(object):
         ni, Etot = dm_method(self, q, **kwargs)
 
         # Measure of density change
-        dn = np.absolute(self.dm - ni).sum()
+        ddm = ni - self.dm
+        dn = np.absolute(ddm).max()
 
-        # Update occupations on sites with mixing
-        self.dm = mix * ni + (1. - mix) * self.dm
+        # Update occupations on sites with mixing algorithm
+        self.dm = mixer(self.dm, ddm)
 
         # Update density matrix
         self.update_density_matrix()
@@ -413,7 +414,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, dm_method, tol=1e-10, premix=0.1, mix=1.0, steps=100, fn=None, func_args=dict()):
+    def converge(self, dm_method, tol=1e-10, mixer=None, steps=100, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion
 
         This method calls `iterate` as many times as it needs until it reaches the specified tolerance
@@ -425,10 +426,8 @@ class HubbardHamiltonian(object):
             it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
         tol: float, optional
             tolerance criterion
-        premix: float, optional
-            mixing parameter for the SCF loop for the first iterations (if ``dn>0.1``)
-        mix: float, optional
-            mixing parameter for the SCF loop (if ``dn<=0.1``)
+        mixer: Mixer
+            mixing object (from `sisl.mixing.Mixer`), defaults to `sisl.mixing.DIISMixer`
         steps: int, optional
             the code will print some relevant information about the convergence process whent the number of completed iterations reaches
             a multiple of the specified `steps`
@@ -451,15 +450,14 @@ class HubbardHamiltonian(object):
         dn
             difference between the ith and the (i-1)th iteration densities
         """
+        if mixer is None:
+            mixer = sisl.mixing.LinearMixer(0.5)
+
         dn = 1.0
         i = 0
         while dn > tol:
             i += 1
-            if dn > 0.1:
-                # precondition when density change is relatively large
-                dn = self.iterate(dm_method, mix=premix, **func_args)
-            else:
-                dn = self.iterate(dm_method, mix=mix, **func_args)
+            dn = self.iterate(dm_method, mixer=mixer, **func_args)
             # Print some info from time to time
             if i % steps == 0:
                 print('   %i iterations completed:' % i, dn, self.Etot)

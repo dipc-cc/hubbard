@@ -34,7 +34,8 @@ H.U = 3.5
 success = H.read_density('fig3_type1.nc') # Try reading, if we already have density on file
 if not success:
     H.random_density()
-H.converge(dm.dm_insulator)
+mixer = sisl.mixing.PulayMixer(0.7, history=7)
+H.converge(dm.dm_insulator, mixer=mixer)
 H.write_density('fig3_type1.nc')
 p = plot.SpinPolarization(H, ext_geom=mol, vmax=0.20)
 p.savefig('fig3_pol.pdf')

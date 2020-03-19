@@ -18,6 +18,8 @@ H = hh.HubbardHamiltonian(Hsp2)
 # FM and AFM solutions
 f = open('FM-AFM.dat', 'w')
 
+mixer = sisl.mixing.PulayMixer(0.7, history=7)
+
 for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.4-u
@@ -26,7 +28,8 @@ for u in np.linspace(0.0, 1.4, 15):
     if not success:
         H.random_density()
 
-    dn = H.converge(dm.dm_insulator)
+    mixer.clear()
+    dn = H.converge(dm.dm_insulator, mixer=mixer)
     eAFM = H.Etot
     H.write_density('fig_S14.nc')
 
@@ -37,7 +40,8 @@ for u in np.linspace(0.0, 1.4, 15):
     if not success:
         H.random_density()
 
-    dn = H.converge(dm.dm_insulator)
+    mixer.clear()
+    dn = H.converge(dm.dm_insulator, mixer=mixer)
     eFM = H.Etot
     H.write_density('fig_S14.nc')
 

@@ -16,6 +16,9 @@ Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 # 3NN tight-binding model
 H = hh.HubbardHamiltonian(Hsp2)
 
+# Create mixer
+mixer = sisl.mixing.PulayMixer(0.7, history=12)
+
 for u in [0.0, 3.5]:
     H.U = u
     if H.U == 0:
@@ -25,7 +28,8 @@ for u in [0.0, 3.5]:
         success = H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
         if not success:
             H.random_density()
-        H.converge(dm.dm_insulator)
+        mixer.clear()
+        H.converge(dm.dm_insulator, mixer=mixer)
         H.write_density('fig_S11-S13.nc')
 
     # Plot Eigenspectrum

@@ -20,6 +20,8 @@ dm_AFM = H.dm
 
 f = open('FM-AFM.dat', 'w')
 
+mixer = sisl.mixing.PulayMixer(0.7, history=7)
+
 for u in np.arange(5, 0, -0.25):
     # We approach the solutions for different U values
     H.U = u
@@ -28,7 +30,8 @@ for u in np.arange(5, 0, -0.25):
         H.dm = dm_AFM.copy()
 
     # AFM case first
-    dn = H.converge(density.dm_insulator, tol=1e-10)
+    mixer.clear()
+    dn = H.converge(density.dm_insulator, tol=1e-10, mixer=mixer)
     eAFM = H.Etot
     H.write_density('clar-goblet.nc')
     dm_AFM = H.dm.copy()
@@ -43,7 +46,8 @@ for u in np.arange(5, 0, -0.25):
     success = H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     if not success:
         H.random_density()
-    dn = H.converge(density.dm_insulator, tol=1e-10)
+    mixer.clear()
+    dn = H.converge(density.dm_insulator, tol=1e-10, mixer=mixer)
     eFM = H.Etot
     H.write_density('clar-goblet.nc')
 
