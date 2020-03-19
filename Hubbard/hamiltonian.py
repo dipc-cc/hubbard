@@ -24,24 +24,23 @@ class HubbardHamiltonian(object):
 
     Parameters
     ----------
-    TBHam: sisl.Hamiltonian instance
+    TBHam: sisl.physics.Hamiltonian instance
         A spin-polarized tight-binding Hamiltonian
-    DM: sisl.DensityMatrix instance, optional
+    DM: sisl.physics.DensityMatrix instance, optional
         A spin-polarized density datrix generated with sisl
         to use as a initial spin-densities
     U: float, optional
         on-site Coulomb repulsion
     q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt: array_like, optional
+    nkpt: array_like or sisl.physics.BrillouinZone instance, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
 
     See Also
     --------
-    `sisl.physics.Hamiltonian <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html>`_
-        sisl module to build sparse Hamiltonian matrices
+    sisl.physics.Hamiltonian : sisl module to build sparse Hamiltonian matrices
     """
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
@@ -58,6 +57,7 @@ class HubbardHamiltonian(object):
         self.U = U # Hubbard onsite Coulomb parameter
 
         # Copy TB Hamiltonian to store the converged one in a different variable
+        self.TBHam = TBHam
         self.H = TBHam.copy()
         self.H.finalize()
         self.geom = TBHam.geometry
@@ -78,17 +78,51 @@ class HubbardHamiltonian(object):
 
         self.sites = len(self.geom)
         self._update_e0()
-        # Generate Monkhorst-Pack
-        self.mp = sisl.MonkhorstPack(self.H, nkpt)
+
+        # Set k-mesh
+        self.set_kmesh(nkpt)
 
         self.kT = kT
 
         # Initialize density matrix
-        if not DM:
-            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=TBHam.orthogonal)
-        else:
+        self.set_dm(DM)
+
+    def set_dm(self, DM=0):
+        """ Set the density matrix for the HubbardHamiltonian
+
+        Parameters
+        ----------
+        DM : sisl.physics.DensityMatrix, optional
+            Density matrix to be associated with the HubbardHamiltonian instance
+
+        See Also
+        --------
+        `sisl.physics.DensityMatrix` : sisl class
+        """
+        if isinstance(DM, sisl.DensityMatrix):
             self.DM = DM
+        else:
+            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=self.TBHam.orthogonal)
         self.dm = self.DM._csr.diagonal().T
+
+    def set_kmesh(self, nkpt=[1, 1, 1]):
+        """ Set the k-mesh for the HubbardHamiltonian
+
+        Parameters
+        ----------
+        nkpt : array_like or sisl.BrillouinZone instance, optional
+            k-mesh to be associated with the HubbardHamiltonian instance
+
+        See Also
+        --------
+        `sisl.physics.BrillouinZone` : sisl class
+        """
+        if isinstance(nkpt, sisl.BrillouinZone):
+            self.mp = nkpt
+        elif isinstance(nkpt, np.ndarray) or isinstance(nkpt, list):
+            self.mp = sisl.MonkhorstPack(self.H, nkpt)
+        else:
+            raise ValueError(self.__class__.__name__ + ' requires an array_like input')
 
     def __str__(self):
         """ Representation of the model """
@@ -111,7 +145,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.SparseOrbitalBZ.eigh <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.SparseOrbitalBZ.html#sisl.physics.SparseOrbitalBZ.eigh>`_
+        `sisl.physics.SparseOrbitalBZ.eigh` : sisl class
 
         Returns
         -------
@@ -131,7 +165,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.EigenstateElectron <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.EigenstateElectron.html>`_
+        `sisl.physics.EigenstateElectron` : sisl class
 
         Returns
         -------
@@ -151,7 +185,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.tile <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.tile>`_
+        `sisl.Geometry.tile` : sisl class method
 
         Returns
         -------
@@ -175,7 +209,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.repeat <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.repeat>`_
+        `sisl.Geometry.repeat` : sisl class method
 
         Returns
         -------
@@ -288,7 +322,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.Hamiltonian.fermi_level <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.fermi_level>`_
+        `sisl.physics.Hamiltonian.fermi_level` : sisl class function
 
         Returns
         -------
@@ -383,7 +417,7 @@ class HubbardHamiltonian(object):
         `sisl.mixing` : sisl tools for mixing
         Returns
         -------
-        dn
+        dn : array_like
             difference between the ith and the (i-1)th iteration densities
         """
         if q is None:
@@ -512,8 +546,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.electron.berry_phase <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.berry_phase.html>`_
-            sisl routine to obtain the Berry phase
+        `sisl.electron.berry_phase` : sisl class function
 
         Returns
         -------
@@ -599,8 +632,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.electron.spin_squared <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.spin_squared.html>`_
-            sisl routine to obtain the spin squared expectation value between two spin states
+        `sisl.electron.spin_squared` : sisl class function
 
         Returns
         -------

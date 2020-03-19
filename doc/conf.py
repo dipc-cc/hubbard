@@ -39,6 +39,7 @@ extensions = ['sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
               'sphinx.ext.coverage',
               'sphinx.ext.extlinks',
+              'sphinx.ext.intersphinx',
               #'numpydoc',
               #'sphinx.ext.inheritance_diagram',
               'sphinx.ext.githubpages']
@@ -237,7 +238,7 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'sisl': ('https://github.com/zerothi/sisl/tree/gh-pages/docs/latest', None),
+    'sisl': ('http://zerothi.github.io/sisl/docs/latest', None),
 }
 
 

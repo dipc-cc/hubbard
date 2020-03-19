@@ -30,8 +30,7 @@ def dm(H, q):
 
     See Also
     --------
-    `sisl.physics.EigenstateElectron.norm2 <http://zerothi.github.io/sisl/docs/latest/api-generated/sisl.physics.EigenstateElectron.html?highlight=norm2#sisl.physics.EigenstateElectron.norm2>`_
-        sisl routine to obtain the dot product of the eigenstates with the overlap matrix
+    `sisl.physics.EigenstateElectron.norm2` sisl routine to obtain the dot product of the eigenstates with the overlap matrix
     """
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)

@@ -9,10 +9,10 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         s0=1.0, s1=0, s2=0, s3=0, dq=0, dim=2):
     """ Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems
 
-    It takes advantage of the `sisl <https://sisl.readthedocs.io/en/latest/index.html>`_ class for building sparse Hamiltonian matrices, 
-    `sisl.physics.Hamiltonian <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html>`_
+    It takes advantage of the `sisl` class for building sparse Hamiltonian matrices,
+    `sisl.physics.Hamiltonian`
 
-    It obtains the Hamiltonian for ``ext_geom`` (which must be a `sisl.Geometry <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html>`_ instance)
+    It obtains the Hamiltonian for ``ext_geom`` (which must be a `sisl.Geometry` instance)
     with the parameters for first, second and third nearest neighbors (``t1``, ``t2``, ``t3``).
 
     One can also use a non-orthogonal basis of atomic orbitals by passing the parameters for the
