@@ -24,9 +24,9 @@ class HubbardHamiltonian(object):
 
     Parameters
     ----------
-    TBHam: sisl.Hamiltonian instance
+    TBHam: sisl.physics.Hamiltonian instance
         A spin-polarized tight-binding Hamiltonian
-    DM: sisl.DensityMatrix instance, optional
+    DM: sisl.physics.DensityMatrix instance, optional
         A spin-polarized density datrix generated with sisl
         to use as a initial spin-densities
     U: float, optional
@@ -40,8 +40,7 @@ class HubbardHamiltonian(object):
 
     See Also
     --------
-    `sisl.physics.Hamiltonian <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html>`_
-        sisl module to build sparse Hamiltonian matrices
+    sisl.physics.Hamiltonian : sisl module to build sparse Hamiltonian matrices
     """
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
