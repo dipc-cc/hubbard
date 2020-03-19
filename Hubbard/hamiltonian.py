@@ -33,7 +33,7 @@ class HubbardHamiltonian(object):
         on-site Coulomb repulsion
     q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt: array_like or sisl.BrillouinZone instance, optional
+    nkpt: array_like or sisl.physics.BrillouinZone instance, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
@@ -92,12 +92,12 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        DM: sisl.DensityMatrix, optional
+        DM : sisl.physics.DensityMatrix, optional
             Density matrix to be associated with the HubbardHamiltonian instance
 
         See Also
         --------
-        `sisl.physics.DensityMatrix <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.DensityMatrix>`_
+        `sisl.physics.DensityMatrix` : sisl class
         """
         if isinstance(DM, sisl.DensityMatrix):
             self.DM = DM
@@ -110,12 +110,12 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        nkpt: array_like or sisl.BrillouinZone instance, optional
+        nkpt : array_like or sisl.BrillouinZone instance, optional
             k-mesh to be associated with the HubbardHamiltonian instance
 
         See Also
         --------
-        `sisl.physics.Brillouin_Zone <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.BrillouinZone>`_
+        `sisl.physics.BrillouinZone` : sisl class
         """
         if isinstance(nkpt, sisl.BrillouinZone):
             self.mp = nkpt
@@ -145,7 +145,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.SparseOrbitalBZ.eigh <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.SparseOrbitalBZ.html#sisl.physics.SparseOrbitalBZ.eigh>`_
+        `sisl.physics.SparseOrbitalBZ.eigh` : sisl class
 
         Returns
         -------
@@ -165,7 +165,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.EigenstateElectron <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.EigenstateElectron.html>`_
+        `sisl.physics.EigenstateElectron` : sisl class
 
         Returns
         -------
@@ -185,7 +185,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.tile <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.tile>`_
+        `sisl.Geometry.tile` : sisl class method
 
         Returns
         -------
@@ -209,7 +209,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.repeat <https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html#sisl.Geometry.repeat>`_
+        `sisl.Geometry.repeat` : sisl class method
 
         Returns
         -------
@@ -322,7 +322,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.physics.Hamiltonian.fermi_level <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.fermi_level>`_
+        `sisl.physics.Hamiltonian.fermi_level` : sisl class function
 
         Returns
         -------
@@ -417,7 +417,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        dn
+        dn : array_like
             difference between the ith and the (i-1)th iteration densities
         """
         if q is None:
@@ -546,8 +546,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.electron.berry_phase <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.berry_phase.html>`_
-            sisl routine to obtain the Berry phase
+        `sisl.electron.berry_phase` : sisl class function
 
         Returns
         -------
@@ -633,8 +632,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.electron.spin_squared <https://sisl.readthedocs.io/en/latest/api-generated/sisl.physics.electron.spin_squared.html>`_
-            sisl routine to obtain the spin squared expectation value between two spin states
+        `sisl.electron.spin_squared` : sisl class function
 
         Returns
         -------

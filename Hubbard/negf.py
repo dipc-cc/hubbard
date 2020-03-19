@@ -34,8 +34,7 @@ class NEGF(object):
 
     See Also
     --------
-    `sisl.physics.RecursiveSI <http://zerothi.github.io/sisl/docs/latest/api-generated/sisl.physics.RecursiveSI.html?highlight=recursivesi#sisl.physics.RecursiveSI>`_
-        sisl routines to create semi-infinite object (obtain self-energy, etc.)
+    `sisl.physics.RecursiveSI` : sisl routines to create semi-infinite object (obtain self-energy, etc.)
 
     Notes
     -----
