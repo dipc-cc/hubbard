@@ -15,7 +15,7 @@ molecule.sc.set_nsc([1, 1, 1])
 Hsp2 = sp2(molecule)
 H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.read_density('mol-ref/density.nc')
-H.iterate(dens.dm_insulator)
+H.iterate(dens.dm_insulator, mixer=sisl.mixing.LinearMixer())
 
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
@@ -26,7 +26,7 @@ mixer = sisl.mixing.PulayMixer(0.7, history=7)
 for m in [dens.dm_insulator, dens.dm]:
     # Reset density and iterate
     H.random_density()
-
+    mixer.clear()
     dn = H.converge(m, tol=1e-10, steps=10, mixer=mixer)
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 

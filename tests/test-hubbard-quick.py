@@ -9,24 +9,24 @@ import sisl
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
 molecule.sc.set_nsc([1, 1, 1])
 
-# Run one iteration
+print('1. Run one iteration with dm_insulator')
 Hsp2 = sp2(molecule)
 H = hh.HubbardHamiltonian(Hsp2, U=3.5)
 H.random_density()
-mixer = sisl.mixing.PulayMixer(0.7, history=7)
-dn = H.iterate(dm.dm_insulator, mixer=mixer)
-print(dn, H.Etot)
+dn = H.iterate(dm.dm_insulator, mixer=sisl.mixing.LinearMixer())
+print('   dn, Etot: ', dn, H.Etot, '\n')
 
-# Run also one iteration with data from ncfile
+print('2. Run one iteration with data from ncfile')
 H.read_density('mol-ref/density.nc')
-dn = H.iterate(dm.dm_insulator, mixer=mixer)
+dn = H.iterate(dm.dm_insulator, mixer=sisl.mixing.LinearMixer())
 etot = 1*H.Etot
-print(dn, etot)
+print('   dn, Etot: ', dn, etot, '\n')
 
-# Test iterate2 method
-d = H.iterate(dm.dm, mixer=mixer)
+print('3. Run one iteration with dm')
+d = H.iterate(dm.dm, mixer=sisl.mixing.LinearMixer())
 e = H.Etot
-print(d-dn, e-etot)
+print('   dn, dEtot: ', d-dn, e-etot, '\n')
 
 # Write new data structure
+print('4. Write data in ncfile')
 H.write_density('mol-ref/test.nc', mode='w')
