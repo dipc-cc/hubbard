@@ -74,7 +74,7 @@ negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
 mixer.clear()
 dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, mixer=mixer)
 
-MFH_HC.H.shift(-negf.Ef)
+MFH_HC.H.shift(negf.Ef)
 MFH_HC.H.write('MFH_HC.nc')
 print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 # Write also densities for future calculations
