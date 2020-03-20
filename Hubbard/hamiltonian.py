@@ -83,7 +83,7 @@ class HubbardHamiltonian(object):
         # Initialize density matrix
         self.set_dm(DM)
 
-    def set_dm(self, DM=0):
+    def set_dm(self, DM=None):
         """ Set the density matrix for the HubbardHamiltonian
 
         Parameters
@@ -429,7 +429,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, dm_method, tol=1e-10, mixer=None, steps=100, fn=None, func_args=dict()):
+    def converge(self, dm_method, tol=1e-6, mixer=None, steps=100, fn=None, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion
 
         This method calls `iterate` as many times as it needs until it reaches the specified tolerance
@@ -638,12 +638,14 @@ class HubbardHamiltonian(object):
         else:
             return S_MFH
 
-    def band_sym(self, eigenstate, diag=True):
+    def band_sym(self, eigenstate, diag=True, axis=2):
         '''
         Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees
         '''
         geom0 = self.geom
-        geom180 = geom0.rotate(180, [0, 0, 1], geom0.center())
+        vec = [0, 0, 0]
+        vec[axis] = 1
+        geom180 = geom0.rotate(180, vec, geom0.center())
         sites180 = []
         for ia in geom180:
             for ib in geom0:
