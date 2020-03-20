@@ -470,8 +470,6 @@ class HubbardHamiltonian(object):
             print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
-            # Clear mixer before convergence starts
-            mixer.clear()
         dn = 1.0
         i = 0
         while dn > tol:
