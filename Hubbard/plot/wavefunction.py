@@ -28,10 +28,10 @@ class Wavefunction(GeometryPlot):
     of the coefficient of `wf` on the atomic sites
     """
 
-    def __init__(self, HubbardHamiltonian, wf,  ext_geom=None, cb_label=r'Phase', **keywords):
+    def __init__(self, HubbardHamiltonian, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **keywords):
 
         # Set default keywords
-        if 'realspace' in keywords:
+        if realspace:
             if 'facecolor' not in keywords:
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
@@ -42,7 +42,7 @@ class Wavefunction(GeometryPlot):
 
         GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
 
-        if 'realspace' in keywords:
+        if realspace:
             self.__realspace__(wf, **keywords)
 
             # Create custom map to differenciate it from polarization cmap

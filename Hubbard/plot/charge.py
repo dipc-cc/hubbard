@@ -22,9 +22,9 @@ class Charge(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], realspace=False, **keywords):
         # Set default keywords
-        if 'realspace' in keywords:
+        if realspace:
             if 'facecolor' not in keywords:
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
@@ -45,7 +45,7 @@ class Charge(GeometryPlot):
 
         charge = HubbardHamiltonian.dm[spin].sum(axis=0)
 
-        if 'realspace' in keywords:
+        if realspace:
             self.__realspace__(charge, density=True, **keywords)
 
         else:
@@ -64,10 +64,10 @@ class ChargeDifference(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, realspace=False, **keywords):
 
         # Set default keywords
-        if 'realspace' in keywords:
+        if realspace:
             if 'facecolor' not in keywords:
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
@@ -87,7 +87,7 @@ class ChargeDifference(GeometryPlot):
         for ia in HubbardHamiltonian.geom:
             charge[ia] -= HubbardHamiltonian.geom.atoms[ia].Z-5
 
-        if 'realspace' in keywords:
+        if realspace:
             self.__realspace__(charge, density=True, **keywords)
 
         else:
@@ -103,10 +103,10 @@ class SpinPolarization(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, **keywords):
+    def __init__(self, HubbardHamiltonian, ext_geom=None, realspace=False, **keywords):
 
         # Set default keywords
-        if 'realspace' in keywords:
+        if realspace:
             if 'facecolor' not in keywords:
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
@@ -124,7 +124,7 @@ class SpinPolarization(GeometryPlot):
         # Compute charge difference between up and down channels
         charge = np.diff(HubbardHamiltonian.dm[[1, 0]], axis=0).ravel()
 
-        if 'realspace' in keywords:
+        if realspace:
             self.__realspace__(charge, density=True, **keywords)
 
         else:

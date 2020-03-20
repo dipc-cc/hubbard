@@ -96,10 +96,10 @@ class DOS_distribution(GeometryPlot):
     If the `realspace` keyword is passed it will plot the DOS in a realspace grid
     """
 
-    def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, **keywords):
+    def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, realspace=False, **keywords):
 
         # Set default keywords
-        if 'realspace' in keywords:
+        if realspace:
             if 'facecolor' not in keywords:
                 keywords['facecolor'] = 'None'
             if 'cmap' not in keywords:
@@ -113,7 +113,7 @@ class DOS_distribution(GeometryPlot):
         x = HubbardHamiltonian.geom[:, 0]
         y = HubbardHamiltonian.geom[:, 1]
 
-        if 'realspace' in keywords:
+        if realspace:
             self.__realspace__(DOS, density=True, vmin=0, **keywords)
             self.imshow.set_cmap(plt.cm.afmhot)
 
