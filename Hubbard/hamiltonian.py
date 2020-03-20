@@ -415,7 +415,7 @@ class HubbardHamiltonian(object):
 
         # Update occupations on sites with mixing algorithm
         if mixer is None:
-            mixer = sisl.mixing.LinearMixer(0.5)
+            mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
         self.dm = mixer(self.dm, ddm)
 
         # Update density matrix
@@ -466,7 +466,7 @@ class HubbardHamiltonian(object):
             difference between the ith and the (i-1)th iteration densities
         """
         if mixer is None:
-            mixer = sisl.mixing.LinearMixer(0.5)
+            mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
         dn = 1.0
         i = 0
         while dn > tol:
