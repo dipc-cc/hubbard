@@ -70,7 +70,7 @@ if not success:
 # First create NEGF object
 negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'], V=0.1)
 mixer.clear()
-dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, mixer=mixer, func_args={'qtol': 1e-4})
+dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, mixer=mixer, func_args={'qtol': 1e-4}, print_info=True)
 
 print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 # Write also densities for future calculations

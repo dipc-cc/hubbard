@@ -429,7 +429,7 @@ class HubbardHamiltonian(object):
 
         return dn
 
-    def converge(self, dm_method, tol=1e-6, mixer=None, steps=100, fn=None, func_args=dict()):
+    def converge(self, dm_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion
 
         This method calls `iterate` as many times as it needs until it reaches the specified tolerance
@@ -444,8 +444,9 @@ class HubbardHamiltonian(object):
         mixer: Mixer
             `sisl.mixing.Mixer` instance, defaults to `sisl.mixing.DIISMixer`
         steps: int, optional
-            the code will print some relevant information about the convergence process whent the number of completed iterations reaches
-            a multiple of the specified `steps`
+            the code will print some relevant information (if `print_info` is set to ``True``) about the convergence
+            process when the number of completed iterations reaches a multiple of the specified `steps`.
+            It also will store the densities in a binary file if `fn` is passed
         fn: str, optional
             optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
             the specified `steps`), by giving the name of the full name of the *binary file*
@@ -456,7 +457,7 @@ class HubbardHamiltonian(object):
         --------
         iterate
         Hubbard.dm
-            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
+            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         Hubbard.NEGF
             class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
 
@@ -465,6 +466,8 @@ class HubbardHamiltonian(object):
         dn
             difference between the ith and the (i-1)th iteration densities
         """
+        if print_info:
+            print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
         dn = 1.0
@@ -472,13 +475,14 @@ class HubbardHamiltonian(object):
         while dn > tol:
             i += 1
             dn = self.iterate(dm_method, mixer=mixer, **func_args)
-            # Print some info from time to time
             if i % steps == 0:
-                print('   %i iterations completed:' % i, dn, self.Etot)
+                # Print some info from time to time
+                if print_info:
+                    print('   %i iterations completed:' % i, dn, self.Etot)
                 if fn:
                     self.write_density(fn)
-
-        print('   found solution in %i iterations' % i)
+        if print_info:
+            print('   found solution in %i iterations' % i)
         return dn
 
     def calc_orbital_charge_overlaps(self, k=[0, 0, 0], spin=0):

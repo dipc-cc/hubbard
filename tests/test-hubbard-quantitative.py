@@ -27,7 +27,7 @@ for m in [dens.dm_insulator, dens.dm]:
     # Reset density and iterate
     H.random_density()
     mixer.clear()
-    dn = H.converge(m, tol=1e-10, steps=10, mixer=mixer)
+    dn = H.converge(m, tol=1e-10, steps=10, mixer=mixer, print_info=True)
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
