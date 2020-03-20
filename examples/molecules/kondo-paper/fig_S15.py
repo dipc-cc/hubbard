@@ -24,22 +24,22 @@ for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.4-u
     # AFM case first
-    success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
+    success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
     mixer.clear()
     dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
     eAFM = H.Etot
-    H.write_density('fig_S14.nc')
+    H.write_density('fig_S15.nc')
 
     # Now FM case
     H.q[0] += 1 # change to two more up-electrons than down
     H.q[1] -= 1
-    success = H.read_density('fig_S14.nc') # Try reading, if we already have density on file
+    success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
     mixer.clear()
     dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
     eFM = H.Etot
-    H.write_density('fig_S14.nc')
+    H.write_density('fig_S15.nc')
 
     # Revert the imbalance for next loop
     H.q[0] -= 1
