@@ -63,9 +63,10 @@ MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, kT=kT)
 # Initial densities
 success = MFH_HC.read_density('HC_density.nc')
 if not success:
-    # Converge without OBC to have initial density
-    mixer.clear()
-    MFH_HC.converge(density.dm, tol=1e-5, mixer=mixer)
+    # Get initial spin-densities with PBC to speed up the following convergence with OBC
+    DM = MFH_elec.tile(16, axis=0).DM
+    DM = DM.remove([69, 79, 89, 78, 88, 66, 77, 76, 87, 86, 65, 74, 75, 84, 85])
+    MFH_HC.set_dm(DM)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'], V=0.1)
