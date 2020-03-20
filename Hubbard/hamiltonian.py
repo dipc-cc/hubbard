@@ -372,7 +372,7 @@ class HubbardHamiltonian(object):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
 
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
-        where one needs to use the correct ``dm_method`` for the particular system.
+        where one needs to use the correct `dm_method` for the particular system.
 
 
         Parameters
@@ -390,9 +390,16 @@ class HubbardHamiltonian(object):
         update_hamiltonian
         update_density_matrix
         Hubbard.dm
-            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
+            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         Hubbard.NEGF.dm_open
             method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+        `sisl.mixing.LinearMixer`
+            `sisl` class to use a linear mixing scheme in the convergence process
+        `sisl.mixing.DIISMixer`
+            `sisl` class to use DIIS (Pulay) mixing scheme in the convergence process
+        `sisl.mixing.AdaptiveDIISMixer`
+            `sisl` class to use DIIS (Pulay) mixing scheme with adaptative weight
+            in the convergence process
 
         Returns
         -------
@@ -460,6 +467,13 @@ class HubbardHamiltonian(object):
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         Hubbard.NEGF
             class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+        `sisl.mixing.LinearMixer`
+            `sisl` class to use a linear mixing scheme in the convergence process
+        `sisl.mixing.DIISMixer`
+            `sisl` class to use DIIS (Pulay) mixing scheme in the convergence process
+        `sisl.mixing.AdaptiveDIISMixer`
+            `sisl` class to use DIIS (Pulay) mixing scheme with adaptative weight
+            in the convergence process
 
         Returns
         -------
