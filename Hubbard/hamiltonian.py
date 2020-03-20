@@ -388,13 +388,7 @@ class HubbardHamiltonian(object):
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         Hubbard.NEGF.dm_open
             method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-        `sisl.mixing.LinearMixer`
-            `sisl` class to use a linear mixing scheme in the convergence process
-        `sisl.mixing.DIISMixer`
-            `sisl` class to use DIIS (Pulay) mixing scheme in the convergence process
-        `sisl.mixing.AdaptiveDIISMixer`
-            `sisl` class to use DIIS (Pulay) mixing scheme with adaptative weight
-            in the convergence process
+        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 
         Returns
         -------
@@ -462,13 +456,7 @@ class HubbardHamiltonian(object):
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         Hubbard.NEGF
             class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-        `sisl.mixing.LinearMixer`
-            `sisl` class to use a linear mixing scheme in the convergence process
-        `sisl.mixing.DIISMixer`
-            `sisl` class to use DIIS (Pulay) mixing scheme in the convergence process
-        `sisl.mixing.AdaptiveDIISMixer`
-            `sisl` class to use DIIS (Pulay) mixing scheme with adaptative weight
-            in the convergence process
+        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 
         Returns
         -------
@@ -524,7 +512,7 @@ class HubbardHamiltonian(object):
         Parameters
         ----------
         func: callable, optional
-            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in ``N`` separations
+            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
         N: int, optional
             number of k-points generated using the parameterization
         sub: int, optional
@@ -532,8 +520,8 @@ class HubbardHamiltonian(object):
 
         Notes
         -----
-        If no ``func`` is passed it assumes the periodicity along the x-axis
-        If no ``sub`` is passed it sums up to the last occuppied band (included)
+        If no `func` is passed it assumes the periodicity along the x-axis
+        If no `sub` is passed it sums up to the last occuppied band (included)
 
         Returns
         -------
@@ -557,9 +545,9 @@ class HubbardHamiltonian(object):
         Parameters
         ----------
         format: {'csr', 'array', 'dense', 'coo', ...}
-           the returned format of the matrix, defaulting to the ``scipy.sparse.csr_matrix``,
+           the returned format of the matrix, defaulting to the `scipy.sparse.csr_matrix`,
            however if one always requires operations on dense matrices, one can always
-           return in ``numpy.ndarray`` (`'array'`) or ``numpy.matrix`` (`'dense'`).
+           return in `numpy.ndarray` (`'array'`) or `numpy.matrix` (`'dense'`).
         midgap: float, optional
            energy value that separates filled states (lower energy) from empty states (higher energy) 
 
