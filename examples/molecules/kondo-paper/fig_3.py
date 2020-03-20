@@ -29,7 +29,10 @@ f = 1
 v = evec[:, int(round(N[i]))-1]
 j = np.argmax(abs(v))
 wf = f*v**2*np.sign(v[j])*np.sign(v)
-p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+rs = False # plot in real space?
+if not rs:
+    wf *= -5000
+p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=rs, vmax=0.0006, vmin=-0.0006)
 p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))-1]))
 p.axes.axis('off')
 p.savefig('Fig3_HOMO.pdf')
@@ -37,7 +40,9 @@ p.savefig('Fig3_HOMO.pdf')
 v = evec[:, int(round(N[i]))]
 j = np.argmax(abs(v))
 wf = f*v**2*np.sign(v[j])*np.sign(v)
-p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=True, vmax=0.0006, vmin=-0.0006)
+if not rs:
+    wf *= -5000
+p = plot.Wavefunction(H, wf, ext_geom=mol, realspace=rs, vmax=0.0006, vmin=-0.0006)
 p.set_title(r'$E = %.3f$ eV'%(ev[int(round(N[i]))]))
 p.axes.axis('off')
 p.savefig('Fig3_LUMO.pdf')

@@ -7,7 +7,7 @@ import Hubbard.density as dm
 import sisl
 
 # Build sisl Geometry object
-mol_file = '2-anthracene'
+mol_file = '3-anthracene'
 mol = sisl.get_sile(mol_file+'.XV').read_geometry()
 mol.sc.set_nsc([1, 1, 1])
 mol = mol.move(-mol.center(what='xyz'))
@@ -30,13 +30,15 @@ for u in np.linspace(0.0, 4.0, 5):
     success = H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
     if not success:
         H.random_density()
+        H.set_polarization([1, 6, 15]) # polarize lower zigzag edge
     mixer.clear()
     dn = H.converge(dm.dm_insulator, mixer=mixer)
     eAFM = H.Etot
     H.write_density(mol_file+'.nc')
 
     p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
-    p.savefig('%s-spin-U%i'%(mol_file, H.U*1000))
+    p.annotate()
+    p.savefig('%s-spin-U%i.pdf'%(mol_file, H.U*1000))
 
     # Now FM case
     H.q[0] += 1 # change to two more up-electrons than down
