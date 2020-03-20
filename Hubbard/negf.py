@@ -169,9 +169,9 @@ class NEGF(object):
                     f = dq[spin] / (- np.trace(inv(inv_GF)).imag / _pi)
                     # Since x above is in units of eta, we have to multiply with eta
                     if abs(f) < 0.45:
-                        Ef[spin] += self.eta * math.tan(f * _pi)
+                        Ef[spin] += self.eta * math.tan(f * _pi) * 0.5
                     else:
-                        Ef[spin] += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi))))
+                        Ef[spin] += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
 
             Etot = 0.
             for spin in [0, 1]:

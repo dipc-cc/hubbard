@@ -416,7 +416,7 @@ class HubbardHamiltonian(object):
         # Update occupations on sites with mixing algorithm
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
-        self.dm = mixer(self.dm, ddm)
+        self.dm = mixer(self.dm.ravel(), ddm.ravel()).reshape(self.dm.shape)
 
         # Update density matrix
         self.update_density_matrix()
