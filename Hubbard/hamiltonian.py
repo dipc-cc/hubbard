@@ -244,7 +244,6 @@ class HubbardHamiltonian(object):
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
-        print('HubbardHamiltonian: Setting random density')
         self.dm = np.random.rand(2, self.sites)
         self.normalize_charge()
         self.update_density_matrix()
@@ -345,10 +344,7 @@ class HubbardHamiltonian(object):
                 self.dm = dm
                 self.update_density_matrix()
                 self.update_hamiltonian()
-                print('HubbardHamiltonian: Read charge from %s' % fn)
                 return True
-            else:
-                print('HubbardHamiltonian: Density not found in %s[%s]' % (fn, group))
         return False
 
     def write_density(self, fn, mode='a'):
@@ -366,7 +362,6 @@ class HubbardHamiltonian(object):
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
-        print('HubbardHamiltonian: Wrote charge to %s' % fn)
 
     def iterate(self, dm_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
