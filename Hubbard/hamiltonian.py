@@ -24,23 +24,19 @@ class HubbardHamiltonian(object):
 
     Parameters
     ----------
-    TBHam: sisl.physics.Hamiltonian instance
+    TBHam: `sisl.physics.Hamiltonian` instance
         A spin-polarized tight-binding Hamiltonian
-    DM: sisl.physics.DensityMatrix instance, optional
+    DM: `sisl.physics.DensityMatrix` instance, optional
         A spin-polarized density datrix generated with sisl
         to use as a initial spin-densities
     U: float, optional
         on-site Coulomb repulsion
     q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt: array_like or sisl.physics.BrillouinZone instance, optional
+    nkpt: array_like or `sisl.physics.BrillouinZone` instance, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
-
-    See Also
-    --------
-    sisl.physics.Hamiltonian : sisl module to build sparse Hamiltonian matrices
     """
 
     def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
@@ -92,12 +88,8 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        DM : sisl.physics.DensityMatrix, optional
-            Density matrix to be associated with the HubbardHamiltonian instance
-
-        See Also
-        --------
-        `sisl.physics.DensityMatrix` : sisl class
+        DM : `sisl.physics.DensityMatrix`, optional
+            Density Matrix to be associated with the HubbardHamiltonian instance
         """
         if isinstance(DM, sisl.DensityMatrix):
             self.DM = DM
@@ -110,12 +102,8 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        nkpt : array_like or sisl.BrillouinZone instance, optional
+        nkpt : array_like or `sisl.physics.BrillouinZone` instance, optional
             k-mesh to be associated with the HubbardHamiltonian instance
-
-        See Also
-        --------
-        `sisl.physics.BrillouinZone` : sisl class
         """
         if isinstance(nkpt, sisl.BrillouinZone):
             self.mp = nkpt
@@ -141,7 +129,7 @@ class HubbardHamiltonian(object):
             if True only eigenvalues are returned, otherwise
             it also returns the eigenvectors
         spin: int, optional
-            for ``spin`` =0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
+            for ``spin`` = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
         See Also
         --------
@@ -154,7 +142,7 @@ class HubbardHamiltonian(object):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
 
     def eigenstate(self, k, spin=0):
-        """ Solve the eigenvalue problem at `k` and return it as a `sisl.EigenstateElectron` object containing all eigenstates
+        """ Solve the eigenvalue problem at `k` and return it as a `sisl.physics.EigenstateElectron` object containing all eigenstates
 
         Parameters
         ----------
@@ -163,13 +151,9 @@ class HubbardHamiltonian(object):
         spin: int, optional
             for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
-        See Also
-        --------
-        `sisl.physics.EigenstateElectron` : sisl class
-
         Returns
         -------
-        object: sisl.physics.EigenstateElectron object
+        object: `sisl.physics.EigenstateElectron` object
         """
         return self.H.eigenstate(k, spin=spin)
 
@@ -189,7 +173,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger HubbardHamiltonian object
+        A new larger `Hubbard.HubbardHamiltonian` object
         """
         Htile = self.H.tile(reps, axis)
         DMtile = self.DM.tile(reps, axis)
@@ -213,7 +197,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger HubbardHamiltonian object
+        A new larger `Hubbard.HubbardHamiltonian` object
         """
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
@@ -390,11 +374,6 @@ class HubbardHamiltonian(object):
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
         where one needs to use the correct ``dm_method`` for the particular system.
 
-        The output densities are obtained using a mixing scheme with the previous iteration to help the convergence:
-
-        .. math::
-
-            \langle n_{\sigma}\rangle_{i} = mix \langle n_{\sigma}\rangle_{i} + (1-mix) \langle n_{\sigma}\rangle_{i-1}
 
         Parameters
         ----------
@@ -404,7 +383,7 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
         mixer: Mixer, optional
-            mixing object for the SCF loop
+            `sisl.mixing.Mixer` instance for the SCF loop, defaults to `sisl.mixing.DIISMixer`
 
         See Also
         --------
@@ -414,7 +393,7 @@ class HubbardHamiltonian(object):
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain ``kT``
         Hubbard.NEGF.dm_open
             method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-        `sisl.mixing` : sisl tools for mixing
+
         Returns
         -------
         dn : array_like
@@ -463,7 +442,7 @@ class HubbardHamiltonian(object):
         tol: float, optional
             tolerance criterion
         mixer: Mixer
-            mixing object (from `sisl.mixing.Mixer`), defaults to `sisl.mixing.DIISMixer`
+            `sisl.mixing.Mixer` instance, defaults to `sisl.mixing.DIISMixer`
         steps: int, optional
             the code will print some relevant information about the convergence process whent the number of completed iterations reaches
             a multiple of the specified `steps`
@@ -488,7 +467,6 @@ class HubbardHamiltonian(object):
         """
         if mixer is None:
             mixer = sisl.mixing.LinearMixer(0.5)
-
         dn = 1.0
         i = 0
         while dn > tol:
@@ -517,7 +495,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        ev: numpy.array
+        ev: numpy.ndarray
             eigenvalues
         L: numpy.ndarray
             orbital charge overlaps
@@ -528,12 +506,12 @@ class HubbardHamiltonian(object):
         return ev, L
 
     def get_Zak_phase(self, func=None, N=51, sub='filled', eigvals=False):
-        """ Computes the Zak phase for 1D (periodic) systems using the sisl function sisl.electron.berry_phase
+        """ Computes the Zak phase for 1D (periodic) systems using `sisl.electron.berry_phase`
 
         Parameters
         ----------
         func: callable, optional
-            function that creates a list of parametrized k-points to generate a new ``sisl.BrillouinZone`` object parametrized in ``N`` separations
+            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in ``N`` separations
         N: int, optional
             number of k-points generated using the parameterization
         sub: int, optional
@@ -543,10 +521,6 @@ class HubbardHamiltonian(object):
         -----
         If no ``func`` is passed it assumes the periodicity along the x-axis
         If no ``sub`` is passed it sums up to the last occuppied band (included)
-
-        See Also
-        --------
-        `sisl.electron.berry_phase` : sisl class function
 
         Returns
         -------
@@ -632,7 +606,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.electron.spin_squared` : sisl class function
+        `sisl.physics.electron.spin_squared` : sisl class function
 
         Returns
         -------
