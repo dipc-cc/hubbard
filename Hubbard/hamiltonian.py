@@ -544,7 +544,7 @@ class HubbardHamiltonian(object):
             sub = np.arange(int(round(self.q[0])))
         return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
 
-    def get_bond_order(self, format='csr'):
+    def get_bond_order(self, format='csr', midgap=0.):
         """ Compute Huckel bond order
 
         Parameters
@@ -553,6 +553,8 @@ class HubbardHamiltonian(object):
            the returned format of the matrix, defaulting to the ``scipy.sparse.csr_matrix``,
            however if one always requires operations on dense matrices, one can always
            return in ``numpy.ndarray`` (`'array'`) or ``numpy.matrix`` (`'dense'`).
+        midgap: float, optional
+           energy value that separates filled states (lower energy) from empty states (higher energy) 
 
         Returns
         -------
@@ -564,12 +566,12 @@ class HubbardHamiltonian(object):
         for w, k in zip(self.mp.weight, self.mp.k):
             # spin-up first
             ev, evec = self.eigh(k=k, eigvals_only=False, spin=0)
-            ev -= self.midgap
+            ev -= midgap
             idx = np.where(ev < 0.)[0]
             bo = np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
             # add spin-down
             ev, evec = self.eigh(k=k, eigvals_only=False, spin=1)
-            ev -= self.midgap
+            ev -= midgap
             idx = np.where(ev < 0.)[0]
             bo += np.dot(np.conj(evec[:, idx]), evec[:, idx].T)
             for ix in (-1, 0, 1):
