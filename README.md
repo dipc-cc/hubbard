@@ -2,7 +2,7 @@
 
 # Hubbard #
 
-__Hubbard__ is a Python package for solving the meanfield Hubbard model.
+__Hubbard__ is a Python package for solving the meanfield Hubbard model built on [sisl].
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 
@@ -11,9 +11,9 @@ This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 Before installation of __Hubbard__ the following packages are required
    - numpy >= 1.10
    - scipy >= 0.18
-   - netCDF4
+   - netCDF4 >= 1.3.1
    - matplotlib >= 2.2.2
-   - sisl
+   - [sisl][sisl] (revision [8ecc6c][8ecc6c] or newer with `Mixing` features)
 
 ## Installation ##
 Manual installation is performed with the command
@@ -44,3 +44,5 @@ Links to external and internal sites.
 [issues]: https://github.com/dipc-cc/hubbard/issues
 [pulls]: https://github.com/dipc-cc/hubbard/pulls
 [lgpl]: http://www.gnu.org/licenses/lgpl.html
+[sisl]: https://github.com/zerothi/sisl
+[8ecc6c]: https://github.com/zerothi/sisl/commit/8ecc6c5566c7574d8476609680f956923b5bf29d
