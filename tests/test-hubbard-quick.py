@@ -30,3 +30,7 @@ print('   dn, dEtot: ', d-dn, e-etot, '\n')
 # Write new data structure
 print('4. Write data in ncfile')
 H.write_density('mol-ref/test.nc', mode='w')
+
+# Write fdf-block
+print('\n5. Write initspin to fdf-block')
+H.write_initspin('test.fdf', mode='w')

@@ -56,7 +56,7 @@ class HubbardHamiltonian(object):
         self.TBHam = TBHam
         self.H = TBHam.copy()
         self.H.finalize()
-        self.geom = TBHam.geometry
+        self.geom = TBHam.geom
 
         # Total initial charge
         ntot = self.geom.q0
@@ -110,7 +110,7 @@ class HubbardHamiltonian(object):
         elif isinstance(nkpt, np.ndarray) or isinstance(nkpt, list):
             self.mp = sisl.MonkhorstPack(self.H, nkpt)
         else:
-            raise ValueError(self.__class__.__name__ + ' requires an array_like input')
+            raise ValueError(self.__class__.__name__ + '.set_kmesh(...) requires an array_like input')
 
     def __str__(self):
         """ Representation of the model """
@@ -362,6 +362,41 @@ class HubbardHamiltonian(object):
         s, group = self._get_hash()
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
+
+    def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a'):
+        """ Write spin polarization to SIESTA fdf-block
+
+        Parameters
+        ----------
+        fn: str
+            name of the fdf-file
+        ext_geom: `sisl.Geometry`, optional
+            an "external" geometry that contains the sp2-sites included in the simulation
+        spinfix: bool, optional
+            specifies if the Spin.Fix and Spin.Total lines are written to the fdf
+        mode: str, optional
+            mode in which the file is opened
+        """
+        if not os.path.isfile(fn):
+            mode = 'w'
+        if ext_geom is None:
+            idx = np.arange(len(self.H))
+        elif isinstance(ext_geom, sisl.Geometry):
+            idx, idx_internal = ext_geom.overlap(self.geom)
+        else:
+            raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
+        polarization = self.dm[0] - self.dm[1]
+        dq = np.sum(polarization)
+        f = open(fn, mode=mode)
+        f.write('# Hubbard: U=%.3f eV\n' % self.U)
+        if spinfix:
+            f.write('Spin.Fix True\n')
+            f.write('Spin.Total %.6f\n' % dq)
+        f.write('%block DM.InitSpin\n')
+        for i, ia in enumerate(idx):
+            f.write('%6i %10.6f\n' % (ia + 1, polarization[i])) # SIESTA counts from 1
+        f.write('%endblock DM.InitSpin\n\n')
+
 
     def iterate(self, dm_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
