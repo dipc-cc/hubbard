@@ -381,8 +381,10 @@ class HubbardHamiltonian(object):
             mode = 'w'
         if ext_geom is None:
             idx = np.arange(len(self.H))
+            geom = self.geom
         elif isinstance(ext_geom, sisl.Geometry):
             idx, idx_internal = ext_geom.overlap(self.geom)
+            geom = ext_geom
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
         polarization = self.dm[0] - self.dm[1]
@@ -394,7 +396,12 @@ class HubbardHamiltonian(object):
             f.write('Spin.Total %.6f\n' % dq)
         f.write('%block DM.InitSpin\n')
         for i, ia in enumerate(idx):
-            f.write('%6i %10.6f\n' % (ia + 1, polarization[i])) # SIESTA counts from 1
+            s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
+            # add documentation string
+            s += ' # %2s' % geom.atoms[i].symbol
+            for j in range(3):
+                s += ' %9.4f' % geom.xyz[i, j]
+            f.write(s + '\n')
         f.write('%endblock DM.InitSpin\n\n')
 
 
