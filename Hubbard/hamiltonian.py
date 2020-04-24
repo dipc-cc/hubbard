@@ -548,14 +548,14 @@ class HubbardHamiltonian(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def get_Zak_phase(self, func=None, N=51, sub='filled', eigvals=False):
+    def get_Zak_phase(self, func=None, nk=51, sub='filled', eigvals=False):
         """ Computes the Zak phase for 1D (periodic) systems using `sisl.electron.berry_phase`
 
         Parameters
         ----------
         func: callable, optional
             function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
-        N: int, optional
+        nk: int, optional
             number of k-points generated using the parameterization
         sub: int, optional
             number of bands that will be summed to obtain the Zak phase
@@ -575,7 +575,7 @@ class HubbardHamiltonian(object):
             # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
             def func(sc, frac):
                 return [frac, 0, 0]
-        bz = sisl.BrillouinZone.parametrize(self.H, func, N)
+        bz = sisl.BrillouinZone.parametrize(self.H, func, nk)
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = np.arange(int(round(self.q[0])))
