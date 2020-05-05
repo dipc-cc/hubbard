@@ -123,7 +123,7 @@ write_version()
 
 # Main setup of python modules
 setup(name='Hubbard',
-      requires=['python (>=2.7)', 'numpy (>=1.10)', 'scipy (>=0.18)', 'netCDF4 (>=1.2.7)', 'sisl (>=0.9.4)', 'matplotlib (>=2.2.2)'],
+      requires=['python (>=3.6)', 'numpy (>=1.10)', 'scipy (>=0.18)', 'netCDF4 (>=1.2.7)', 'sisl (>=0.9.4)', 'matplotlib (>=2.2.2)'],
       description='Python package for meanfield Hubbard models',
       author='Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen',
       author_email='sofia.sanz@dipc.org, thomas_frederiksen@ehu.eus',
