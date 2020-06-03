@@ -35,7 +35,7 @@ class Charge(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow+Q_\downarrow$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
         # Compute total charge on each site
         if not isinstance(spin, list):
@@ -78,12 +78,12 @@ class ChargeDifference(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
         # Compute total charge on each site, subtract neutral atom charge
         charge = HubbardHamiltonian.dm.sum(0)
-        for ia in HubbardHamiltonian.geom:
-            charge[ia] -= HubbardHamiltonian.geom.atoms[ia].Z-5
+        for ia in HubbardHamiltonian.geometry:
+            charge[ia] -= HubbardHamiltonian.geometry.atoms[ia].Z-5
 
         if realspace:
             self.__realspace__(charge, density=True, **keywords)
@@ -117,7 +117,7 @@ class SpinPolarization(GeometryPlot):
             if 'label' not in keywords:
                 keywords['label']=r'$Q_\uparrow-Q_\downarrow$ ($e$)'
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
         # Compute charge difference between up and down channels
         charge = np.diff(HubbardHamiltonian.dm[[1, 0]], axis=0).ravel()

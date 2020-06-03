@@ -56,7 +56,7 @@ class GeometryPlot(Plot):
 
         Plot.__init__(self, **keywords)
 
-        self.geom = geometry
+        self.geometry = geometry
         self.set_axes()
         # Relevant keywords
         kw = {}
@@ -73,7 +73,7 @@ class GeometryPlot(Plot):
         if ext_geom:
             g = ext_geom
         else:
-            g = self.geom
+            g = self.geometry
         for ia in g:
             idx = g.close(ia, R=[0.1, 1.6])
             if g.atoms[ia].Z == 1: # H
@@ -137,7 +137,7 @@ class GeometryPlot(Plot):
             import sisl
 
             # Create a temporary copy of the geometry
-            g = self.geom.copy()
+            g = self.geometry.copy()
 
             # Set new sc to create real-space grid
             sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
@@ -195,7 +195,7 @@ class GeometryPlot(Plot):
                     self.set_colorbar_ylabel(keywords['label'])
 
     def set_axes(self, bdx=2):
-        g = self.geom
+        g = self.geometry
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         self.xmin = min(x)-bdx
@@ -239,7 +239,7 @@ class GeometryPlot(Plot):
 
     def annotate(self, sites=[], size=6):
         """ Annotate the site indices in the pi-network """
-        g = self.geom
+        g = self.geometry
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]
         if not sites:

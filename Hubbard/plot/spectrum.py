@@ -47,7 +47,7 @@ class LDOSmap(Plot):
         Plot.__init__(self, **keywords)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.midgap
-        coord = HubbardHamiltonian.geom.xyz[:, axis]
+        coord = HubbardHamiltonian.geometry.xyz[:, axis]
 
         xmin, xmax = min(coord)-dx, max(coord)+dx
         ymin, ymax = -ymax, ymax
@@ -106,10 +106,10 @@ class DOS_distribution(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
-        x = HubbardHamiltonian.geom[:, 0]
-        y = HubbardHamiltonian.geom[:, 1]
+        x = HubbardHamiltonian.geometry[:, 0]
+        y = HubbardHamiltonian.geometry[:, 1]
 
         if realspace:
             self.__realspace__(DOS, density=True, vmin=0, **keywords)

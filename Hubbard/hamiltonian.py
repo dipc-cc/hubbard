@@ -55,12 +55,12 @@ class HubbardHamiltonian(object):
         self.TBHam = TBHam
         self.H = TBHam.copy()
         self.H.finalize()
-        self.geom = TBHam.geom
+        self.geometry = TBHam.geometry
 
         # Total initial charge
-        ntot = self.geom.q0
+        ntot = self.geometry.q0
         if ntot == 0:
-            ntot = len(self.geom)
+            ntot = len(self.geometry)
 
         self.q = np.array(q, dtype=np.float64).copy()
         assert len(self.q) == 2 # Users *must* specify two values
@@ -71,7 +71,7 @@ class HubbardHamiltonian(object):
         if self.q[0] <= 0:
             self.q[0] = int(ntot - self.q[1])
 
-        self.sites = len(self.geom)
+        self.sites = len(self.geometry)
         self._update_e0()
 
         # Set k-mesh
@@ -93,7 +93,7 @@ class HubbardHamiltonian(object):
         if isinstance(DM, sisl.DensityMatrix):
             self.DM = DM
         else:
-            self.DM = sisl.DensityMatrix(self.geom, dim=2, orthogonal=self.TBHam.orthogonal)
+            self.DM = sisl.DensityMatrix(self.geometry, dim=2, orthogonal=self.TBHam.orthogonal)
         self.dm = self.DM._csr.diagonal().T
 
     def set_kmesh(self, nkpt=[1, 1, 1]):
@@ -221,7 +221,7 @@ class HubbardHamiltonian(object):
 
         # TODO Generalize this method for inter-atomic Coulomb repulsion also
 
-        q0 = self.geom.atoms.q0
+        q0 = self.geometry.atoms.q0
         E = self.e0.copy()
         E += self.U * (self.dm[[1, 0], :] - q0)
         a = np.arange(len(self.H))
@@ -380,9 +380,9 @@ class HubbardHamiltonian(object):
             mode = 'w'
         if ext_geom is None:
             idx = np.arange(len(self.H))
-            geom = self.geom
+            geom = self.geometry
         elif isinstance(ext_geom, sisl.Geometry):
-            idx, idx_internal = ext_geom.overlap(self.geom)
+            idx, idx_internal = ext_geom.overlap(self.geometry)
             geom = ext_geom
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
@@ -596,7 +596,7 @@ class HubbardHamiltonian(object):
         -------
         the Huckel bond-order matrix object
         """
-        g = self.geom
+        g = self.geometry
         BO = sisl.Hamiltonian(g)
         R = [0.1, 1.6]
         for w, k in zip(self.mp.weight, self.mp.k):
@@ -686,7 +686,7 @@ class HubbardHamiltonian(object):
         '''
         Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees
         '''
-        geom0 = self.geom
+        geom0 = self.geometry
         vec = [0, 0, 0]
         vec[axis] = 1
         geom180 = geom0.rotate(180, vec, geom0.center())
