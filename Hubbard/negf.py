@@ -43,7 +43,7 @@ class NEGF(object):
     def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
         """ Initialize NEGF class """
 
-        self.Ef = np.zeros([2], np.float64)
+        self.Ef = 0.
         self.kT = Hdev.kT
         self.elec_indx = elec_indx
 
@@ -117,7 +117,7 @@ class NEGF(object):
         ----------
         H: HubbardHamiltonian instances
             `Hubbard.HubbardHamiltonian` of the object that is being iterated
-        q: list, numpy array
+        q: float
             charge associated to the up and down spin-components
         qtol: float, optional
             tolerance to which the charge is going to be converged in the internal loop
@@ -128,18 +128,20 @@ class NEGF(object):
         ni
         Etot
         """
+        # ensure scalar, for open systems one cannot impose a spin-charge
+        # This spin-charge would be dependent on the system size
+        q = np.asarray(q).sum()
 
         no = len(H.H)
         inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
-        Ef = self.Ef.copy()
-        while abs(ntot - q.sum()) > qtol:
+        Ef = self.Ef
+        while abs(ntot - q) > qtol:
 
             if ntot > 0.:
                 # correct fermi-level
-                dq = np.empty([2])
-                dq = ni.sum(axis=1) - q
+                dq = ni.sum() - q
 
                 # Fermi-level is at 0.
                 # The Lorentzian has ~70% of its integral within
@@ -148,9 +150,10 @@ class NEGF(object):
                 # and expect the Lorentzian peak to be positioned at
                 # the current Fermi-level we will use eta = 100 meV
                 # Calculate charge at the Fermi-level
+                f = 0.
                 for spin in [0, 1]:
                     HC = H.H.Hk(spin=spin).todense()
-                    cc = - Ef[spin] + 1j * self.eta
+                    cc = - Ef + 1j * self.eta
 
                     inv_GF[:, :] = 0.
                     np.fill_diagonal(inv_GF, cc)
@@ -165,21 +168,23 @@ class NEGF(object):
                     #   F(x) - F(0) = arctan(x) / pi = dq
                     # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                     # and consider this a pre-factor
-                    f = dq[spin] / (- np.trace(inv(inv_GF)).imag / _pi)
-                    # Since x above is in units of eta, we have to multiply with eta
-                    if abs(f) < 0.45:
-                        Ef[spin] += self.eta * math.tan(f * _pi) * 0.5
-                    else:
-                        Ef[spin] += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    f -= np.trace(inv(inv_GF)).imag / _pi
+
+                # calculate fractional change
+                f = dq / f 
+                # Since x above is in units of eta, we have to multiply with eta
+                if abs(f) < 0.45:
+                    Ef += self.eta * math.tan(f * _pi) * 0.5
+                else:
+                    Ef += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
 
             Etot = 0.
             for spin in [0, 1]:
                 HC = H.H.Hk(spin=spin, format='array')
                 D = np.zeros([len(self.CC_eq), len(HC)])
-                ni[spin, :] = 0.
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, Ef[spin], spin=spin)
+                    Delta, w = self.Delta(HC, Ef, spin=spin)
                     # Store only diagonal
                     w = np.diag(w)
                     # Transfer Delta to D
@@ -194,7 +199,7 @@ class NEGF(object):
 
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC - Ef[spin], self.w_eq)):
+                    for ic, [cc, wi] in enumerate(zip(CC - Ef, self.w_eq)):
                         inv_GF[:, :] = 0.
                         np.fill_diagonal(inv_GF, cc)
                         inv_GF[:, :] -= HC[:, :]
@@ -235,7 +240,7 @@ class NEGF(object):
         ----------
         HC: numpy.ndarray
             Hamiltonian of the central region in its matrix form
-        Ef: list of floats
+        Ef: float
             Potential of the device
         spin: int
             spin index (0=up, 1=dn)
