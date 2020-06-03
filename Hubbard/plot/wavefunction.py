@@ -38,7 +38,7 @@ class Wavefunction(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geom, ext_geom=ext_geom, **keywords)
+        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
         if realspace:
             self.__realspace__(wf, **keywords)
@@ -49,8 +49,8 @@ class Wavefunction(GeometryPlot):
             self.imshow.set_cmap(custom_map)
 
         else:
-            x = HubbardHamiltonian.geom[:, 0]
-            y = HubbardHamiltonian.geom[:, 1]
+            x = HubbardHamiltonian.geometry[:, 0]
+            y = HubbardHamiltonian.geometry[:, 1]
 
             assert len(x) == len(wf)
 

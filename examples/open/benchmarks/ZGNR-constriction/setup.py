@@ -53,7 +53,7 @@ MFH_elec.H.write('MFH_elec.nc')
 HC = H_elec.tile(16, axis=0)
 HC = HC.remove([69, 79, 89, 78, 88, 66, 77, 76, 87, 86, 65, 74, 75, 84, 85])
 HC.set_nsc([1, 1, 1])
-HC.geom.write('device.xyz')
+HC.geometry.write('device.xyz')
 
 # Map electrodes in the device region
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]

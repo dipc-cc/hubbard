@@ -26,9 +26,9 @@ class BondOrder(GeometryPlot):
         # Plot results
         row, col = BO.nonzero()
         for i, r in enumerate(row):
-            xr = H.geom.xyz[r]
+            xr = H.geometry.xyz[r]
             c = col[i]
-            xc = H.geom.xyz[c]
+            xc = H.geometry.xyz[c]
             R = xr-xc
             if np.dot(R, R)**.5 <= d:
                 # intracell bond
@@ -37,7 +37,7 @@ class BondOrder(GeometryPlot):
                 plt.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
             else:
                 # intercell bond
-                cell = H.geom.sc.cell
+                cell = H.geometry.sc.cell
                 # Compute projections onto lattice vectors
                 P = np.dot(cell, R)
                 # Normalize
@@ -60,11 +60,11 @@ class BondHoppings(Plot):
         Plot.__init__(self, **keywords)
         H = H.H
         H.set_nsc([1, 1, 1])
-        for ia in H.geom:
-            x0, y0 = H.geom.xyz[ia, 0], H.geom.xyz[ia, 1]
+        for ia in H.geometry:
+            x0, y0 = H.geometry.xyz[ia, 0], H.geometry.xyz[ia, 1]
             edges = H.edges(ia)
             for ib in edges:
-                x1, y1 = H.geom.xyz[ib, 0], H.geom.xyz[ib, 1]
+                x1, y1 = H.geometry.xyz[ib, 0], H.geometry.xyz[ib, 1]
                 t = H[ia, ib, 0]
                 if abs(t) == 2.7:
                     self.axes.plot([x0, x1], [y0, y1], '-', markersize=2, color='blue', linewidth=1.2)
@@ -91,20 +91,20 @@ class Bonds(Plot):
         H.H.set_nsc([1, 1, 1])
 
         if not maxR:
-            maxR = max(H.geom.distance())
+            maxR = max(H.geometry.distance())
         if not minR:
-            minR = min(H.geom.distance())
+            minR = min(H.geometry.distance())
 
         # Create colormap
         norm = mp.colors.Normalize(vmin=minR, vmax=maxR)
         cmap = mp.cm.ScalarMappable(norm=norm, cmap=cm)
         cmap.set_array([])
-        for i in H.geom:
-            x0, y0 = H.geom.xyz[i, 0], H.geom.xyz[i, 1]
+        for i in H.geometry:
+            x0, y0 = H.geometry.xyz[i, 0], H.geometry.xyz[i, 1]
             edges = H.H.edges(i)
             for j in edges:
-                x1, y1 = H.geom.xyz[j, 0], H.geom.xyz[j, 1]
-                rij = H.geom.Rij(i, j)
+                x1, y1 = H.geometry.xyz[j, 0], H.geometry.xyz[j, 1]
+                rij = H.geometry.Rij(i, j)
                 d = np.sqrt((rij*rij).sum())
                 self.axes.plot([x0, x1], [y0, y1], linewidth=2, color=cmap.to_rgba(d))
                 if annotate:
