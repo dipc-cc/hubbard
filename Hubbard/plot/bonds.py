@@ -53,25 +53,32 @@ class BondOrder(GeometryPlot):
 
 
 class BondHoppings(Plot):
-    """ Plot hoppings for a sp2 carbon system """
+    """ Plot matrix element of sisl.Hamiltonian. Only off-diagonal elements """
 
-    def __init__(self, H, **keywords):
+    def __init__(self, H, annotate=False, **keywords):
+
+        if 'cmap' not in keywords:
+            cm = plt.cm.jet
+        else:
+            cm = keywords['cmap']
 
         Plot.__init__(self, **keywords)
         H = H.H
         H.set_nsc([1, 1, 1])
+        tmax = np.amax(abs(H.Hk()))
+        tmin = np.amin(abs(H.Hk()))
+        norm = mp.colors.Normalize(vmin=tmin, vmax=tmax)
+        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cm)
         for ia in H.geometry:
             x0, y0 = H.geometry.xyz[ia, 0], H.geometry.xyz[ia, 1]
             edges = H.edges(ia)
-            for ib in edges:
+            for ib in edges[edges!=ia]:
                 x1, y1 = H.geometry.xyz[ib, 0], H.geometry.xyz[ib, 1]
                 t = H[ia, ib, 0]
-                if abs(t) == 2.7:
-                    self.axes.plot([x0, x1], [y0, y1], '-', markersize=2, color='blue', linewidth=1.2)
-                elif abs(t) == 0.2:
-                    self.axes.plot([x0, x1], [y0, y1], '--', markersize=2, color='red', linewidth=1.2)
-                elif abs(t) == 0.18:
-                    self.axes.plot([x0, x1], [y0, y1], '--', markersize=2, color='green', linewidth=1.2)
+                self.axes.plot([x0, x1], [y0, y1], '-', color=cmap.to_rgba(abs(t)), linewidth=2*abs(t)/tmax, label='%.3f'%t)
+                if annotate:
+                    rij = H.geometry.Rij(ia, ib)
+                    self.axes.annotate('%.2f'%(t), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
 
         self.axes.axis('off')
 
