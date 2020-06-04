@@ -46,6 +46,13 @@ class Plot(object):
         self.colorbar = plt.colorbar(layer, cax=cax)
         plt.subplots_adjust(right=0.8)
 
+    def legend(self, **keywords):
+        handles, labels = self.fig.gca().get_legend_handles_labels()
+        # Reduce in case there are repeated labels
+        labels, ids = np.unique(labels, return_index=True)
+        handles = [handles[i] for i in ids]
+        self.fig.legend(handles, labels, **keywords)
+
 # Generate a dummy plot, this seems to avoid font issues with subsequent instances
 Plot()
 
