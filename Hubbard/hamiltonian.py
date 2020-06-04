@@ -292,7 +292,7 @@ class HubbardHamiltonian(object):
             LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
         self.midgap = (HOMO + LUMO) * 0.5
 
-    def fermi_level(self, q=None, dist='fermi_dirac'):
+    def fermi_level(self, q=[None,None], dist='fermi_dirac'):
         """ Find the fermi level for  a certain charge `q` at a certain `kT`
 
         Parameters
