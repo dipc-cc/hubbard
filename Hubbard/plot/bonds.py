@@ -71,8 +71,8 @@ class BondHoppings(Plot):
         cmap = mp.cm.ScalarMappable(norm=norm, cmap=cm)
         for ia in H.geometry:
             x0, y0 = H.geometry.xyz[ia, 0], H.geometry.xyz[ia, 1]
-            edges = H.edges(ia)
-            for ib in edges[edges!=ia]:
+            edges = H.edges(ia, exclude=ia)
+            for ib in edges:
                 x1, y1 = H.geometry.xyz[ib, 0], H.geometry.xyz[ib, 1]
                 t = H[ia, ib, 0]
                 self.axes.plot([x0, x1], [y0, y1], '-', color=cmap.to_rgba(abs(t)), linewidth=2*abs(t)/tmax, label='%.3f'%t)
