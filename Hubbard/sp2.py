@@ -41,7 +41,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     func = 5 * np.exp(-r * 5)
     for atom, _ in pi_geom.atoms.iter(True):
         pz = sisl.AtomicOrbital('pz', (r, func), q0=atom.Z-5+dq)
-        atom.orbital[0] = pz
+        atom.orbitals[0] = pz
 
     # Construct Hamiltonian
     if s1 != 0:

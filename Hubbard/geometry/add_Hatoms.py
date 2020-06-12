@@ -35,5 +35,5 @@ def add_Hatoms(geom, d=1.1, sp3=[]):
                 Hxyz[-1] = p + geom.xyz[ia, :]
                 Hxyz.append(Hxyz[-1]*1.0)
                 Hxyz[-1][2] -= 2*Hxyz[-1][2]
-    Hgeom = sisl.Geometry(Hxyz, atom=sisl.Atom(Z=1, R=d), sc=geom.sc)
+    Hgeom = sisl.Geometry(Hxyz, sisl.Atom(Z=1, R=d), sc=geom.sc)
     return geom.add(Hgeom)

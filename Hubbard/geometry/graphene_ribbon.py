@@ -29,7 +29,7 @@ def zgnr(w, bond=1.42):
     vz = 10.*bond # 10 bond lengths separation out of GNR plane (z)
     # Create supercell and geometry
     sc = sisl.SuperCell([vx, vy, vz, 90, 90, 90], nsc=[3, 1, 1])
-    uc = sisl.Geometry(list(xyz), atom=sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
+    uc = sisl.Geometry(list(xyz), sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
     return uc
 
 
@@ -56,7 +56,7 @@ def agnr(w, bond=1.42):
     vz = 10.*bond # 10 bond lengths separation out of GNR plane (z)
     # Create supercell and geometry
     sc = sisl.SuperCell([vx, vy, vz, 90, 90, 90], nsc=[3, 1, 1])
-    uc = sisl.Geometry(list(xyz), atom=sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
+    uc = sisl.Geometry(list(xyz), sisl.Atom(Z=6, R=bond, orbs=1), sc=sc)
     return uc
 
 
