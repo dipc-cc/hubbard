@@ -174,11 +174,13 @@ class HubbardHamiltonian(object):
         -------
         A new larger `Hubbard.HubbardHamiltonian` object
         """
+        self.update_density_matrix()
         Htile = self.H.tile(reps, axis)
         DMtile = self.DM.tile(reps, axis)
         Nup = (DMtile.tocsr(0).diagonal()).sum()
         Ndn = (DMtile.tocsr(1).diagonal()).sum()
-        return self.__class__(Htile, DM=DMtile, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
+        return self.__class__(Htile, DM=DMtile, U=self.U,
+                    q=(int(round(Nup)), int(round(Ndn))),  nkpt=self.mp, kT=self.kT)
 
     def repeat(self, reps, axis):
         """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
@@ -198,11 +200,13 @@ class HubbardHamiltonian(object):
         -------
         A new larger `Hubbard.HubbardHamiltonian` object
         """
+        self.update_density_matrix()
         Hrep = self.H.repeat(reps, axis)
         DMrep = self.DM.repeat(reps, axis)
         Nup = (DMrep.tocsr(0).diagonal()).sum()
         Ndn = (DMrep.tocsr(1).diagonal()).sum()
-        return self.__class__(Hrep, DM=DMrep, U=self.U, q=(int(round(Nup)), int(round(Ndn))))
+        return self.__class__(Hrep, DM=DMrep, U=self.U,
+                    q=(int(round(Nup)), int(round(Ndn))), nkpt=self.mp, kT=self.kT)
 
     def _update_e0(self):
         """ Internal routine to update e0 """
