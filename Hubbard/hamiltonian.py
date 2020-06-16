@@ -208,6 +208,21 @@ class HubbardHamiltonian(object):
         return self.__class__(Hrep, DM=DMrep, U=self.U,
                     q=(int(round(Nup)), int(round(Ndn))), nkpt=self.mp, kT=self.kT)
 
+    def sub(self, atoms):
+        """ Return a new `HubbardHamiltonian` object of a subset of selected atoms
+
+        Parameters
+        ----------
+        atoms : int or array_like
+            indices/boolean of all atoms to be kept
+        """
+        self.update_density_matrix()
+        DM = self.DM.sub(atoms)
+        Nup = (DM.tocsr(0).diagonal()).sum()
+        Ndn = (DM.tocsr(1).diagonal()).sum()
+        return self.__class__(self.H.sub(atoms), DM=DM, U=self.U,
+                    q=(int(round(Nup)), int(round(Ndn))), nkpt=self.mp, kT=self.kT)
+
     def _update_e0(self):
         """ Internal routine to update e0 """
         e0 = self.H.tocsr(0).diagonal()
