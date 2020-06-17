@@ -223,6 +223,13 @@ class HubbardHamiltonian(object):
         return self.__class__(self.H.sub(atoms), DM=DM, U=self.U,
                     q=(int(round(Nup)), int(round(Ndn))), nkpt=self.mp, kT=self.kT)
 
+    def copy(self):
+        """ Return a copy of the `HubbardHamiltonian` object """
+
+        self.update_density_matrix()
+        return self.__class__(self.H, DM=self.DM, U=self.U,
+                    q=(self.q[0], self.q[1]), nkpt=self.mp, kT=self.kT)
+
     def _update_e0(self):
         """ Internal routine to update e0 """
         e0 = self.H.tocsr(0).diagonal()
