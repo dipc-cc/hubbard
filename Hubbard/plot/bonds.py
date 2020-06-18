@@ -113,9 +113,10 @@ class Bonds(Plot):
                 x1, y1 = H.geometry.xyz[j, 0], H.geometry.xyz[j, 1]
                 rij = H.geometry.Rij(i, j)
                 d = np.sqrt((rij*rij).sum())
-                self.axes.plot([x0, x1], [y0, y1], linewidth=2, color=cmap.to_rgba(d))
-                if annotate:
-                    self.axes.annotate('%.2f'%(d), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
+                if d <= maxR:
+                    self.axes.plot([x0, x1], [y0, y1], linewidth=2, color=cmap.to_rgba(d))
+                    if annotate:
+                        self.axes.annotate('%.2f'%(d), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
          # Colorbar
         if 'colorbar' in keywords:
             if keywords['colorbar'] != False:
