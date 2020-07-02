@@ -163,8 +163,8 @@ class GeometryPlot(Plot):
 
             if density:
                 D = sisl.physics.DensityMatrix(g)
-                for ia in g:
-                    D.D[ia, ia] = v[ia]
+                a = np.arange(len(D))
+                D.D[a, a] = v
                 D.density(grid)
             else:
                 if isinstance(v, sisl.physics.electron.EigenstateElectron):
