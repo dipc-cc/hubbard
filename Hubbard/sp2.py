@@ -35,12 +35,14 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
 
     # Remove all sites not carbon-type
     pi_geom = ext_geom.remove(aux + sp3)
+    pi_geom.reduce()
 
     # Iterate over atomic species to set initial charge
-    r = np.linspace(0, 1.6, 700)
-    func = 5 * np.exp(-r * 5)
+    maxR = 7
+    r = np.linspace(0, 7, 700)
+    func =  np.exp(-3*r)
     for atom, _ in pi_geom.atoms.iter(True):
-        pz = sisl.AtomicOrbital('pz', (r, func), q0=atom.Z-5+dq)
+        pz = sisl.AtomicOrbital('pz', (r, func), R=maxR, q0=atom.Z-5+dq)
         atom.orbitals[0] = pz
 
     # Construct Hamiltonian
