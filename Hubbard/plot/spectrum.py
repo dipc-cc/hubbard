@@ -112,7 +112,9 @@ class DOS_distribution(GeometryPlot):
         y = HubbardHamiltonian.geometry[:, 1]
 
         if realspace:
-            self.__realspace__(DOS, density=True, vmin=0, **keywords)
+            if 'vmin' not in keywords:
+                keywords['vmin'] = 0
+            self.__realspace__(DOS, density=True, **keywords)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
