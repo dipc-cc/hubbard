@@ -138,7 +138,7 @@ class GeometryPlot(Plot):
                 if 'label' in keywords:
                     self.set_colorbar_ylabel(keywords['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=0.05, density=False, **keywords):
+    def __realspace__(self, v, z=1.1, grid_unit=0.05, density=False, r_smooth=0.9, **keywords):
 
         def real_space_grid(v, grid_unit, density):
             import sisl
@@ -188,11 +188,14 @@ class GeometryPlot(Plot):
             vmin = None
 
         grid = real_space_grid(v, grid_unit, density)
+        # Smooth grid with gaussian function
+        grid = grid.smooth(method='gaussian', r=r_smooth)
         index =  grid.index([0, 0, z])
+        slice_grid = grid.grid[:, :, index[2]].T.real
 
         # Plot only the real part of the grid
         # The image will be created in an imshow layer (stored in self.imshow)
-        self.imshow = self.axes.imshow(grid.grid[:, :, index[2]].T.real, cmap='seismic', origin='lower',
+        self.imshow = self.axes.imshow(slice_grid, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=vmin, extent=self.extent)
         # Colorbars
         if 'colorbar' in keywords:
