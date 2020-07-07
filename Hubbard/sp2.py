@@ -40,6 +40,9 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     # Iterate over atomic species to set initial charge
     maxR = 7
     r = np.linspace(0, 7, 700)
+    # In Slater-type orbitals (Hydrogen-like atom solution), the radial function is ~exp(-Zr/2a)
+    # where a=0.529 \AA is the Bohr radius and Z is the atomic number.
+    # We use the effective nuclear charge instead, which for Carbon atoms is approximately Zeff~3.
     func =  np.exp(-3*r)
     for atom, _ in pi_geom.atoms.iter(True):
         pz = sisl.AtomicOrbital('pz', (r, func), R=maxR, q0=atom.Z-5+dq)
