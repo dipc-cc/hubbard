@@ -138,7 +138,7 @@ class GeometryPlot(Plot):
                 if 'label' in keywords:
                     self.set_colorbar_ylabel(keywords['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=0.05, density=False, r_smooth=0.9, **keywords):
+    def __realspace__(self, v, z=1.1, grid_unit=[100,100,1], density=False, smooth=False, **keywords):
 
         def real_space_grid(v, grid_unit, density):
             import sisl
@@ -147,7 +147,7 @@ class GeometryPlot(Plot):
             g = self.geometry.copy()
 
             # Set new sc to create real-space grid
-            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 3.2], origo=[self.xmin, self.ymin, 0])
+            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origo=[self.xmin, self.ymin, z])
             g.set_sc(sc)
 
             # Shift negative xy coordinates within the supercell
@@ -188,10 +188,15 @@ class GeometryPlot(Plot):
             vmin = None
 
         grid = real_space_grid(v, grid_unit, density)
-        # Smooth grid with gaussian function
-        grid = grid.smooth(method='gaussian', r=r_smooth)
-        index =  grid.index([0, 0, z])
-        slice_grid = grid.grid[:, :, index[2]].T.real
+        if smooth:
+            # Smooth grid with gaussian function
+            if 'r_smooth' in keywords:
+                r_smooth = keywords['r_smooth']
+            else:
+                r_smooth = 0.7
+            grid = grid.smooth(method='gaussian', r=r_smooth)
+
+        slice_grid = grid.grid[:, :, 0].T.real
 
         # Plot only the real part of the grid
         # The image will be created in an imshow layer (stored in self.imshow)
