@@ -38,8 +38,8 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     pi_geom.reduce()
 
     # Iterate over atomic species to set initial charge
-    maxR = 7
-    r = np.linspace(0, 7, 700)
+    maxR = 20
+    r = np.linspace(0, maxR, 700)
     # In Slater-type orbitals (Hydrogen-like atom solution), the radial function is ~exp(-Zr/2a)
     # where a=0.529 \AA is the Bohr radius and Z is the atomic number.
     # We use the effective nuclear charge instead, which for Carbon atoms is approximately Zeff~3.
