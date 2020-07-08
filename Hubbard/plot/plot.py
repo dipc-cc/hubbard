@@ -147,14 +147,11 @@ class GeometryPlot(Plot):
             g = self.geometry.copy()
 
             # Set new sc to create real-space grid
-            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origo=[self.xmin, self.ymin, z])
+            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origo=[0, 0, -z])
             g.set_sc(sc)
 
-            # Shift negative xy coordinates within the supercell
-            ix = np.where(g.xyz[:, 0] < 0)
-            iy = np.where(g.xyz[:, 1] < 0)
-            g.xyz[ix, 0] = g.axyz(isc=[1, 0, 0])[ix, 0]
-            g.xyz[iy, 1] = g.axyz(isc=[0, 1, 0])[iy, 1]
+            # Move geometry within the supercell
+            g = g.move([-self.xmin, -self.ymin, -np.amin(g.xyz[:,2])])
             # Make z~0 -> z = 0
             g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
 
@@ -177,16 +174,6 @@ class GeometryPlot(Plot):
             del g
             return grid
 
-        if 'vmax' in keywords:
-            vmax = keywords['vmax']
-        else:
-            vmax = None
-
-        if 'vmin' in keywords:
-            vmin = keywords['vmin']
-        else:
-            vmin = None
-
         grid = real_space_grid(v, grid_unit, density)
         if smooth:
             # Smooth grid with gaussian function
@@ -197,6 +184,16 @@ class GeometryPlot(Plot):
             grid = grid.smooth(method='gaussian', r=r_smooth)
 
         slice_grid = grid.grid[:, :, 0].T.real
+
+        if 'vmax' in keywords:
+            vmax = keywords['vmax']
+        else:
+            vmax = np.amax(np.absolute(slice_grid))
+
+        if 'vmin' in keywords:
+            vmin = keywords['vmin']
+        else:
+            vmin = -vmax
 
         # Plot only the real part of the grid
         # The image will be created in an imshow layer (stored in self.imshow)
