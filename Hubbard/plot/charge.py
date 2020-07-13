@@ -28,7 +28,7 @@ class Charge(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = 'Greys'
             if 'label' not in keywords:
-                keywords['label']=r'$q_\uparrow+q_\downarrow$ ($e/$\AA)'
+                keywords['label']=r'$q_\uparrow+q_\downarrow$ ($e/$\AA^{2})'
         else:
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
@@ -71,7 +71,7 @@ class ChargeDifference(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = 'Greys'
             if 'label' not in keywords:
-                keywords['label']=r'$q_\uparrow+q_\downarrow-q_\mathrm{NA}$ ($e/$\AA)'
+                keywords['label']=r'$q_\uparrow+q_\downarrow-q_\mathrm{NA}$ ($e/$\AA^{2})'
         else:
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
@@ -110,7 +110,7 @@ class SpinPolarization(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = 'Greys'
             if 'label' not in keywords:
-                keywords['label']=r'$q_\uparrow-q_\downarrow$ ($e/$\AA)'
+                keywords['label']=r'$q_\uparrow-q_\downarrow$ ($e/$\AA^{2})'
         else:
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
