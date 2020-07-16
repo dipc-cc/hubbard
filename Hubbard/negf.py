@@ -58,8 +58,9 @@ class NEGF(object):
         self.w_eq = (contour_weight[2] + contour_weight[3]*1j) / np.pi
         self.NEQ = V != 0
 
-        mu = [V*0.5, -V*0.5]
+        mu = np.zeros(len(Helecs))
         if self.NEQ:
+            mu = [V*0.5, -V*0.5]
             self.CC_eq = np.array([self.CC_eq[0] + mu[0], self.CC_eq[0] + mu[1]])
 
             # Integration path for the non-Eq window
