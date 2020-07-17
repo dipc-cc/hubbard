@@ -131,16 +131,15 @@ class DOS(Plot):
 
         Plot.__init__(self, **keywords)
 
-        DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
-
         if np.any(sites):
+            DOS = HubbardHamiltonian.PDOS(egrid, eta=eta, spin=spin)
             offset = 0.*np.average(DOS[sites[0]])
             for i, s in enumerate(sites):
-                self.axes.plot(egrid, DOS[s]+offset*i, label='%i'%i)
+                self.axes.plot(egrid, DOS[s]+offset*i, label='site %i'%i)
             self.legend()
         else:
-            TDOS = DOS.sum(axis=0)
-            plt.plot(egrid, TDOS, label='TDOS')
+            DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
+            plt.plot(egrid, DOS, label='TDOS')
 
         self.set_xlabel(r'E-E$_\mathrm{midgap}$ [eV]')
         self.set_ylabel(r'DOS [1/eV]')
