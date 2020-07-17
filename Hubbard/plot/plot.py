@@ -59,12 +59,12 @@ Plot()
 
 class GeometryPlot(Plot):
 
-    def __init__(self, geometry, ext_geom=None, **keywords):
+    def __init__(self, geometry, ext_geom=None, bdx=2, **keywords):
 
         Plot.__init__(self, **keywords)
 
         self.geometry = geometry
-        self.set_axes()
+        self.set_axes(bdx=bdx)
         # Relevant keywords
         kw = {}
         for k in keywords:
