@@ -327,3 +327,33 @@ class NEGF(object):
 
         # Get rid of the numerical imaginary part (which is ~0)
         return Delta.real, weight.real
+
+    def DOS(self, H, E, spin=[0,1]):
+        '''
+        Returns
+        -------
+        DOS: numpy.array
+        '''
+
+        # Ensure spin instance is iterable
+        if not isinstance(spin, list) or isinstance(spin, np.ndarray):
+            spin = [spin]
+
+        dos = np.zeros((len(spin),len(E)))
+        for ispin in range(len(spin)):
+            HC = H.H.Hk(spin=ispin, format='array')
+            for i, e in enumerate(E):
+                # Append all the self-energies for the electrodes at each energy point
+                SE = []
+                for j, elec in enumerate(self.Helecs):
+                    se = sisl.RecursiveSI(elec.H, self.elec_dir[j])
+                    SE.append(se.self_energy(e, spin=spin[ispin]))
+                if self.WBL:
+                    # Append also the WBL self energies
+                    for k, g in enumerate(self.gamma):
+                        SE.append(-1j*g*np.identity(len(self.gamma_indx[k])))
+                inv_GF = _inv_G(e + self.eta*1j, HC, self.elec_indx, SE)
+
+                dos[ispin, i] = - np.trace(inv(inv_GF)).imag
+        dos = dos.sum(axis=0)
+        return dos/np.pi
