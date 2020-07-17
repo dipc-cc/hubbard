@@ -740,8 +740,8 @@ class HubbardHamiltonian(object):
             sym = np.dot(v1, v2.T)
         return sym
 
-    def DOS(self, egrid, eta=1e-3, spin=[0, 1]):
-        """ Obtains the Density Of States of the system convoluted with a Lorentzian function
+    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian'):
+        """ Obtains the density of states (DOS) of the system with a distribution function
 
         Parameters
         ----------
@@ -752,27 +752,82 @@ class HubbardHamiltonian(object):
         spin: int, optional
             If spin=0(1) it calculates the DOS for up (down) electrons in the system.
             If spin is not specified it returns DOS_up + DOS_dn.
+        dist: str or sisl.distribution, optional
+            distribution for the convolution, defaults to Lorentzian
+
+        See Also
+        --------
+        `sisl.get_distribution`
+        `sisl.electron.DOS`
 
         Returns
         -------
         DOS: array_like
             density of states at the given energies for the selected spin
         """
+        # Ensure spin is iterable
+        if not isinstance(spin, (list)) or isinstance(spin, (np.ndarray)):
+            spin = [spin]
 
         # Check if egrid is numpy.ndarray
         if not isinstance(egrid, (np.ndarray)):
             egrid = np.array(egrid)
 
-        # Obtain DOS
-        DOS = 0
+        if isinstance(dist, (str)):
+            dist = sisl.get_distribution(dist, smearing=eta)
+
+        # Obtain eigenvalues
+        dos = 0
+        # Find midgap energy reference
+        self.find_midgap()
+        for ispin in spin:
+            eig = self.eigh(spin=ispin) - self.midgap
+            dos += sisl.electron.DOS(egrid, eig, distribution=dist)
+        return dos
+
+    def PDOS(self, egrid, eta=1e-3, spin=[0,1], dist='Lorentzian'):
+        """ Obtains the projected density of states (PDOS) of the system with a distribution function
+
+        Parameters
+        ----------
+        egrid: array_like
+            Energy grid at which the DOS will be calculated.
+        eta: float, optional
+            Smearing parameter
+        spin: int, optional
+            If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+            If spin is not specified it returns DOS_up + DOS_dn.
+        dist: str or sisl.distribution, optional
+            distribution for the convolution, defaults to Lorentzian
+
+        See Also
+        --------
+        `sisl.get_distribution`
+        `sisl.physics.electron.PDOS`
+
+        Returns
+        -------
+        PDOS: numpy.ndarray
+            projected density of states at the given energies for the selected spin
+        """
+        # Ensure spin is iterable
+        if not isinstance(spin, (list)) or isinstance(spin, (np.ndarray)):
+            spin = [spin]
+
+        # Check if egrid is numpy.ndarray
+        if not isinstance(egrid, (np.ndarray)):
+            egrid = np.array(egrid)
+
+        if isinstance(dist, (str)):
+            dist = sisl.get_distribution(dist, smearing=eta)
+
+        # Find midgap reference
+        self.find_midgap()
+        # Obtain PDOS
+        pdos = 0
         for ispin in spin:
             ev, evec = self.eigh(eigvals_only=False, spin=ispin)
             ev -= self.midgap
+            pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=dist)
 
-            id1 = np.ones(ev.shape, np.float)
-            id2 = np.ones(egrid.shape, np.float)
-            dE = np.outer(id1, egrid) - np.outer(ev, id2)
-            LOR = 2 * eta / (dE ** 2 + eta ** 2)
-            DOS += np.einsum('ai,ai,ij->aj', evec, evec, LOR) / (2 * np.pi)
-
-        return DOS
+        return pdos
