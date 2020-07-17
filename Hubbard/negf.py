@@ -9,6 +9,14 @@ _pi = math.pi
 
 __all__ = ['NEGF']
 
+def _inv_G(e, HC, elec_indx, SE):
+    no = len(HC)
+    inv_GF = np.zeros([no, no], dtype=np.complex128)
+    np.fill_diagonal(inv_GF, e)
+    inv_GF[:, :] -= HC[:, :]
+    for i, se in enumerate(SE):
+        inv_GF[elec_indx[i], elec_indx[i].T] -= se
+    return inv_GF
 
 class NEGF(object):
     r""" This class creates the open quantum system object for a N-terminal device
@@ -30,6 +38,10 @@ class NEGF(object):
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
         applied bias between the two electrodes
+    WBL: bool, optional
+        if True this method uses the wide band limit approximation, where the real part of the self-energy
+        is neglected, and the imaginary part is approximated by a constant: ``-1j*gamma``
+        on specified sites (`gamma_indx`)
 
     See Also
     --------
@@ -40,12 +52,16 @@ class NEGF(object):
     This class has to be generalized to non-orthogonal basis
     """
 
-    def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
+    def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0, WBL=False, gamma_indx=None, gamma=[0.]):
         """ Initialize NEGF class """
-
+        # Save some relevant quantities in the object
         self.Ef = 0.
         self.kT = Hdev.kT
         self.elec_indx = elec_indx
+        self.Helecs = Helecs
+        self.elec_dir = elec_dir
+        self.Hdev = Hdev
+        self.WBL = WBL
 
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
 
@@ -110,6 +126,44 @@ class NEGF(object):
             self._cc_eq_SE.append(_cc_eq_SE)
             self._cc_neq_SE.append(_cc_neq_SE)
 
+        if WBL:
+            # Ensure gamma is iterable, as the implementation is generalized
+            # for several possible gammas
+            if not isinstance(gamma, list) or isinstance(gamma, np.ndarray):
+                    gamma = [gamma]
+
+            # Atomic indices at which the WBL is going to be applied, default to all sites if the list is empty
+            if not gamma_indx:
+                gamma_indx = [np.arange(len(Hdev.H)).reshape(-1, 1)] * len(gamma)
+            else:
+                gamma_indx = [np.array(idx).reshape(-1, 1) for idx in gamma_indx]
+
+            # Save WBL related quantities in the object
+            self.gamma = gamma
+            self.gamma_indx = gamma_indx
+
+            # All the WBL related quantities (both the atomic indices and the self-energies) are stored
+            # at the end of the lists that contain the electrode information
+            self.elec_indx += gamma_indx
+            for i, g in enumerate(gamma):
+                _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2)
+                _ef_SE = np.array([None] * 2)
+                _cc_neq_SE = np.array([[None] * len(self.CC_neq)] * 2)
+                for spin in [0,1]:
+                    # For all energies the self-energy term is the same
+                    _ef_SE[spin] = -1j*g*np.identity(len(gamma_indx[i]))
+                    for cc_eq_i, CC_eq in enumerate(self.CC_eq):
+                        for ic, cc in enumerate(CC_eq):
+                            # For all energies the self-energy term is the same
+                            _cc_eq_SE[spin][cc_eq_i][ic] = -1j*g*np.identity(len(gamma_indx[i]))
+                    if self.NEQ:
+                        for ic, cc in enumerate(self.CC_neq):
+                            # And for each point in the Neq CC
+                            _cc_neq_SE[spin][ic] = -1j*g*np.identity(len(gamma_indx[i]))
+                self._ef_SE.append(_ef_SE)
+                self._cc_eq_SE.append(_cc_eq_SE)
+                self._cc_neq_SE.append(_cc_neq_SE)
+
     def dm_open(self, H, q, qtol=1e-5):
         """
         Method to compute the spin densities from the Neq Green's function
@@ -132,12 +186,14 @@ class NEGF(object):
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
         q = np.asarray(q).sum()
-
         no = len(H.H)
-        inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
         Ef = self.Ef
+
+        ef_SE = np.array(self._ef_SE)
+        CC_SE = np.array(self._cc_eq_SE)
+
         while abs(ntot - q) > qtol:
 
             if ntot > 0.:
@@ -155,12 +211,7 @@ class NEGF(object):
                 for spin in [0, 1]:
                     HC = H.H.Hk(spin=spin).todense()
                     cc = - Ef + 1j * self.eta
-
-                    inv_GF[:, :] = 0.
-                    np.fill_diagonal(inv_GF, cc)
-                    inv_GF[:, :] -= HC[:, :]
-                    for i, SE in enumerate(self._ef_SE):
-                        inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin]
+                    inv_GF = _inv_G(cc, HC, self.elec_indx, ef_SE[:, spin])
 
                     # Now we need to calculate the new Fermi level based on the
                     # difference in charge and by estimating the current Fermi level
@@ -201,11 +252,7 @@ class NEGF(object):
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
                     for ic, [cc, wi] in enumerate(zip(CC - Ef, self.w_eq)):
-                        inv_GF[:, :] = 0.
-                        np.fill_diagonal(inv_GF, cc)
-                        inv_GF[:, :] -= HC[:, :]
-                        for i, SE in enumerate(self._cc_eq_SE):
-                            inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][cc_eq_i][ic]
+                        inv_GF = _inv_G(cc, HC, self.elec_indx, CC_SE[:, spin, cc_eq_i, ic])
 
                         # Greens function evaluated at each point of the CC multiplied by the weight
                         Gf_wi = - np.diag(inv(inv_GF)) * wi
