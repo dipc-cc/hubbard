@@ -328,11 +328,11 @@ class NEGF(object):
         # Get rid of the numerical imaginary part (which is ~0)
         return Delta.real, weight.real
 
-    def DOS(self, H, E, spin=[0,1]):
+    def DOS(self, H, E, spin=[0,1], eta=0.01):
         '''
         Returns
         -------
-        DOS: numpy.array
+        DOS: numpy.ndarray
         '''
 
         # Ensure spin instance is iterable
@@ -352,8 +352,37 @@ class NEGF(object):
                     # Append also the WBL self energies
                     for k, g in enumerate(self.gamma):
                         SE.append(-1j*g*np.identity(len(self.gamma_indx[k])))
-                inv_GF = _inv_G(e + self.eta*1j, HC, self.elec_indx, SE)
+                inv_GF = _inv_G(e + eta*1j, HC, self.elec_indx, SE)
 
                 dos[ispin, i] = - np.trace(inv(inv_GF)).imag
         dos = dos.sum(axis=0)
         return dos/np.pi
+
+    def PDOS(self, H, E, spin=[0,1], eta=0.01):
+        '''
+        Returns
+        -------
+        PDOS: numpy.ndarray
+        '''
+
+        # Ensure spin instance is iterable
+        if not isinstance(spin, list) or isinstance(spin, np.ndarray):
+            spin = [spin]
+
+        ldos = np.zeros((len(spin),len(E), len(H.H)))
+        for ispin in range(len(spin)):
+            HC = H.H.Hk(spin=ispin, format='array')
+            for i, e in enumerate(E):
+                # Append all the self-energies for the electrodes at each energy point
+                SE = []
+                for j, elec in enumerate(self.Helecs):
+                    se = sisl.RecursiveSI(elec.H, self.elec_dir[j])
+                    SE.append(se.self_energy(e, spin=spin[ispin]))
+                if self.WBL:
+                    # Append also the WBL self energies
+                    for k, g in enumerate(self.gamma):
+                        SE.append(-1j*g*np.identity(len(self.gamma_indx[k])))
+                inv_GF = _inv_G(e + eta*1j, HC, self.elec_indx, SE)
+                ldos[ispin, i] = - (inv(inv_GF)).diagonal().imag
+        ldos = ldos.sum(axis=0)
+        return ldos/(2*np.pi)
