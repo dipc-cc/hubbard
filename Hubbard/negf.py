@@ -342,7 +342,7 @@ class NEGF(object):
 
         dos = np.zeros((len(spin),len(E)))
         for ispin in range(len(spin)):
-            HC = H.H.Hk(spin=ispin, format='array')
+            HC = H.H.Hk(spin=spin[ispin], format='array')
             for i, e in enumerate(E):
                 # Append all the self-energies for the electrodes at each energy point
                 SE = []
@@ -373,7 +373,7 @@ class NEGF(object):
 
         ldos = np.zeros((len(spin),len(E), len(H.H)))
         for ispin in range(len(spin)):
-            HC = H.H.Hk(spin=ispin, format='array')
+            HC = H.H.Hk(spin=spin[ispin], format='array')
             for i, e in enumerate(E):
                 # Append all the self-energies for the electrodes at each energy point
                 SE = []
@@ -388,4 +388,4 @@ class NEGF(object):
                 inv_GF = _inv_G(e + eta*1j, HC, self.elec_indx, SE)
                 ldos[ispin, i] = - (inv(inv_GF)).diagonal().imag
         ldos = ldos.sum(axis=0)
-        return ldos/(2*np.pi)
+        return ldos/np.pi
