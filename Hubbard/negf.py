@@ -149,17 +149,18 @@ class NEGF(object):
                 _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2)
                 _ef_SE = np.array([None] * 2)
                 _cc_neq_SE = np.array([[None] * len(self.CC_neq)] * 2)
+                se = sisl.WideBandSE(len(gamma_indx[i]), g)
                 for spin in [0,1]:
                     # For all energies the self-energy term is the same
-                    _ef_SE[spin] = -1j*g*np.identity(len(gamma_indx[i]))
+                    _ef_SE[spin] = se.self_energy()
                     for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                         for ic, cc in enumerate(CC_eq):
                             # For all energies the self-energy term is the same
-                            _cc_eq_SE[spin][cc_eq_i][ic] = -1j*g*np.identity(len(gamma_indx[i]))
+                            _cc_eq_SE[spin][cc_eq_i][ic] = se.self_energy()
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            _cc_neq_SE[spin][ic] = -1j*g*np.identity(len(gamma_indx[i]))
+                            _cc_neq_SE[spin][ic] = se.self_energy()
                 self._ef_SE.append(_ef_SE)
                 self._cc_eq_SE.append(_cc_eq_SE)
                 self._cc_neq_SE.append(_cc_neq_SE)
@@ -351,7 +352,8 @@ class NEGF(object):
                 if self.WBL:
                     # Append also the WBL self energies
                     for k, g in enumerate(self.gamma):
-                        SE.append(-1j*g*np.identity(len(self.gamma_indx[k])))
+                        se = sisl.WideBandSE(len(self.gamma_indx[k]), g)
+                        SE.append(se.self_energy())
                 inv_GF = _inv_G(e + eta*1j, HC, self.elec_indx, SE)
 
                 dos[ispin, i] = - np.trace(inv(inv_GF)).imag
@@ -381,7 +383,8 @@ class NEGF(object):
                 if self.WBL:
                     # Append also the WBL self energies
                     for k, g in enumerate(self.gamma):
-                        SE.append(-1j*g*np.identity(len(self.gamma_indx[k])))
+                        se = sisl.WideBandSE(len(self.gamma_indx[k]), g)
+                        SE.append(se.self_energy())
                 inv_GF = _inv_G(e + eta*1j, HC, self.elec_indx, SE)
                 ldos[ispin, i] = - (inv(inv_GF)).diagonal().imag
         ldos = ldos.sum(axis=0)
