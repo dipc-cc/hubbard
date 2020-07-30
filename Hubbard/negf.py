@@ -3,12 +3,35 @@ from numpy import einsum, conj
 import sisl
 import os
 import math
+from scipy.interpolate import interp1d
 from scipy.linalg import inv
 
 _pi = math.pi
 
 __all__ = ['NEGF']
 
+
+def _inv_G(e, HC, elec_idx, SE):
+    """ Calculate Green function
+
+    Parameters
+    ----------
+    e : complex
+       energy at which the Green function is calculated
+    HC : numpy.ndarray
+       the Hamiltonian
+    elec_idx : list of indices
+       indices for the electrode orbitals
+    SE : list of numpy.ndarray
+       self-energies for the electrodes
+    """
+    no = len(HC)
+    inv_GF = np.zeros([no, no], dtype=np.complex128)
+    np.fill_diagonal(inv_GF, e)
+    inv_GF[:, :] -= HC[:, :]
+    for idx, se in zip(elec_idx, SE):
+        inv_GF[idx, idx.T] -= se
+    return inv_GF
 
 class NEGF(object):
     r""" This class creates the open quantum system object for a N-terminal device
@@ -20,16 +43,21 @@ class NEGF(object):
     ----------
     Hdev: HubbardHamiltonian instance
         `Hubbard.HubbardHamiltonian` object of the device
-    Helecs: list of HubbardHamiltonian instances
+    elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)
         list of (already converged) `Hubbard.HubbardHamiltonian` objects for the electrodes
-    elec_indx: array_like
+        plus the semi-infinite direction for the respective electrode.
+        Alternatively one may directly pass sisl.SelfEnergy instances
+    elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
-    elec_dir: array_like of strings
-        list of axis specification for the semi-infinite direction (`+A`/`-A`/`+B`/`-B`/`+C`/`-C`)
     CC: str, optional
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
         applied bias between the two electrodes
+
+
+    Examples
+    --------
+    >>> NEGF(Hdev, [sisl.SelfEnergy(), (H, '+A')])
 
     See Also
     --------
@@ -40,27 +68,29 @@ class NEGF(object):
     This class has to be generalized to non-orthogonal basis
     """
 
-    def __init__(self, Hdev, Helecs, elec_indx, elec_dir=['-A', '+A'], CC=None, V=0):
+    def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
 
+        # Global charge neutral reference energy (conveniently named fermi)
         self.Ef = 0.
         self.kT = Hdev.kT
-        self.elec_indx = elec_indx
-
-        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
-
         self.eta = 0.1
 
+        # Immediately retrieve the distribution
+        dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
+
         if not CC:
-            CC = os.path.split(__file__)[0]+'/EQCONTOUR'
+            CC = os.path.split(__file__)[0] + "/EQCONTOUR"
         contour_weight = sisl.io.tableSile(CC).read_data()
         self.CC_eq = np.array([contour_weight[0] + contour_weight[1]*1j])
         self.w_eq = (contour_weight[2] + contour_weight[3]*1j) / np.pi
         self.NEQ = V != 0
 
-        mu = np.zeros(len(Helecs))
+        mu = np.zeros(len(elec_SE))
         if self.NEQ:
-            mu = [V*0.5, -V*0.5]
+            # in case the user has WBL electrodes
+            mu[0] = V*0.5
+            mu[1] = -V*0.5
             self.CC_eq = np.array([self.CC_eq[0] + mu[0], self.CC_eq[0] + mu[1]])
 
             # Integration path for the non-Eq window
@@ -73,7 +103,54 @@ class NEGF(object):
         else:
             self.CC_neq = []
 
-        self.elec_indx = [np.array(idx).reshape(-1, 1) for idx in elec_indx]
+        def convert2SelfEnergy(HH, mu):
+            if isinstance(HH, (tuple, list)):
+                # here HH *must* be a HubbardHamiltonian (otherwise it will probably crash)
+                HH, semi_inf = HH
+                Ef_elec = HH.H.fermi_level(HH.mp, q=HH.q, distribution=dist)
+                # Shift each electrode with its Fermi-level
+                # And also shift the chemical potential
+                # Since the electrodes are *bulk* i.e. the entire electronic structure
+                # is simply shifted we need to subtract since the contour shifts the chemical
+                # potential back.
+                HH.H.shift(-Ef_elec - mu)
+                return sisl.RecursiveSI(HH.H, semi_inf)
+
+            # this will work since SelfEnergy instances overloads unknown attributes
+            # to the parent.
+            # This will only shift the electronic structure of the RecursiveSI.spgeom0
+            # and not RecursiveSI.spgeom1. However, for orthogonal basis, this is equivalent.
+            # TODO this should be changed when non-orthogonal basis' are used
+            try:
+                HH.shift(-mu)
+            except:
+                # the parent does not have the shift method
+                pass
+            return HH
+
+        # convert all matrices to a sisl.SelfEnergy instance
+        self.elec_SE = list(map(convert2SelfEnergy, elec_SE, mu))
+        self.elec_idx = [np.array(idx).reshape(-1, 1) for idx in elec_idx]
+
+        # Ensure commensurate shapes
+        for SE, idx in zip(self.elec_SE, self.elec_idx):
+            assert len(SE) == len(idx)
+
+        # For a bias calcualtion, ensure that only the first
+        # two electrodes are RecursiveSI (all others should be WideBandSE)
+        if self.NEQ:
+            for i in range(2):
+                assert isinstance(self.elec_SE[i], sisl.RecursiveSI)
+            for i in range(2, len(self.elec_SE)):
+                assert isinstance(self.elec_SE[i], sisl.WideBandSE)
+
+        # In case all self-energies are WB, then we can change the eta value
+        if all(map(lambda obj: isinstance(obj, sisl.WideBandSE), self.elec_SE)):
+            # The wide-band limit ensures that all electrons comes at a constant rate per
+            # energy.
+            # Although this *could* potentially be too high, then I think it should be ok
+            # since the electrodes more govern the DOS.
+            self.eta = 1.
 
         # electrode, spin
         self._ef_SE = []
@@ -82,18 +159,12 @@ class NEGF(object):
         # electrode, spin, energy
         self._cc_neq_SE = []
 
-        for i, elec in enumerate(Helecs):
-            Ef_elec = elec.H.fermi_level(elec.mp, q=elec.q, distribution=dist)
-            # Shift each electrode with its Fermi-level
-            # And also shift the chemical potential
-            # Since the electrodes are *bulk* i.e. the entire electronic structure
-            # is simply shifted we need to subtract since the contour shifts the chemical
-            # potential back.
-            elec.H.shift(-Ef_elec - mu[i])
-            se = sisl.RecursiveSI(elec.H, elec_dir[i])
-            _cc_eq_SE = np.array([[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2)
-            _ef_SE = np.array([None] * 2)
-            _cc_neq_SE = np.array([[None] * len(self.CC_neq)] * 2)
+        for i, se in enumerate(self.elec_SE):
+            # Using numpy to contain objects is not performance critical.
+            # Regular lists are just fine
+            _cc_eq_SE = [[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2
+            _ef_SE = [None] * 2
+            _cc_neq_SE = [[None] * len(self.CC_neq)] * 2
             for spin in [0, 1]:
                 # Map self-energy at the Fermi-level of each electrode into the device region
                 _ef_SE[spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
@@ -133,51 +204,73 @@ class NEGF(object):
         # This spin-charge would be dependent on the system size
         q = np.asarray(q).sum()
 
+        # Create short-hands
+        ef_SE = np.array(self._ef_SE)
+        cc_eq_SE = np.array(self._cc_eq_SE)
+
         no = len(H.H)
-        inv_GF = np.empty([no, no], dtype=np.complex128)
         ni = np.empty([2, no], dtype=np.float64)
         ntot = -1.
         Ef = self.Ef
+
+        conv_q = []
         while abs(ntot - q) > qtol:
+            # for debug purposes
+            #print(ntot, q, qtol, Ef)
 
             if ntot > 0.:
                 # correct fermi-level
                 dq = ni.sum() - q
 
-                # Fermi-level is at 0.
-                # The Lorentzian has ~70% of its integral within
-                #   2 * \eta (on both sides)
-                # To cover 200 meV ~ 2400 K in the integration window
-                # and expect the Lorentzian peak to be positioned at
-                # the current Fermi-level we will use eta = 100 meV
-                # Calculate charge at the Fermi-level
-                f = 0.
-                for spin in [0, 1]:
-                    HC = H.H.Hk(spin=spin).todense()
-                    cc = - Ef + 1j * self.eta
+                conv_q.append([dq, Ef])
+                if len(conv_q) > 1:
+                    # do a bisection of the fermi level
+                    f = np.array(conv_q)
+                    try:
+                        Ef = interp1d(f[:, 0], f[:, 1],
+                                          fill_value="extrapolate")(0.)
+                    except:
+                        Ef = conv_q[-1][1]
+                    if np.isnan(Ef):
+                        Ef = conv_q[-1][1]
 
-                    inv_GF[:, :] = 0.
-                    np.fill_diagonal(inv_GF, cc)
-                    inv_GF[:, :] -= HC[:, :]
-                    for i, SE in enumerate(self._ef_SE):
-                        inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin]
+                    # check that the fermi-level is not one we already have
+                    if np.any(np.fabs(Ef - f[:, 1]) < 1e-15):
+                        conv_q = [conv_q[-1]]
 
-                    # Now we need to calculate the new Fermi level based on the
-                    # difference in charge and by estimating the current Fermi level
-                    # as the peak position of a Lorentzian.
-                    # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
-                    #   F(x) - F(0) = arctan(x) / pi = dq
-                    # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
-                    # and consider this a pre-factor
-                    f -= np.trace(inv(inv_GF)).imag / _pi
+                if len(conv_q) == 1:
 
-                # calculate fractional change
-                f = dq / f 
-                # Since x above is in units of eta, we have to multiply with eta
-                if abs(f) < 0.45:
-                    Ef += self.eta * math.tan(f * _pi) * 0.5
-                else:
-                    Ef += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    # Fermi-level is at 0.
+                    # The Lorentzian has ~70% of its integral within
+                    #   2 * \eta (on both sides)
+                    # To cover 200 meV ~ 2400 K in the integration window
+                    # and expect the Lorentzian peak to be positioned at
+                    # the current Fermi-level we will use eta = 100 meV
+                    # Calculate charge at the Fermi-level
+                    f = 0.
+                    for spin in [0, 1]:
+                        HC = H.H.Hk(spin=spin).todense()
+                        cc = - Ef + 1j * self.eta
+
+                        inv_GF = _inv_G(cc, HC, self.elec_idx, ef_SE[:, spin])
+
+                        # Now we need to calculate the new Fermi level based on the
+                        # difference in charge and by estimating the current Fermi level
+                        # as the peak position of a Lorentzian.
+                        # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
+                        #   F(x) - F(0) = arctan(x) / pi = dq
+                        # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
+                        # and consider this a pre-factor
+                        f -= np.trace(inv(inv_GF)).imag / _pi
+
+                        # calculate fractional change
+                        f = dq / f
+                        # Since x above is in units of eta, we have to multiply with eta
+                        if abs(f) < 0.45:
+                            Ef += self.eta * math.tan(f * _pi) * 0.5
+                        else:
+                            Ef += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+
 
             Etot = 0.
             for spin in [0, 1]:
@@ -201,11 +294,8 @@ class NEGF(object):
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
                     for ic, [cc, wi] in enumerate(zip(CC - Ef, self.w_eq)):
-                        inv_GF[:, :] = 0.
-                        np.fill_diagonal(inv_GF, cc)
-                        inv_GF[:, :] -= HC[:, :]
-                        for i, SE in enumerate(self._cc_eq_SE):
-                            inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][cc_eq_i][ic]
+
+                        inv_GF = _inv_G(cc, HC, self.elec_idx, cc_eq_SE[:, spin, cc_eq_i, ic])
 
                         # Greens function evaluated at each point of the CC multiplied by the weight
                         Gf_wi = - np.diag(inv(inv_GF)) * wi
@@ -251,32 +341,68 @@ class NEGF(object):
         Delta
         weight
         """
-        def spectral(G, self_energy, elec):
+        def spectral(G, self_energy):
             # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
             Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
-            G = G[:, self.elec_indx[elec].T[0]]
             # Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)
             return np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
-        inv_GF = np.empty([no, no], dtype=np.complex128)
+        cc_neq_SE = np.array(self._cc_neq_SE)
 
         for ic, cc in enumerate(self.CC_neq - Ef):
-            inv_GF[:, :] = 0.
-            np.fill_diagonal(inv_GF, cc)
-            inv_GF[:, :] -= HC[:, :]
-            for i, SE in enumerate(self._cc_neq_SE):
-                inv_GF[self.elec_indx[i], self.elec_indx[i].T] -= SE[spin][ic]
-            # Calculate the Green function
+
+            inv_GF = _inv_G(cc, HC, self.elec_idx, cc_neq_SE[:, spin, ic])
             inv_GF[:, :] = inv(inv_GF)
+
             # Elec (0, 1) are (left, right)
-            for i, SE in enumerate(self._cc_neq_SE):
-                Delta[i] += spectral(inv_GF, SE[spin][ic], i) * self.w_neq[i, ic]
+            # only do for the first two!
+            for i, SE in enumerate(cc_neq_SE[:2]):
+                Delta[i] += spectral(inv_GF[:, self.elec_idx[i].ravel()],
+                                     SE[spin, ic]) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
-        weight = Delta[0]**2 / ((Delta**2).sum(axis=0))
+        weight = Delta[0]**2 / (Delta**2).sum(axis=0)
 
         # Get rid of the numerical imaginary part (which is ~0)
         return Delta.real, weight.real
+
+    def DOS(self, H, E, spin=[0, 1], eta=0.01):
+        """
+        Returns
+        -------
+        DOS : np.ndarray
+        """
+        # Ensure spin instance is iterable
+        if not isinstance(spin, (list, tuple, np.ndarray)):
+            spin = [spin]
+
+        dos = np.zeros([len(E)])
+        for ispin in spin:
+            HC = H.H.Hk(spin=ispin, format='array')
+            for i, e in enumerate(E):
+
+                # Append all the self-energies for the electrodes at each energy point
+                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                inv_GF = _inv_G(e + eta*1j, HC, self.elec_idx, SE)
+
+                dos[i] -= np.trace(inv(inv_GF)).imag
+
+        return dos / np.pi
+
+    def PDOS(self, H, E, spin=(0, 1), eta=0.01):
+        # Ensure spin instance is iterable
+        if not isinstance(spin, (list, tuple, np.ndarray)):
+            spin = [spin]
+
+        ldos = np.zeros([len(E), len(H.H)])
+        for ispin in spin:
+            HC = H.H.Hk(spin=ispin, format='array')
+            for i, e in enumerate(E):
+                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                inv_GF = _inv_G(e + eta*1j, HC, self.elec_idx, SE)
+                ldos[i] -= inv(inv_GF).diagonal().imag
+
+        return ldos / np.pi

@@ -48,3 +48,38 @@ for m in [dens.dm_insulator, dens.dm]:
         print('Eigenvector check passed\n')
     else:
         print('Eigenvector check failed!!!\n')
+
+if True:
+    # Test also Hubbard.negf in the WBL approximation for gamma=0.
+    # We will compare with the density and Etot obtained from diagonalization
+    # at kT=0.025 (temperature of the CC)
+    H.kT = 0.025
+    H.random_density()
+    mixer.clear()
+    dn = H.converge(dens.dm, tol=1e-10, steps=10, mixer=mixer)
+    Etot0 = H.Etot
+    dm = 1*H.dm
+
+    # Obtain DOS for the finite molecule with Lorentzian distribution
+    egrid = np.linspace(-1,1,50)
+    import Hubbard.plot as plot
+    p = plot.DOS(H, egrid, eta=1e-2, spin=[0])
+
+    # Now compute same molecule with the WBL approximation with gamma=0
+    from Hubbard.negf import NEGF
+    elec = sisl.WideBandSE(2, 0.)
+    negf = NEGF(H, [elec], [[0, 1]])
+    # This is to use a better guess for the device potential
+    H.find_midgap()
+    negf.Ef = -H.midgap
+    negf.eta = 1e-2
+    mixer.clear()
+    ddm = H.converge(negf.dm_open, mixer=mixer, tol=1e-10, func_args={'qtol':1e-4}, steps=1, print_info=True)
+    print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
+    print('Density difference (up, dn): (%.4e, %.4e)'%(max(abs(H.dm[0]-dm[0])), max(abs(H.dm[1]-dm[1]))))
+
+    # Plot DOS calculated from the diagonalization and the WBL with gamma=0
+    dos = negf.DOS(H, egrid-negf.Ef, spin=0)
+    p.axes.plot(egrid, dos, '--', label='WBL')
+    p.legend()
+    p.savefig('DOS-comparison.pdf')
