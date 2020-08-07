@@ -81,8 +81,7 @@ p = plot.SpinPolarization(MFH_HC, colorbar=True)
 p.savefig('spin_HC.pdf')
 
 # Shift with Fermi-level of the device and write Hamiltonian into netcdf file
-MFH_HC.H.shift(negf.Ef)
-MFH_HC.H.write('MFH_HC.nc')
+MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)
 
 # RUN TBtrans and plot transmissions
 print('Clean TBtrans output from previous run')
