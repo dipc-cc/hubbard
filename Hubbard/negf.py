@@ -11,7 +11,7 @@ _pi = math.pi
 __all__ = ['NEGF']
 
 
-def _inv_G(e, HC, elec_idx, SE):
+def _G(e, HC, elec_idx, SE):
     """ Calculate Green function
 
     Parameters
@@ -31,9 +31,18 @@ def _inv_G(e, HC, elec_idx, SE):
     inv_GF[:, :] -= HC[:, :]
     for idx, se in zip(elec_idx, SE):
         inv_GF[idx, idx.T] -= se
-    return inv_GF
+    return inv(inv_GF)
 
-class NEGF(object):
+def _nested_list(*args):
+    if len(args) == 0:
+        return None
+    l = []
+    for _ in range(args[0]):
+        l.append(_nested_list(*args[1:]))
+    return l
+
+
+class NEGF:
     r""" This class creates the open quantum system object for a N-terminal device
 
     For the Non-equilibrium case :math:`V\neq 0` the current implementation
@@ -101,7 +110,7 @@ class NEGF(object):
             # Store weights for correction to RIGHT [0] and LEFT [1]
             self.w_neq = np.array([w_neq, -w_neq]) / np.pi
         else:
-            self.CC_neq = []
+            self.CC_neq = np.array([])
 
         def convert2SelfEnergy(HH, mu):
             if isinstance(HH, (tuple, list)):
@@ -152,34 +161,26 @@ class NEGF(object):
             # since the electrodes more govern the DOS.
             self.eta = 1.
 
-        # electrode, spin
-        self._ef_SE = []
-        # electrode, spin, EQ-contour, energy
-        self._cc_eq_SE = []
-        # electrode, spin, energy
-        self._cc_neq_SE = []
+        # spin, electrode
+        self._ef_SE = _nested_list(2, len(self.elec_SE))
+        # spin, EQ-contour, energy, electrode
+        self._cc_eq_SE = _nested_list(2, *self.CC_eq.shape, len(self.elec_SE))
+        # spin, energy, electrode
+        self._cc_neq_SE = _nested_list(2, self.CC_neq.shape[0], len(self.elec_SE))
 
         for i, se in enumerate(self.elec_SE):
-            # Using numpy to contain objects is not performance critical.
-            # Regular lists are just fine
-            _cc_eq_SE = [[[None] * self.CC_eq.shape[1]] * self.CC_eq.shape[0]] * 2
-            _ef_SE = [None] * 2
-            _cc_neq_SE = [[None] * len(self.CC_neq)] * 2
             for spin in [0, 1]:
                 # Map self-energy at the Fermi-level of each electrode into the device region
-                _ef_SE[spin] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
+                self._ef_SE[spin][i] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
 
                 for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                     for ic, cc in enumerate(CC_eq):
                         # Do it also for each point in the CC, for all EQ CC
-                        _cc_eq_SE[spin][cc_eq_i][ic] = se.self_energy(cc, spin=spin)
+                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, spin=spin)
                 if self.NEQ:
                     for ic, cc in enumerate(self.CC_neq):
                         # And for each point in the Neq CC
-                        _cc_neq_SE[spin][ic] = se.self_energy(cc, spin=spin)
-            self._ef_SE.append(_ef_SE)
-            self._cc_eq_SE.append(_cc_eq_SE)
-            self._cc_neq_SE.append(_cc_neq_SE)
+                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, spin=spin)
 
     def dm_open(self, H, q, qtol=1e-5):
         """
@@ -205,8 +206,8 @@ class NEGF(object):
         q = np.asarray(q).sum()
 
         # Create short-hands
-        ef_SE = np.array(self._ef_SE)
-        cc_eq_SE = np.array(self._cc_eq_SE)
+        ef_SE = self._ef_SE
+        cc_eq_SE = self._cc_eq_SE
 
         no = len(H.H)
         ni = np.empty([2, no], dtype=np.float64)
@@ -249,10 +250,10 @@ class NEGF(object):
                     # Calculate charge at the Fermi-level
                     f = 0.
                     for spin in [0, 1]:
-                        HC = H.H.Hk(spin=spin).todense()
+                        HC = H.H.Hk(spin=spin, format='array')
                         cc = Ef + 1j * self.eta
 
-                        inv_GF = _inv_G(cc, HC, self.elec_idx, ef_SE[:, spin])
+                        GF = _G(cc, HC, self.elec_idx, ef_SE[spin])
 
                         # Now we need to calculate the new Fermi level based on the
                         # difference in charge and by estimating the current Fermi level
@@ -261,7 +262,7 @@ class NEGF(object):
                         #   F(x) - F(0) = arctan(x) / pi = dq
                         # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                         # and consider this a pre-factor
-                        f -= np.trace(inv(inv_GF)).imag / _pi
+                        f -= np.trace(GF).imag / _pi
 
                         # calculate fractional change
                         f = dq / f
@@ -294,10 +295,10 @@ class NEGF(object):
                 for cc_eq_i, CC in enumerate(self.CC_eq):
                     for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
 
-                        inv_GF = _inv_G(cc, HC, self.elec_idx, cc_eq_SE[:, spin, cc_eq_i, ic])
+                        GF = _G(cc, HC, self.elec_idx, cc_eq_SE[spin][cc_eq_i][ic])
 
                         # Greens function evaluated at each point of the CC multiplied by the weight
-                        Gf_wi = - np.diag(inv(inv_GF)) * wi
+                        Gf_wi = - np.diag(GF) * wi
                         D[cc_eq_i] += Gf_wi.imag
 
                         # Integrate density of states to obtain the total energy
@@ -348,18 +349,16 @@ class NEGF(object):
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
-        cc_neq_SE = np.array(self._cc_neq_SE)
+        cc_neq_SE = self._cc_neq_SE
 
         for ic, cc in enumerate(self.CC_neq + Ef):
 
-            inv_GF = _inv_G(cc, HC, self.elec_idx, cc_neq_SE[:, spin, ic])
-            inv_GF[:, :] = inv(inv_GF)
+            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[spin][ic])
 
             # Elec (0, 1) are (left, right)
             # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[:2]):
-                Delta[i] += spectral(inv_GF[:, self.elec_idx[i].ravel()],
-                                     SE[spin, ic]) * self.w_neq[i, ic]
+            for i, SE in enumerate(cc_neq_SE[spin][ic][:2]):
+                Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
@@ -385,9 +384,9 @@ class NEGF(object):
 
                 # Append all the self-energies for the electrodes at each energy point
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                inv_GF = _inv_G(e + eta*1j, HC, self.elec_idx, SE)
+                GF = _G(e + eta*1j, HC, self.elec_idx, SE)
 
-                dos[i] -= np.trace(inv(inv_GF)).imag
+                dos[i] -= np.trace(GF).imag
 
         return dos / np.pi
 
@@ -401,7 +400,7 @@ class NEGF(object):
             HC = H.H.Hk(spin=ispin, format='array')
             for i, e in enumerate(E):
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                inv_GF = _inv_G(e + eta*1j, HC, self.elec_idx, SE)
-                ldos[i] -= inv(inv_GF).diagonal().imag
+                GF = _G(e + eta*1j, HC, self.elec_idx, SE)
+                ldos[i] -= GF.diagonal().imag
 
         return ldos / np.pi
