@@ -69,13 +69,12 @@ if not success:
     MFH_HC.converge(density.dm, tol=1e-5, mixer=mixer)
 
 # First create NEGF object
-negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 # Converge using Green's function method to obtain the densities
 mixer.clear()
 dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, mixer=mixer, print_info=True)
 
-MFH_HC.H.shift(negf.Ef)
-MFH_HC.H.write('MFH_HC.nc')
+MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)
 print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 # Write also densities for future calculations
 MFH_HC.write_density('HC_density.nc')

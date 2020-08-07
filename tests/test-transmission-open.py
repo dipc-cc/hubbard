@@ -29,6 +29,7 @@ dn = MFH_elec.converge(density.dm, mixer=sisl.mixing.PulayMixer(weight=.7, histo
 
 dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=MFH_elec.q, distribution=dist)
+print("Electrode Ef = ", Ef_elec)
 # Shift each electrode with its Fermi-level and write it to netcdf file
 MFH_elec.H.shift(-Ef_elec)
 MFH_elec.H.write('MFH_elec.nc')
@@ -44,15 +45,14 @@ elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3, axis=0), U=U, kT=kT)
 
 # First create NEGF object
-negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 # Converge using Green's function method to obtain the densities
 dn = MFH_HC.converge(negf.dm_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=.1), tol=0.1)
 dn = MFH_HC.converge(negf.dm_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=1., history=7), tol=1e-6, print_info=True)
 print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
 
 # Shift device with its Fermi level and write nc file
-MFH_HC.H.shift(negf.Ef)
-MFH_HC.H.write('MFH_HC.nc')
+MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)
 
 # TBtrans RUN and plot transmission
 import os
