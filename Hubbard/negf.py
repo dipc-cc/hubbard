@@ -250,7 +250,7 @@ class NEGF(object):
                     f = 0.
                     for spin in [0, 1]:
                         HC = H.H.Hk(spin=spin).todense()
-                        cc = - Ef + 1j * self.eta
+                        cc = Ef + 1j * self.eta
 
                         inv_GF = _inv_G(cc, HC, self.elec_idx, ef_SE[:, spin])
 
@@ -267,10 +267,9 @@ class NEGF(object):
                         f = dq / f
                         # Since x above is in units of eta, we have to multiply with eta
                         if abs(f) < 0.45:
-                            Ef += self.eta * math.tan(f * _pi) * 0.5
+                            Ef -= self.eta * math.tan(f * _pi) * 0.5
                         else:
-                            Ef += self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
-
+                            Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
 
             Etot = 0.
             for spin in [0, 1]:
@@ -293,7 +292,7 @@ class NEGF(object):
 
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC - Ef, self.w_eq)):
+                    for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
 
                         inv_GF = _inv_G(cc, HC, self.elec_idx, cc_eq_SE[:, spin, cc_eq_i, ic])
 
@@ -351,7 +350,7 @@ class NEGF(object):
         Delta = np.zeros([2, no, no], dtype=np.complex128)
         cc_neq_SE = np.array(self._cc_neq_SE)
 
-        for ic, cc in enumerate(self.CC_neq - Ef):
+        for ic, cc in enumerate(self.CC_neq + Ef):
 
             inv_GF = _inv_G(cc, HC, self.elec_idx, cc_neq_SE[:, spin, ic])
             inv_GF[:, :] = inv(inv_GF)
