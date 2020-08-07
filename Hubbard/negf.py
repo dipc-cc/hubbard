@@ -349,15 +349,15 @@ class NEGF:
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
-        cc_neq_SE = self._cc_neq_SE
+        cc_neq_SE = self._cc_neq_SE[spin]
 
         for ic, cc in enumerate(self.CC_neq + Ef):
 
-            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[spin][ic])
+            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ic])
 
             # Elec (0, 1) are (left, right)
             # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[spin][ic][:2]):
+            for i, SE in enumerate(cc_neq_SE[ic][:2]):
                 Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
