@@ -17,7 +17,6 @@ class Bandstructure(Plot):
 
         Plot.__init__(self, **keywords)
 
-        self.set_xlabel(r'$ka/\pi$')
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)
 
@@ -40,7 +39,7 @@ class Bandstructure(Plot):
                     v = evec[projection]
                     pdos[ik, ispin] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
         # Set energy reference to the Fermi level
-        Ef = HubbardHamiltonian.fermi_level()
+        Ef = HubbardHamiltonian.fermi_level(q=HubbardHamiltonian.q)
         ev[:,0] -= Ef[0]
         ev[:,1] -= Ef[1]
         # Make plot
