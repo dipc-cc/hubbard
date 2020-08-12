@@ -337,7 +337,7 @@ class HubbardHamiltonian(object):
         Ef: numpy.array
             Fermi-level for each spin channel
         """
-        Q = q
+        Q = q*1
         for i in (0, 1):
             if Q[i] is None:
                 Q[i] = self.q[i]
