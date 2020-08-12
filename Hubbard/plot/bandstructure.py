@@ -7,9 +7,20 @@ __all__ = ['Bandstructure']
 
 
 class Bandstructure(Plot):
-    """ Plot the bandstructure for the `HubbardHamiltonian` object along certain path of the Brillouin Zone """
+    """ Plot the bandstructure for the `HubbardHamiltonian` object along certain path of the Brillouin Zone
 
-    def __init__(self, HH, bz_path=[[0., 0., 0.], [1/2, 0, 0.]], bz_labels=[r'$\Gamma$', r'$X$'],  ymax=4.,  projection=None, scale=1, c='r', **keywords):
+    Parameters
+    ----------
+    bz: list of tuples or `sisl.BbandStructure`, optional
+        k points to build the path along the first Brillouin Zone with their corresponding string labels ``[(k1, label1),(k2, label2)]``,
+        or directly pass the `sisl.BandStructure` object
+    projection: list, optional
+        sites to project the bands onto
+    scale: float, optional
+        in case ``projection!=None``, scale controls the size of the error bar to plot the projection onto the bands
+    """
+
+    def __init__(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **keywords):
 
         # Set default keywords
         if 'figsize' not in keywords:
@@ -20,10 +31,16 @@ class Bandstructure(Plot):
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)
 
-        self.add_bands(HH, bz_path=bz_path, bz_labels=bz_labels, projection=projection, scale=scale, c=c)
+        self.add_bands(HH, bz=bz, projection=projection, scale=scale, c=c)
 
-    def add_bands(self, HH, bz_path=[[0., 0., 0.], [1/2, 0, 0.]], bz_labels=[r'$\Gamma$', r'$X$'], projection=None, scale=1, c='r'):
-        band = sisl.BandStructure(HH.H, bz_path, 101, bz_labels)
+    def add_bands(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')], projection=None, scale=1, c='r'):
+
+        if isinstance(bz, sisl.BandStructure):
+            band = bz
+        else:
+            path, labels = map(list, zip(*bz))
+            band = sisl.BandStructure(HH.H, path, 101, labels)
+
         lk = band.lineark()
         xticks, xticks_labels = band.lineartick()
         ev = np.empty([2, len(lk), HH.sites])
