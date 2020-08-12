@@ -11,7 +11,7 @@ class Bandstructure(Plot):
 
     Parameters
     ----------
-    bz: list of tuples or `sisl.BbandStructure`, optional
+    bz: list of tuples or `sisl.BandStructure`, optional
         k points to build the path along the first Brillouin Zone with their corresponding string labels ``[(k1, label1),(k2, label2)]``,
         or directly pass the `sisl.BandStructure` object
     projection: list, optional
