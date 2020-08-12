@@ -12,7 +12,7 @@ class Spectrum(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **keywords):
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
         HubbardHamiltonian.find_midgap()
@@ -44,7 +44,7 @@ class LDOSmap(Plot):
                  nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
                  **keywords):
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.midgap
         coord = HubbardHamiltonian.geometry.xyz[:, axis]
@@ -106,7 +106,7 @@ class DOS_distribution(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
+        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
 
         x = HubbardHamiltonian.geometry[:, 0]
         y = HubbardHamiltonian.geometry[:, 1]
@@ -129,7 +129,7 @@ class DOS(Plot):
 
     def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **keywords):
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
 
         if np.any(sites):
             DOS = HubbardHamiltonian.PDOS(egrid, eta=eta, spin=spin)
