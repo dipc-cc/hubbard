@@ -15,7 +15,7 @@ class Bandstructure(Plot):
         if 'figsize' not in keywords:
             keywords['figsize'] = (4, 8)
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
 
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)

@@ -16,7 +16,7 @@ class BondOrder(GeometryPlot):
         if 'cmap' not in keywords:
             keywords['cmap'] = plt.cm.bwr
 
-        GeometryPlot.__init__(self, H, **keywords)
+        super().__init__(H, **keywords)
         bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
 
         # Compute Huckel bond orders
@@ -62,7 +62,7 @@ class BondHoppings(Plot):
         else:
             cm = keywords['cmap']
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
         H = H.H
         H.set_nsc([1, 1, 1])
         tmax = np.amax(abs(H.Hk()))
@@ -93,7 +93,7 @@ class Bonds(Plot):
         else:
             cm = keywords['cmap']
 
-        Plot.__init__(self, **keywords)
+        super().__init__(**keywords)
         H = H0.copy()
         H.H.set_nsc([1, 1, 1])
 
