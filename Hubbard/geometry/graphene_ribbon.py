@@ -4,7 +4,7 @@ import sisl
 cs = np.cos(np.pi/3)
 sn = np.sin(np.pi/3)
 
-__all__ = ['zgnr', 'agnr', 'cgnr', 'agnr2', 'agnr2B']
+__all__ = ['zgnr', 'agnr', 'cgnr', 'agnr2', 'agnr2B', 'agnr2N', 'agnrBN']
 
 
 def zgnr(w, bond=1.42):
@@ -98,7 +98,7 @@ def agnr2(w, bond=1.42):
     return g
 
 
-def agnr2B(w, n, bond=1.42, nB=2):
+def agnr2B(w, n, bond=1.42, nsub=2):
     """ Create an AGNR with (up to) two B-substitutions """
     g = agnr2(w, bond=bond).tile(n, axis=0)
     g = g.move(-g.center())
@@ -106,8 +106,35 @@ def agnr2B(w, n, bond=1.42, nB=2):
     idx = g.close(np.array([0, 0, 0]), R=[1.1*bond])
     # Set first and last atoms to B
     B = sisl.Atom(Z=5, R=bond, orbs=1)
-    if nB > 0:
+    if nsub > 0:
         g.atoms[idx[0]] = B
-    if nB > 1:
+    if nsub > 1:
         g.atoms[idx[-1]] = B
+    return g
+
+def agnr2N(w, n, bond=1.42, nsub=2):
+    """ Create an AGNR with (up to) two N-substitutions """
+    g = agnr2(w, bond=bond).tile(n, axis=0)
+    g = g.move(-g.center())
+    # Find hexagon near origo
+    idx = g.close(np.array([0, 0, 0]), R=[1.1*bond])
+    # Set first and last atoms to N
+    N = sisl.Atom(Z=7, R=bond, orbs=1)
+    if nsub > 0:
+        g.atoms[idx[0]] = N
+    if nsub > 1:
+        g.atoms[idx[-1]] = N
+    return g
+
+def agnrBN(w, n, bond=1.42):
+    """ Create an AGNR with a BN-substitution """
+    g = agnr2(w, bond=bond).tile(n, axis=0)
+    g = g.move(-g.center())
+    # Find hexagon near origo
+    idx = g.close(np.array([0, 0, 0]), R=[1.1*bond])
+    # Set first and last atoms to BN
+    B = sisl.Atom(Z=5, R=bond, orbs=1)
+    N = sisl.Atom(Z=7, R=bond, orbs=1)
+    g.atoms[idx[0]] = B
+    g.atoms[idx[-1]] = N
     return g

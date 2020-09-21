@@ -52,7 +52,7 @@ class Bandstructure(Plot):
             for ispin in range(2):
                 for ik, k in enumerate(band.k):
                     _, evec = HH.eigh(k, eigvals_only=False, spin=ispin)
-                    v = evec[tuple(projection)]
+                    v = evec[tuple(projection), :]
                     pdos[ispin, ik] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
         # Set energy reference to the Fermi level
         Ef = HH.fermi_level(q=HH.q)
