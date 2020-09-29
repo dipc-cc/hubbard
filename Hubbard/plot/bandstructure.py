@@ -61,14 +61,14 @@ class Bandstructure(Plot):
         # Make plot
         if not np.allclose(ev[0], ev[1]):
             # Add spin-down component to plotapply.
-            plt.plot(lk, ev[1], 'g.')
+            self.axes.plot(lk, ev[1], 'g.')
         # Fat bands?
         if projection != None:
             for i in range(HH.sites):
-                plt.errorbar(lk, ev[0, :, i], yerr=scale*pdos[0, :, i], alpha=.4, color='Grey')
+                self.axes.errorbar(lk, ev[0, :, i], yerr=scale*pdos[0, :, i], alpha=.4, color='Grey')
         # Add spin-up component to plot (top layer)
-        plt.plot(lk, ev[0], color=c)
-        plt.gca().xaxis.set_ticks(xticks)
-        plt.gca().set_xticklabels(xticks_labels)
+        self.axes.plot(lk, ev[0], color=c)
+        self.fig.gca().xaxis.set_ticks(xticks)
+        self.fig.gca().set_xticklabels(xticks_labels)
         # Adjust borders
-        plt.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
+        self.fig.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)
