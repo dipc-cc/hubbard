@@ -88,12 +88,28 @@ class Bonds(Plot):
 
     def __init__(self, H0, annotate=False, maxR=0, minR=0, **keywords):
 
+        super().__init__(**keywords)
+
+        self.plot_bonds(H0, annotate=annotate, maxR=maxR, minR=minR, **keywords)
+
+    def plot_bonds(self, H0,  annotate=False, maxR=0, minR=0, **keywords):
         if 'cmap' not in keywords:
             cm = plt.cm.jet
         else:
             cm = keywords['cmap']
+        if 'zorder' not in keywords:
+            zorder = 1
+        else:
+            zorder = keywords['zorder']
+        if 'alpha' not in keywords:
+            alpha = 1.
+        else:
+            alpha = keywords['alpha']
+        if 'linewidth' not in keywords:
+            linewidth = 2.
+        else:
+            linewidth = keywords['linewidth']
 
-        super().__init__(**keywords)
         H = H0.copy()
         H.H.set_nsc([1, 1, 1])
 
@@ -114,7 +130,7 @@ class Bonds(Plot):
                 rij = H.geometry.Rij(i, j)
                 d = np.sqrt((rij*rij).sum())
                 if d <= maxR:
-                    self.axes.plot([x0, x1], [y0, y1], linewidth=2, color=cmap.to_rgba(d))
+                    self.axes.plot([x0, x1], [y0, y1], linewidth=linewidth, color=cmap.to_rgba(d), zorder=zorder, alpha=alpha)
                     if annotate:
                         self.axes.annotate('%.2f'%(d), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
          # Colorbar
