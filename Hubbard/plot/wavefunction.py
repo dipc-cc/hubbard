@@ -26,7 +26,7 @@ class Wavefunction(GeometryPlot):
     of the coefficient of `wf` on the atomic sites
     """
 
-    def __init__(self, HubbardHamiltonian, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **keywords):
+    def __init__(self, HH, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **keywords):
 
         # Set default keywords
         if realspace:
@@ -38,8 +38,11 @@ class Wavefunction(GeometryPlot):
             if 'cmap' not in keywords:
                 keywords['cmap'] = plt.cm.bwr
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **keywords)
 
+        self.plot_wf(HH, wf, cb_label=cb_label, realspace=realspace, **keywords)
+
+    def plot_wf(self, HH, wf, cb_label=r'Phase', realspace=False, **keywords):
         if realspace:
             self.__realspace__(wf, **keywords)
 
@@ -49,8 +52,8 @@ class Wavefunction(GeometryPlot):
             self.imshow.set_cmap(custom_map)
 
         else:
-            x = HubbardHamiltonian.geometry[:, 0]
-            y = HubbardHamiltonian.geometry[:, 1]
+            x = HH.geometry[:, 0]
+            y = HH.geometry[:, 1]
 
             assert len(x) == len(wf)
 
