@@ -20,7 +20,7 @@ class Bandstructure(Plot):
         in case ``projection!=None``, scale controls the size of the error bar to plot the projection onto the bands
     """
 
-    def __init__(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **kwargs):
+    def __init__(self, HH, bz=[([0., 0., 0.], r'$\Gamma$'), ([0.5, 0., 0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **kwargs):
 
         # Set default kwargs
         if 'figsize' not in kwargs:
@@ -33,7 +33,7 @@ class Bandstructure(Plot):
 
         self.add_bands(HH, bz=bz, projection=projection, scale=scale, c=c)
 
-    def add_bands(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')], projection=None, scale=1, c='r'):
+    def add_bands(self, HH, bz=[([0., 0., 0.], r'$\Gamma$'), ([0.5, 0., 0.], r'X')], projection=None, scale=1, c='r'):
 
         if isinstance(bz, sisl.BandStructure):
             band = bz

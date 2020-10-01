@@ -33,6 +33,7 @@ def _G(e, HC, elec_idx, SE):
         inv_GF[idx, idx.T] -= se
     return inv(inv_GF)
 
+
 def _nested_list(*args):
     if len(args) == 0:
         return None

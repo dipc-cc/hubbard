@@ -9,7 +9,7 @@ class Plot(object):
 
     def __init__(self, **kwargs):
         # Figure size
-        figsize = kwargs.get("figsize", (8,6))
+        figsize = kwargs.get("figsize", (8, 6))
         self.fig = plt.figure(figsize=figsize)
         self.axes = plt.axes()
         plt.rc('text', usetex=True)
@@ -136,7 +136,7 @@ class GeometryPlot(Plot):
                 if 'label' in kwargs:
                     self.set_colorbar_ylabel(kwargs['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=[100,100,1], density=False, smooth=False, **kwargs):
+    def __realspace__(self, v, z=1.1, grid_unit=[100, 100, 1], density=False, smooth=False, **kwargs):
 
         def real_space_grid(v, grid_unit, density):
             import sisl
@@ -149,7 +149,7 @@ class GeometryPlot(Plot):
             g.set_sc(sc)
 
             # Move geometry within the supercell
-            g = g.move([-self.xmin, -self.ymin, -np.amin(g.xyz[:,2])])
+            g = g.move([-self.xmin, -self.ymin, -np.amin(g.xyz[:, 2])])
             # Make z~0 -> z = 0
             g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
 

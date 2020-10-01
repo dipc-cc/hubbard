@@ -5,6 +5,7 @@ import Hubbard.sp2 as sp2
 import Hubbard.density as dm
 import sisl
 
+
 def test_quick():
     molecule = sisl.geom.agnr(7).tile(3, 0)
     molecule.set_nsc([1, 1, 1])

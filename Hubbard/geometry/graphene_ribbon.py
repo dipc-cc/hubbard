@@ -112,6 +112,7 @@ def agnr2B(w, n, bond=1.42, nsub=2):
         g.atoms[idx[-1]] = B
     return g
 
+
 def agnr2N(w, n, bond=1.42, nsub=2):
     """ Create an AGNR with (up to) two N-substitutions """
     g = agnr2(w, bond=bond).tile(n, axis=0)
@@ -125,6 +126,7 @@ def agnr2N(w, n, bond=1.42, nsub=2):
     if nsub > 1:
         g.atoms[idx[-1]] = N
     return g
+
 
 def agnrBN(w, n, bond=1.42):
     """ Create an AGNR with a BN-substitution """

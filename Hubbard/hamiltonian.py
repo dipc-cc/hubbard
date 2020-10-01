@@ -318,7 +318,7 @@ class HubbardHamiltonian(object):
             LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
         self.midgap = (HOMO + LUMO) * 0.5
 
-    def fermi_level(self, q=[None,None], dist='fermi_dirac'):
+    def fermi_level(self, q=[None, None], dist='fermi_dirac'):
         """ Find the fermi level for  a certain charge `q` at a certain `kT`
 
         Parameters
@@ -428,7 +428,6 @@ class HubbardHamiltonian(object):
                 s += ' %9.4f' % geom.xyz[i, j]
             f.write(s + '\n')
         f.write('%endblock DM.InitSpin\n\n')
-
 
     def iterate(self, dm_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
@@ -785,7 +784,7 @@ class HubbardHamiltonian(object):
             dos += sisl.electron.DOS(egrid, eig, distribution=dist)
         return dos
 
-    def PDOS(self, egrid, eta=1e-3, spin=[0,1], dist='Lorentzian'):
+    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian'):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
 
         Parameters

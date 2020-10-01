@@ -61,7 +61,7 @@ if True:
     dm = 1*H.dm
 
     # Obtain DOS for the finite molecule with Lorentzian distribution
-    egrid = np.linspace(-1,1,50)
+    egrid = np.linspace(-1, 1, 50)
     import Hubbard.plot as plot
     p = plot.DOS(H, egrid, eta=1e-2, spin=[0])
 
@@ -74,7 +74,7 @@ if True:
     negf.Ef = -H.midgap
     negf.eta = 1e-2
     mixer.clear()
-    ddm = H.converge(negf.dm_open, mixer=mixer, tol=1e-10, func_args={'qtol':1e-4}, steps=1, print_info=True)
+    ddm = H.converge(negf.dm_open, mixer=mixer, tol=1e-10, func_args={'qtol': 1e-4}, steps=1, print_info=True)
     print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
     print('Density difference (up, dn): (%.4e, %.4e)'%(max(abs(H.dm[0]-dm[0])), max(abs(H.dm[1]-dm[1]))))
 
