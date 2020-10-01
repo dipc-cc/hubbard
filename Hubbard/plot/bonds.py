@@ -111,7 +111,7 @@ class Bonds(Plot):
 
         # Create colormap
         norm = mp.colors.Normalize(vmin=minR, vmax=maxR)
-        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cm)
+        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cmap)
         cmap.set_array([])
         for i in H.geometry:
             x0, y0 = H.geometry.xyz[i, 0], H.geometry.xyz[i, 1]
