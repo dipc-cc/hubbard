@@ -21,30 +21,30 @@ class Wavefunction(GeometryPlot):
 
     Notes
     -----
-    If `realspace` keyword is passed it plots the wavefunction in a realspace grid
+    If `realspace` kwarg is passed it plots the wavefunction in a realspace grid
     In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
     of the coefficient of `wf` on the atomic sites
     """
 
-    def __init__(self, HH, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **keywords):
+    def __init__(self, HH, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **kwargs):
 
-        # Set default keywords
+        # Set default kwargs
         if realspace:
-            if 'facecolor' not in keywords:
-                keywords['facecolor'] = 'None'
-            if 'cmap' not in keywords:
-                keywords['cmap'] = 'Greys'
+            if 'facecolor' not in kwargs:
+                kwargs['facecolor'] = 'None'
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = 'Greys'
         else:
-            if 'cmap' not in keywords:
-                keywords['cmap'] = plt.cm.bwr
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **keywords)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
-        self.plot_wf(HH, wf, cb_label=cb_label, realspace=realspace, **keywords)
+        self.plot_wf(HH, wf, cb_label=cb_label, realspace=realspace, **kwargs)
 
-    def plot_wf(self, HH, wf, cb_label=r'Phase', realspace=False, **keywords):
+    def plot_wf(self, HH, wf, cb_label=r'Phase', realspace=False, **kwargs):
         if realspace:
-            self.__realspace__(wf, **keywords)
+            self.__realspace__(wf, **kwargs)
 
             # Create custom map to differenciate it from polarization cmap
             import matplotlib.colors as mcolors
@@ -65,9 +65,9 @@ class Wavefunction(GeometryPlot):
             ax = self.axes.scatter(x, y, s=fun, c=phase, cmap=cmap, vmax=np.pi, vmin=-np.pi)
 
             # Colorbars
-            if 'colorbar' in keywords:
-                if keywords['colorbar'] != False:
+            if 'colorbar' in kwargs:
+                if kwargs['colorbar'] != False:
                     cb = self.fig.colorbar(ax, label=cb_label)
-                    if 'ticks' in keywords:
+                    if 'ticks' in kwargs:
                         cb.set_ticks([np.pi, 3*np.pi/4, np.pi/2, np.pi/4, 0, -np.pi/4., -np.pi/2., -3*np.pi/4, -np.pi, ])
                         cb.set_ticklabels([r'$\pi$', r'$3\pi/4$', r'$\pi/2$', r'$\pi/4$', r'$0$', r'-$\pi/4$', r'-$\pi/2$', r'-$3\pi/4$', r'-$\pi$'])

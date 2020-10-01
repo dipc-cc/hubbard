@@ -10,9 +10,9 @@ __all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
 class Spectrum(Plot):
     """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object """
 
-    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **keywords):
+    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **kwargs):
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
         HubbardHamiltonian.find_midgap()
@@ -23,8 +23,8 @@ class Spectrum(Plot):
             lmax = max(max(L), lmax)
             plt.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
 
-            if 'annotate' in keywords:
-                if keywords['annotate'] != False:
+            if 'annotate' in kwargs:
+                if kwargs['annotate'] != False:
                     for i in range(len(ev)):
                         self.axes.annotate(i, (ev[i], L[i]), fontsize=6)
         self.axes.legend()
@@ -42,9 +42,9 @@ class LDOSmap(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
                  nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
-                 **keywords):
+                 **kwargs):
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.midgap
         coord = HubbardHamiltonian.geometry.xyz[:, axis]
@@ -91,30 +91,30 @@ class DOS_distribution(GeometryPlot):
 
     Notes
     -----
-    If the `realspace` keyword is passed it will plot the DOS in a realspace grid
+    If the `realspace` kwarg is passed it will plot the DOS in a realspace grid
     """
 
-    def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, realspace=False, **keywords):
+    def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, realspace=False, **kwargs):
 
-        # Set default keywords
+        # Set default kwargs
         if realspace:
-            if 'facecolor' not in keywords:
-                keywords['facecolor'] = 'None'
-            if 'cmap' not in keywords:
-                keywords['cmap'] = 'Greys'
+            if 'facecolor' not in kwargs:
+                kwargs['facecolor'] = 'None'
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = 'Greys'
         else:
-            if 'cmap' not in keywords:
-                keywords['cmap'] = plt.cm.bwr
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **keywords)
+        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
 
         x = HubbardHamiltonian.geometry[:, 0]
         y = HubbardHamiltonian.geometry[:, 1]
 
         if realspace:
-            if 'vmin' not in keywords:
-                keywords['vmin'] = 0
-            self.__realspace__(DOS, density=True, **keywords)
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+            self.__realspace__(DOS, density=True, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
@@ -127,9 +127,9 @@ class DOS_distribution(GeometryPlot):
 class DOS(Plot):
     """ Plot the total DOS as a function of the energy for the `HubbardHamiltonian` object """
 
-    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **keywords):
+    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
 
         if np.any(sites):
             DOS = HubbardHamiltonian.PDOS(egrid, eta=eta, spin=spin)

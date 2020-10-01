@@ -7,9 +7,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class Plot(object):
 
-    def __init__(self, **keywords):
+    def __init__(self, **kwargs):
         # Figure size
-        figsize = keywords.get("figsize", (8,6))
+        figsize = kwargs.get("figsize", (8,6))
         self.fig = plt.figure(figsize=figsize)
         self.axes = plt.axes()
         plt.rc('text', usetex=True)
@@ -44,12 +44,12 @@ class Plot(object):
         self.colorbar = plt.colorbar(layer, cax=cax)
         plt.subplots_adjust(right=0.8)
 
-    def legend(self, **keywords):
+    def legend(self, **kwargs):
         handles, labels = self.fig.gca().get_legend_handles_labels()
         # Reduce in case there are repeated labels
         labels, ids = np.unique(labels, return_index=True)
         handles = [handles[i] for i in ids]
-        self.fig.legend(handles, labels, **keywords)
+        self.fig.legend(handles, labels, **kwargs)
 
 # Generate a dummy plot, this seems to avoid font issues with subsequent instances
 Plot()
@@ -57,21 +57,21 @@ Plot()
 
 class GeometryPlot(Plot):
 
-    def __init__(self, geometry, ext_geom=None, bdx=2, **keywords):
+    def __init__(self, geometry, ext_geom=None, bdx=2, **kwargs):
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
 
         self.geometry = geometry
         self.set_axes(bdx=bdx)
-        # Relevant keywords
+        # Relevant kwargs
         kw = {}
-        for k in keywords:
+        for k in kwargs:
             if k in ['cmap']:
-                kw[k] = keywords[k]
+                kw[k] = kwargs[k]
             if k in ['facecolor']:
-                kw[k] = keywords[k]
+                kw[k] = kwargs[k]
             if k in ['label']:
-                kw[k] = keywords[k]
+                kw[k] = kwargs[k]
         # Patches
         pi = []
         aux = []
@@ -115,28 +115,28 @@ class GeometryPlot(Plot):
         self.paux = paux
         self.axes.add_collection(self.paux)
 
-    def __orbitals__(self, v, **keywords):
+    def __orbitals__(self, v, **kwargs):
         # Set values for the pi-network
         self.ppi.set_array(v)
 
         # Set color range
-        if 'vmax' in keywords:
-            if 'vmin' in keywords:
-                vmin = keywords['vmin']
+        if 'vmax' in kwargs:
+            if 'vmin' in kwargs:
+                vmin = kwargs['vmin']
             else:
-                vmin = -keywords['vmax']
-            self.ppi.set_clim(vmin, keywords['vmax'])
+                vmin = -kwargs['vmax']
+            self.ppi.set_clim(vmin, kwargs['vmax'])
         else:
             self.ppi.set_clim(min(v), max(v))
 
         # Colorbars
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
+        if 'colorbar' in kwargs:
+            if kwargs['colorbar'] != False:
                 self.add_colorbar(self.ppi)
-                if 'label' in keywords:
-                    self.set_colorbar_ylabel(keywords['label'])
+                if 'label' in kwargs:
+                    self.set_colorbar_ylabel(kwargs['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=[100,100,1], density=False, smooth=False, **keywords):
+    def __realspace__(self, v, z=1.1, grid_unit=[100,100,1], density=False, smooth=False, **kwargs):
 
         def real_space_grid(v, grid_unit, density):
             import sisl
@@ -175,21 +175,21 @@ class GeometryPlot(Plot):
         grid = real_space_grid(v, grid_unit, density)
         if smooth:
             # Smooth grid with gaussian function
-            if 'r_smooth' in keywords:
-                r_smooth = keywords['r_smooth']
+            if 'r_smooth' in kwargs:
+                r_smooth = kwargs['r_smooth']
             else:
                 r_smooth = 0.7
             grid = grid.smooth(method='gaussian', r=r_smooth)
 
         slice_grid = grid.grid[:, :, 0].T.real
 
-        if 'vmax' in keywords:
-            vmax = keywords['vmax']
+        if 'vmax' in kwargs:
+            vmax = kwargs['vmax']
         else:
             vmax = np.amax(np.absolute(slice_grid))
 
-        if 'vmin' in keywords:
-            vmin = keywords['vmin']
+        if 'vmin' in kwargs:
+            vmin = kwargs['vmin']
         else:
             vmin = -vmax
 
@@ -198,11 +198,11 @@ class GeometryPlot(Plot):
         self.imshow = self.axes.imshow(slice_grid, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=vmin, extent=self.extent)
         # Colorbars
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
+        if 'colorbar' in kwargs:
+            if kwargs['colorbar'] != False:
                 self.add_colorbar(self.imshow)
-                if 'label' in keywords:
-                    self.set_colorbar_ylabel(keywords['label'])
+                if 'label' in kwargs:
+                    self.set_colorbar_ylabel(kwargs['label'])
 
     def set_axes(self, bdx=2):
         g = self.geometry

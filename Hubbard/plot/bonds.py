@@ -10,13 +10,13 @@ __all__ = ['BondOrder', 'BondHoppings', 'Bonds']
 class BondOrder(GeometryPlot):
     """ Plot the Bond order for the HubbardHamiltonian """
 
-    def __init__(self, HubbardHamiltonian, **keywords):
+    def __init__(self, HubbardHamiltonian, **kwargs):
 
         H = HubbardHamiltonian
-        if 'cmap' not in keywords:
-            keywords['cmap'] = plt.cm.bwr
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(H, **keywords)
+        super().__init__(H, **kwargs)
         bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
 
         # Compute Huckel bond orders
@@ -55,11 +55,11 @@ class BondOrder(GeometryPlot):
 class BondHoppings(Plot):
     """ Plot matrix element of sisl.Hamiltonian. Only off-diagonal elements """
 
-    def __init__(self, H, annotate=False, **keywords):
+    def __init__(self, H, annotate=False, **kwargs):
 
-        cmap = keywords.get("cmap", plt.cm.jet)
+        cmap = kwargs.get("cmap", plt.cm.jet)
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
         H = H.H
         H.set_nsc([1, 1, 1])
         tmax = np.amax(abs(H.Hk()))
@@ -83,18 +83,18 @@ class BondHoppings(Plot):
 class Bonds(Plot):
     """ Plot bonds between atoms in geometry """
 
-    def __init__(self, H0, annotate=False, R=0., **keywords):
+    def __init__(self, H0, annotate=False, R=0., **kwargs):
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
 
-        self.plot_bonds(H0, annotate=annotate, R=R, **keywords)
+        self.plot_bonds(H0, annotate=annotate, R=R, **kwargs)
 
-    def plot_bonds(self, H0, annotate=False, R=0, **keywords):
-        # Define default keyword aruments
-        cmap = keywords.get("cmap", plt.cm.jet)
-        zorder = keywords.get("zorder", 1)
-        alpha = keywords.get("alpha", 1.)
-        linewidth = keywords.get("linewidth", 2.)
+    def plot_bonds(self, H0, annotate=False, R=0, **kwargs):
+        # Define default kwarg aruments
+        cmap = kwargs.get("cmap", plt.cm.jet)
+        zorder = kwargs.get("zorder", 1)
+        alpha = kwargs.get("alpha", 1.)
+        linewidth = kwargs.get("linewidth", 2.)
 
         if isinstance(R, (tuple, list)):
             minR, maxR = R
@@ -125,8 +125,8 @@ class Bonds(Plot):
                     if annotate:
                         self.axes.annotate('%.2f'%(d), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
          # Colorbar
-        if 'colorbar' in keywords:
-            if keywords['colorbar'] != False:
+        if 'colorbar' in kwargs:
+            if kwargs['colorbar'] != False:
                 self.cbar = self.fig.colorbar(cmap)
-                if 'label' in keywords:
-                    self.cbar.ax.set_ylabel(keywords['label'])
+                if 'label' in kwargs:
+                    self.cbar.ax.set_ylabel(kwargs['label'])

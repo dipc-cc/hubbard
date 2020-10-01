@@ -20,13 +20,13 @@ class Bandstructure(Plot):
         in case ``projection!=None``, scale controls the size of the error bar to plot the projection onto the bands
     """
 
-    def __init__(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **keywords):
+    def __init__(self, HH, bz=[([0.,0.,0.], r'$\Gamma$'), ([0.5,0.,0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **kwargs):
 
-        # Set default keywords
-        if 'figsize' not in keywords:
-            keywords['figsize'] = (4, 8)
+        # Set default kwargs
+        if 'figsize' not in kwargs:
+            kwargs['figsize'] = (4, 8)
 
-        super().__init__(**keywords)
+        super().__init__(**kwargs)
 
         self.set_ylabel(r'$E_{nk}-E_\mathrm{mid}$ (eV)')
         self.set_ylim(-ymax, ymax)
