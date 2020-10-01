@@ -57,10 +57,7 @@ class BondHoppings(Plot):
 
     def __init__(self, H, annotate=False, **keywords):
 
-        if 'cmap' not in keywords:
-            cm = plt.cm.jet
-        else:
-            cm = keywords['cmap']
+        cmap = keywords.get("cmap", plt.cm.jet)
 
         super().__init__(**keywords)
         H = H.H
@@ -68,7 +65,7 @@ class BondHoppings(Plot):
         tmax = np.amax(abs(H.Hk()))
         tmin = np.amin(abs(H.Hk()))
         norm = mp.colors.Normalize(vmin=tmin, vmax=tmax)
-        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cm)
+        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cmap)
         for ia in H.geometry:
             x0, y0 = H.geometry.xyz[ia, 0], H.geometry.xyz[ia, 1]
             edges = H.edges(ia, exclude=ia)
@@ -86,29 +83,23 @@ class BondHoppings(Plot):
 class Bonds(Plot):
     """ Plot bonds between atoms in geometry """
 
-    def __init__(self, H0, annotate=False, maxR=0, minR=0, **keywords):
+    def __init__(self, H0, annotate=False, R=0., **keywords):
 
         super().__init__(**keywords)
 
-        self.plot_bonds(H0, annotate=annotate, maxR=maxR, minR=minR, **keywords)
+        self.plot_bonds(H0, annotate=annotate, R=R, **keywords)
 
-    def plot_bonds(self, H0,  annotate=False, maxR=0, minR=0, **keywords):
-        if 'cmap' not in keywords:
-            cm = plt.cm.jet
+    def plot_bonds(self, H0, annotate=False, R=0, **keywords):
+        # Define default keyword aruments
+        cmap = keywords.get("cmap", plt.cm.jet)
+        zorder = keywords.get("zorder", 1)
+        alpha = keywords.get("alpha", 1.)
+        linewidth = keywords.get("linewidth", 2.)
+
+        if isinstance(R, (tuple, list)):
+            minR, maxR = R
         else:
-            cm = keywords['cmap']
-        if 'zorder' not in keywords:
-            zorder = 1
-        else:
-            zorder = keywords['zorder']
-        if 'alpha' not in keywords:
-            alpha = 1.
-        else:
-            alpha = keywords['alpha']
-        if 'linewidth' not in keywords:
-            linewidth = 2.
-        else:
-            linewidth = keywords['linewidth']
+            minR, maxR = 0., R
 
         H = H0.copy()
         H.H.set_nsc([1, 1, 1])

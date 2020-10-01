@@ -9,10 +9,8 @@ class Plot(object):
 
     def __init__(self, **keywords):
         # Figure size
-        if 'figsize' in keywords:
-            self.fig = plt.figure(figsize=keywords['figsize'])
-        else:
-            self.fig = plt.figure(figsize=(8, 6))
+        figsize = keywords.get("figsize", (8,6))
+        self.fig = plt.figure(figsize=figsize)
         self.axes = plt.axes()
         plt.rc('text', usetex=True)
         plt.rc('font', family='Bitstream Vera Serif', size=16)
