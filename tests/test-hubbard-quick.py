@@ -17,13 +17,13 @@ print('   dn, Etot: ', dn, H.Etot, '\n')
 print('2. Run one iteration with data from ncfile')
 H.read_density('mol-ref/density.nc')
 dn = H.iterate(dm.dm_insulator, mixer=sisl.mixing.LinearMixer())
-etot = 1*H.Etot
+etot = 1 * H.Etot
 print('   dn, Etot: ', dn, etot, '\n')
 
 print('3. Run one iteration with dm')
 d = H.iterate(dm.dm, mixer=sisl.mixing.LinearMixer())
 e = H.Etot
-print('   dn, dEtot: ', d-dn, e-etot, '\n')
+print('   dn, dEtot: ', d - dn, e - etot, '\n')
 
 # Write new data structure
 print('4. Write data in ncfile')

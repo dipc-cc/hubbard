@@ -19,7 +19,7 @@ H.iterate(dens.dm_insulator, mixer=sisl.mixing.LinearMixer())
 
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
-Etot0 = H.Etot*1
+Etot0 = 1 * H.Etot
 
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
 
@@ -31,7 +31,7 @@ for m in [dens.dm_insulator, dens.dm]:
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
     # Total energy check:
-    print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
+    print('Total energy difference: %.4e eV' % (Etot0 - H.Etot))
 
     # Eigenvalues are easy to check
     if np.allclose(ev1, ev0):
@@ -58,7 +58,7 @@ if True:
     mixer.clear()
     dn = H.converge(dens.dm, tol=1e-10, steps=10, mixer=mixer)
     Etot0 = H.Etot
-    dm = 1*H.dm
+    dm = 1 * H.dm
 
     # Obtain DOS for the finite molecule with Lorentzian distribution
     egrid = np.linspace(-1, 1, 50)
@@ -75,11 +75,11 @@ if True:
     negf.eta = 1e-2
     mixer.clear()
     ddm = H.converge(negf.dm_open, mixer=mixer, tol=1e-10, func_args={'qtol': 1e-4}, steps=1, print_info=True)
-    print('Total energy difference: %.4e eV' %(Etot0-H.Etot))
-    print('Density difference (up, dn): (%.4e, %.4e)'%(max(abs(H.dm[0]-dm[0])), max(abs(H.dm[1]-dm[1]))))
+    print('Total energy difference: %.4e eV' % (Etot0 - H.Etot))
+    print('Density difference (up, dn): (%.4e, %.4e)' % (max(abs(H.dm[0] - dm[0])), max(abs(H.dm[1] - dm[1]))))
 
     # Plot DOS calculated from the diagonalization and the WBL with gamma=0
-    dos = negf.DOS(H, egrid-negf.Ef, spin=0)
+    dos = negf.DOS(H, egrid - negf.Ef, spin=0)
     p.axes.plot(egrid, dos, '--', label='WBL')
     p.legend()
     p.savefig('DOS-comparison.pdf')

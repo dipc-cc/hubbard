@@ -92,20 +92,20 @@ class NEGF:
         if not CC:
             CC = os.path.split(__file__)[0] + "/EQCONTOUR"
         contour_weight = sisl.io.tableSile(CC).read_data()
-        self.CC_eq = np.array([contour_weight[0] + contour_weight[1]*1j])
-        self.w_eq = (contour_weight[2] + contour_weight[3]*1j) / np.pi
+        self.CC_eq = np.array([contour_weight[0] + 1j * contour_weight[1]])
+        self.w_eq = (contour_weight[2] + 1j * contour_weight[3]) / np.pi
         self.NEQ = V != 0
 
         mu = np.zeros(len(elec_SE))
         if self.NEQ:
             # in case the user has WBL electrodes
-            mu[0] = V*0.5
-            mu[1] = -V*0.5
+            mu[0] = V * 0.5
+            mu[1] = -V * 0.5
             self.CC_eq = np.array([self.CC_eq[0] + mu[0], self.CC_eq[0] + mu[1]])
 
             # Integration path for the non-Eq window
             dE = 0.01
-            self.CC_neq = np.arange(min(mu)-5*self.kT, max(mu)+5*self.kT + dE, dE) + 1j * 0.001
+            self.CC_neq = np.arange(min(mu) - 5 * self.kT, max(mu) + 5 * self.kT + dE, dE) + 1j * 0.001
             # Weights for the non-Eq integrals
             w_neq = dE * (dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]))
             # Store weights for correction to RIGHT [0] and LEFT [1]
@@ -305,12 +305,12 @@ class NEGF:
                         # Integrate density of states to obtain the total energy
                         # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
                         if cc_eq_i == 0:
-                            Etot += ((w*Gf_wi).sum() * cc).imag
+                            Etot += ((w * Gf_wi).sum() * cc).imag
                         else:
-                            Etot += (((1-w)*Gf_wi).sum() * cc).imag
+                            Etot += (((1 - w) * Gf_wi).sum() * cc).imag
 
                 if self.NEQ:
-                    D = w * D[0] + (1-w) * D[1]
+                    D = w * D[0] + (1 - w) * D[1]
                 else:
                     D = D[0]
 
@@ -344,7 +344,7 @@ class NEGF:
         """
         def spectral(G, self_energy):
             # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
-            Gamma = 1j*(self_energy - np.conjugate(self_energy.T))
+            Gamma = 1j * (self_energy - np.conjugate(self_energy.T))
             # Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)
             return np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
 
@@ -363,7 +363,7 @@ class NEGF:
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
-        weight = Delta[0]**2 / (Delta**2).sum(axis=0)
+        weight = Delta[0] ** 2 / (Delta ** 2).sum(axis=0)
 
         # Get rid of the numerical imaginary part (which is ~0)
         return Delta.real, weight.real
@@ -385,7 +385,7 @@ class NEGF:
 
                 # Append all the self-energies for the electrodes at each energy point
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + eta*1j, HC, self.elec_idx, SE)
+                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
 
@@ -401,7 +401,7 @@ class NEGF:
             HC = H.H.Hk(spin=ispin, format='array')
             for i, e in enumerate(E):
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + eta*1j, HC, self.elec_idx, SE)
+                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 
         return ldos / np.pi

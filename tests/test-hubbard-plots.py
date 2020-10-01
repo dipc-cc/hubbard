@@ -34,7 +34,7 @@ p.annotate()
 p.savefig('pol.pdf')
 
 ev, evec = H.eigh(eigvals_only=False, spin=0)
-p = plot.Wavefunction(H, 500*evec[:, 10], ext_geom=molecule, colorbar=True)
+p = plot.Wavefunction(H, 500 * evec[:, 10], ext_geom=molecule, colorbar=True)
 p.savefig('wf.pdf')
 
 p = plot.Spectrum(H)
@@ -49,8 +49,8 @@ p.savefig('total_dos.pdf')
 p = plot.DOS(H, np.linspace(-0.2, 0.2, 101), sites=[60])
 p.savefig('ldos.pdf')
 
-DOS = H.PDOS(ev[int(H.q[0])-1], eta=1e-2, spin=[0])
-p = plot.DOS_distribution(H, DOS*300, sites=[60], ext_geom=molecule)
+DOS = H.PDOS(ev[int(H.q[0]) - 1], eta=1e-2, spin=[0])
+p = plot.DOS_distribution(H, DOS * 300, sites=[60], ext_geom=molecule)
 p.savefig('pdos.pdf')
 
 # Test real-space plots?

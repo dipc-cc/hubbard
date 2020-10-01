@@ -314,7 +314,7 @@ class HubbardHamiltonian(object):
         for k in self.mp.k:
             ev_up = self.eigh(k=k, spin=0)
             ev_dn = self.eigh(k=k, spin=1)
-            HOMO = max(HOMO, ev_up[int(round(self.q[0]-1))], ev_dn[int(round(self.q[1]-1))])
+            HOMO = max(HOMO, ev_up[int(round(self.q[0] - 1))], ev_dn[int(round(self.q[1] - 1))])
             LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
         self.midgap = (HOMO + LUMO) * 0.5
 
@@ -337,7 +337,7 @@ class HubbardHamiltonian(object):
         Ef: numpy.array
             Fermi-level for each spin channel
         """
-        Q = q*1
+        Q = 1 * q
         for i in (0, 1):
             if Q[i] is None:
                 Q[i] = self.q[i]
@@ -689,7 +689,7 @@ class HubbardHamiltonian(object):
         Nbeta = np.amin(self.q)
 
         # Exact Total Spin expected value (< S² >)
-        S = (Nalpha - Nbeta) * ((Nalpha - Nbeta)*.25 + 0.5)
+        S = (Nalpha - Nbeta) * ((Nalpha - Nbeta) * .25 + 0.5)
 
         # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
         ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
