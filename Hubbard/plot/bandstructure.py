@@ -20,7 +20,7 @@ class Bandstructure(Plot):
         in case ``projection!=None``, scale controls the size of the error bar to plot the projection onto the bands
     """
 
-    def __init__(self, HH, bz=[([0., 0., 0.], r'$\Gamma$'), ([0.5, 0., 0.], r'X')],  ymax=4.,  projection=None, scale=1, c='r', **kwargs):
+    def __init__(self, HH, bz=[([0., 0., 0.], r'$\Gamma$'), ([0.5, 0., 0.], r'X')],  ymax=4., projection=None, scale=1, c='r', **kwargs):
 
         # Set default kwargs
         if 'figsize' not in kwargs:
@@ -59,7 +59,7 @@ class Bandstructure(Plot):
         ev[0] -= Ef[0]
         ev[1] -= Ef[1]
         # Make plot
-        if not np.allclose(ev[0], ev[1]):
+        if not np.allclose(ev[0], ev[1], rtol=1e-3, atol=1e-3):
             # Add spin-down component to plotapply.
             self.axes.plot(lk, ev[1], 'g.')
         # Fat bands?
