@@ -68,7 +68,7 @@ class Bandstructure(Plot):
                 self.axes.errorbar(lk, ev[0, :, i], yerr=scale*pdos[0, :, i], alpha=.4, color='Grey')
         # Add spin-up component to plot (top layer)
         self.axes.plot(lk, ev[0], color=c)
-        self.fig.gca().xaxis.set_ticks(xticks)
-        self.fig.gca().set_xticklabels(xticks_labels)
+        self.axes.xaxis.set_ticks(xticks)
+        self.axes.set_xticklabels(xticks_labels)
         # Adjust borders
         self.fig.subplots_adjust(left=0.2, top=.95, bottom=0.1, right=0.95)

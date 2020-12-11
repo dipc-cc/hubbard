@@ -5,23 +5,35 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
+# Install font rc params
+plt.rc('text', usetex=True)
+plt.rc('font', family='Bitstream Vera Serif', size=16)
+
+
 class Plot(object):
 
     def __init__(self, **kwargs):
         # Figure size
         figsize = kwargs.get("figsize", (8, 6))
-        self.fig = plt.figure(figsize=figsize)
-        self.axes = plt.axes()
-        plt.rc('text', usetex=True)
-        plt.rc('font', family='Bitstream Vera Serif', size=16)
+        if "figure" in kwargs:
+            self.fig = kwargs["figure"]
+        else:
+            self.fig = plt.figure(figsize=figsize)
+        axes = self.fig.get_axes()
+        if len(axes) == 0:
+            self.axes = self.fig.add_subplot(1, 1, 1)
+        elif len(axes) == 1:
+            self.axes = axes[0]
 
     def savefig(self, fn):
-        plt.tight_layout()
+        self.fig.tight_layout()
         self.fig.savefig(fn)
-        print('Wrote', fn)
 
     def close(self):
-        plt.close('all')
+        # matplotlib does not have close method on Figure class
+        # weird.
+        self.fig.clear()
+        plt.close(self.fig)
 
     def set_title(self, title, fontsize=16):
         self.axes.set_title(title, size=fontsize)
@@ -42,7 +54,7 @@ class Plot(object):
         divider = make_axes_locatable(self.axes)
         cax = divider.append_axes(pos, size=size, pad=0.1)
         self.colorbar = plt.colorbar(layer, cax=cax)
-        plt.subplots_adjust(right=0.8)
+        self.fig.subplots_adjust(right=0.8)
 
     def legend(self, **kwargs):
         handles, labels = self.fig.gca().get_legend_handles_labels()
@@ -50,9 +62,6 @@ class Plot(object):
         labels, ids = np.unique(labels, return_index=True)
         handles = [handles[i] for i in ids]
         self.fig.legend(handles, labels, **kwargs)
-
-# Generate a dummy plot, this seems to avoid font issues with subsequent instances
-Plot()
 
 
 class GeometryPlot(Plot):
