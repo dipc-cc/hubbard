@@ -21,7 +21,7 @@ class Spectrum(Plot):
             ev -= HubbardHamiltonian.midgap
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
-            plt.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
+            self.axes.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
 
             if 'annotate' in kwargs:
                 if kwargs['annotate'] != False:
@@ -139,7 +139,7 @@ class DOS(Plot):
             self.legend()
         else:
             DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
-            plt.plot(egrid, DOS, label='TDOS')
+            self.axes.plot(egrid, DOS, label='TDOS')
 
         self.set_xlabel(r'E-E$_\mathrm{midgap}$ [eV]')
         self.set_ylabel(r'DOS [1/eV]')
