@@ -388,7 +388,7 @@ class HubbardHamiltonian(object):
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
 
-    def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a'):
+    def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
 
         Parameters
@@ -401,6 +401,8 @@ class HubbardHamiltonian(object):
             specifies if the Spin.Fix and Spin.Total lines are written to the fdf
         mode: str, optional
             mode in which the file is opened
+        eps: float, optional
+            atoms within this distance will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)
         """
         if not os.path.isfile(fn):
             mode = 'w'
@@ -408,7 +410,7 @@ class HubbardHamiltonian(object):
             idx = np.arange(len(self.H))
             geom = self.geometry
         elif isinstance(ext_geom, sisl.Geometry):
-            idx, idx_internal = ext_geom.overlap(self.geometry)
+            idx, idx_internal = ext_geom.overlap(self.geometry, eps=eps)
             geom = ext_geom
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
@@ -423,9 +425,9 @@ class HubbardHamiltonian(object):
         for i, ia in enumerate(idx):
             s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
             # add documentation string
-            s += ' # %2s' % geom.atoms[i].symbol
+            s += ' # %2s' % geom.atoms[ia].symbol
             for j in range(3):
-                s += ' %9.4f' % geom.xyz[i, j]
+                s += ' %9.4f' % geom.xyz[ia, j]
             f.write(s + '\n')
         f.write('%endblock DM.InitSpin\n\n')
 
