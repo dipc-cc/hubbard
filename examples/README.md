@@ -7,17 +7,17 @@ can be found in this [examples][examples] folder in the main repository.
 ## Simulation of electron correlations in a molecule ##
 
 [Here][example-kondo] we will find the self-consistent solution
-of a finite molecule using the mean field Hubbard model.
+of a finite molecule using the mean-field Hubbard model.
 
 ## Simulation of electron correlations in a periodic system ##
 
 [Here][example-periodic] we will find the self-consistent solution
-of a periodic system using the mean field Hubbard model.
+of a periodic system using the mean-field Hubbard model.
 
 ## Simulation of electron correlations in open-quantum system ##
 
 [Here][example-open] we will find the self-consistent solution
-for an open-quantum system using the mean field Hubbard model.
+for an open-quantum system using the mean-field Hubbard model.
 
 <!---
 Links to external and internal sites.

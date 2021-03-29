@@ -2,7 +2,7 @@
 
 # hubbard #
 
-__hubbard__ is a Python package for solving the meanfield Hubbard model built on [sisl].
+__hubbard__ is a Python package for solving the mean-field Hubbard model built on [sisl].
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 

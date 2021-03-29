@@ -8,13 +8,13 @@
 Welcome to hubbard's documentation!
 ===================================
 
-The hubbard_ Python package allows to find the self-consistent solution for the mean Field hubbard Model
+The hubbard_ Python package allows to find the self-consistent solution for the mean-field Hubbard Model
 for a certain tight-binding Hamiltonian and a certain Coulomb repulsion parameter U.
 
 -  Easy calculation of spin-resolved quantities. It takes advantage of many routines from sisl_ as well as numpy_ and scipy_, 
    which makes it very efficient when handling with thousands of atoms, given the usage of sparse matrices. 
    The goal of this package is to include electron correlations in the tight-binding Hamiltonian by solving self-consistently 
-   the mean Field hubbard model. Given the simplicity of the model one can find quite fast the solution to problems that are typically 
+   the mean-field Hubbard model. Given the simplicity of the model one can find quite fast the solution to problems that are typically 
    adressed with DFT with similar accuracy, specially for sp2 carbon systems. It is also very easy to manipulate 
    the spin configuration to obtain different magnetic solutions, e.g., obtain the approximated energy difference between the singlet and 
    the triplet states, etc. This package is fully implemented in Python, which makes it very easy and comfortable to use.

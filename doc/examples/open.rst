@@ -3,7 +3,7 @@ Simulating an open-quantum system with electron correlations
 ============================================================
 
 In this example we will create the `HubbardHamiltonian` object
-of a system with open boundary conditions, and find the self-consistent solution using the mean field Hubbard Hamiltonian.
+of a system with open boundary conditions, and find the self-consistent solution using the mean-field Hubbard Hamiltonian.
 
 We will model a perfect system, where we *know* that we should recover a perfect step-like transmission function.
 You can also navigate through the
@@ -52,7 +52,7 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
 
       # Build tight-binding Hamiltonian using sp2 function
       H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
-      # hubbard Hamiltonian of elecs
+      # Hubbard Hamiltonian of elecs
       MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[100, 1, 1], kT=kT)
 
       # Converge Electrode Hamiltonians

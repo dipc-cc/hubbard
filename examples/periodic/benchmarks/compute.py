@@ -26,7 +26,7 @@ for i, geom in enumerate([agnr, zgnr]):
     mixer.clear()
     dn = H.converge(density.dm, mixer=mixer, print_info=True)
 
-    # Plot banstructure of hubbard Hamiltonian
+    # Plot banstructure of Hubbard Hamiltonian
     p = plot.Bandstructure(H, ymax=3)
     p.savefig('%s_bands.pdf'%(lab[i]))
     print('\n')

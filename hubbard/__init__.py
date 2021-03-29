@@ -1,6 +1,6 @@
 """
 =========================================
-mean field Hubbard model (:mod:`hubbard`)
+Mean-field Hubbard model (:mod:`hubbard`)
 =========================================
 
 .. module:: hubbard

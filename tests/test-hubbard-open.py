@@ -18,7 +18,7 @@ ZGNR = geometry.zgnr(2)
 # and 3NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
-# hubbard Hamiltonian of elecs
+# Hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 
 # Start with random densities

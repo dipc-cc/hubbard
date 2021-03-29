@@ -3,7 +3,7 @@ Electron correlations in periodic systems
 
 In this example we will create the HubbardHamiltonian object of a system
 with periodic boundary conditions, and find the self-consistent solution
-using the mean field Hubbard model.
+using the mean-field Hubbard model.
 
 We will use as a reference the graphene nanoribbons of ref. [Phys. Rev.
 B 81, 245402

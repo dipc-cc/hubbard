@@ -27,7 +27,7 @@ H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 mixer = sisl.mixing.PulayMixer(0.6, history=7)
 
-# hubbard Hamiltonian of elecs
+# Hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Initial densities
 success = MFH_elec.read_density('elec_density.nc')

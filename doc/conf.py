@@ -216,7 +216,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'hubbard', u'hubbard Documentation',
-     author, 'hubbard', 'Python package for meanfield Hubbard model simulations.',
+     author, 'hubbard', 'Python package for mean-field Hubbard model simulations.',
      'Miscellaneous'),
 ]
 
