@@ -1,7 +1,7 @@
 .. _publications:
 
-Publications using the hubbard model
-====================================
+Publications using the hubbard package
+======================================
 
 This implementation of the `hubbard` package has been used in the listed
 publications below.
