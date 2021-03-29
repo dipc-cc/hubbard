@@ -3,7 +3,7 @@ Simulating an open-quantum system with electron correlations
 
 In this example we will create the HubbardHamiltonian object of a system
 with open boundary conditions, and find the self-consistent solution
-using the mean field hubbard Hamiltonian.
+using the mean field Hubbard Hamiltonian.
 
 We will model a perfect system, where we *know* that we should recover a
 perfect step-like transmission function. You can also navigate through

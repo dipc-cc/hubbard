@@ -12,10 +12,10 @@ __all__ = ['HubbardHamiltonian']
 
 
 class HubbardHamiltonian(object):
-    """ A class to create a Self Consistent Field (SCF) object related to the Mean Field hubbard (MFH) model
+    """ A class to create a Self Consistent field (SCF) object related to the mean field Hubbard (MFH) model
 
     The `hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
-    by solving self-consistently the Mean Field hubbard Hamiltonian
+    by solving self-consistently the mean field Hubbard Hamiltonian
 
     It enables the convergence of several tight-binding described systems towards a user-defined tolerance criterion
 
@@ -237,7 +237,7 @@ class HubbardHamiltonian(object):
         self.e0 = np.array([e0, e1])
 
     def update_hamiltonian(self):
-        """ Update spin Hamiltonian according to the mean field hubbard model
+        """ Update spin Hamiltonian according to the mean field Hubbard model
         It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities
 
         Notes
@@ -432,7 +432,7 @@ class HubbardHamiltonian(object):
         f.write('%endblock DM.InitSpin\n\n')
 
     def iterate(self, dm_method, q=None, mixer=None, **kwargs):
-        r""" Common method to iterate in a SCF loop that corresponds to the Mean Field hubbard approximation
+        r""" Common method to iterate in a SCF loop that corresponds to the mean field Hubbard approximation
 
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
         where one needs to use the correct `dm_method` for the particular system.

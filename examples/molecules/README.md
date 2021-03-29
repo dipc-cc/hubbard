@@ -10,7 +10,7 @@ compare the simulation with the experimental system.
 
 You can also navigate through the [molecule examples
 section](https://github.com/dipc-cc/hubbard/tree/master/examples/molecules),
-where more molecular geometries suitable to compute with the meand field
+where more molecular geometries suitable to compute with the mean field
 hubbard model can be found.
 
 1.  We will start by building the tight-binding (TB) Hamiltonian for an

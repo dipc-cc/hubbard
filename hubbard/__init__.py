@@ -1,14 +1,14 @@
 """
 =========================================
-Mean Field hubbard model (:mod:`hubbard`)
+mean field Hubbard model (:mod:`hubbard`)
 =========================================
 
 .. module:: hubbard
     :noindex:
 
-Package for mean-field hubbard approximation
+Package for mean-field Hubbard approximation
 
-Self Consistent Field class
+Self Consistent field class
 ===========================
 
 .. autosummary::

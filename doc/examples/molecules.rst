@@ -10,7 +10,7 @@ and compare the simulation with the experimental system.
 
 You can also navigate through the 
 `molecule examples section <https://github.com/dipc-cc/hubbard/tree/master/examples/molecules>`_,
-where more molecular geometries suitable to compute with the mean field hubbard model can be found.
+where more molecular geometries suitable to compute with the mean field Hubbard model can be found.
 
 #. We will start by building the tight-binding (TB) Hamiltonian for an sp2 
    carbon-based molecule, by first reading the geometry file stored in this `file <https://github.com/dipc-cc/hubbard/blob/master/examples/molecules/kondo-paper/junction-2-2.XV>`_
@@ -19,7 +19,7 @@ where more molecular geometries suitable to compute with the mean field hubbard 
    in the `Supp. Material <https://www.nature.com/articles/s41467-018-08060-6#Sec12>`_ of the paper referenced above.
 
 #. We will build the `HubbardHamiltonian` object, which will allow us to use the routines
-   stored in this class to converge the mean field hubbard Hamiltonian until we find the self-consistent solution.
+   stored in this class to converge the mean field Hubbard Hamiltonian until we find the self-consistent solution.
 
 #. We then can manipulate and obtain different magnetic states to compare the total energies
    that will tell us which one is the groundstate.
