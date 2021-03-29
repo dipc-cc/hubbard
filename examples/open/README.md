@@ -21,7 +21,7 @@ across periodic along the x-axis.
 We will focus on the equilibrium situation, therefore the temperature
 and chemical potentials of the electrodes *must coincide*. The complex
 contour that we use to integrate the density matrix in the hubbard.NEGF
-class is extracted from a [Transiesta](https://launchpad.net/siesta)
+class is extracted from a [Transiesta](https://gitlab.com/siesta/-project/siesta)
 calculation performed for a temperature of kT=0.025 eV, which we will
 set as common for all the composing element calculations.
 
@@ -39,7 +39,7 @@ set as common for all the composing element calculations.
     spin-densities. To do so, we can make use of the methods available
     in the hubbard.NEGF class.
 5.  Optionally, you can also compute the transmission function of the
-    converged system using [TBtrans](https://launchpad.net/siesta).
+    converged system using [TBtrans](https://gitlab.com/siesta/-project/siesta).
 
 ``` {.sourceCode .python}
 import hubbard.hamiltonian as hh

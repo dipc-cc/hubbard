@@ -16,7 +16,7 @@ for the sake of simplicity. We will consider the electrodes to be the unit cell 
 of width W=5 C-atoms across periodic along the x-axis.
 
 We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes *must coincide*.
-The complex contour that we use to integrate the density matrix in the `hubbard.NEGF` class is extracted from a `Transiesta <https://launchpad.net/siesta>`_ calculation
+The complex contour that we use to integrate the density matrix in the `hubbard.NEGF` class is extracted from a `Transiesta <https://gitlab.com/siesta/-project/siesta>`_ calculation
 performed for a temperature of `kT=0.025` eV, which we will set as common for all the composing element calculations.
 
 #. We will start by building the tight-binding (TB) Hamiltonian for the graphene nanoribbons,
@@ -31,7 +31,7 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
 #. In this case we will have to use a method based on the non-equilibrium Green's function of the central region 
    to obtain the spin-densities. To do so, we can make use of the methods available in the `hubbard.NEGF` class.
 
-#. Optionally, you can also compute the transmission function of the converged system using `TBtrans <https://launchpad.net/siesta>`_.
+#. Optionally, you can also compute the transmission function of the converged system using `TBtrans <https://gitlab.com/siesta/-project/siesta>`_.
 
 .. code-block:: python
 
