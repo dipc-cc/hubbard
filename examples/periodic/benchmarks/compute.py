@@ -1,9 +1,9 @@
 import sisl
-import Hubbard.hamiltonian as hh
-import Hubbard.plot as plot
-import Hubbard.sp2 as sp2
-import Hubbard.density as density
-import Hubbard.geometry as geometry
+import hubbard.hamiltonian as hh
+import hubbard.plot as plot
+import hubbard.sp2 as sp2
+import hubbard.density as density
+import hubbard.geometry as geometry
 import numpy as np
 import os
 
@@ -26,7 +26,7 @@ for i, geom in enumerate([agnr, zgnr]):
     mixer.clear()
     dn = H.converge(density.dm, mixer=mixer, print_info=True)
 
-    # Plot banstructure of Hubbard Hamiltonian
+    # Plot banstructure of hubbard Hamiltonian
     p = plot.Bandstructure(H, ymax=3)
     p.savefig('%s_bands.pdf'%(lab[i]))
     print('\n')

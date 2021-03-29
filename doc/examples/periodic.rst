@@ -3,7 +3,7 @@ Electron correlations in periodic systems
 =========================================
 
 In this example we will create the `HubbardHamiltonian` object
-of a system with periodic boundary conditions, and find the self-consistent solution using the mean field Hubbard model.
+of a system with periodic boundary conditions, and find the self-consistent solution using the mean field hubbard model.
 
 We will use as a reference the graphene nanoribbons of ref.
 `Phys. Rev. B 81, 245402 (2010) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.81.245402>`_
@@ -18,22 +18,22 @@ and benchmark the results published there. You can also navigate through the
 #. We will build the `HubbardHamiltonian` object, which will allow us to use the routines
    stored in this class to converge until we find the self-consistent solution.
 
-#. Then we can plot some physical quantities that may be relevant after the calculation with the Hubbard package.
+#. Then we can plot some physical quantities that may be relevant after the calculation with the hubbard package.
 
 .. code-block:: python
 
-      import Hubbard.hamiltonian as hh
-      import Hubbard.geometry as geometry
-      import Hubbard.sp2 as sp2
-      import Hubbard.density as density
-      import Hubbard.plot as plot
+      import hubbard.hamiltonian as hh
+      import hubbard.geometry as geometry
+      import hubbard.sp2 as sp2
+      import hubbard.density as density
+      import hubbard.plot as plot
 
       # Build sisl.Geometry object of a zigzag graphene nanoribbon of width W=16 C-atoms across,
-      # e.g., by using the function Hubbard.geometry.zgnr.
+      # e.g., by using the function hubbard.geometry.zgnr.
       # This function returns a periodic graphene ribbon along the x-axis.
       g = geometry.zgnr(16)
 
-      # Build tight-binding Hamiltonian using Hubbard.sp2 function
+      # Build tight-binding Hamiltonian using hubbard.sp2 function
       Hsp2 = sp2(g, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
 
       # Build the HubbardHamiltonian object with U=2.0 eV at a temperature of kT=1e-5 in units

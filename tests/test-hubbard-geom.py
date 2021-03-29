@@ -1,4 +1,4 @@
-import Hubbard.geometry as geom
+import hubbard.geometry as geom
 
 for w in [8, 9]:
 

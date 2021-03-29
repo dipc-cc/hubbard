@@ -1,6 +1,6 @@
-import Hubbard.hamiltonian as hh
-import Hubbard.density as dens
-import Hubbard.sp2 as sp2
+import hubbard.hamiltonian as hh
+import hubbard.density as dens
+import hubbard.sp2 as sp2
 import numpy as np
 import sisl
 
@@ -50,7 +50,7 @@ for m in [dens.dm_insulator, dens.dm]:
         print('Eigenvector check failed!!!\n')
 
 if True:
-    # Test also Hubbard.negf in the WBL approximation for gamma=0.
+    # Test also hubbard.negf in the WBL approximation for gamma=0.
     # We will compare with the density and Etot obtained from diagonalization
     # at kT=0.025 (temperature of the CC)
     H.kT = 0.025
@@ -62,11 +62,11 @@ if True:
 
     # Obtain DOS for the finite molecule with Lorentzian distribution
     egrid = np.linspace(-1, 1, 50)
-    import Hubbard.plot as plot
+    import hubbard.plot as plot
     p = plot.DOS(H, egrid, eta=1e-2, spin=[0])
 
     # Now compute same molecule with the WBL approximation with gamma=0
-    from Hubbard.negf import NEGF
+    from hubbard.negf import NEGF
     elec = sisl.WideBandSE(2, 0.)
     negf = NEGF(H, [elec], [[0, 1]])
     # This is to use a better guess for the device potential

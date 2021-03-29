@@ -1,11 +1,11 @@
-import Hubbard.hamiltonian as hh
-import Hubbard.density as dens
-import Hubbard.plot as plot
-import Hubbard.sp2 as sp2
+import hubbard.hamiltonian as hh
+import hubbard.density as dens
+import hubbard.plot as plot
+import hubbard.sp2 as sp2
 import numpy as np
 import sisl
 
-# Test all plot functionalities of Hubbard module
+# Test all plot functionalities of hubbard module
 # using a reference molecule (already converged)
 
 # Build sisl Geometry object

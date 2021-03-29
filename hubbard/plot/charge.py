@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from Hubbard.plot import GeometryPlot
+from hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
 

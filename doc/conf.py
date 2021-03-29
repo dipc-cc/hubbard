@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Hubbard documentation build configuration file, created by
+# hubbard documentation build configuration file, created by
 # sphinx-quickstart on Mon Oct 22 22:30:07 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -67,7 +67,7 @@ autosummary_generate = glob.glob('*.rst') + glob.glob('*/*.rst')
 autosummary_generate = [f for f in autosummary_generate if 'api-generated' not in f]
 
 # General information about the project.
-project = u'Hubbard'
+project = u'hubbard'
 copyright = u'2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 author = u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 
@@ -80,7 +80,7 @@ author = u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 # The full version, including alpha/beta/rc tags.
 #release = u''
 
-import Hubbard.info as info
+import hubbard.info as info
 release = info.release
 version = info.release
 
@@ -114,7 +114,7 @@ default_role = 'autolink'
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-modindex_common_prefix = ['Hubbard.']
+modindex_common_prefix = ['hubbard.']
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -131,10 +131,10 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "Hubbard documentation"
+html_title = "hubbard documentation"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-html_short_title = "Hubbard"
+html_short_title = "hubbard"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -167,7 +167,7 @@ html_use_index = True
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Hubbard'
+htmlhelp_basename = 'hubbard'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -194,7 +194,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Hubbard.tex', u'Hubbard Documentation',
+    (master_doc, 'hubbard.tex', u'hubbard Documentation',
      u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen', 'manual'),
 ]
 
@@ -204,7 +204,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'hubbard', u'Hubbard Documentation',
+    (master_doc, 'hubbard', u'hubbard Documentation',
      [author], 1)
 ]
 
@@ -215,8 +215,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Hubbard', u'Hubbard Documentation',
-     author, 'Hubbard', 'Python package for meanfield Hubbard model simulations.',
+    (master_doc, 'hubbard', u'hubbard Documentation',
+     author, 'hubbard', 'Python package for meanfield Hubbard model simulations.',
      'Miscellaneous'),
 ]
 

@@ -1,12 +1,12 @@
 """
 =========================================
-Mean Field Hubbard model (:mod:`Hubbard`)
+Mean Field hubbard model (:mod:`hubbard`)
 =========================================
 
-.. module:: Hubbard
+.. module:: hubbard
     :noindex:
 
-Package for mean-field Hubbard approximation
+Package for mean-field hubbard approximation
 
 Self Consistent Field class
 ===========================
@@ -24,7 +24,7 @@ Read and write in binary files
 .. autosummary::
    :toctree:
 
-   ncSileHubbard
+   ncSilehubbard
 
 Build the specific TB Hamiltonian for a sp2 system
 ==================================================

@@ -2,12 +2,12 @@ import sisl
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
-import Hubbard.geometry as geometry
-import Hubbard.density as density
-from Hubbard.negf import NEGF
-import Hubbard.hamiltonian as hh
-import Hubbard.sp2 as sp2
-import Hubbard.plot as plot
+import hubbard.geometry as geometry
+import hubbard.density as density
+from hubbard.negf import NEGF
+import hubbard.hamiltonian as hh
+import hubbard.sp2 as sp2
+import hubbard.plot as plot
 
 # Set U for the whole calculation
 U = 3.0
@@ -19,7 +19,7 @@ ZGNR = geometry.zgnr(2)
 # and 3NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
-# Hubbard Hamiltonian of elecs
+# hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Start with random densities
 MFH_elec.random_density()

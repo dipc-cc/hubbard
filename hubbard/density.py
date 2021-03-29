@@ -22,7 +22,7 @@ def dm(H, q):
 
     Parameters
     ----------
-    H: `Hubbard.HubbardHamiltonian` instance
+    H: `hubbard.HubbardHamiltonian` instance
         `HubbardHamiltonian` object of the system to obtain the spin-densities from
     q: array_like
         charge resolved in spin channels (first index for up-electrons and second index for down-electrons)

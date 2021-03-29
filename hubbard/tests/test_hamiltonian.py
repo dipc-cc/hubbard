@@ -1,8 +1,8 @@
 import pytest
 
-import Hubbard.hamiltonian as hh
-import Hubbard.sp2 as sp2
-import Hubbard.density as dm
+import hubbard.hamiltonian as hh
+import hubbard.sp2 as sp2
+import hubbard.density as dm
 import sisl
 
 

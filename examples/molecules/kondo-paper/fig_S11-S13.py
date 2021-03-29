@@ -1,7 +1,7 @@
-import Hubbard.hamiltonian as hh
-import Hubbard.plot as plot
-import Hubbard.sp2 as sp2
-import Hubbard.density as dm
+import hubbard.hamiltonian as hh
+import hubbard.plot as plot
+import hubbard.sp2 as sp2
+import hubbard.density as dm
 import sys
 import numpy as np
 

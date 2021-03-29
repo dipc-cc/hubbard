@@ -3,7 +3,7 @@ Simulating an open-quantum system with electron correlations
 
 In this example we will create the HubbardHamiltonian object of a system
 with open boundary conditions, and find the self-consistent solution
-using the mean field Hubbard Hamiltonian.
+using the mean field hubbard Hamiltonian.
 
 We will model a perfect system, where we *know* that we should recover a
 perfect step-like transmission function. You can also navigate through
@@ -20,7 +20,7 @@ across periodic along the x-axis.
 
 We will focus on the equilibrium situation, therefore the temperature
 and chemical potentials of the electrodes *must coincide*. The complex
-contour that we use to integrate the density matrix in the Hubbard.NEGF
+contour that we use to integrate the density matrix in the hubbard.NEGF
 class is extracted from a [Transiesta](https://launchpad.net/siesta)
 calculation performed for a temperature of kT=0.025 eV, which we will
 set as common for all the composing element calculations.
@@ -28,7 +28,7 @@ set as common for all the composing element calculations.
 1.  We will start by building the tight-binding (TB) Hamiltonian for the
     graphene nanoribbons, which compose the electrodes (periodic
     boundary conditions). Then we will find their self-consistent
-    solution by using the Hubbard package.
+    solution by using the hubbard package.
 2.  We then have to build the geometry of the central region before we
     generate its sp2 TB Hamiltonian.
 3.  We will build the HubbardHamiltonian object, which will allow us to
@@ -37,19 +37,19 @@ set as common for all the composing element calculations.
 4.  In this case we will have to use a method based on the
     non-equilibrium Green's function of the central region to obtain the
     spin-densities. To do so, we can make use of the methods available
-    in the Hubbard.NEGF class.
+    in the hubbard.NEGF class.
 5.  Optionally, you can also compute the transmission function of the
     converged system using [TBtrans](https://launchpad.net/siesta).
 
 ``` {.sourceCode .python}
-import Hubbard.hamiltonian as hh
-import Hubbard.geometry as geometry
-import Hubbard.sp2 as sp2
-import Hubbard.density as density
-from Hubbard.negf import NEGF
+import hubbard.hamiltonian as hh
+import hubbard.geometry as geometry
+import hubbard.sp2 as sp2
+import hubbard.density as density
+from hubbard.negf import NEGF
 
 # Build sisl.Geometry object of a ZGNR of width W=5 C-atoms across,
-# e.g., by using the function Hubbard.geometry.zgnr. 
+# e.g., by using the function hubbard.geometry.zgnr. 
 # This function returns a periodic ZGNR along the x-axis.
 ZGNR = geometry.zgnr(5)
 
@@ -59,7 +59,7 @@ kT = 0.025
 
 # Build tight-binding Hamiltonian using sp2 function
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
-# Hubbard Hamiltonian of elecs
+# hubbard Hamiltonian of elecs
 MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[100, 1, 1], kT=kT)
 
 # Converge Electrode Hamiltonians

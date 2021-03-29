@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from Hubbard.plot import Plot
+from hubbard.plot import Plot
 import sisl
 import numpy as np
 

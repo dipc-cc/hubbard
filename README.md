@@ -1,14 +1,14 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-# Hubbard #
+# hubbard #
 
-__Hubbard__ is a Python package for solving the meanfield Hubbard model built on [sisl].
+__hubbard__ is a Python package for solving the meanfield Hubbard model built on [sisl].
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 
 
 ## Dependencies ##
-Before installation of __Hubbard__ the following packages are required
+Before installation of __hubbard__ the following packages are required
    - python >= 3.6
    - numpy >= 1.13
    - scipy >= 0.18
@@ -36,7 +36,7 @@ If you find any bugs please form a [bug report/issue][issues]
 If you have a fix please consider adding a [pull request][pulls].
 
 ## License ##
-__Hubbard__ is distributed under [LGPL][lgpl], please see the LICENSE file.
+__hubbard__ is distributed under [LGPL][lgpl], please see the LICENSE file.
 
 
 <!---

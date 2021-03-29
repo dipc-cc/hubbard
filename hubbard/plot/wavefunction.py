@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from Hubbard.plot import GeometryPlot
+from hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
 
@@ -11,8 +11,8 @@ class Wavefunction(GeometryPlot):
 
     Parameters
     ----------
-    HubbardHamiltonian: Hubbard.hamiltonian.HubbardHamiltonian instance
-        Hubbard.hamiltonian object of a system
+    HubbardHamiltonian: hubbard.hamiltonian.HubbardHamiltonian instance
+        hubbard.hamiltonian object of a system
     wf: array_like
         vector that contains the eigenstate to plot
     ext_geom: sisl.Geometry instance

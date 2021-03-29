@@ -1,6 +1,6 @@
 import numpy as np
 import sisl
-import Hubbard.ncsile as nc
+import hubbard.ncsile as nc
 import hashlib
 import os
 import math
@@ -12,10 +12,10 @@ __all__ = ['HubbardHamiltonian']
 
 
 class HubbardHamiltonian(object):
-    """ A class to create a Self Consistent Field (SCF) object related to the Mean Field Hubbard (MFH) model
+    """ A class to create a Self Consistent Field (SCF) object related to the Mean Field hubbard (MFH) model
 
-    The `Hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
-    by solving self-consistently the Mean Field Hubbard Hamiltonian
+    The `hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian
+    by solving self-consistently the Mean Field hubbard Hamiltonian
 
     It enables the convergence of several tight-binding described systems towards a user-defined tolerance criterion
 
@@ -49,7 +49,7 @@ class HubbardHamiltonian(object):
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
         self.hash_base = H0.H.tocsr().sum()
 
-        self.U = U # Hubbard onsite Coulomb parameter
+        self.U = U # hubbard onsite Coulomb parameter
 
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.TBHam = TBHam
@@ -172,7 +172,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger `Hubbard.HubbardHamiltonian` object
+        A new larger `hubbard.HubbardHamiltonian` object
         """
         self.update_density_matrix()
         Htile = self.H.tile(reps, axis)
@@ -198,7 +198,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger `Hubbard.HubbardHamiltonian` object
+        A new larger `hubbard.HubbardHamiltonian` object
         """
         self.update_density_matrix()
         Hrep = self.H.repeat(reps, axis)
@@ -237,7 +237,7 @@ class HubbardHamiltonian(object):
         self.e0 = np.array([e0, e1])
 
     def update_hamiltonian(self):
-        """ Update spin Hamiltonian according to the mean field Hubbard model
+        """ Update spin Hamiltonian according to the mean field hubbard model
         It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities
 
         Notes
@@ -259,7 +259,7 @@ class HubbardHamiltonian(object):
         Notes
         -----
         This method can be generalized to return the density matrix with off-diagonal elements
-        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `Hubbard.dm`)
+        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `hubbard.dm`)
         """
 
         # TODO Generalize this method to return the density matrix with off-diagonal elements
@@ -363,7 +363,7 @@ class HubbardHamiltonian(object):
         """
         if os.path.isfile(fn):
             s, group = self._get_hash()
-            fh = nc.ncSileHubbard(fn, mode=mode)
+            fh = nc.ncSilehubbard(fn, mode=mode)
             if group in fh.groups:
                 dm = fh.read_density(group)
                 self.dm = dm
@@ -385,7 +385,7 @@ class HubbardHamiltonian(object):
         if not os.path.isfile(fn):
             mode = 'w'
         s, group = self._get_hash()
-        fh = nc.ncSileHubbard(fn, mode=mode)
+        fh = nc.ncSilehubbard(fn, mode=mode)
         fh.write_density(s, group, self.dm)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
@@ -417,7 +417,7 @@ class HubbardHamiltonian(object):
         polarization = self.dm[0] - self.dm[1]
         dq = np.sum(polarization)
         f = open(fn, mode=mode)
-        f.write('# Hubbard: U=%.3f eV\n' % self.U)
+        f.write('# hubbard: U=%.3f eV\n' % self.U)
         if spinfix:
             f.write('Spin.Fix True\n')
             f.write('Spin.Total %.6f\n' % dq)
@@ -432,7 +432,7 @@ class HubbardHamiltonian(object):
         f.write('%endblock DM.InitSpin\n\n')
 
     def iterate(self, dm_method, q=None, mixer=None, **kwargs):
-        r""" Common method to iterate in a SCF loop that corresponds to the Mean Field Hubbard approximation
+        r""" Common method to iterate in a SCF loop that corresponds to the Mean Field hubbard approximation
 
         The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
         where one needs to use the correct `dm_method` for the particular system.
@@ -452,9 +452,9 @@ class HubbardHamiltonian(object):
         --------
         update_hamiltonian
         update_density_matrix
-        Hubbard.dm
+        hubbard.dm
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        Hubbard.NEGF.dm_open
+        hubbard.NEGF.dm_open
             method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
         `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 
@@ -520,9 +520,9 @@ class HubbardHamiltonian(object):
         See Also
         --------
         iterate
-        Hubbard.dm
+        hubbard.dm
             method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        Hubbard.NEGF
+        hubbard.NEGF
             class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
         `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 

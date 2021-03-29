@@ -11,7 +11,7 @@ compare the simulation with the experimental system.
 You can also navigate through the [molecule examples
 section](https://github.com/dipc-cc/hubbard/tree/master/examples/molecules),
 where more molecular geometries suitable to compute with the meand field
-Hubbard model can be found.
+hubbard model can be found.
 
 1.  We will start by building the tight-binding (TB) Hamiltonian for an
     sp2 carbon-based molecule, by first reading the geometry file stored
@@ -23,7 +23,7 @@ Hubbard model can be found.
     of the paper referenced above.
 2.  We will build the HubbardHamiltonian object, which will allow us to
     use the routines stored in this class to converge the mean field
-    Hubbard Hamiltonian until we find the self-consistent solution.
+    hubbard Hamiltonian until we find the self-consistent solution.
 3.  We then can manipulate and obtain different magnetic states to
     compare the total energies that will tell us which one is the
     groundstate.
@@ -33,10 +33,10 @@ Hubbard model can be found.
 
 ``` {.sourceCode .python}
 import sisl
-import Hubbard.hamiltonian as hh
-import Hubbard.sp2 as sp2
-import Hubbard.density as density
-import Hubbard.plot as plot
+import hubbard.hamiltonian as hh
+import hubbard.sp2 as sp2
+import hubbard.density as density
+import hubbard.plot as plot
 
 # Build sisl.Geometry object from the 'XV' file
 g = sisl.get_sile('junction-2-2.XV').read_geometry()

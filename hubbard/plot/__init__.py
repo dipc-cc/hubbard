@@ -1,9 +1,9 @@
 """
 =======================================================
-Visualizing electronic properties (:mod:`Hubbard.plot`)
+Visualizing electronic properties (:mod:`hubbard.plot`)
 =======================================================
 
-.. module:: Hubbard.plot
+.. module:: hubbard.plot
     :noindex:
 
 Functionality for plotting different physical properties of the

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from Hubbard.plot import Plot
-from Hubbard.plot import GeometryPlot
+from hubbard.plot import Plot
+from hubbard.plot import GeometryPlot
 import matplotlib.colors as colors
 import numpy as np
 

@@ -1,6 +1,6 @@
-import Hubbard.hamiltonian as hh
-import Hubbard.plot as plot
-import Hubbard.sp2 as sp2
+import hubbard.hamiltonian as hh
+import hubbard.plot as plot
+import hubbard.sp2 as sp2
 import sisl
 
 mol = sisl.get_sile('benzene.xyz').read_geometry()

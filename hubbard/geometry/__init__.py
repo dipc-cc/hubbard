@@ -1,9 +1,9 @@
 """
 ===========================================
-Common geometries (:mod:`Hubbard.geometry`)
+Common geometries (:mod:`hubbard.geometry`)
 ===========================================
 
-.. module:: Hubbard.geometry
+.. module:: hubbard.geometry
     :noindex:
 
 Functions to create particular geometries

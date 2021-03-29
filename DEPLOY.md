@@ -1,5 +1,5 @@
 
-Deployment of Hubbard
+Deployment of hubbard
 ========================
 
 This document describes the deployment details to perform a version release.

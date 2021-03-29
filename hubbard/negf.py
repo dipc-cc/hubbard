@@ -52,9 +52,9 @@ class NEGF:
     Parameters
     ----------
     Hdev: HubbardHamiltonian instance
-        `Hubbard.HubbardHamiltonian` object of the device
+        `hubbard.HubbardHamiltonian` object of the device
     elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)
-        list of (already converged) `Hubbard.HubbardHamiltonian` objects for the electrodes
+        list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes
         plus the semi-infinite direction for the respective electrode.
         Alternatively one may directly pass sisl.SelfEnergy instances
     elec_idx: array_like
@@ -190,7 +190,7 @@ class NEGF:
         Parameters
         ----------
         H: HubbardHamiltonian instances
-            `Hubbard.HubbardHamiltonian` of the object that is being iterated
+            `hubbard.HubbardHamiltonian` of the object that is being iterated
         q: float
             charge associated to the up and down spin-components
         qtol: float, optional
