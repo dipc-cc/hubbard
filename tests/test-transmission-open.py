@@ -2,7 +2,6 @@ import sisl
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
-import hubbard.geometry as geometry
 import hubbard.density as density
 from hubbard.negf import NEGF
 import hubbard.hamiltonian as hh
@@ -14,7 +13,7 @@ U = 3.0
 kT = 0.025
 
 # Build zigzag GNR
-ZGNR = geometry.zgnr(2)
+ZGNR = sisl.geom.zgnr(2)
 
 # and 3NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)

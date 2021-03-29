@@ -43,15 +43,14 @@ set as common for all the composing element calculations.
 
 ``` {.sourceCode .python}
 import hubbard.hamiltonian as hh
-import hubbard.geometry as geometry
 import hubbard.sp2 as sp2
 import hubbard.density as density
 from hubbard.negf import NEGF
 
 # Build sisl.Geometry object of a ZGNR of width W=5 C-atoms across,
-# e.g., by using the function hubbard.geometry.zgnr. 
+# e.g., by using the function sisl.geom.zgnr. 
 # This function returns a periodic ZGNR along the x-axis.
-ZGNR = geometry.zgnr(5)
+ZGNR = sisl.geom.zgnr(5)
 
 # Set U and kT for the whole calculation
 U = 2.0

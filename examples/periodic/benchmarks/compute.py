@@ -3,15 +3,14 @@ import hubbard.hamiltonian as hh
 import hubbard.plot as plot
 import hubbard.sp2 as sp2
 import hubbard.density as density
-import hubbard.geometry as geometry
 import numpy as np
 import os
 
 """ Script to benchmark the Generalized TB method of Ref. Phys. Rev. B 81, 245402 (2010) """
 
 # Create geometry of the periodic (along x-axis) ribbon
-agnr = geometry.agnr(14)
-zgnr = geometry.zgnr(16)
+agnr = sisl.geom.agnr(14)
+zgnr = sisl.geom.zgnr(16)
 
 lab = ['14-AGNR', '16-ZGNR']
 mixer = sisl.mixing.PulayMixer(0.7, history=7)

@@ -1,7 +1,6 @@
 from __future__ import print_function
 import sisl
 import numpy as np
-import hubbard.geometry as geometry
 import hubbard.hamiltonian as hh
 import hubbard.sp2 as sp2
 import hubbard.plot as plot
@@ -20,7 +19,7 @@ U = 2.0
 kT = 0.025
 
 # Build zigzag GNR
-ZGNR = geometry.zgnr(5)
+ZGNR = sisl.geom.zgnr(5)
 
 # and 3NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
@@ -51,7 +50,7 @@ MFH_elec.H.write('MFH_elec.nc')
 
 # Build central region TB Hamiltonian
 HC = H_elec.tile(16, axis=0)
-HC = HC.remove([69, 79, 89, 78, 88, 66, 77, 76, 87, 86, 65, 74, 75, 84, 85])
+HC = HC.remove([67, 68, 69, 72, 73, 74, 77, 78, 79, 82, 83, 84, 87, 88, 89])
 HC.set_nsc([1, 1, 1])
 HC.geometry.write('device.xyz')
 
@@ -65,7 +64,7 @@ success = MFH_HC.read_density('HC_density.nc')
 if not success:
     # Get initial spin-densities with PBC to speed up the following convergence with OBC
     DM = MFH_elec.tile(16, axis=0).DM
-    DM = DM.remove([69, 79, 89, 78, 88, 66, 77, 76, 87, 86, 65, 74, 75, 84, 85])
+    DM = DM.remove([67, 68, 69, 72, 73, 74, 77, 78, 79, 82, 83, 84, 87, 88, 89])
     MFH_HC.set_dm(DM)
 
 # First create NEGF object
