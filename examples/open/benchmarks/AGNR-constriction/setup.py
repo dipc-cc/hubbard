@@ -1,7 +1,6 @@
 from __future__ import print_function
 import sisl
 import numpy as np
-import Hubbard.geometry as geometry
 import Hubbard.hamiltonian as hh
 import Hubbard.sp2 as sp2
 import Hubbard.plot as plot
@@ -20,7 +19,7 @@ U = 2.0
 kT = 0.025
 
 # Build zigzag GNR
-AGNR = geometry.agnr(9)
+AGNR = sisl.geom.agnr(9)
 
 # and 3NN TB Hamiltonian
 H_elec = sp2(AGNR, t1=2.7, t2=0.2, t3=0.18)
@@ -51,9 +50,8 @@ MFH_elec.H.shift(-Ef_elecs)
 MFH_elec.H.write('MFH_elec.nc')
 
 # Central region is a repetition of the electrodes without PBC
-HC = H_elec.tile(11, axis=0)
-HC = HC.remove([89, 106, 107, 86, 85, 102, 105, 104, 103, 124, 120, 101, 100, 123])
-HC.set_nsc([1, 1, 1])
+HC = H_elec.tile(10, axis=0)
+HC = HC.remove([75,80,85,89,93,98,103,107,79,84,97,102,88,92])
 HC.geometry.write('device.xyz')
 
 # Map electrodes in the device region

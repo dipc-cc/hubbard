@@ -23,15 +23,14 @@ and benchmark the results published there. You can also navigate through the
 .. code-block:: python
 
       import Hubbard.hamiltonian as hh
-      import Hubbard.geometry as geometry
       import Hubbard.sp2 as sp2
       import Hubbard.density as density
       import Hubbard.plot as plot
 
       # Build sisl.Geometry object of a zigzag graphene nanoribbon of width W=16 C-atoms across,
-      # e.g., by using the function Hubbard.geometry.zgnr.
+      # e.g., by using the function sisl.geom.zgnr.
       # This function returns a periodic graphene ribbon along the x-axis.
-      g = geometry.zgnr(16)
+      g = sisl.geom.zgnr(16)
 
       # Build tight-binding Hamiltonian using Hubbard.sp2 function
       Hsp2 = sp2(g, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
