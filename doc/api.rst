@@ -11,7 +11,6 @@ Here we list all the modules of the hubbard package, where all the routies are c
 
    api-generated/hubbard
    api-generated/hubbard.plot
-   api-generated/hubbard.geometry
 
 
 .. Here we should list *all* modules we want to be hosted in the
@@ -23,4 +22,4 @@ Here we list all the modules of the hubbard package, where all the routies are c
 
    hubbard
    hubbard.plot
-   hubbard.geometry
+

@@ -4,7 +4,6 @@ def configuration(parent_package='', top_path=None):
     config = Configuration('hubbard', parent_package, top_path)
 
     config.add_subpackage('plot')
-    config.add_subpackage('geometry')
     config.add_data_files('EQCONTOUR')
     config.make_config_py()
     return config
