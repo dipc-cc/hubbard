@@ -43,6 +43,5 @@ from .sp2 import *
 from .ncsile import *
 from .density import *
 from .negf import *
-from . import geometry
 
 __all__ = [s for s in dir() if not s.startswith('_')]
