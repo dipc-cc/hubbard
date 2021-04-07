@@ -39,6 +39,10 @@ If you have a fix please consider adding a [pull request][pulls].
 __hubbard__ is distributed under [LGPL][lgpl], please see the LICENSE file.
 
 
+## Funding ##
+Financial support from Spanish AEI (FIS2017-83780-P) and the European Union's Horizon 2020 (FET-Open
+project [SPRING][spring] Grant No. 863098) is acknowledged.
+
 <!---
 Links to external and internal sites.
 -->
@@ -46,4 +50,4 @@ Links to external and internal sites.
 [pulls]: https://github.com/dipc-cc/hubbard/pulls
 [lgpl]: http://www.gnu.org/licenses/lgpl.html
 [sisl]: https://github.com/zerothi/sisl
-[8ecc6c]: https://github.com/zerothi/sisl/commit/8ecc6c5566c7574d8476609680f956923b5bf29d
+[spring]: https://www.springfetopen.eu/
