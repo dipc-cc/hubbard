@@ -8,7 +8,23 @@ __all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
 
 
 class Spectrum(Plot):
-    """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object """
+    """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object
+
+    Parameters
+    ----------
+    HubbardHamiltonian : HubbardHamiltonian
+        the HubbardHamiltonian from which the LDOS should be computed
+    k : array_like, optional
+        k-point in the Brillouin zone to sample
+    xmax : float, optional
+        the energy range (-xmax, xmax) wrt. midgap to be plotted
+    ymin : float, optional
+        the y-axis minimum
+    ymax : float, optional
+        the y-axis maximum
+    fontsize : float, optional
+        fontsize
+    """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **kwargs):
 
@@ -38,7 +54,38 @@ class Spectrum(Plot):
 
 
 class LDOSmap(Plot):
-    """ Plot LDOS map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object """
+    """ Plot LDOS(distance, energy) map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object
+
+    Parameters
+    ----------
+
+    HubbardHamiltonian : HubbardHamiltonian
+        the HubbardHamiltonian from which the LDOS should be computed
+    k : array_like, optional
+        k-point in the Brillouin zone to sample
+    spin : int, optional
+        spin index
+    axis : int, optional
+        real-space index along which LDOS is resolved
+    nx : int, optional
+        number of grid points along real-space axis
+    gamma_x : float, optional
+        Lorentzian broadening of orbitals along the real-space axis
+    dx : float, optional
+        extension (in Ang) of the boundary around the system
+    ny : int, optiona
+        number of grid points along the energy axis
+    gamma_e : float, optional
+        Lorentzian broadening of eigenvalues along the energy axis
+    ymax : float, optional
+        specifies the energy range (-ymax, ymax) to be plotted
+    vmin : float, optional
+        colorscale minimum
+    vmax : float, optional
+        colorscale maximum
+    scale : {'linear', 'log'}
+        whether to use linear or logarithmic color scale
+    """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
                  nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
@@ -49,19 +96,19 @@ class LDOSmap(Plot):
         ev -= HubbardHamiltonian.midgap
         coord = HubbardHamiltonian.geometry.xyz[:, axis]
 
-        xmin, xmax = min(coord)-dx, max(coord)+dx
+        xmin, xmax = min(coord) - dx, max(coord) + dx
         ymin, ymax = -ymax, ymax
         x = np.linspace(xmin, xmax, nx)
         y = np.linspace(ymin, ymax, ny)
 
         dat = np.zeros((len(x), len(y)))
         for i, evi in enumerate(ev):
-            de = gamma_e/((y-evi)**2+gamma_e**2)/np.pi
+            de = gamma_e / ((y - evi) ** 2 + gamma_e ** 2) / np.pi
             dos = np.zeros(len(x))
             for j, vj in enumerate(evec[:, i]):
-                dos += abs(vj)**2*gamma_x/((x-coord[j])**2+gamma_x**2)/np.pi
+                dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + gamma_x ** 2) / np.pi
             dat += np.outer(dos, de)
-        intdat = np.sum(dat)*(x[1]-x[0])*(y[1]-y[0])
+        intdat = np.sum(dat) * (x[1] - x[0]) * (y[1] - y[0])
         print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
 
@@ -73,12 +120,12 @@ class LDOSmap(Plot):
             # Linear scale
             norm = colors.Normalize(vmin=vmin)
         self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, \
-                    origin='lower', norm=norm, vmax=vmax)
-        if axis==0:
+                                       origin='lower', norm=norm, vmax=vmax)
+        if axis == 0:
             self.set_xlabel(r'$x$ (\AA)')
-        elif axis==1:
+        elif axis == 1:
             self.set_xlabel(r'$y$ (\AA)')
-        elif axis==2:
+        elif axis == 2:
             self.set_xlabel(r'$z$ (\AA)')
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
@@ -121,7 +168,7 @@ class DOS_distribution(GeometryPlot):
             self.axes.scatter(x, y, DOS, 'b')
 
         for i, s in enumerate(sites):
-            self.axes.text(x[s], y[s], '%i'%i, fontsize=15, color='r')
+            self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
 
 
 class DOS(Plot):
@@ -133,9 +180,9 @@ class DOS(Plot):
 
         if np.any(sites):
             DOS = HubbardHamiltonian.PDOS(egrid, eta=eta, spin=spin)
-            offset = 0.*np.average(DOS[sites[0]])
+            offset = 0. * np.average(DOS[sites[0]])
             for i, s in enumerate(sites):
-                self.axes.plot(egrid, DOS[s]+offset*i, label='site %i'%i)
+                self.axes.plot(egrid, DOS[s] + offset * i, label='site %i' % i)
             self.legend()
         else:
             DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
