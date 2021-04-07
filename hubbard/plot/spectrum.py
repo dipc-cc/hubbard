@@ -37,18 +37,19 @@ class Spectrum(Plot):
             ev -= HubbardHamiltonian.midgap
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
-            self.axes.plot(ev, L, 'rg'[ispin]+'.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
+            self.axes.plot(ev, L, 'rg'[ispin] + '.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
 
             if 'annotate' in kwargs:
                 if kwargs['annotate'] != False:
                     for i in range(len(ev)):
-                        self.axes.annotate(i, (ev[i], L[i]), fontsize=6)
+                        if np.abs(ev[i]) < xmax:
+                            self.axes.annotate(f'({i}, {ev[i]:.3f})', (ev[i], L[i] * 1.05), fontsize=6, rotation=45)
         self.axes.legend()
         self.set_xlabel(r'$E_{\alpha\sigma}-E_\mathrm{mid}$ (eV)', fontsize=fontsize)
         self.set_ylabel(r'$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$', fontsize=fontsize)
         self.set_xlim(-xmax, xmax)
         if ymax == 0:
-            self.set_ylim(ymin, lmax+0.01)
+            self.set_ylim(ymin, lmax + 0.01)
         else:
             self.set_ylim(ymin, ymax)
 
