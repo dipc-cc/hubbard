@@ -9,7 +9,7 @@ Required dependencies
 * Python_ 2.7, 3.4 or newer
 * NumPy_ 1.10 or newer
 * SciPy_ 0.17 or newer
-* sisl_ 0.9.6 or newer
+* sisl_ 0.11.0 or newer
 
 Optional:
 
