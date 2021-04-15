@@ -42,6 +42,7 @@ p.savefig('spectrum.pdf')
 p = plot.LDOSmap(H)
 p.savefig('ldos_map.pdf')
 
+H.H.shift(-H.find_midgap())
 p = plot.DOS(H, np.linspace(-0.2, 0.2, 101))
 p.savefig('total_dos.pdf')
 

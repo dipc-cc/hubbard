@@ -63,7 +63,8 @@ if True:
     # Obtain DOS for the finite molecule with Lorentzian distribution
     egrid = np.linspace(-1, 1, 50)
     import hubbard.plot as plot
-    p = plot.DOS(H, egrid, eta=1e-2, spin=[0])
+    H.H.shift(-H.fermi_level())
+    p = plot.DOS(H, egrid, eta=1e-2, spin=0)
 
     # Now compute same molecule with the WBL approximation with gamma=0
     from hubbard.negf import NEGF
@@ -78,7 +79,8 @@ if True:
     print('Density difference (up, dn): (%.4e, %.4e)' % (max(abs(H.dm[0] - dm[0])), max(abs(H.dm[1] - dm[1]))))
 
     # Plot DOS calculated from the diagonalization and the WBL with gamma=0
-    dos = negf.DOS(H, egrid - negf.Ef, spin=0)
+    H.H.shift(-negf.Ef)
+    dos = negf.DOS(H, egrid, spin=0)
     p.axes.plot(egrid, dos, '--', label='WBL')
     p.legend()
     p.savefig('DOS-comparison.pdf')

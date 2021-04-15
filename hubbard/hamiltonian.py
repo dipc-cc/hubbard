@@ -742,7 +742,7 @@ class HubbardHamiltonian(object):
             sym = np.dot(v1, v2.T)
         return sym
 
-    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref='midgap'):
+    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref=0.):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
         Parameters
@@ -756,6 +756,8 @@ class HubbardHamiltonian(object):
             If spin is not specified it returns DOS_up + DOS_dn.
         dist: str or sisl.distribution, optional
             distribution for the convolution, defaults to Lorentzian
+        eref: float, optional
+            energy reference, defaults to zero
 
         See Also
         --------
@@ -778,16 +780,6 @@ class HubbardHamiltonian(object):
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
 
-        # Find midgap energy reference
-        if 'midgap' in eref:
-            eref = self.find_midgap()
-        elif 'fermi' in eref:
-            eref = self.fermi_level()
-        elif isinstance(eref, (float, int)):
-            eref = eref
-        else:
-            eref = 0.
-
         # Obtain eigenvalues
         dos = 0
         for ispin in spin:
@@ -795,7 +787,7 @@ class HubbardHamiltonian(object):
             dos += sisl.electron.DOS(egrid, eig, distribution=dist)
         return dos
 
-    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref='midgap'):
+    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref=0.):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
 
         Parameters
@@ -809,9 +801,8 @@ class HubbardHamiltonian(object):
             If spin is not specified it returns DOS_up + DOS_dn.
         dist: str or sisl.distribution, optional
             distribution for the convolution, defaults to Lorentzian
-        eref: str or float, optional
-            if ``eref =  'midgap'`` (``eref =  'fermi'``) it will use the midgap (Fermi) energy reference.
-            if it is a float value it will use the passed value. Default to 'midgap'.
+        eref: float, optional
+            energy reference, defaults to zero
 
         See Also
         --------
@@ -833,16 +824,6 @@ class HubbardHamiltonian(object):
 
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
-
-        # Find energy reference
-        if 'midgap' in eref:
-            eref = self.find_midgap()
-        elif 'fermi' in eref:
-            eref = self.fermi_level()
-        elif isinstance(eref, (float, int)):
-            eref = eref
-        else:
-            eref = 0.
 
         # Obtain PDOS
         pdos = 0
