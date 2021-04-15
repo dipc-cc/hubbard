@@ -19,7 +19,7 @@ H = hh.HubbardHamiltonian(Hsp2)
 f = open('FM-AFM.dat', 'w')
 
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
-H.random_density()
+H.set_polarization([77], dn=[23])
 for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
     H.U = 4.4-u

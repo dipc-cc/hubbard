@@ -31,10 +31,10 @@ class Spectrum(Plot):
         super().__init__(**kwargs)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
-        HubbardHamiltonian.find_midgap()
+        midgap = HubbardHamiltonian.find_midgap()
         for ispin in range(2):
             ev, L = HubbardHamiltonian.calc_orbital_charge_overlaps(k=k, spin=ispin)
-            ev -= HubbardHamiltonian.midgap
+            ev -= midgap
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
             self.axes.plot(ev, L, 'rg'[ispin] + '.+'[ispin], label=[r'$\sigma=\uparrow$', r'$\sigma=\downarrow$'][ispin])
@@ -94,7 +94,7 @@ class LDOSmap(Plot):
 
         super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
-        ev -= HubbardHamiltonian.midgap
+        ev -= HubbardHamiltonian.find_midgap()
         coord = HubbardHamiltonian.geometry.xyz[:, axis]
 
         xmin, xmax = min(coord) - dx, max(coord) + dx

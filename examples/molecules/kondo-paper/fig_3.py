@@ -24,7 +24,10 @@ spin = ['up', 'dn']
 N = H.q
 for i in range(1):
     ev, evec = H.eigh(eigvals_only=False, spin=i)
-ev -= H.midgap
+# Use midgap as energy reference
+midgap = H.find_midgap()
+print(midgap)
+ev -= midgap
 f = 1
 v = evec[:, int(round(N[i]))-1]
 j = np.argmax(abs(v))

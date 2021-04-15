@@ -316,7 +316,8 @@ class HubbardHamiltonian(object):
             ev_dn = self.eigh(k=k, spin=1)
             HOMO = max(HOMO, ev_up[int(round(self.q[0] - 1))], ev_dn[int(round(self.q[1] - 1))])
             LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
-        self.midgap = (HOMO + LUMO) * 0.5
+        midgap = (HOMO + LUMO) * 0.5
+        return midgap
 
     def fermi_level(self, q=[None, None], dist='fermi_dirac'):
         """ Find the fermi level for  a certain charge `q` at a certain `kT`
@@ -741,7 +742,7 @@ class HubbardHamiltonian(object):
             sym = np.dot(v1, v2.T)
         return sym
 
-    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian'):
+    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref='midgap'):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
         Parameters
@@ -777,16 +778,24 @@ class HubbardHamiltonian(object):
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
 
+        # Find midgap energy reference
+        if 'midgap' in eref:
+            eref = self.find_midgap()
+        elif 'fermi' in eref:
+            eref = self.fermi_level()
+        elif isinstance(eref, (float, int)):
+            eref = eref
+        else:
+            eref = 0.
+
         # Obtain eigenvalues
         dos = 0
-        # Find midgap energy reference
-        self.find_midgap()
         for ispin in spin:
-            eig = self.eigh(spin=ispin) - self.midgap
+            eig = self.eigh(spin=ispin) - eref
             dos += sisl.electron.DOS(egrid, eig, distribution=dist)
         return dos
 
-    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian'):
+    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref='midgap'):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
 
         Parameters
@@ -800,6 +809,9 @@ class HubbardHamiltonian(object):
             If spin is not specified it returns DOS_up + DOS_dn.
         dist: str or sisl.distribution, optional
             distribution for the convolution, defaults to Lorentzian
+        eref: str or float, optional
+            if ``eref =  'midgap'`` (``eref =  'fermi'``) it will use the midgap (Fermi) energy reference.
+            if it is a float value it will use the passed value. Default to 'midgap'.
 
         See Also
         --------
@@ -822,13 +834,21 @@ class HubbardHamiltonian(object):
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
 
-        # Find midgap reference
-        self.find_midgap()
+        # Find energy reference
+        if 'midgap' in eref:
+            eref = self.find_midgap()
+        elif 'fermi' in eref:
+            eref = self.fermi_level()
+        elif isinstance(eref, (float, int)):
+            eref = eref
+        else:
+            eref = 0.
+
         # Obtain PDOS
         pdos = 0
         for ispin in spin:
             ev, evec = self.eigh(eigvals_only=False, spin=ispin)
-            ev -= self.midgap
+            ev -= eref
             pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=dist)
 
         return pdos

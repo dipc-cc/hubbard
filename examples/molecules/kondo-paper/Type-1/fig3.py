@@ -19,8 +19,8 @@ H = hh.HubbardHamiltonian(Hsp2)
 H.U = 0.0
 ev, evec = H.eigh(eigvals_only=False, spin=0)
 N = H.q[0]
-H.find_midgap()
-ev -= H.midgap
+midgap = H.find_midgap()
+ev -= midgap
 f = 3800
 v = evec[:, int(round(N))-1]
 j = np.argmax(abs(v))
@@ -33,7 +33,7 @@ p.savefig('Fig3_SOMO.pdf')
 H.U = 3.5
 success = H.read_density('fig3_type1.nc') # Try reading, if we already have density on file
 if not success:
-    H.random_density()
+    H.set_polarization([23])
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
 H.converge(dm.dm_insulator, mixer=mixer)
 H.write_density('fig3_type1.nc')

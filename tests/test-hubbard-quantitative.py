@@ -70,8 +70,7 @@ if True:
     elec = sisl.WideBandSE(2, 0.)
     negf = NEGF(H, [elec], [[0, 1]])
     # This is to use a better guess for the device potential
-    H.find_midgap()
-    negf.Ef = -H.midgap
+    negf.Ef =  H.find_midgap()
     negf.eta = 1e-2
     mixer.clear()
     ddm = H.converge(negf.dm_open, mixer=mixer, tol=1e-10, func_args={'qtol': 1e-4}, steps=1, print_info=True)

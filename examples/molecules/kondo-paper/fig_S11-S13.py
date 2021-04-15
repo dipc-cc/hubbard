@@ -27,7 +27,7 @@ for u in [0.0, 3.5]:
         lab = 'Fig_S13'
         success = H.read_density('fig_S11-S13.nc') # Try reading, if we already have density on file
         if not success:
-            H.random_density()
+            H.set_polarization([77], dn=[23])
         mixer.clear()
         H.converge(dm.dm_insulator, mixer=mixer)
         H.write_density('fig_S11-S13.nc')
@@ -40,10 +40,10 @@ for u in [0.0, 3.5]:
     # Plot HOMO and LUMO level wavefunctions for up- and down-electrons
     spin = ['up', 'dn']
     N = H.q
+    midgap = H.find_midgap()
     for i in range(2):
         ev, evec = H.eigh(eigvals_only=False, spin=i)
-        H.find_midgap()
-        ev -= H.midgap
+        ev -= midgap
 
         f = 1
 
