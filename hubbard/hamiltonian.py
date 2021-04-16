@@ -107,7 +107,7 @@ class HubbardHamiltonian(object):
         """
         if isinstance(nkpt, sisl.BrillouinZone):
             self.mp = nkpt
-        elif isinstance(nkpt, np.ndarray) or isinstance(nkpt, list):
+        elif isinstance(nkpt, (np.ndarray, list)):
             self.mp = sisl.MonkhorstPack(self.H, nkpt)
         else:
             raise ValueError(self.__class__.__name__ + '.set_kmesh(...) requires an array_like input')
@@ -343,7 +343,7 @@ class HubbardHamiltonian(object):
         for i in (0, 1):
             if Q[i] is None:
                 Q[i] = self.q[i]
-        if isinstance(dist, (str)):
+        if isinstance(dist, str):
             dist = sisl.get_distribution(dist, smearing=self.kT)
 
         Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
@@ -773,14 +773,14 @@ class HubbardHamiltonian(object):
             density of states at the given energies for the selected spin
         """
         # Ensure spin is iterable
-        if not isinstance(spin, (list)) or isinstance(spin, (np.ndarray)):
+        if not isinstance(spin, (list, np.ndarray)):
             spin = [spin]
 
         # Check if egrid is numpy.ndarray
-        if not isinstance(egrid, (np.ndarray)):
+        if not isinstance(egrid, np.ndarray):
             egrid = np.array(egrid)
 
-        if isinstance(dist, (str)):
+        if isinstance(dist, str):
             dist = sisl.get_distribution(dist, smearing=eta)
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
@@ -820,14 +820,14 @@ class HubbardHamiltonian(object):
             projected density of states at the given energies for the selected spin
         """
         # Ensure spin is iterable
-        if not isinstance(spin, (list)) or isinstance(spin, (np.ndarray)):
+        if not isinstance(spin, (list, np.ndarray)):
             spin = [spin]
 
         # Check if egrid is numpy.ndarray
-        if not isinstance(egrid, (np.ndarray)):
+        if not isinstance(egrid, np.ndarray):
             egrid = np.array(egrid)
 
-        if isinstance(dist, (str)):
+        if isinstance(dist, str):
             dist = sisl.get_distribution(dist, smearing=eta)
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
