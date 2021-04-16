@@ -5,6 +5,7 @@ import hashlib
 import os
 import math
 from scipy.linalg import inv
+import warnings
 
 _pi = math.pi
 
@@ -779,6 +780,8 @@ class HubbardHamiltonian(object):
 
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
+        else:
+            warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
         # Obtain eigenvalues
         dos = 0
@@ -824,6 +827,8 @@ class HubbardHamiltonian(object):
 
         if isinstance(dist, (str)):
             dist = sisl.get_distribution(dist, smearing=eta)
+        else:
+            warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
         # Obtain PDOS
         pdos = 0
