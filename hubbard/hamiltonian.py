@@ -321,14 +321,14 @@ class HubbardHamiltonian(object):
         return midgap
 
     def fermi_level(self, q=[None, None], dist='fermi_dirac'):
-        """ Find the fermi level for  a certain charge `q` at a certain `kT`
+        """ Find the fermi level for a certain charge `q` at a certain `kT`
 
         Parameters
         ----------
         q: array_like, optional
             charge per spin channel. First index for spin up, second index for dn
-        dist: str, optional
-            distribution
+        dist: str or sisl.distribution, optional
+            distribution function
 
         See Also
         --------
@@ -343,7 +343,9 @@ class HubbardHamiltonian(object):
         for i in (0, 1):
             if Q[i] is None:
                 Q[i] = self.q[i]
-        dist = sisl.get_distribution(dist, smearing=self.kT)
+        if isinstance(dist, (str)):
+            dist = sisl.get_distribution(dist, smearing=self.kT)
+
         Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
         return Ef
 
