@@ -3,7 +3,7 @@ import hubbard.sp2 as sp2
 import hubbard.plot as plot
 import sys
 import numpy as np
-import hubbard.density as dm
+import hubbard.density as dens
 import sisl
 
 # Build sisl Geometry object
@@ -32,7 +32,7 @@ for u in np.linspace(0.0, 4.0, 5):
         H.random_density()
         H.set_polarization([1, 6, 15]) # polarize lower zigzag edge
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer)
+    dn = H.converge(dens.calc_occ_insulator, mixer=mixer)
     eAFM = H.Etot
     H.write_density(mol_file+'.nc')
 
@@ -48,7 +48,7 @@ for u in np.linspace(0.0, 4.0, 5):
     except:
         H.random_density()
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer)
+    dn = H.converge(dens.calc_occ_insulator, mixer=mixer)
     eFM = H.Etot
     H.write_density(mol_file+'.nc')
 

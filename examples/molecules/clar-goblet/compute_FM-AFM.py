@@ -16,7 +16,7 @@ Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
 H = hh.HubbardHamiltonian(Hsp2)
 H.random_density()
 H.set_polarization(up=[6], dn=[28])
-dm_AFM = H.dm
+occ_AFM = H.occ
 
 f = open('FM-AFM.dat', 'w')
 
@@ -30,12 +30,12 @@ for u in np.arange(5, 0, -0.25):
     # AFM case first
     success = H.read_density('clar-goblet.nc') # Try reading, if we already have density on file
     if not success:
-        H.dm = dm_AFM.copy()
+        H.occ = occ_AFM.copy()
 
-    dn = H.converge(density.dm_insulator, tol=1e-10, mixer=mixer)
+    dn = H.converge(density.calc_occ_insulator, tol=1e-10, mixer=mixer)
     eAFM = H.Etot
     H.write_density('clar-goblet.nc')
-    dm_AFM = H.dm.copy()
+    occ_AFM = H.occ.copy()
 
     if u == 3.5:
         p = plot.SpinPolarization(H, colorbar=True, vmax=0.4, vmin=-0.4)
@@ -49,7 +49,7 @@ for u in np.arange(5, 0, -0.25):
         H.random_density()
         H.set_polarization(up=[6, 28])
     mixer.clear()
-    dn = H.converge(density.dm_insulator, tol=1e-10, mixer=mixer)
+    dn = H.converge(density.calc_occ_insulator, tol=1e-10, mixer=mixer)
     eFM = H.Etot
     H.write_density('clar-goblet.nc')
 

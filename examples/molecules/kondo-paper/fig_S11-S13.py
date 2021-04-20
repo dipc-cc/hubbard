@@ -1,7 +1,7 @@
 import hubbard.hamiltonian as hh
 import hubbard.plot as plot
 import hubbard.sp2 as sp2
-import hubbard.density as dm
+import hubbard.density as density
 import sys
 import numpy as np
 
@@ -29,7 +29,7 @@ for u in [0.0, 3.5]:
         if not success:
             H.set_polarization([77], dn=[23])
         mixer.clear()
-        H.converge(dm.dm_insulator, mixer=mixer)
+        H.converge(density.calc_occ_insulator, mixer=mixer)
         H.write_density('fig_S11-S13.nc')
 
     # Plot Eigenspectrum

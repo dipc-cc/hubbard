@@ -81,9 +81,9 @@ class HubbardHamiltonian(object):
         self.kT = kT
 
         # Initialize density matrix
-        self.set_dm(DM)
+        self.set_DM(DM)
 
-    def set_dm(self, DM=None):
+    def set_DM(self, DM=None):
         """ Set the density matrix for the HubbardHamiltonian
 
         Parameters
@@ -95,7 +95,7 @@ class HubbardHamiltonian(object):
             self.DM = DM
         else:
             self.DM = sisl.DensityMatrix(self.geometry, dim=2, orthogonal=self.TBHam.orthogonal)
-        self.dm = self.DM._csr.diagonal().T
+        self.occ = self.DM._csr.diagonal().T
 
     def set_kmesh(self, nkpt=[1, 1, 1]):
         """ Set the k-mesh for the HubbardHamiltonian
@@ -250,7 +250,7 @@ class HubbardHamiltonian(object):
 
         q0 = self.geometry.atoms.q0
         E = self.e0.copy()
-        E += self.U * (self.dm[[1, 0], :] - q0)
+        E += self.U * (self.occ[[1, 0], :] - q0)
         a = np.arange(len(self.H))
         self.H[a, a, [0, 1]] = E.T
 
@@ -260,23 +260,23 @@ class HubbardHamiltonian(object):
         Notes
         -----
         This method can be generalized to return the density matrix with off-diagonal elements
-        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `hubbard.dm`)
+        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `hubbard.occ`)
         """
 
         # TODO Generalize this method to return the density matrix with off-diagonal elements
         # for non-orthogonal LCAO basis
         a = np.arange(len(self.H))
-        self.DM[a, a, [0, 1]] = self.dm.T
+        self.DM[a, a, [0, 1]] = self.occ.T
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
-        self.dm = np.random.rand(2, self.sites)
+        self.occ = np.random.rand(2, self.sites)
         self.normalize_charge()
         self.update_density_matrix()
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
-        self.dm *= (self.q / self.dm.sum(1)).reshape(-1, 1)
+        self.occ *= (self.q / self.occ.sum(1)).reshape(-1, 1)
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites
@@ -289,9 +289,9 @@ class HubbardHamiltonian(object):
         dn: array_like, optional
             atomic sites where the spin-down density is going to be maximized
         """
-        self.dm[:, up] = np.array([1., 0.]).reshape(2, 1)
+        self.occ[:, up] = np.array([1., 0.]).reshape(2, 1)
         if len(dn) > 0:
-            self.dm[:, dn] = np.array([0., 1.]).reshape(2, 1)
+            self.occ[:, dn] = np.array([0., 1.]).reshape(2, 1)
         self.normalize_charge()
         self.update_density_matrix()
 
@@ -300,8 +300,8 @@ class HubbardHamiltonian(object):
         without checking that consequtive atoms actually belong to
         different sublattices """
         a = np.arange(len(self.H))
-        self.dm[0, :] = a % 2
-        self.dm[1, :] = 1 - self.dm[0, :]
+        self.occ[0, :] = a % 2
+        self.occ[1, :] = 1 - self.occ[0, :]
         self.normalize_charge()
         self.update_density_matrix()
 
@@ -369,8 +369,8 @@ class HubbardHamiltonian(object):
             s, group = self._get_hash()
             fh = nc.ncSilehubbard(fn, mode=mode)
             if group in fh.groups:
-                dm = fh.read_density(group)
-                self.dm = dm
+                occ = fh.read_density(group)
+                self.occ = occ
                 self.update_density_matrix()
                 self.update_hamiltonian()
                 return True
@@ -390,7 +390,7 @@ class HubbardHamiltonian(object):
             mode = 'w'
         s, group = self._get_hash()
         fh = nc.ncSilehubbard(fn, mode=mode)
-        fh.write_density(s, group, self.dm)
+        fh.write_density(s, group, self.occ)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
@@ -418,7 +418,7 @@ class HubbardHamiltonian(object):
             geom = ext_geom
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
-        polarization = self.dm[0] - self.dm[1]
+        polarization = self.occ[0] - self.occ[1]
         dq = np.sum(polarization)
         f = open(fn, mode=mode)
         f.write('# hubbard: U=%.3f eV\n' % self.U)
@@ -435,18 +435,18 @@ class HubbardHamiltonian(object):
             f.write(s + '\n')
         f.write('%endblock DM.InitSpin\n\n')
 
-    def iterate(self, dm_method, q=None, mixer=None, **kwargs):
+    def iterate(self, calc_occ_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation
 
-        The only thing that may change is the way in which the spin-densities (``dm``) and total energy (``Etot``) are obtained
-        where one needs to use the correct `dm_method` for the particular system.
+        The only thing that may change is the way in which the spin-densities (``occ``) and total energy (``Etot``) are obtained
+        where one needs to use the correct `calc_occ_method` for the particular system.
 
 
         Parameters
         ----------
-        dm_method: callable
+        calc_occ_method: callable
             method to obtain the spin-densities
-            it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
+            it *must* return the corresponding spin-densities (``occ``) and the total energy (``Etot``)
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
         mixer: Mixer, optional
@@ -456,10 +456,10 @@ class HubbardHamiltonian(object):
         --------
         update_hamiltonian
         update_density_matrix
-        hubbard.dm
-            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        hubbard.NEGF.dm_open
-            method to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+        hubbard.occ
+            method to obtain ``occ`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        hubbard.NEGF.calc_occ_open
+            method to obtain  ``occ`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
         `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 
         Returns
@@ -475,16 +475,16 @@ class HubbardHamiltonian(object):
             if q[1] is None:
                 q[1] = int(round(self.q[1]))
 
-        ni, Etot = dm_method(self, q, **kwargs)
+        ni, Etot = calc_occ_method(self, q, **kwargs)
 
         # Measure of density change
-        ddm = ni - self.dm
+        ddm = ni - self.occ
         dn = np.absolute(ddm).max()
 
         # Update occupations on sites with mixing algorithm
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
-        self.dm = mixer(self.dm.ravel(), ddm.ravel()).reshape(self.dm.shape)
+        self.occ = mixer(self.occ.ravel(), ddm.ravel()).reshape(self.occ.shape)
 
         # Update density matrix
         self.update_density_matrix()
@@ -493,20 +493,20 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - self.U * np.multiply.reduce(self.dm, axis=0).sum()
+        self.Etot = Etot - self.U * np.multiply.reduce(self.occ, axis=0).sum()
 
         return dn
 
-    def converge(self, dm_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
+    def converge(self, calc_occ_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion
 
         This method calls `iterate` as many times as it needs until it reaches the specified tolerance
 
         Parameters
         ----------
-        dm_method: callable
+        calc_occ_method: callable
             method to obtain the spin-densities
-            it *must* return the corresponding spin-densities (``dm``) and the total energy (``Etot``)
+            it *must* return the corresponding spin-densities (``occ``) and the total energy (``Etot``)
         tol: float, optional
             tolerance criterion
         mixer: Mixer
@@ -519,15 +519,15 @@ class HubbardHamiltonian(object):
             optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
             the specified `steps`), by giving the name of the full name of the *binary file*
         func_args: dictionary, optional
-            function arguments to pass to dm_method
+            function arguments to pass to calc_occ_method
 
         See Also
         --------
         iterate
-        hubbard.dm
-            method to obtain ``dm`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        hubbard.occ
+            method to obtain ``occ`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         hubbard.NEGF
-            class that contains the routines to obtain  ``dm`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+            class that contains the routines to obtain  ``occ`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
         `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
 
         Returns
@@ -543,7 +543,7 @@ class HubbardHamiltonian(object):
         i = 0
         while dn > tol:
             i += 1
-            dn = self.iterate(dm_method, mixer=mixer, **func_args)
+            dn = self.iterate(occ_method, mixer=mixer, **func_args)
             if i % steps == 0:
                 # Print some info from time to time
                 if print_info:

@@ -23,7 +23,7 @@ for i, geom in enumerate([agnr, zgnr]):
     # Start with random densities
     H.random_density()
     mixer.clear()
-    dn = H.converge(density.dm, mixer=mixer, print_info=True)
+    dn = H.converge(density.calc_occ, mixer=mixer, print_info=True)
 
     # Plot banstructure of Hubbard Hamiltonian
     p = plot.Bandstructure(H, ymax=3)

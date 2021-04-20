@@ -20,7 +20,7 @@ p.savefig('bondHoppings.pdf')
 
 H = hh.HubbardHamiltonian(H_mol, U=3.5)
 H.read_density('mol-ref/density.nc')
-H.iterate(dens.dm_insulator)
+H.iterate(dens.calc_occ_insulator)
 
 p = plot.Charge(H, ext_geom=molecule, colorbar=True)
 p.savefig('chg.pdf')

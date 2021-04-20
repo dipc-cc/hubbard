@@ -17,19 +17,19 @@ class ncSilehubbard(sisl.SileCDF):
         g = self.groups[group]
 
         # Read densities
-        dm = g.variables['dm'][:]
-        return dm
+        occ = g.variables['occ'][:]
+        return occ
 
-    def write_density(self, infolabel, group, dm):
+    def write_density(self, infolabel, group, occ):
         # Create group
         g = self._crt_grp(self, group)
         g.info = infolabel
 
         # Create dimensions
-        self._crt_dim(self, 'ncomp', dm.shape[0])
-        self._crt_dim(self, 'norb', dm.shape[1])
+        self._crt_dim(self, 'ncomp', occ.shape[0])
+        self._crt_dim(self, 'norb', occ.shape[1])
 
-        # Write variable dm
-        v = self._crt_var(g, 'dm', ('f8', 'f8'), ('ncomp', 'norb'))
+        # Write variable occ
+        v = self._crt_var(g, 'occ', ('f8', 'f8'), ('ncomp', 'norb'))
         v.info = 'Densities'
-        g.variables['dm'][:] = dm
+        g.variables['occ'][:] = occ

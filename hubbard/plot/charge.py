@@ -41,7 +41,7 @@ class Charge(GeometryPlot):
         if not isinstance(spin, list):
             spin = [spin]
 
-        charge = HubbardHamiltonian.dm[spin].sum(axis=0)
+        charge = HubbardHamiltonian.occ[spin].sum(axis=0)
 
         if realspace:
             self.__realspace__(charge, density=True, **kwargs)
@@ -81,7 +81,7 @@ class ChargeDifference(GeometryPlot):
         super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute total charge on each site, subtract neutral atom charge
-        charge = HubbardHamiltonian.dm.sum(0)
+        charge = HubbardHamiltonian.occ.sum(0)
         for ia in HubbardHamiltonian.geometry:
             charge[ia] -= HubbardHamiltonian.geometry.atoms[ia].Z-5
 
@@ -120,7 +120,7 @@ class SpinPolarization(GeometryPlot):
         super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute charge difference between up and down channels
-        charge = np.diff(HubbardHamiltonian.dm[[1, 0]], axis=0).ravel()
+        charge = np.diff(HubbardHamiltonian.occ[[1, 0]], axis=0).ravel()
 
         if realspace:
             self.__realspace__(charge, density=True, **kwargs)

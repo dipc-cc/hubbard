@@ -35,7 +35,7 @@ if not success:
     MFH_elec.random_density()
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(density.dm, mixer=mixer)
+dn = MFH_elec.converge(density.calc_occ, mixer=mixer)
 
 # Write also densities for future calculations
 MFH_elec.write_density('elec_density.nc')
@@ -64,16 +64,16 @@ success = MFH_HC.read_density('HC_density.nc')
 if not success:
     # Converge without OBC to have initial density
     mixer.clear()
-    MFH_HC.converge(density.dm, tol=1e-5, mixer=mixer)
+    MFH_HC.converge(density.calc_occ, tol=1e-5, mixer=mixer)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 # Converge using Green's function method to obtain the densities
 mixer.clear()
-dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-5, mixer=mixer, print_info=True)
+dn = MFH_HC.converge(negf.calc_occ_open, steps=1, tol=1e-5, mixer=mixer, print_info=True)
 
 MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)
-print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
+print('Nup, Ndn: ', MFH_HC.occ.sum(axis=1))
 # Write also densities for future calculations
 MFH_HC.write_density('HC_density.nc')
 # Plot spin polarization of electrodes

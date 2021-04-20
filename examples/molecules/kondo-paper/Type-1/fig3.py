@@ -1,7 +1,7 @@
 import hubbard.hamiltonian as hh
 import hubbard.plot as plot
 import hubbard.sp2 as sp2
-import hubbard.density as dm
+import hubbard.density as density
 import sys
 import numpy as np
 import sisl
@@ -35,7 +35,7 @@ success = H.read_density('fig3_type1.nc') # Try reading, if we already have dens
 if not success:
     H.set_polarization([23])
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
-H.converge(dm.dm_insulator, mixer=mixer)
+H.converge(density.calc_occ_insulator, mixer=mixer)
 H.write_density('fig3_type1.nc')
 p = plot.SpinPolarization(H, ext_geom=mol, vmax=0.20)
 p.savefig('fig3_pol.pdf')
