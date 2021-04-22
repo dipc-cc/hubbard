@@ -65,6 +65,21 @@ class HubbardHamiltonian(object):
         self._hash_base = s
         del H0
 
+        if U == None:
+            try:
+                # Try to extract U stored in sisl.Geometry object
+                U = np.array(len(self.geometry))
+                for ia in self.geometry:
+                    U[ia] = self.geometry.atom[ia].U
+            except AttributeError:
+                U = 0.0
+
+        # Hubbard Coulomb parameter
+        self.U = U*np.identity(len(self.geometry)) # Multiply with the identity matrix to ensure that the U variable is a matrix
+        # Separate into intra and inter-atomic interactions:
+        self.U_ii = np.diag(self.U)
+        self.U_ij = self.U - self.U_ii*np.identity(len(self.geometry))
+
         # Total initial charge
         ntot = self.geometry.q0
         if ntot == 0:
@@ -260,20 +275,26 @@ class HubbardHamiltonian(object):
             self.e0[spin] = e
 
     def update_hamiltonian(self):
-        """ Update spin Hamiltonian according to the mean-field Hubbard model
-        It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities
+        r""" Update spin Hamiltonian according to the extended Hubbard model,
+        see for instance `PRL 106, 236805 (2011)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
+        It updtates the diagonal elements for each spin Hamiltonian following the mean field approximation:
 
-        Notes
-        -----
-        This method has to be generalized for inter-atomic Coulomb repulsion also
+        .. math::
+
+            H &= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} + \frac{1}{2}\sum_{i\neq j\sigma\sigma^\prime}U_{ij}n_{i\sigma}n_{j\sigma^\prime} \approx\\
+	        & -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} + \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij} + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + C
+
+        The constat term :math:`C = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle - \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle + \langle n_{j\downarrow}\rangle\right)`
+        will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-
-        # TODO Generalize this method for inter-atomic Coulomb repulsion also
 
         q0 = self.geometry.atoms.q0
         E = self.e0.copy()
         ispin = np.arange(self.spin_size)[::-1]
-        E += self.U * (self.n[ispin, :] - q0)
+        # diagonal elements
+        E += self.U_ii * (self.n[ispin, :] - q0)
+        # off-diafonal elements
+        E += 0.5*(self.U_ij+self.U_ij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
         a = np.arange(len(self.H))
         self.H[a, a, range(self.spin_size)] = E.T
 
@@ -449,7 +470,6 @@ class HubbardHamiltonian(object):
         polarization = self.n[0] - self.n[1]
         dq = np.sum(polarization)
         f = open(fn, mode=mode)
-        f.write('# hubbard: U=%.3f eV\n' % self.U)
         if spinfix:
             f.write('Spin.Fix True\n')
             f.write('Spin.Total %.6f\n' % dq)
@@ -514,8 +534,7 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - self.U * (ni[0]*ni[-1]).sum()
-
+        self.Etot = Etot - (self.U_ii * ni[0]*ni[-1]).sum() - 0.5*self.U_ij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
         return dn
 
     def converge(self, calc_n_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
