@@ -65,12 +65,12 @@ class HubbardHamiltonian(object):
         self._hash_base = s
         del H0
 
-        if U == None:
+        if U is None:
             try:
                 # Try to extract U stored in sisl.Geometry object
                 U = np.array(len(self.geometry))
                 for ia in self.geometry:
-                    U[ia] = self.geometry.atom[ia].U
+                    U[ia] = self.geometry.atoms[ia].U
             except AttributeError:
                 U = 0.0
 
@@ -293,7 +293,7 @@ class HubbardHamiltonian(object):
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
         E += self.U_ii * (self.n[ispin, :] - q0)
-        # off-diafonal elements
+        # off-diagonal elements
         E += 0.5*(self.U_ij+self.U_ij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
         a = np.arange(len(self.H))
         self.H[a, a, range(self.spin_size)] = E.T
