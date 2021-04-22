@@ -20,10 +20,9 @@ class ncSilehubbard(sisl.SileCDF):
         dm = g.variables['dm'][:]
         return dm
 
-    def write_density(self, infolabel, group, dm):
+    def write_density(self, group, dm):
         # Create group
         g = self._crt_grp(self, group)
-        g.info = infolabel
 
         # Create dimensions
         self._crt_dim(self, 'ncomp', dm.shape[0])

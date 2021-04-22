@@ -56,12 +56,12 @@ class HubbardHamiltonian(object):
         self.H.finalize()
         self.geometry = TBHam.geometry
 
-        if U == None:
+        if U is None:
             try:
                 # Try to extract U stored in sisl.Geometry object
                 U = np.array(len(self.geometry))
                 for ia in self.geometry:
-                    U[ia] = self.geometry.atom[ia].U
+                    U[ia] = self.geometry.atoms[ia].U
             except AttributeError:
                 U = 0.0
 
@@ -269,7 +269,7 @@ class HubbardHamiltonian(object):
         a = np.arange(len(self.H))
         # diagonal elements
         E += self.U_ii * (self.dm[[1, 0], :] - q0)
-        # off-diafonal elements
+        # off-diagonal elements
         E += 0.5*(self.U_ij+self.U_ij.T).dot(self.dm.sum(axis=0)-q0) # Same thing adds to both spin components
         self.H[a, a, [0, 1]] = E.T
 
@@ -369,10 +369,7 @@ class HubbardHamiltonian(object):
         return Ef
 
     def _get_hash(self):
-        s = 'U=%.4f' % self.U.sum()
-        s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
-        s += ' base=%.3f' % self.hash_base
-        return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+        return str(hash((self.U.tostring(), self.q.tostring(), self.hash_base.tostring())))
 
     def read_density(self, fn, mode='a', match_hash=True):
         """ Read density from binary file
@@ -388,7 +385,7 @@ class HubbardHamiltonian(object):
             and the one corresponding to the current calculation coincides
         """
         if os.path.isfile(fn):
-            s, group = self._get_hash()
+            group = self._get_hash()
             fh = nc.ncSilehubbard(fn, mode=mode)
             if match_hash:
                 if group in fh.groups:
@@ -420,9 +417,9 @@ class HubbardHamiltonian(object):
         """
         if not os.path.isfile(fn):
             mode = 'w'
-        s, group = self._get_hash()
+        group = self._get_hash()
         fh = nc.ncSilehubbard(fn, mode=mode)
-        fh.write_density(s, group, self.dm)
+        fh.write_density(group, self.dm)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
@@ -524,7 +521,8 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - (self.U_ii * np.multiply.reduce(self.dm, axis=0)).sum() - self.U_ij.dot(self.dm.sum(axis=0)).dot(self.dm.sum(axis=0))
+        dm_sum = self.dm.sum(axis=0) # Sum densities for the two spin components
+        self.Etot = Etot - (self.U_ii * np.multiply.reduce(self.dm, axis=0)).sum() - self.U_ij @ dm_sum @ dm_sum
 
         return dn
 
