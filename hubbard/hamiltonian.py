@@ -26,8 +26,8 @@ class HubbardHamiltonian(object):
         An unpolarized or spin-polarized tight-binding Hamiltonian
     n: numpy.ndarray, optional
         initial spin-densities vectors. The shape of `n` must be (spin deg. of freedom, no. of sites)
-    U: float, optional
-        on-site Coulomb repulsion
+    U: float or np.ndarray, optional
+        Coulomb repulsion parameter
     q: array_like, optional
         One or two values specifying the total charge associated to each spin component.
         The array should contain as many values as the dimension of the problem. I.e., if the
@@ -39,6 +39,10 @@ class HubbardHamiltonian(object):
     units: str, optional
         (energy) units of U, kT and the TB Hamiltonian parameters (namely the hopping term and the onsite energies).
         If one uses another units then it should be specified here. electron volts are used by default
+
+    Note
+    ----
+    The implementation to solve the extended Hubbard model (with inter-atomic interactions) has not been tested
     """
 
     def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5, units='eV'):
