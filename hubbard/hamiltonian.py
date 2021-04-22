@@ -39,7 +39,7 @@ class HubbardHamiltonian(object):
         Temperature of the system in units of the Boltzmann constant
     """
 
-    def __init__(self, TBHam, DM=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
+    def __init__(self, TBHam, DM=0, U=None, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
 
         if not TBHam.spin.is_polarized:
@@ -50,13 +50,26 @@ class HubbardHamiltonian(object):
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
         self.hash_base = H0.H.tocsr().sum()
 
-        self.U = U # hubbard onsite Coulomb parameter
-
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.TBHam = TBHam
         self.H = TBHam.copy()
         self.H.finalize()
         self.geometry = TBHam.geometry
+
+        if U == None:
+            try:
+                # Try to extract U stored in sisl.Geometry object
+                U = np.array(len(self.geometry))
+                for ia in self.geometry:
+                    U[ia] = self.geometry.atom[ia].U
+            except AttributeError:
+                U = 0.0
+
+        # Hubbard Coulomb parameter
+        self.U = U*np.identity(len(self.geometry)) # Multiply with the identity matrix to ensure that the U variable is a matrix
+        # Separate into intra and inter-atomic interactions:
+        self.U_ii = np.diag(self.U)
+        self.U_ij = self.U - self.U_ii*np.identity(len(self.geometry))
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -238,20 +251,26 @@ class HubbardHamiltonian(object):
         self.e0 = np.array([e0, e1])
 
     def update_hamiltonian(self):
-        """ Update spin Hamiltonian according to the mean-field Hubbard model
-        It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities
+        r""" Update spin Hamiltonian according to the extended Hubbard model,
+        see for instance `PRL 106, 236805 (2011)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
+        It updtates the diagonal elements for each spin Hamiltonian following the mean field approximation:
 
-        Notes
-        -----
-        This method has to be generalized for inter-atomic Coulomb repulsion also
+        .. math::
+
+            H &= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} + \frac{1}{2}\sum_{i\neq j\sigma\sigma^\prime}U_{ij}n_{i\sigma}n_{j\sigma^\prime} \approx\\
+	        & -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} + \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij} + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + C
+
+        The constat term :math:`C = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle - \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle + \langle n_{j\downarrow}\rangle\right)`
+        will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-
-        # TODO Generalize this method for inter-atomic Coulomb repulsion also
 
         q0 = self.geometry.atoms.q0
         E = self.e0.copy()
-        E += self.U * (self.dm[[1, 0], :] - q0)
         a = np.arange(len(self.H))
+        # diagonal elements
+        E += self.U_ii * (self.dm[[1, 0], :] - q0)
+        # off-diafonal elements
+        E += 0.5*(self.U_ij+self.U_ij.T).dot(self.dm.sum(axis=0)-q0) # Same thing adds to both spin components
         self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
@@ -350,7 +369,7 @@ class HubbardHamiltonian(object):
         return Ef
 
     def _get_hash(self):
-        s = 'U=%.4f' % self.U
+        s = 'U=%.4f' % self.U.sum()
         s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
         s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
@@ -434,7 +453,6 @@ class HubbardHamiltonian(object):
         polarization = self.dm[0] - self.dm[1]
         dq = np.sum(polarization)
         f = open(fn, mode=mode)
-        f.write('# hubbard: U=%.3f eV\n' % self.U)
         if spinfix:
             f.write('Spin.Fix True\n')
             f.write('Spin.Total %.6f\n' % dq)
@@ -506,7 +524,7 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - self.U * np.multiply.reduce(self.dm, axis=0).sum()
+        self.Etot = Etot - (self.U_ii * np.multiply.reduce(self.dm, axis=0)).sum() - self.U_ij.dot(self.dm.sum(axis=0)).dot(self.dm.sum(axis=0))
 
         return dn
 

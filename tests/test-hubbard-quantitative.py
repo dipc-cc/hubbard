@@ -14,7 +14,7 @@ molecule.sc.set_nsc([1, 1, 1])
 # Try reading from file
 Hsp2 = sp2(molecule)
 H = hh.HubbardHamiltonian(Hsp2, U=3.5)
-H.read_density('mol-ref/density.nc')
+H.read_density('mol-ref/density.nc', match_hash=False)
 H.iterate(dens.dm_insulator, mixer=sisl.mixing.LinearMixer())
 
 # Determine reference values for the tests
