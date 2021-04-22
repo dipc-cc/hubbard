@@ -1,7 +1,6 @@
 import numpy as np
 import sisl
 import hubbard.ncsile as nc
-import hashlib
 import os
 import math
 import warnings
@@ -78,11 +77,8 @@ class HubbardHamiltonian(object):
             except AttributeError:
                 U = 0.0
 
-        # Hubbard Coulomb parameter
-        self.U = U*np.identity(len(self.geometry)) # Multiply with the identity matrix to ensure that the U variable is a matrix
-        # Separate into intra and inter-atomic interactions:
-        self.U_ii = np.diag(self.U)
-        self.U_ij = self.U - self.U_ii*np.identity(len(self.geometry))
+        # Hubbard Coulomb parameter (use setter)
+        self.U = U
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -122,6 +118,22 @@ class HubbardHamiltonian(object):
                 self.n = n
         # Ensure normalized charge
         self.normalize_charge()
+
+    @property
+    def U(self):
+        """ U values in full matrix form """
+        return self._U
+
+    @U.setter
+    def U(self, U):
+        """ Set U values """
+        # Hubbard Coulomb parameter
+        # Multiply with the identity matrix to ensure that the U variable is a matrix
+        self._U = U * np.identity(len(self.geometry))
+        # Separate into intra and inter-atomic interactions:
+        self._U_ii = np.diag(self._U)
+        self._U_ij = self._U.copy()
+        np.fill_diagonal(self._U_ij, 0.)
 
     def set_kmesh(self, nkpt=[1, 1, 1]):
         """ Set the k-mesh for the HubbardHamiltonian
