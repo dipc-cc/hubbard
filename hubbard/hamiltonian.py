@@ -29,14 +29,18 @@ class HubbardHamiltonian(object):
     DM: `sisl.physics.DensityMatrix` instance, optional
         A spin-polarized density datrix generated with sisl
         to use as a initial spin-densities
-    U: float, optional
-        on-site Coulomb repulsion
+    U: float, np.ndarray optional
+        Coulomb repulsion parameter
     q: array_like, optional
         Two values specifying up, down electron occupations
     nkpt: array_like or `sisl.physics.BrillouinZone` instance, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
+
+    Note
+    ----
+    The implementation to solve the extended Hubbard model (with inter-atomic interactions) has not been tested
     """
 
     def __init__(self, TBHam, DM=0, U=None, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
