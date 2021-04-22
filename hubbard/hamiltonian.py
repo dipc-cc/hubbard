@@ -355,7 +355,7 @@ class HubbardHamiltonian(object):
         s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
-    def read_density(self, fn, mode='a'):
+    def read_density(self, fn, mode='a', match_hash=True):
         """ Read density from binary file
 
         Parameters
@@ -364,17 +364,30 @@ class HubbardHamiltonian(object):
             name of the file that is going to read from
         mode: str, optional
             mode in which the file is opened
+        match_hash: bool, optional
+            if True only reads file if the hash stored in the file
+            and the one corresponding to the current calculation coincides
         """
         if os.path.isfile(fn):
             s, group = self._get_hash()
             fh = nc.ncSilehubbard(fn, mode=mode)
-            if group in fh.groups:
-                dm = fh.read_density(group)
+            if match_hash:
+                if group in fh.groups:
+                    dm = fh.read_density(group)
+                    self.dm = dm
+                    self.update_density_matrix()
+                    self.update_hamiltonian()
+                    return True
+                else:
+                    return False
+            else:
+                warnings.warn('Attempting to read file with no matching hash!')
+                for i in fh.groups:
+                    dm = fh.read_density(i)
+
                 self.dm = dm
                 self.update_density_matrix()
                 self.update_hamiltonian()
-                return True
-        return False
 
     def write_density(self, fn, mode='a'):
         """ Write density in a binary file
