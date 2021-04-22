@@ -1,7 +1,6 @@
 import numpy as np
 import sisl
 import hubbard.ncsile as nc
-import hashlib
 import os
 import math
 from scipy.linalg import inv
@@ -49,10 +48,9 @@ class HubbardHamiltonian(object):
         if not TBHam.spin.is_polarized:
             raise ValueError(self.__class__.__name__ + ' requires a spin-polarized system')
 
-        # Use sum of all matrix elements as a basis for hash function calls
         H0 = TBHam.copy()
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
-        self.hash_base = H0.H.tocsr().sum()
+        self._hash_base = hash((H0.H.tocsr(0).data.tostring(), H0.H.tocsr(1).data.tostring()))
 
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.TBHam = TBHam
@@ -69,11 +67,8 @@ class HubbardHamiltonian(object):
             except AttributeError:
                 U = 0.0
 
-        # Hubbard Coulomb parameter
-        self.U = U*np.identity(len(self.geometry)) # Multiply with the identity matrix to ensure that the U variable is a matrix
-        # Separate into intra and inter-atomic interactions:
-        self.U_ii = np.diag(self.U)
-        self.U_ij = self.U - self.U_ii*np.identity(len(self.geometry))
+        # Hubbard Coulomb parameter (use setter)
+        self.U = U
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -99,6 +94,22 @@ class HubbardHamiltonian(object):
 
         # Initialize density matrix
         self.set_dm(DM)
+
+    @property
+    def U(self):
+        """ U values in full matrix form """
+        return self._U
+
+    @U.setter
+    def U(self, U):
+        """ Set U values """
+        # Hubbard Coulomb parameter
+        # Multiply with the identity matrix to ensure that the U variable is a matrix
+        self._U = U * np.identity(len(self.geometry))
+        # Separate into intra and inter-atomic interactions:
+        self._U_ii = np.diag(self._U)
+        self._U_ij = self._U.copy()
+        np.fill_diagonal(self._U_ij, 0.)
 
     def set_dm(self, DM=None):
         """ Set the density matrix for the HubbardHamiltonian
@@ -272,9 +283,9 @@ class HubbardHamiltonian(object):
         E = self.e0.copy()
         a = np.arange(len(self.H))
         # diagonal elements
-        E += self.U_ii * (self.dm[[1, 0], :] - q0)
+        E += self._U_ii * (self.dm[[1, 0], :] - q0)
         # off-diagonal elements
-        E += 0.5*(self.U_ij+self.U_ij.T).dot(self.dm.sum(axis=0)-q0) # Same thing adds to both spin components
+        E += 0.5*(self._U_ij+self._U_ij.T).dot(self.dm.sum(axis=0)-q0) # Same thing adds to both spin components
         self.H[a, a, [0, 1]] = E.T
 
     def update_density_matrix(self):
@@ -372,8 +383,8 @@ class HubbardHamiltonian(object):
         Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
         return Ef
 
-    def _get_hash(self):
-        return str(hash((self.U.tostring(), self.q.tostring(), self.hash_base.tostring())))
+    def __hash__(self):
+        return hash((self.U.tostring(), self.q.tostring(), self._hash_base))
 
     def read_density(self, fn, mode='a', match_hash=True):
         """ Read density from binary file
@@ -389,7 +400,7 @@ class HubbardHamiltonian(object):
             and the one corresponding to the current calculation coincides
         """
         if os.path.isfile(fn):
-            group = self._get_hash()
+            group = str(hash(self))
             fh = nc.ncSilehubbard(fn, mode=mode)
             if match_hash:
                 if group in fh.groups:
@@ -421,7 +432,7 @@ class HubbardHamiltonian(object):
         """
         if not os.path.isfile(fn):
             mode = 'w'
-        group = self._get_hash()
+        group = str(hash(self))
         fh = nc.ncSilehubbard(fn, mode=mode)
         fh.write_density(group, self.dm)
 
@@ -526,7 +537,7 @@ class HubbardHamiltonian(object):
 
         # Store total energy
         dm_sum = self.dm.sum(axis=0) # Sum densities for the two spin components
-        self.Etot = Etot - (self.U_ii * np.multiply.reduce(self.dm, axis=0)).sum() - self.U_ij @ dm_sum @ dm_sum
+        self.Etot = Etot - (self._U_ii * np.multiply.reduce(self.dm, axis=0)).sum() - self._U_ij @ dm_sum @ dm_sum
 
         return dn
 
