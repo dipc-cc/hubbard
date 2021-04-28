@@ -28,7 +28,7 @@ for w, k in zip(mp.weight, mp.k):
     occ = es.occupation(dist) * w
     mulliken += np.einsum('i,ij->j', occ, es.norm2(False))
     # build extended state vectors in the whole supercell
-    extstate = np.concatenate([np.exp(1j * k.dot(isc[1])) * es.state.T for isc in g.sc]).T
+    extstate = np.concatenate([np.exp(2j * np.pi * k.dot(isc)) * es.state.T for _, isc in g.sc]).T
     dm += np.einsum('n,ni,nj->ij', occ, es.state, np.conj(extstate))
 
 print('mulliken', mulliken)
