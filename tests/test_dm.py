@@ -21,20 +21,20 @@ for ia in g:
 dist = sisl.get_distribution('fermi_dirac', smearing=0.1)
 mp = sisl.MonkhorstPack(H, [1000, 1, 1])
 
-mulliken = 0j
-dm = 0j
+mulliken = 0
+dm = 0
 for w, k in zip(mp.weight, mp.k):
     es = H.eigenstate(k, spin=0)
     occ = es.occupation(dist) * w
-    mulliken += np.einsum('i,ij->j', occ, es.norm2(False))
+    mulliken += np.einsum('i,ij->j', occ, es.norm2(False).real)
     # build extended state vectors in the whole supercell
     extstate = np.concatenate([np.exp(2j * np.pi * k.dot(isc)) * es.state.T for _, isc in g.sc]).T
-    dm += np.einsum('n,ni,nj->ij', occ, es.state, np.conj(extstate))
+    dm += np.einsum('n,ni,nj->ij', occ, es.state, np.conj(extstate)).real
 
 print('mulliken', mulliken)
 
 # initialize density matrix
-DM = sisl.DensityMatrix(g, spin='unpolarized', orthogonal=False, dtype='complex')
+DM = sisl.DensityMatrix(g, spin='unpolarized', orthogonal=False)
 #print(DM)
 
 # insert DM elements where relevant
