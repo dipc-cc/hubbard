@@ -66,20 +66,24 @@ class LDOSmap(Plot):
         k-point in the Brillouin zone to sample
     spin : int, optional
         spin index
-    axis : int, optional
-        real-space index along which LDOS is resolved
+    direction : 3-vector, optional
+        vector defining the direction of the real-space projection
+    origo : 3-vector, optional
+        coordinate on the real-space projection axis
+    projection : {'2D', '1D'}
+        whether the projection is for the perpendicular plane (2D) or on the axis (1D)
     nx : int, optional
         number of grid points along real-space axis
     gamma_x : float, optional
-        Lorentzian broadening of orbitals along the real-space axis
+        Lorentzian broadening of orbitals in real space
     dx : float, optional
         extension (in Ang) of the boundary around the system
-    ny : int, optiona
+    ne : int, optional
         number of grid points along the energy axis
     gamma_e : float, optional
         Lorentzian broadening of eigenvalues along the energy axis
-    ymax : float, optional
-        specifies the energy range (-ymax, ymax) to be plotted
+    emax : float, optional
+        specifies the energy range (-emax, emax) to be plotted
     vmin : float, optional
         colorscale minimum
     vmax : float, optional
@@ -88,28 +92,44 @@ class LDOSmap(Plot):
         whether to use linear or logarithmic color scale
     """
 
-    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
-                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
+    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
+                 direction=[1, 0, 0], origo=[0, 0, 0], projection='2D',
+                 nx=501, gamma_x=1.0, dx=5.0, ne=501, gamma_e=0.05, emax=10., vmin=0, vmax=None, scale='linear',
                  **kwargs):
 
         super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.find_midgap()
-        coord = HubbardHamiltonian.geometry.xyz[:, axis]
+        xyz = HubbardHamiltonian.geometry.xyz[:]
+        # coordinates relative to selected origo
+        xyz = xyz - np.array([origo] * len(xyz))
+        # distance along projection axis
+        unitvec = np.array(direction)
+        unitvec = unitvec / unitvec.dot(unitvec) ** 0.5
+        coord = xyz.dot(unitvec)
+        # distance perpendicular to projection axis
+        perp = xyz - np.array([unitvec * c for c in coord])
+        perp = np.einsum('ij,ij->i', perp, perp) ** 0.5
 
         xmin, xmax = min(coord) - dx, max(coord) + dx
-        ymin, ymax = -ymax, ymax
+        emin, emax = -emax, emax
         x = np.linspace(xmin, xmax, nx)
-        y = np.linspace(ymin, ymax, ny)
+        e = np.linspace(emin, emax, ne)
 
-        dat = np.zeros((len(x), len(y)))
+        dat = np.zeros((len(x), len(e)))
         for i, evi in enumerate(ev):
-            de = gamma_e / ((y - evi) ** 2 + gamma_e ** 2) / np.pi
+            # energy broadening
+            de = gamma_e / ((e - evi) ** 2 + gamma_e ** 2) / np.pi
             dos = np.zeros(len(x))
+            # coordinate broadening
             for j, vj in enumerate(evec[:, i]):
-                dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + gamma_x ** 2) / np.pi
+                if projection.upper() == '2D':
+                    dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + gamma_x ** 2) / np.pi
+                elif projection.upper() == '1D':
+                    # include also the perpendicular coordinate
+                    dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + perp[j] ** 2 + gamma_x ** 2) / np.pi
             dat += np.outer(dos, de)
-        intdat = np.sum(dat) * (x[1] - x[0]) * (y[1] - y[0])
+        intdat = np.sum(dat) * (x[1] - x[0]) * (e[1] - e[0])
         print('Integrated LDOS spectrum (states within plot):', intdat)
         cm = plt.cm.hot
 
@@ -120,17 +140,16 @@ class LDOSmap(Plot):
         else:
             # Linear scale
             norm = colors.Normalize(vmin=vmin)
-        self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, \
+        self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, emin, emax], cmap=cm, \
                                        origin='lower', norm=norm, vmax=vmax)
-        if axis == 0:
-            self.set_xlabel(r'$x$ (\AA)')
-        elif axis == 1:
-            self.set_xlabel(r'$y$ (\AA)')
-        elif axis == 2:
-            self.set_xlabel(r'$z$ (\AA)')
+        title = f'LDOS projection in {projection.upper()}'
+        if projection.upper() == '1D':
+            title += r': origo [%.2f,%.2f,%.2f] (\AA)' % tuple(origo)
+        self.set_title(title)
+        self.set_xlabel(r'distance along [%.2f,%.2f,%.2f] (\AA)' % tuple(direction))
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
-        self.set_ylim(ymin, ymax)
+        self.set_ylim(emin, emax)
         self.axes.set_aspect('auto')
 
 
