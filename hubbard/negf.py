@@ -183,7 +183,7 @@ class NEGF:
                         # And for each point in the Neq CC
                         self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, spin=spin)
 
-    def dm_open(self, H, q, qtol=1e-5):
+    def calc_n_open(self, H, q, qtol=1e-5):
         """
         Method to compute the spin densities from the Neq Green's function
 

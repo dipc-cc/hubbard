@@ -60,7 +60,7 @@ class BondHoppings(Plot):
         cmap = kwargs.get("cmap", plt.cm.jet)
 
         super().__init__(**kwargs)
-        H = H.H
+        H = H.H.copy()
         H.set_nsc([1, 1, 1])
         tmax = np.amax(abs(H.Hk()))
         tmin = np.amin(abs(H.Hk()))

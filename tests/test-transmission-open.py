@@ -24,7 +24,7 @@ MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 MFH_elec.random_density()
 MFH_elec.set_polarization([0], dn=[-1]) # Ensure we break symmetry
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(density.dm, mixer=sisl.mixing.PulayMixer(weight=.7, history=7), tol=1e-10)
+dn = MFH_elec.converge(density.calc_n, mixer=sisl.mixing.PulayMixer(weight=.7, history=7), tol=1e-10)
 
 dist = sisl.get_distribution('fermi_dirac', smearing=kT)
 Ef_elec = MFH_elec.H.fermi_level(MFH_elec.mp, q=MFH_elec.q, distribution=dist)
@@ -41,14 +41,14 @@ HC.set_nsc([1, 1, 1])
 elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, DM=MFH_elec.DM.tile(3, axis=0), U=U, kT=kT)
+MFH_HC = hh.HubbardHamiltonian(HC.H, n=np.tile(MFH_elec.n, 3), U=U, kT=kT)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 # Converge using Green's function method to obtain the densities
-dn = MFH_HC.converge(negf.dm_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=.1), tol=0.1)
-dn = MFH_HC.converge(negf.dm_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=1., history=7), tol=1e-6, print_info=True)
-print('Nup, Ndn: ', MFH_HC.dm.sum(axis=1))
+dn = MFH_HC.converge(negf.calc_n_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=.1), tol=0.1)
+dn = MFH_HC.converge(negf.calc_n_open, steps=1, mixer=sisl.mixing.PulayMixer(weight=1., history=7), tol=1e-6, print_info=True)
+print('Nup, Ndn: ', MFH_HC.n.sum(axis=1))
 
 # Shift device with its Fermi level and write nc file
 MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)

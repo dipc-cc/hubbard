@@ -1,6 +1,6 @@
 import hubbard.hamiltonian as hh
 import hubbard.sp2 as sp2
-import hubbard.density as dm
+import hubbard.density as density
 import hubbard.plot as plot
 import sys
 import numpy as np
@@ -27,7 +27,7 @@ for u in np.linspace(0.0, 1.4, 15):
     success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
+    dn = H.converge(density.calc_n_insulator, mixer=mixer, tol=1e-6)
     eAFM = H.Etot
     H.write_density('fig_S15.nc')
 
@@ -37,7 +37,7 @@ for u in np.linspace(0.0, 1.4, 15):
     success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
     mixer.clear()
-    dn = H.converge(dm.dm_insulator, mixer=mixer, tol=1e-6)
+    dn = H.converge(density.calc_n_insulator, mixer=mixer, tol=1e-6)
     eFM = H.Etot
     H.write_density('fig_S15.nc')
 

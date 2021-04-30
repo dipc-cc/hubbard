@@ -20,7 +20,7 @@ class Charge(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, spin=[0, 1], realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, spin=[0, 1], realspace=False, **kwargs):
         # Set default kwargs
         if realspace:
             if 'facecolor' not in kwargs:
@@ -35,13 +35,13 @@ class Charge(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow+Q_\downarrow$ ($e$)'
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute total charge on each site
         if not isinstance(spin, list):
             spin = [spin]
 
-        charge = HubbardHamiltonian.dm[spin].sum(axis=0)
+        charge = HH.n[spin].sum(axis=0)
 
         if realspace:
             self.__realspace__(charge, density=True, **kwargs)
@@ -62,7 +62,7 @@ class ChargeDifference(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -78,12 +78,12 @@ class ChargeDifference(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)'
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute total charge on each site, subtract neutral atom charge
-        charge = HubbardHamiltonian.dm.sum(0)
-        for ia in HubbardHamiltonian.geometry:
-            charge[ia] -= HubbardHamiltonian.geometry.atoms[ia].Z-5
+        charge = HH.n.sum(0)
+        for ia in HH.geometry:
+            charge[ia] -= HH.geometry.atoms[ia].Z-5
 
         if realspace:
             self.__realspace__(charge, density=True, **kwargs)
@@ -101,7 +101,7 @@ class SpinPolarization(GeometryPlot):
     In other case it will be plotted as Mulliken populations.
     """
 
-    def __init__(self, HubbardHamiltonian, ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -117,10 +117,10 @@ class SpinPolarization(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow-Q_\downarrow$ ($e$)'
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute charge difference between up and down channels
-        charge = np.diff(HubbardHamiltonian.dm[[1, 0]], axis=0).ravel()
+        charge = np.diff(HH.n[[1, 0]], axis=0).ravel()
 
         if realspace:
             self.__realspace__(charge, density=True, **kwargs)

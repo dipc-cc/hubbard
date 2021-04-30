@@ -2,7 +2,7 @@ import pytest
 
 import hubbard.hamiltonian as hh
 import hubbard.sp2 as sp2
-import hubbard.density as dm
+import hubbard.density as density
 import sisl
 
 
@@ -12,6 +12,6 @@ def test_quick():
     Hsp2 = sp2(molecule)
     H = hh.HubbardHamiltonian(Hsp2, U=3.5)
     H.random_density()
-    dn = H.iterate(dm.dm_insulator, mixer=sisl.mixing.LinearMixer())
+    dn = H.iterate(density.calc_n_insulator, mixer=sisl.mixing.LinearMixer())
     H.write_density('test.nc')
     H.write_initspin('test.fdf')

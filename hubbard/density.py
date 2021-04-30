@@ -2,10 +2,10 @@ import numpy as np
 from numpy import einsum, conj
 import sisl
 
-__all__ = ['dm', 'dm_insulator']
+__all__ = ['calc_n', 'calc_n_insulator']
 
 
-def dm(H, q):
+def calc_n(H, q):
     r""" General method to obtain the spin-densities for periodic or finite systems at a given temperature
 
     It obtains the densities from the direct diagonalization of the Hamiltonian (``H.H``) taking into account
@@ -65,7 +65,7 @@ def dm(H, q):
     return ni, Etot
 
 
-def dm_insulator(H, q):
+def calc_n_insulator(H, q):
     """ Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* """
     ni = np.zeros((2, H.sites))
     Etot = 0
