@@ -100,15 +100,15 @@ class LDOSmap(Plot):
         super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.find_midgap()
-        xyz = HubbardHamiltonian.geometry.xyz[:]
+        xyz = np.array(HubbardHamiltonian.geometry.xyz[:])
         # coordinates relative to selected origo
-        xyz = xyz - np.array([origo] * len(xyz))
+        xyz -= np.array(origo).reshape(1, 3)
         # distance along projection axis
         unitvec = np.array(direction)
         unitvec = unitvec / unitvec.dot(unitvec) ** 0.5
         coord = xyz.dot(unitvec)
         # distance perpendicular to projection axis
-        perp = xyz - np.array([unitvec * c for c in coord])
+        perp = xyz - coord.reshape(-1, 1) * unitvec
         perp = np.einsum('ij,ij->i', perp, perp) ** 0.5
 
         xmin, xmax = min(coord) - dx, max(coord) + dx
