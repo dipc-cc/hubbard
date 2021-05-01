@@ -1,3 +1,4 @@
+import sisl
 import matplotlib.pyplot as plt
 from hubbard.plot import Plot
 from hubbard.plot import GeometryPlot
@@ -94,7 +95,7 @@ class LDOSmap(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
                  direction=[1, 0, 0], origo=[0, 0, 0], projection='2D',
-                 nx=501, gamma_x=1.0, dx=5.0, ne=501, gamma_e=0.05, emax=10., vmin=0, vmax=None, scale='linear',
+                 nx=601, gamma_x=1.0, dx=5.0, ne=501, gamma_e=0.05, emax=10., vmin=0, vmax=None, scale='linear',
                  **kwargs):
 
         super().__init__(**kwargs)
@@ -113,26 +114,26 @@ class LDOSmap(Plot):
 
         xmin, xmax = min(coord) - dx, max(coord) + dx
         emin, emax = -emax, emax
+
+        # Broaden along real-space axis
         x = np.linspace(xmin, xmax, nx)
+        distribution_x = sisl.get_distribution('lorentzian', smearing=gamma_x)
+        xcoord = x.reshape(-1, 1) - coord.reshape(1, -1) # (nx, natoms)
+        if projection.upper() == '1D':
+            xcoord = (xcoord ** 2 + perp ** 2) ** 0.5
+        DX = distribution_x(xcoord)
+
+        # Broaden along energy axis
         e = np.linspace(emin, emax, ne)
+        distribution_e = sisl.get_distribution('lorentzian', smearing=gamma_e)
+        DE = distribution_e(e.reshape(-1, 1) - ev.reshape(1, -1)) # (ne, norbs)
 
-        dat = np.zeros((len(x), len(e)))
-        for i, evi in enumerate(ev):
-            # energy broadening
-            de = gamma_e / ((e - evi) ** 2 + gamma_e ** 2) / np.pi
-            dos = np.zeros(len(x))
-            # coordinate broadening
-            for j, vj in enumerate(evec[:, i]):
-                if projection.upper() == '2D':
-                    dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + gamma_x ** 2) / np.pi
-                elif projection.upper() == '1D':
-                    # include also the perpendicular coordinate
-                    dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + perp[j] ** 2 + gamma_x ** 2) / np.pi
-            dat += np.outer(dos, de)
-        intdat = np.sum(dat) * (x[1] - x[0]) * (e[1] - e[0])
-        print('Integrated LDOS spectrum (states within plot):', intdat)
+        # Compute DOS
+        DOS = np.einsum('ix,je,xe->ij', DX, DE, np.abs(evec) ** 2)
+        intdat = np.sum(DOS) * (x[1] - x[0]) * (e[1] - e[0])
+        print('Integrated LDOS spectrum (states within plot):', intdat, DOS.shape)
+
         cm = plt.cm.hot
-
         if scale == 'log':
             if vmin == 0:
                 vmin = 1e-4
@@ -140,7 +141,7 @@ class LDOSmap(Plot):
         else:
             # Linear scale
             norm = colors.Normalize(vmin=vmin)
-        self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, emin, emax], cmap=cm, \
+        self.imshow = self.axes.imshow(DOS.T, extent=[xmin, xmax, emin, emax], cmap=cm, \
                                        origin='lower', norm=norm, vmax=vmax)
         title = f'LDOS projection in {projection.upper()}'
         if projection.upper() == '1D':
