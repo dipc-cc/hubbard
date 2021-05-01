@@ -1,3 +1,4 @@
+import sisl
 import matplotlib.pyplot as plt
 from hubbard.plot import Plot
 from hubbard.plot import GeometryPlot
@@ -66,20 +67,28 @@ class LDOSmap(Plot):
         k-point in the Brillouin zone to sample
     spin : int, optional
         spin index
-    axis : int, optional
-        real-space index along which LDOS is resolved
+    direction : 3-vector, optional
+        vector defining the direction of the real-space projection
+    origo : 3-vector, optional
+        coordinate on the real-space projection axis
+    projection : {'2D', '1D'}
+        whether the projection is for the perpendicular plane (2D) or on the axis (1D)
     nx : int, optional
         number of grid points along real-space axis
     gamma_x : float, optional
-        Lorentzian broadening of orbitals along the real-space axis
+        Lorentzian broadening of orbitals in real space
     dx : float, optional
         extension (in Ang) of the boundary around the system
-    ny : int, optiona
+    dist_x : {'gaussian', 'lorentzian'}
+        smearing function along the real-space axis
+    ne : int, optional
         number of grid points along the energy axis
     gamma_e : float, optional
         Lorentzian broadening of eigenvalues along the energy axis
-    ymax : float, optional
-        specifies the energy range (-ymax, ymax) to be plotted
+    emax : float, optional
+        specifies the energy range (-emax, emax) to be plotted
+    dist_e : {'lorentzian', 'lorentzian'}
+        smearing function along the energy axis
     vmin : float, optional
         colorscale minimum
     vmax : float, optional
@@ -88,31 +97,48 @@ class LDOSmap(Plot):
         whether to use linear or logarithmic color scale
     """
 
-    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0, axis=0,
-                 nx=501, gamma_x=1.0, dx=5.0, ny=501, gamma_e=0.05, ymax=10., vmin=0, vmax=None, scale='linear',
-                 **kwargs):
+    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
+                 direction=[1, 0, 0], origo=[0, 0, 0], projection='2D',
+                 nx=601, gamma_x=0.5, dx=5.0, dist_x='gaussian',
+                 ne=501, gamma_e=0.05, emax=10., dist_e='lorentzian',
+                 vmin=0, vmax=None, scale='linear', **kwargs):
 
         super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.find_midgap()
-        coord = HubbardHamiltonian.geometry.xyz[:, axis]
+        xyz = np.array(HubbardHamiltonian.geometry.xyz[:])
+        # coordinates relative to selected origo
+        xyz -= np.array(origo).reshape(1, 3)
+        # distance along projection axis
+        unitvec = np.array(direction)
+        unitvec = unitvec / unitvec.dot(unitvec) ** 0.5
+        coord = xyz.dot(unitvec)
 
         xmin, xmax = min(coord) - dx, max(coord) + dx
-        ymin, ymax = -ymax, ymax
+        emin, emax = -emax, emax
+
+        # Broaden along real-space axis
         x = np.linspace(xmin, xmax, nx)
-        y = np.linspace(ymin, ymax, ny)
+        dist_x = sisl.get_distribution(dist_x, smearing=gamma_x)
+        xcoord = x.reshape(-1, 1) - coord.reshape(1, -1) # (nx, natoms)
+        if projection.upper() == '1D':
+            # distance perpendicular to projection axis
+            perp = xyz - coord.reshape(-1, 1) * unitvec
+            perp = np.einsum('ij,ij->i', perp, perp)
+            xcoord = (xcoord ** 2 + perp) ** 0.5
+        DX = dist_x(xcoord)
 
-        dat = np.zeros((len(x), len(y)))
-        for i, evi in enumerate(ev):
-            de = gamma_e / ((y - evi) ** 2 + gamma_e ** 2) / np.pi
-            dos = np.zeros(len(x))
-            for j, vj in enumerate(evec[:, i]):
-                dos += abs(vj) ** 2 * gamma_x / ((x - coord[j]) ** 2 + gamma_x ** 2) / np.pi
-            dat += np.outer(dos, de)
-        intdat = np.sum(dat) * (x[1] - x[0]) * (y[1] - y[0])
-        print('Integrated LDOS spectrum (states within plot):', intdat)
+        # Broaden along energy axis
+        e = np.linspace(emin, emax, ne)
+        dist_e = sisl.get_distribution(dist_e, smearing=gamma_e)
+        DE = dist_e(e.reshape(-1, 1) - ev.reshape(1, -1)) # (ne, norbs)
+
+        # Compute DOS
+        DOS = np.einsum('ix,je,xe->ij', DX, DE, np.abs(evec) ** 2)
+        intdat = np.sum(DOS) * (x[1] - x[0]) * (e[1] - e[0])
+        print('Integrated LDOS spectrum (states within plot):', intdat, DOS.shape)
+
         cm = plt.cm.hot
-
         if scale == 'log':
             if vmin == 0:
                 vmin = 1e-4
@@ -120,17 +146,16 @@ class LDOSmap(Plot):
         else:
             # Linear scale
             norm = colors.Normalize(vmin=vmin)
-        self.imshow = self.axes.imshow(dat.T, extent=[xmin, xmax, ymin, ymax], cmap=cm, \
+        self.imshow = self.axes.imshow(DOS.T, extent=[xmin, xmax, emin, emax], cmap=cm, \
                                        origin='lower', norm=norm, vmax=vmax)
-        if axis == 0:
-            self.set_xlabel(r'$x$ (\AA)')
-        elif axis == 1:
-            self.set_xlabel(r'$y$ (\AA)')
-        elif axis == 2:
-            self.set_xlabel(r'$z$ (\AA)')
+        title = f'LDOS projection in {projection.upper()}'
+        if projection.upper() == '1D':
+            title += r': origo [%.2f,%.2f,%.2f] (\AA)' % tuple(origo)
+        self.set_title(title)
+        self.set_xlabel(r'distance along [%.2f,%.2f,%.2f] (\AA)' % tuple(direction))
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
-        self.set_ylim(ymin, ymax)
+        self.set_ylim(emin, emax)
         self.axes.set_aspect('auto')
 
 
