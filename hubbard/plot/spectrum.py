@@ -134,7 +134,8 @@ class LDOSmap(Plot):
         DE = dist_e(e.reshape(-1, 1) - ev.reshape(1, -1)) # (ne, norbs)
 
         # Compute DOS
-        DOS = np.einsum('ix,je,xe->ij', DX, DE, np.abs(evec) ** 2)
+        prob_dens = np.abs(evec) ** 2
+        DOS = DX.dot(prob_dens).dot(DE.T)
         intdat = np.sum(DOS) * (x[1] - x[0]) * (e[1] - e[0])
         print('Integrated LDOS spectrum (states within plot):', intdat, DOS.shape)
 
