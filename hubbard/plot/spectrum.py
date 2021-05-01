@@ -79,12 +79,16 @@ class LDOSmap(Plot):
         Lorentzian broadening of orbitals in real space
     dx : float, optional
         extension (in Ang) of the boundary around the system
+    dist_x : {'gaussian', 'lorentzian'}
+        smearing function along the real-space axis
     ne : int, optional
         number of grid points along the energy axis
     gamma_e : float, optional
         Lorentzian broadening of eigenvalues along the energy axis
     emax : float, optional
         specifies the energy range (-emax, emax) to be plotted
+    dist_e : {'lorentzian', 'lorentzian'}
+        smearing function along the energy axis
     vmin : float, optional
         colorscale minimum
     vmax : float, optional
@@ -95,8 +99,9 @@ class LDOSmap(Plot):
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
                  direction=[1, 0, 0], origo=[0, 0, 0], projection='2D',
-                 nx=601, gamma_x=1.0, dx=5.0, ne=501, gamma_e=0.05, emax=10., vmin=0, vmax=None, scale='linear',
-                 **kwargs):
+                 nx=601, gamma_x=0.5, dx=5.0, dist_x='gaussian',
+                 ne=501, gamma_e=0.05, emax=10., dist_e='lorentzian',
+                 vmin=0, vmax=None, scale='linear', **kwargs):
 
         super().__init__(**kwargs)
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
@@ -117,16 +122,16 @@ class LDOSmap(Plot):
 
         # Broaden along real-space axis
         x = np.linspace(xmin, xmax, nx)
-        distribution_x = sisl.get_distribution('lorentzian', smearing=gamma_x)
+        dist_x = sisl.get_distribution(dist_x, smearing=gamma_x)
         xcoord = x.reshape(-1, 1) - coord.reshape(1, -1) # (nx, natoms)
         if projection.upper() == '1D':
             xcoord = (xcoord ** 2 + perp ** 2) ** 0.5
-        DX = distribution_x(xcoord)
+        DX = dist_x(xcoord)
 
         # Broaden along energy axis
         e = np.linspace(emin, emax, ne)
-        distribution_e = sisl.get_distribution('lorentzian', smearing=gamma_e)
-        DE = distribution_e(e.reshape(-1, 1) - ev.reshape(1, -1)) # (ne, norbs)
+        dist_e = sisl.get_distribution(dist_e, smearing=gamma_e)
+        DE = dist_e(e.reshape(-1, 1) - ev.reshape(1, -1)) # (ne, norbs)
 
         # Compute DOS
         DOS = np.einsum('ix,je,xe->ij', DX, DE, np.abs(evec) ** 2)
