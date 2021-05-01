@@ -113,9 +113,6 @@ class LDOSmap(Plot):
         unitvec = np.array(direction)
         unitvec = unitvec / unitvec.dot(unitvec) ** 0.5
         coord = xyz.dot(unitvec)
-        # distance perpendicular to projection axis
-        perp = xyz - coord.reshape(-1, 1) * unitvec
-        perp = np.einsum('ij,ij->i', perp, perp) ** 0.5
 
         xmin, xmax = min(coord) - dx, max(coord) + dx
         emin, emax = -emax, emax
@@ -125,7 +122,10 @@ class LDOSmap(Plot):
         dist_x = sisl.get_distribution(dist_x, smearing=gamma_x)
         xcoord = x.reshape(-1, 1) - coord.reshape(1, -1) # (nx, natoms)
         if projection.upper() == '1D':
-            xcoord = (xcoord ** 2 + perp ** 2) ** 0.5
+            # distance perpendicular to projection axis
+            perp = xyz - coord.reshape(-1, 1) * unitvec
+            perp = np.einsum('ij,ij->i', perp, perp)
+            xcoord = (xcoord ** 2 + perp) ** 0.5
         DX = dist_x(xcoord)
 
         # Broaden along energy axis
