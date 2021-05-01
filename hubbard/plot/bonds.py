@@ -2,33 +2,39 @@ import matplotlib.pyplot as plt
 from hubbard.plot import GeometryPlot
 from hubbard.plot import Plot
 import numpy as np
+import sisl
 import matplotlib as mp
 
 __all__ = ['BondOrder', 'BondHoppings', 'Bonds']
 
 
 class BondOrder(GeometryPlot):
-    """ Plot the Bond order for the HubbardHamiltonian """
+    """ Plot the Bond order for the `hubbard.HubbardHamiltonian`
 
-    def __init__(self, HubbardHamiltonian, **kwargs):
+    Parameters
+    ----------
+    HH: hubbard.HubbardHamiltonian
+        Mean-field Hubbard Hamiltonian
+    """
 
-        H = HubbardHamiltonian
+    def __init__(self, HH, **kwargs):
+
         if 'cmap' not in kwargs:
             kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(H, **kwargs)
+        super().__init__(HH, **kwargs)
         bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
 
         # Compute Huckel bond orders
-        BO = H.get_bond_order()
+        BO = HH.get_bond_order()
         d = 1.6 # max nearest-neighbor bond length
 
         # Plot results
         row, col = BO.nonzero()
         for i, r in enumerate(row):
-            xr = H.geometry.xyz[r]
+            xr = HH.geometry.xyz[r]
             c = col[i]
-            xc = H.geometry.xyz[c]
+            xc = HH.geometry.xyz[c]
             R = xr-xc
             if np.dot(R, R)**.5 <= d:
                 # intracell bond
@@ -37,7 +43,7 @@ class BondOrder(GeometryPlot):
                 self.axes.plot(x, y, c='k', ls='-', lw=4, solid_capstyle='round')
             else:
                 # intercell bond
-                cell = H.geometry.sc.cell
+                cell = HH.geometry.sc.cell
                 # Compute projections onto lattice vectors
                 P = np.dot(cell, R)
                 # Normalize
@@ -53,9 +59,19 @@ class BondOrder(GeometryPlot):
 
 
 class BondHoppings(Plot):
-    """ Plot matrix element of sisl.Hamiltonian. Only off-diagonal elements """
+    """ Plot matrix element of a tight-binding Hamiltonian in real space
 
-    def __init__(self, H, annotate=False, **kwargs):
+    Parameters
+    ----------
+    H: sisl.Hamiltonian or hubbard.HubbardHamiltonian object
+        tight-binding Hamitlonian
+    annotate: bool, optional
+        if True it annotates the numerical value of the matrix element
+    off_diagonal_only: bool, optional
+        if True it also plots the onsite energy
+    """
+
+    def __init__(self, H, annotate=False, off_diagonal_only=True, **kwargs):
 
         cmap = kwargs.get("cmap", plt.cm.jet)
 
@@ -76,20 +92,34 @@ class BondHoppings(Plot):
                 if annotate:
                     rij = H.geometry.Rij(ia, ib)
                     self.axes.annotate('%.2f'%(t), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
+            # Plot onsite energies?
+            if not off_diagonal_only:
+                self.axes.plot(x0, y0, 'or', label='%.3f'%H[ia, ia, 0])
 
         self.axes.axis('off')
 
 
 class Bonds(Plot):
-    """ Plot bonds between atoms in geometry """
+    r""" Plot bonds between atoms in geometry
 
-    def __init__(self, H0, annotate=False, R=0., **kwargs):
+    Parameters
+    ----------
+    G: sisl.Geometr, sisl.Hamiltonian, or hubbard.HubbardHamiltonian
+        Geometry to be plotted
+    annotate: bool, optional
+        if True it annotates the value of the distance between atoms in the plot
+    R: float or array_like
+        minimum and maximum distance between atoms to consider in the plot
+        Defaults to R=1.5 \AA since typically we consider sp2 carbon systems
+    """
+
+    def __init__(self, G, annotate=False, R=1.5, **kwargs):
 
         super().__init__(**kwargs)
 
-        self.plot_bonds(H0, annotate=annotate, R=R, **kwargs)
+        self.plot_bonds(G, annotate=annotate, R=R, **kwargs)
 
-    def plot_bonds(self, H0, annotate=False, R=0, **kwargs):
+    def plot_bonds(self, G, annotate=False, R=0, **kwargs):
         # Define default kwarg aruments
         cmap = kwargs.get("cmap", plt.cm.jet)
         zorder = kwargs.get("zorder", 1)
@@ -97,28 +127,30 @@ class Bonds(Plot):
         linewidth = kwargs.get("linewidth", 2.)
 
         if isinstance(R, (tuple, list)):
-            minR, maxR = R
+            minR, maxR = min(R), max(R)
         else:
             minR, maxR = 0., R
 
-        H = H0.copy()
-        H.H.set_nsc([1, 1, 1])
+        if not isinstance(G, sisl.Geometry):
+            G = G.geometry
+        G = G.copy()
+        G.set_nsc([1, 1, 1])
 
         if not maxR:
-            maxR = max(H.geometry.distance())
+            maxR = max(G.distance())
         if not minR:
-            minR = min(H.geometry.distance())
+            minR = min(G.distance())
 
         # Create colormap
         norm = mp.colors.Normalize(vmin=minR, vmax=maxR)
         cmap = mp.cm.ScalarMappable(norm=norm, cmap=cmap)
         cmap.set_array([])
-        for i in H.geometry:
-            x0, y0 = H.geometry.xyz[i, 0], H.geometry.xyz[i, 1]
-            edges = H.H.edges(i)
-            for j in edges:
-                x1, y1 = H.geometry.xyz[j, 0], H.geometry.xyz[j, 1]
-                rij = H.geometry.Rij(i, j)
+        for i in G:
+            x0, y0 = G.xyz[i, 0], G.xyz[i, 1]
+            idx = G.close(i, R=[0.1, maxR+0.1])
+            for j in idx[1]:
+                x1, y1 = G.xyz[j, 0], G.xyz[j, 1]
+                rij = G.Rij(i, j)
                 d = np.sqrt((rij*rij).sum())
                 if d <= maxR:
                     self.axes.plot([x0, x1], [y0, y1], linewidth=linewidth, color=cmap.to_rgba(d), zorder=zorder, alpha=alpha)

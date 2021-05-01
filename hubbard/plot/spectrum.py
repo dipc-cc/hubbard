@@ -9,12 +9,12 @@ __all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
 
 
 class Spectrum(Plot):
-    """ Plot the orbital charge overlaps for the `HubbardHamiltonian` object
+    """ Plot the orbital charge overlaps for the `hubbard.HubbardHamiltonian` object
 
     Parameters
     ----------
-    HubbardHamiltonian : HubbardHamiltonian
-        the HubbardHamiltonian from which the LDOS should be computed
+    HH : hubbard.HubbardHamiltonian
+        the mean-field Hubbard Hamiltonian from which the LDOS should be computed
     k : array_like, optional
         k-point in the Brillouin zone to sample
     xmax : float, optional
@@ -27,14 +27,14 @@ class Spectrum(Plot):
         fontsize
     """
 
-    def __init__(self, HubbardHamiltonian, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **kwargs):
+    def __init__(self, HH, k=[0, 0, 0], xmax=10, ymin=0, ymax=0, fontsize=16, **kwargs):
 
         super().__init__(**kwargs)
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
-        midgap = HubbardHamiltonian.find_midgap()
+        midgap = HH.find_midgap()
         for ispin in range(2):
-            ev, L = HubbardHamiltonian.calc_orbital_charge_overlaps(k=k, spin=ispin)
+            ev, L = HH.calc_orbital_charge_overlaps(k=k, spin=ispin)
             ev -= midgap
             L = np.diagonal(L)
             lmax = max(max(L), lmax)
@@ -161,14 +161,24 @@ class LDOSmap(Plot):
 
 
 class DOS_distribution(GeometryPlot):
-    """ Plot LDOS in the configuration space for the `HubbardHamiltonian` object
+    """ Plot LDOS in the configuration space for the `hubbard.HubbardHamiltonian` object
 
-    Notes
+    Parameters
+    ----------
+    HH: hubbard.Hamiltonian instance
+        mean-field Hubbard Hamiltonian
+    PDOS: np.ndarray
+        Density of states projected in atomic sites obtained at certain energy
+    realspace:
+        If True it will plot the DOS in a realspace grid otherwise it plots it as a scatter plot
+        with varying size depending on the PDOS numerical value
+
+    See Also
     -----
-    If the `realspace` kwarg is passed it will plot the DOS in a realspace grid
+    `hubbard.HubbardHamiltonian.PDOS`
     """
 
-    def __init__(self, HubbardHamiltonian, DOS, sites=[], ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, PDOS, sites=[], ext_geom=None, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -180,39 +190,58 @@ class DOS_distribution(GeometryPlot):
             if 'cmap' not in kwargs:
                 kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HubbardHamiltonian.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
-        x = HubbardHamiltonian.geometry[:, 0]
-        y = HubbardHamiltonian.geometry[:, 1]
+        x = HH.geometry[:, 0]
+        y = HH.geometry[:, 1]
 
         if realspace:
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
-            self.__realspace__(DOS, density=True, **kwargs)
+            self.__realspace__(PDOS, density=True, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            self.axes.scatter(x, y, DOS, 'b')
+            self.axes.scatter(x, y, PDOS, 'b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
 
 
 class DOS(Plot):
-    """ Plot the total DOS as a function of the energy for the `HubbardHamiltonian` object """
+    """ Plot the total density of states (DOS) as a function of the energy for the `hubbard.HubbardHamiltonian` object
 
-    def __init__(self, HubbardHamiltonian, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):
+    Parameters
+    ----------
+    HH: hubbard.Hamiltonian instance
+        mean-field Hubbard Hamiltonian
+    egrid: array_like
+        energy grid to compute the density of states
+    eta: float, optional
+        smearing parameter to compute DOS
+    spin: int or array_like, optional
+        plot DOS for selected spin index or sum them both if ``spin=[0,1]``
+    sites: array_like, optional
+        sum projected DOS into selected atomic sites
+
+    See Also
+    ---------
+    `hubbard.HubbardHamiltonian.DOS`
+    `hubbard.HubbardHamiltonian.PDOS`
+    """
+
+    def __init__(self, HH, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):
 
         super().__init__(**kwargs)
 
         if np.any(sites):
-            DOS = HubbardHamiltonian.PDOS(egrid, eta=eta, spin=spin)
+            DOS = HH.PDOS(egrid, eta=eta, spin=spin)
             offset = 0. * np.average(DOS[sites[0]])
             for i, s in enumerate(sites):
                 self.axes.plot(egrid, DOS[s] + offset * i, label='site %i' % i)
             self.legend()
         else:
-            DOS = HubbardHamiltonian.DOS(egrid, eta=eta, spin=spin)
+            DOS = HH.DOS(egrid, eta=eta, spin=spin)
             self.axes.plot(egrid, DOS, label='TDOS')
 
         self.set_xlabel(r'E-E$_\mathrm{midgap}$ [eV]')
