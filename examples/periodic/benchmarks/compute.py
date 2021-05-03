@@ -1,8 +1,5 @@
 import sisl
-import hubbard.hamiltonian as hh
-import hubbard.plot as plot
-import hubbard.sp2 as sp2
-import hubbard.density as density
+from hubbard import HubbardHamiltonian, sp2, density, plot
 import numpy as np
 import os
 
@@ -19,7 +16,7 @@ for i, geom in enumerate([agnr, zgnr]):
     H0 = sp2(geom, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
 
     # Find self-consistent solution with MFH
-    H = hh.HubbardHamiltonian(H0, U=2, nkpt=[100, 1, 1])
+    H = HubbardHamiltonian(H0, U=2, nkpt=[100, 1, 1])
     # Start with random densities
     H.random_density()
     mixer.clear()

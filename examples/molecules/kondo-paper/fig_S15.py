@@ -1,7 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
-import hubbard.density as density
-import hubbard.plot as plot
+from hubbard import HubbardHamiltonian, density, plot, sp2
 import sys
 import numpy as np
 import sisl
@@ -12,7 +9,7 @@ mol.sc.set_nsc([1, 1, 1])
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 
-H = hh.HubbardHamiltonian(Hsp2)
+H = HubbardHamiltonian(Hsp2)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions

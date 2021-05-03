@@ -1,7 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.plot as plot
-import hubbard.sp2 as sp2
-import hubbard.density as density
+from hubbard import HubbardHamiltonian, plot, density, sp2
 import sys
 import numpy as np
 import sisl
@@ -13,7 +10,7 @@ mol = mol.move(-mol.center(what='xyz')).rotate(220, [0, 0, 1])
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 
-H = hh.HubbardHamiltonian(Hsp2)
+H = HubbardHamiltonian(Hsp2)
 
 # Plot the single-particle TB (U = 0.0) wavefunction (SO) for Type 1
 H.U = 0.0
@@ -35,7 +32,6 @@ success = H.read_density('fig3_type1.nc') # Try reading, if we already have dens
 if not success:
     H.set_polarization([23])
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
-print(H.n)
 H.converge(density.calc_n_insulator, mixer=mixer)
 H.write_density('fig3_type1.nc')
 p = plot.SpinPolarization(H, ext_geom=mol, vmax=0.20)

@@ -1,6 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.plot as plot
-import hubbard.sp2 as sp2
+from hubbard import HubbardHamiltonian, plot, sp2
 import sys
 import numpy as np
 import sisl
@@ -12,7 +10,7 @@ mol = mol.move(-mol.center(what='xyz')).rotate(220, [0, 0, 1])
 Hsp2 = sp2(mol)
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(Hsp2, U=0)
+H = HubbardHamiltonian(Hsp2, U=0)
 
 # Plot Eigenspectrum
 p = plot.Spectrum(H, ymax=0.12)

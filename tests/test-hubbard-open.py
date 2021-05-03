@@ -2,10 +2,7 @@ import sisl
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
-import hubbard.density as density
-from hubbard.negf import NEGF
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
+from hubbard import HubbardHamiltonian, density, sp2, NEGF
 
 # Set U and kT for the whole calculation
 U = 3.
@@ -18,7 +15,7 @@ ZGNR = sisl.geom.zgnr(2)
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
+MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 
 # Start with random densities
 MFH_elec.random_density()
@@ -33,7 +30,7 @@ HC.set_nsc([1, 1, 1])
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, n=np.tile(MFH_elec.n, 3), U=U, kT=kT)
+MFH_HC = HubbardHamiltonian(HC.H, n=np.tile(MFH_elec.n, 3), U=U, kT=kT)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
@@ -47,7 +44,7 @@ print('MFH-NEGF Etot = {:10.5f}'.format(MFH_HC.Etot))
 
 # Reference test for total energy
 HC_periodic = H_elec.tile(3, axis=0)
-MFH_HC_periodic = hh.HubbardHamiltonian(HC_periodic.H, n=np.tile(MFH_elec.n, 3), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
+MFH_HC_periodic = HubbardHamiltonian(HC_periodic.H, n=np.tile(MFH_elec.n, 3), U=U, nkpt=[int(102/3), 1, 1], kT=kT)
 dn = MFH_HC_periodic.converge(density.calc_n)
 
 assert abs(MFH_HC_periodic.n[0].sum() - MFH_HC_periodic.q[0]) < 1e-7

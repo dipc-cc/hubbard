@@ -1,11 +1,6 @@
-from __future__ import print_function
 import sisl
 import numpy as np
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
-import hubbard.plot as plot
-import hubbard.density as density
-from hubbard.negf import NEGF
+from hubbard import HubbardHamiltonian, density, sp2, NEGF, plot
 import os
 
 '''
@@ -27,7 +22,7 @@ H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 mixer = sisl.mixing.PulayMixer(0.6, history=7)
 
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
+MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Initial densities
 success = MFH_elec.read_density('elec_density.nc')
 if not success:
@@ -58,7 +53,7 @@ HC.geometry.write('device.xyz')
 elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
 # MFH object of the device
-MFH_HC = hh.HubbardHamiltonian(HC.H, U=U, kT=kT)
+MFH_HC = HubbardHamiltonian(HC.H, U=U, kT=kT)
 # Initial densities
 success = MFH_HC.read_density('HC_density.nc')
 if not success:

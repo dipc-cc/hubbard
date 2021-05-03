@@ -1,9 +1,6 @@
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
-import hubbard.plot as plot
+from hubbard import HubbardHamiltonian, sp2, plot, density
 import sys
 import numpy as np
-import hubbard.density as dens
 import sisl
 
 # Build sisl Geometry object
@@ -14,7 +11,7 @@ mol = mol.move(-mol.center(what='xyz'))
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
-H = hh.HubbardHamiltonian(Hsp2)
+H = HubbardHamiltonian(Hsp2)
 
 # Output file to collect the energy difference between
 # FM and AFM solutions
@@ -32,7 +29,7 @@ for u in np.linspace(0.0, 4.0, 5):
         H.random_density()
         H.set_polarization([1, 6, 15]) # polarize lower zigzag edge
     mixer.clear()
-    dn = H.converge(dens.calc_n_insulator, mixer=mixer)
+    dn = H.converge(density.calc_n_insulator, mixer=mixer)
     eAFM = H.Etot
     H.write_density(mol_file+'.nc')
 
@@ -48,7 +45,7 @@ for u in np.linspace(0.0, 4.0, 5):
     except:
         H.random_density()
     mixer.clear()
-    dn = H.converge(dens.calc_n_insulator, mixer=mixer)
+    dn = H.converge(density.calc_n_insulator, mixer=mixer)
     eFM = H.Etot
     H.write_density(mol_file+'.nc')
 

@@ -1,7 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.plot as plot
-import hubbard.density as density
-import hubbard.sp2 as sp2
+from hubbard import HubbardHamiltonian, density, sp2, plot
 import sys
 import numpy as np
 import sisl
@@ -13,7 +10,7 @@ mol = mol.move(-mol.center(what='xyz'))
 
 # 3NN tight-binding model
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18, dim=2)
-H = hh.HubbardHamiltonian(Hsp2)
+H = HubbardHamiltonian(Hsp2)
 H.random_density()
 H.set_polarization(up=[6], dn=[28])
 n_AFM = H.n

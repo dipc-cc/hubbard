@@ -1,7 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.plot as plot
-import hubbard.sp2 as sp2
-import hubbard.density as density
+from hubbard import HubbardHamiltonian, plot, sp2, density
 import sys
 import numpy as np
 
@@ -14,7 +11,7 @@ mol = mol.move(-mol.center(what='xyz')).rotate(220, [0, 0, 1])
 Hsp2 = sp2(mol, t1=2.7, t2=0.2, t3=.18)
 
 # 3NN tight-binding model
-H = hh.HubbardHamiltonian(Hsp2)
+H = HubbardHamiltonian(Hsp2)
 
 # Create mixer
 mixer = sisl.mixing.PulayMixer(0.7, history=12)

@@ -1,6 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.density as dens
-import hubbard.sp2 as sp2
+from hubbard import HubbardHamiltonian, density, sp2
 import numpy as np
 import sisl
 
@@ -13,9 +11,9 @@ molecule.sc.set_nsc([1, 1, 1])
 
 # Try reading from file
 Hsp2 = sp2(molecule)
-H = hh.HubbardHamiltonian(Hsp2, U=3.5)
+H = HubbardHamiltonian(Hsp2, U=3.5)
 H.read_density('mol-ref/density.nc')
-H.iterate(dens.calc_n_insulator, mixer=sisl.mixing.LinearMixer())
+H.iterate(density.calc_n_insulator, mixer=sisl.mixing.LinearMixer())
 
 # Determine reference values for the tests
 ev0, evec0 = H.eigh(eigvals_only=False, spin=0)
@@ -23,7 +21,7 @@ Etot0 = 1 * H.Etot
 
 mixer = sisl.mixing.PulayMixer(0.7, history=7)
 
-for m in [dens.calc_n_insulator, dens.calc_n]:
+for m in [density.calc_n_insulator, density.calc_n]:
     # Reset density and iterate
     H.random_density()
     mixer.clear()
@@ -56,7 +54,7 @@ if True:
     H.kT = 0.025
     H.random_density()
     mixer.clear()
-    dn = H.converge(dens.calc_n, tol=1e-10, steps=10, mixer=mixer)
+    dn = H.converge(density.calc_n, tol=1e-10, steps=10, mixer=mixer)
     Etot0 = H.Etot
     n = 1 * H.n
 

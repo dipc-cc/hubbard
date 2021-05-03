@@ -2,11 +2,7 @@ import sisl
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
-import hubbard.density as density
-from hubbard.negf import NEGF
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
-import hubbard.plot as plot
+from hubbard import HubbardHamiltonian, density, NEGF, sp2, plot
 
 # Set U for the whole calculation
 U = 3.0
@@ -19,7 +15,7 @@ ZGNR = sisl.geom.zgnr(2)
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
 # Hubbard Hamiltonian of elecs
-MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
+MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Start with random densities
 MFH_elec.random_density()
 MFH_elec.set_polarization([0], dn=[-1]) # Ensure we break symmetry
@@ -41,7 +37,7 @@ HC.set_nsc([1, 1, 1])
 elec_indx = [range(len(H_elec)), range(-len(H_elec), 0)]
 
 # MFH object
-MFH_HC = hh.HubbardHamiltonian(HC.H, n=np.tile(MFH_elec.n, 3), U=U, kT=kT)
+MFH_HC = HubbardHamiltonian(HC.H, n=np.tile(MFH_elec.n, 3), U=U, kT=kT)
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)

@@ -1,7 +1,4 @@
-import hubbard.hamiltonian as hh
-import hubbard.density as dens
-import hubbard.plot as plot
-import hubbard.sp2 as sp2
+from hubbard import HubbardHamiltonian, sp2, density, plot
 import numpy as np
 import sisl
 
@@ -18,9 +15,9 @@ p = plot.BondHoppings(H_mol, annotate=False, off_diagonal_only=False, cmap_e='wi
 p.legend()
 p.savefig('bondHoppings.pdf')
 
-H = hh.HubbardHamiltonian(H_mol, U=3.5)
+H = HubbardHamiltonian(H_mol, U=3.5)
 H.read_density('mol-ref/density.nc')
-H.iterate(dens.calc_n_insulator)
+H.iterate(density.calc_n_insulator)
 
 p = plot.Charge(H, ext_geom=molecule, colorbar=True)
 p.savefig('chg.pdf')
