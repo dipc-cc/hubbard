@@ -73,28 +73,40 @@ class BondHoppings(Plot):
 
     def __init__(self, H, annotate=False, off_diagonal_only=True, **kwargs):
 
+        # Separated colormaps for the diagonal and off-diagonal elements
         cmap = kwargs.get("cmap", plt.cm.jet)
+        cmap_t = kwargs.get("cmap_t", cmap)
+        cmap_e = kwargs.get("cmap_e", cmap)
 
         super().__init__(**kwargs)
         H = H.H.copy()
         H.set_nsc([1, 1, 1])
-        tmax = np.amax(abs(H.Hk()))
-        tmin = np.amin(abs(H.Hk()))
+
+        # Create colormaps
+        tmax = kwargs.get("tmax", np.amax(abs(H.Hk())))
+        tmin = kwargs.get("tmin", np.amin(abs(H.Hk())))
         norm = mp.colors.Normalize(vmin=tmin, vmax=tmax)
-        cmap = mp.cm.ScalarMappable(norm=norm, cmap=cmap)
+        cmap_t = mp.cm.ScalarMappable(norm=norm, cmap=cmap_t)
+
+        emax = kwargs.get("emax", np.amax(abs(H.H.tocsr(0).diagonal())))
+        emin = kwargs.get("emin", np.amin(abs(H.H.tocsr(0).diagonal())))
+        norm = mp.colors.Normalize(vmin=emin, vmax=emax)
+        cmap_e = mp.cm.ScalarMappable(norm=norm, cmap=cmap_e)
+
         for ia in H.geometry:
             x0, y0 = H.geometry.xyz[ia, 0], H.geometry.xyz[ia, 1]
             edges = H.edges(ia, exclude=ia)
             for ib in edges:
                 x1, y1 = H.geometry.xyz[ib, 0], H.geometry.xyz[ib, 1]
                 t = H[ia, ib, 0]
-                self.axes.plot([x0, x1], [y0, y1], '-', color=cmap.to_rgba(abs(t)), linewidth=2*abs(t)/tmax, label='%.3f'%t)
+                self.axes.plot([x0, x1], [y0, y1], '-', color=cmap_t.to_rgba(abs(t)), linewidth=2*abs(t)/tmax, label='%.3f'%t)
                 if annotate:
                     rij = H.geometry.Rij(ia, ib)
                     self.axes.annotate('%.2f'%(t), (x0+rij[0]*.5, y0+rij[1]*.5), fontsize=8)
             # Plot onsite energies?
             if not off_diagonal_only:
-                self.axes.plot(x0, y0, 'or', label='%.3f'%H[ia, ia, 0])
+                e = H[ia, ia, 0]
+                self.axes.plot(x0, y0, 'o', color=cmap_e.to_rgba(abs(e)), zorder=100, label='%.3f'%e)
 
         self.axes.axis('off')
 

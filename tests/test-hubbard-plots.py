@@ -14,7 +14,7 @@ molecule.sc.set_nsc([1, 1, 1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0, 0, 1])
 H_mol = sp2(molecule)
 
-p = plot.BondHoppings(H_mol, annotate=False)
+p = plot.BondHoppings(H_mol, annotate=False, off_diagonal_only=False, cmap_e='winter')
 p.legend()
 p.savefig('bondHoppings.pdf')
 
