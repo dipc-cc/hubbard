@@ -1,0 +1,48 @@
+HubbardHamiltonian
+==========================
+
+.. currentmodule:: hubbard
+
+.. autoclass:: HubbardHamiltonian
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~HubbardHamiltonian.DOS
+        ~HubbardHamiltonian.PDOS
+        ~HubbardHamiltonian.__init__
+        ~HubbardHamiltonian.band_sym
+        ~HubbardHamiltonian.calc_orbital_charge_overlaps
+        ~HubbardHamiltonian.converge
+        ~HubbardHamiltonian.copy
+        ~HubbardHamiltonian.eigenstate
+        ~HubbardHamiltonian.eigh
+        ~HubbardHamiltonian.fermi_level
+        ~HubbardHamiltonian.find_midgap
+        ~HubbardHamiltonian.get_Zak_phase
+        ~HubbardHamiltonian.get_bond_order
+        ~HubbardHamiltonian.iterate
+        ~HubbardHamiltonian.normalize_charge
+        ~HubbardHamiltonian.polarize_sublattices
+        ~HubbardHamiltonian.random_density
+        ~HubbardHamiltonian.read_density
+        ~HubbardHamiltonian.repeat
+        ~HubbardHamiltonian.set_kmesh
+        ~HubbardHamiltonian.set_polarization
+        ~HubbardHamiltonian.spin_contamination
+        ~HubbardHamiltonian.sub
+        ~HubbardHamiltonian.tile
+        ~HubbardHamiltonian.update_hamiltonian
+        ~HubbardHamiltonian.write_density
+        ~HubbardHamiltonian.write_initspin
+    
+    

@@ -1,0 +1,31 @@
+DOS
+================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: DOS
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~DOS.__init__
+        ~DOS.add_colorbar
+        ~DOS.close
+        ~DOS.legend
+        ~DOS.savefig
+        ~DOS.set_title
+        ~DOS.set_xlabel
+        ~DOS.set_xlim
+        ~DOS.set_ylabel
+        ~DOS.set_ylim
+    
+    

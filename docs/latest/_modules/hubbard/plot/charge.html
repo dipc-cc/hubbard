@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hubbard.plot.charge &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>hubbard.plot.charge</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for hubbard.plot.charge</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">hubbard.plot</span> <span class="kn">import</span> <span class="n">GeometryPlot</span>
+<span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Charge&#39;</span><span class="p">,</span> <span class="s1">&#39;ChargeDifference&#39;</span><span class="p">,</span> <span class="s1">&#39;SpinPolarization&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Charge"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.Charge.html#hubbard.plot.Charge">[docs]</a><span class="k">class</span> <span class="nc">Charge</span><span class="p">(</span><span class="n">GeometryPlot</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Plot the total charge for the `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">    :math:`\langle n_{\uparrow}\rangle+\langle n_{\downarrow}\rangle`</span>
+
+<span class="sd">    or the charge for a particular spin-channel (:math:`\langle n_{\uparrow}\rangle`)</span>
+<span class="sd">    by specifying the `spin` index.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH: hubbard.HubbardHamiltonian</span>
+<span class="sd">        mean-field Hubbard Hamiltonian</span>
+<span class="sd">    ext_geom: sisl.Geometry, optional</span>
+<span class="sd">        usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don&#39;t play</span>
+<span class="sd">        a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system</span>
+<span class="sd">        otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)</span>
+<span class="sd">    spin: int or array_like, optional:</span>
+<span class="sd">        plot charge associated to one specific spin index, or both if ``spin=[0,1]``</span>
+<span class="sd">    realspace: bool, optional</span>
+<span class="sd">        if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">realspace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Set default kwargs</span>
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;facecolor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;facecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$q_\uparrow+q_\downarrow$ ($e/\AA^</span><span class="si">{2}</span><span class="s1">$)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bwr</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$Q_\uparrow+Q_\downarrow$ ($e$)&#39;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">ext_geom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Compute total charge on each site</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
+
+        <span class="n">chg</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__orbitals__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChargeDifference"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.ChargeDifference.html#hubbard.plot.ChargeDifference">[docs]</a><span class="k">class</span> <span class="nc">ChargeDifference</span><span class="p">(</span><span class="n">GeometryPlot</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Plot the total charge compared to the neutral atom charge in each site for the HH object</span>
+
+<span class="sd">    :math:`(\langle n_{\uparrow}\rangle+\langle n_{\downarrow}\rangle)- (Z - 5)`</span>
+<span class="sd">    Where :math:`Z` is the atomic number</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH: hubbard.HubbardHamiltonian</span>
+<span class="sd">        mean-field Hubbard Hamiltonian</span>
+<span class="sd">    ext_geom: sisl.Geometry, optional</span>
+<span class="sd">        usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don&#39;t play</span>
+<span class="sd">        a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system</span>
+<span class="sd">        otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)</span>
+<span class="sd">    realspace: bool, optional</span>
+<span class="sd">        if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken populations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">realspace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Set default kwargs</span>
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;facecolor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;facecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$q_\uparrow+q_\downarrow-q_\mathrm</span><span class="si">{NA}</span><span class="s1">$ ($e/\AA^</span><span class="si">{2}</span><span class="s1">$)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bwr</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$Q_\uparrow+Q_\downarrow-Q_\mathrm</span><span class="si">{NA}</span><span class="s1">$ ($e$)&#39;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">ext_geom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Compute total charge on each site, subtract neutral atom charge</span>
+        <span class="n">chg</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">:</span>
+            <span class="n">chg</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span> <span class="o">-=</span> <span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">Z</span><span class="o">-</span><span class="mi">5</span>
+
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__orbitals__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpinPolarization"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.SpinPolarization.html#hubbard.plot.SpinPolarization">[docs]</a><span class="k">class</span> <span class="nc">SpinPolarization</span><span class="p">(</span><span class="n">GeometryPlot</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Plot charge difference between up and down channels :math:`\langle n_{\uparrow}\rangle-\langle n_{\downarrow}\rangle`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH: hubbard.HubbardHamiltonian</span>
+<span class="sd">        mean-field Hubbard Hamiltonian</span>
+<span class="sd">    ext_geom: sisl.Geometry, optional</span>
+<span class="sd">        usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don&#39;t play</span>
+<span class="sd">        a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system</span>
+<span class="sd">        otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)</span>
+<span class="sd">    realspace: bool, optional</span>
+<span class="sd">        if True it plots the spin polarization in a realspace grid. In other case it will be plotted as Mulliken populations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">realspace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Set default kwargs</span>
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;facecolor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;facecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$q_\uparrow-q_\downarrow$ ($e/\AA^</span><span class="si">{2}</span><span class="s1">$)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bwr</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$Q_\uparrow-Q_\downarrow$ ($e$)&#39;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">ext_geom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Compute charge difference between up and down channels</span>
+        <span class="n">chg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">n</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__orbitals__</span><span class="p">(</span><span class="n">chg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

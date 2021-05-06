@@ -1,0 +1,42 @@
+Wavefunction
+=========================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: Wavefunction
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~Wavefunction.__init__
+        ~Wavefunction.add_colorbar
+        ~Wavefunction.annotate
+        ~Wavefunction.close
+        ~Wavefunction.get_colorbar_xticks
+        ~Wavefunction.get_colorbar_yticks
+        ~Wavefunction.legend
+        ~Wavefunction.plot_wf
+        ~Wavefunction.savefig
+        ~Wavefunction.set_axes
+        ~Wavefunction.set_colorbar_xlabel
+        ~Wavefunction.set_colorbar_xticklabels
+        ~Wavefunction.set_colorbar_xticks
+        ~Wavefunction.set_colorbar_ylabel
+        ~Wavefunction.set_colorbar_yticklabels
+        ~Wavefunction.set_colorbar_yticks
+        ~Wavefunction.set_title
+        ~Wavefunction.set_xlabel
+        ~Wavefunction.set_xlim
+        ~Wavefunction.set_ylabel
+        ~Wavefunction.set_ylim
+    
+    

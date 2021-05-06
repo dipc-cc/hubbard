@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hubbard.plot.spectrum &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>hubbard.plot.spectrum</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for hubbard.plot.spectrum</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">hubbard.plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span> <span class="nn">hubbard.plot</span> <span class="kn">import</span> <span class="n">GeometryPlot</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">colors</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Spectrum&#39;</span><span class="p">,</span> <span class="s1">&#39;LDOSmap&#39;</span><span class="p">,</span> <span class="s1">&#39;DOS_distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;DOS&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Spectrum"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.Spectrum.html#hubbard.plot.Spectrum">[docs]</a><span class="k">class</span> <span class="nc">Spectrum</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot the orbital charge overlaps for the `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH : hubbard.HubbardHamiltonian</span>
+<span class="sd">        the mean-field Hubbard Hamiltonian from which the LDOS should be computed</span>
+<span class="sd">    k : array_like, optional</span>
+<span class="sd">        k-point in the Brillouin zone to sample</span>
+<span class="sd">    xmax : float, optional</span>
+<span class="sd">        the energy range (-xmax, xmax) wrt. midgap to be plotted</span>
+<span class="sd">    ymin : float, optional</span>
+<span class="sd">        the y-axis minimum</span>
+<span class="sd">    ymax : float, optional</span>
+<span class="sd">        the y-axis maximum</span>
+<span class="sd">    fontsize : float, optional</span>
+<span class="sd">        fontsize</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="o">-</span><span class="n">xmax</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">lmax</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">midgap</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">find_midgap</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">ev</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">calc_orbital_charge_overlaps</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
+            <span class="n">ev</span> <span class="o">-=</span> <span class="n">midgap</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+            <span class="n">lmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">lmax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="s1">&#39;rg&#39;</span><span class="p">[</span><span class="n">ispin</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.+&#39;</span><span class="p">[</span><span class="n">ispin</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s1">&#39;$\sigma=\uparrow$&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\sigma=\downarrow$&#39;</span><span class="p">][</span><span class="n">ispin</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="s1">&#39;annotate&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;annotate&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ev</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">xmax</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.05</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E_{\alpha\sigma}-E_\mathrm</span><span class="si">{mid}</span><span class="s1">$ (eV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\eta_{\alpha\sigma}=\int dr |\psi_{\alpha\sigma}|^4$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">xmax</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ymax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">lmax</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LDOSmap"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.LDOSmap.html#hubbard.plot.LDOSmap">[docs]</a><span class="k">class</span> <span class="nc">LDOSmap</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot LDOS(distance, energy) map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    HubbardHamiltonian : HubbardHamiltonian</span>
+<span class="sd">        the HubbardHamiltonian from which the LDOS should be computed</span>
+<span class="sd">    k : array_like, optional</span>
+<span class="sd">        k-point in the Brillouin zone to sample</span>
+<span class="sd">    spin : int, optional</span>
+<span class="sd">        spin index</span>
+<span class="sd">    direction : 3-vector, optional</span>
+<span class="sd">        vector defining the direction of the real-space projection</span>
+<span class="sd">    origo : 3-vector, optional</span>
+<span class="sd">        coordinate on the real-space projection axis</span>
+<span class="sd">    projection : {&#39;2D&#39;, &#39;1D&#39;}</span>
+<span class="sd">        whether the projection is for the perpendicular plane (2D) or on the axis (1D)</span>
+<span class="sd">    nx : int, optional</span>
+<span class="sd">        number of grid points along real-space axis</span>
+<span class="sd">    gamma_x : float, optional</span>
+<span class="sd">        Lorentzian broadening of orbitals in real space</span>
+<span class="sd">    dx : float, optional</span>
+<span class="sd">        extension (in Ang) of the boundary around the system</span>
+<span class="sd">    dist_x : {&#39;gaussian&#39;, &#39;lorentzian&#39;}</span>
+<span class="sd">        smearing function along the real-space axis</span>
+<span class="sd">    ne : int, optional</span>
+<span class="sd">        number of grid points along the energy axis</span>
+<span class="sd">    gamma_e : float, optional</span>
+<span class="sd">        Lorentzian broadening of eigenvalues along the energy axis</span>
+<span class="sd">    emax : float, optional</span>
+<span class="sd">        specifies the energy range (-emax, emax) to be plotted</span>
+<span class="sd">    dist_e : {&#39;lorentzian&#39;, &#39;lorentzian&#39;}</span>
+<span class="sd">        smearing function along the energy axis</span>
+<span class="sd">    vmin : float, optional</span>
+<span class="sd">        colorscale minimum</span>
+<span class="sd">    vmax : float, optional</span>
+<span class="sd">        colorscale maximum</span>
+<span class="sd">    scale : {&#39;linear&#39;, &#39;log&#39;}</span>
+<span class="sd">        whether to use linear or logarithmic color scale</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">origo</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;2D&#39;</span><span class="p">,</span>
+                 <span class="n">nx</span><span class="o">=</span><span class="mi">601</span><span class="p">,</span> <span class="n">gamma_x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">dist_x</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
+                 <span class="n">ne</span><span class="o">=</span><span class="mi">501</span><span class="p">,</span> <span class="n">gamma_e</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="mf">10.</span><span class="p">,</span> <span class="n">dist_e</span><span class="o">=</span><span class="s1">&#39;lorentzian&#39;</span><span class="p">,</span>
+                 <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+        <span class="n">ev</span> <span class="o">-=</span> <span class="n">HubbardHamiltonian</span><span class="o">.</span><span class="n">find_midgap</span><span class="p">()</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">HubbardHamiltonian</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:])</span>
+        <span class="c1"># coordinates relative to selected origo</span>
+        <span class="n">xyz</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">origo</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="c1"># distance along projection axis</span>
+        <span class="n">unitvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+        <span class="n">unitvec</span> <span class="o">=</span> <span class="n">unitvec</span> <span class="o">/</span> <span class="n">unitvec</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">unitvec</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="n">coord</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">unitvec</span><span class="p">)</span>
+
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="o">-</span> <span class="n">dx</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">coord</span><span class="p">)</span> <span class="o">+</span> <span class="n">dx</span>
+        <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span> <span class="o">=</span> <span class="o">-</span><span class="n">emax</span><span class="p">,</span> <span class="n">emax</span>
+
+        <span class="c1"># Broaden along real-space axis</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+        <span class="n">dist_x</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">dist_x</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">gamma_x</span><span class="p">)</span>
+        <span class="n">xcoord</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">coord</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># (nx, natoms)</span>
+        <span class="k">if</span> <span class="n">projection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;1D&#39;</span><span class="p">:</span>
+            <span class="c1"># distance perpendicular to projection axis</span>
+            <span class="n">perp</span> <span class="o">=</span> <span class="n">xyz</span> <span class="o">-</span> <span class="n">coord</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">unitvec</span>
+            <span class="n">perp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;i&#39;</span><span class="p">,</span> <span class="n">perp</span><span class="p">,</span> <span class="n">perp</span><span class="p">)</span>
+            <span class="n">xcoord</span> <span class="o">=</span> <span class="p">(</span><span class="n">xcoord</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">perp</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+        <span class="n">DX</span> <span class="o">=</span> <span class="n">dist_x</span><span class="p">(</span><span class="n">xcoord</span><span class="p">)</span>
+
+        <span class="c1"># Broaden along energy axis</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">,</span> <span class="n">ne</span><span class="p">)</span>
+        <span class="n">dist_e</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">dist_e</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">gamma_e</span><span class="p">)</span>
+        <span class="n">DE</span> <span class="o">=</span> <span class="n">dist_e</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">ev</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="c1"># (ne, norbs)</span>
+
+        <span class="c1"># Compute DOS</span>
+        <span class="n">prob_dens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evec</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">DOS</span> <span class="o">=</span> <span class="n">DX</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">prob_dens</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">DE</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">intdat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">DOS</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Integrated LDOS spectrum (states within plot):&#39;</span><span class="p">,</span> <span class="n">intdat</span><span class="p">,</span> <span class="n">DOS</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">hot</span>
+        <span class="k">if</span> <span class="n">scale</span> <span class="o">==</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vmin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">vmin</span> <span class="o">=</span> <span class="mf">1e-4</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Linear scale</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imshow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">DOS</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> \
+                                       <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;LDOS projection in </span><span class="si">{</span><span class="n">projection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">projection</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;1D&#39;</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39;: origo [</span><span class="si">%.2f</span><span class="s1">,</span><span class="si">%.2f</span><span class="s1">,</span><span class="si">%.2f</span><span class="s1">] (\AA)&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">origo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;distance along [</span><span class="si">%.2f</span><span class="s1">,</span><span class="si">%.2f</span><span class="s1">,</span><span class="si">%.2f</span><span class="s1">] (\AA)&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">direction</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E-E_\mathrm</span><span class="si">{midgap}</span><span class="s1">$ (eV)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">emin</span><span class="p">,</span> <span class="n">emax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DOS_distribution"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.DOS_distribution.html#hubbard.plot.DOS_distribution">[docs]</a><span class="k">class</span> <span class="nc">DOS_distribution</span><span class="p">(</span><span class="n">GeometryPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot LDOS in the configuration space for the `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH: hubbard.Hamiltonian instance</span>
+<span class="sd">        mean-field Hubbard Hamiltonian</span>
+<span class="sd">    PDOS: np.ndarray</span>
+<span class="sd">        Density of states projected in atomic sites obtained at certain energy</span>
+<span class="sd">    realspace:</span>
+<span class="sd">        If True it will plot the DOS in a realspace grid otherwise it plots it as a scatter plot</span>
+<span class="sd">        with varying size depending on the PDOS numerical value</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    -----</span>
+<span class="sd">    `hubbard.HubbardHamiltonian.PDOS`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">PDOS</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="p">[],</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">realspace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Set default kwargs</span>
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;facecolor&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;facecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;cmap&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;cmap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bwr</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">ext_geom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">geometry</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;vmin&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;vmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">PDOS</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imshow</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">afmhot</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">PDOS</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DOS"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.DOS.html#hubbard.plot.DOS">[docs]</a><span class="k">class</span> <span class="nc">DOS</span><span class="p">(</span><span class="n">Plot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Plot the total density of states (DOS) as a function of the energy for the `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    HH: hubbard.Hamiltonian instance</span>
+<span class="sd">        mean-field Hubbard Hamiltonian</span>
+<span class="sd">    egrid: array_like</span>
+<span class="sd">        energy grid to compute the density of states</span>
+<span class="sd">    eta: float, optional</span>
+<span class="sd">        smearing parameter to compute DOS</span>
+<span class="sd">    spin: int or array_like, optional</span>
+<span class="sd">        plot DOS for selected spin index or sum them both if ``spin=[0,1]``</span>
+<span class="sd">    sites: array_like, optional</span>
+<span class="sd">        sum projected DOS into selected atomic sites</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    ---------</span>
+<span class="sd">    `hubbard.HubbardHamiltonian.DOS`</span>
+<span class="sd">    `hubbard.HubbardHamiltonian.PDOS`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sites</span><span class="o">=</span><span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+            <span class="n">DOS</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">PDOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="n">eta</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">DOS</span><span class="p">[</span><span class="n">sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">DOS</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;site </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">DOS</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">DOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="n">eta</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">DOS</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;TDOS&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;E-E$_\mathrm</span><span class="si">{midgap}</span><span class="s1">$ [eV]&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;DOS [1/eV]&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

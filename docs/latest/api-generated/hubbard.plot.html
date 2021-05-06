@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Visualizing electronic properties (hubbard.plot) &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Charge" href="hubbard.plot.Charge.html" />
+    <link rel="prev" title="sp2" href="hubbard.sp2.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#plot-spin-resolved-quantities">Plot spin-resolved quantities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Charge.html">Charge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.ChargeDifference.html">ChargeDifference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.SpinPolarization.html">SpinPolarization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-spectra">Plot spectra</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOS.html">DOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOS_distribution.html">DOS_distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOSmap.html">LDOSmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Spectrum.html">Spectrum</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-wavefunctions-for-each-spin-channel">Plot wavefunctions for each spin-channel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Wavefunction.html">Wavefunction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-geometrical-functions">Plot geometrical functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.BondOrder.html">BondOrder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Bonds.html">Bonds</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-bandstructure-of-the-system">Plot bandstructure of the system</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Bandstructure.html">Bandstructure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+      <li>Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-generated/hubbard.plot.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-hubbard.plot"></span><div class="section" id="visualizing-electronic-properties-hubbard-plot">
+<h1>Visualizing electronic properties (<a class="reference internal" href="#module-hubbard.plot" title="hubbard.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code></a>)<a class="headerlink" href="#visualizing-electronic-properties-hubbard-plot" title="Permalink to this headline">¶</a></h1>
+<p>Functionality for plotting different physical properties of the
+self-consistent solution for the system.</p>
+<div class="section" id="plot-spin-resolved-quantities">
+<h2>Plot spin-resolved quantities<a class="headerlink" href="#plot-spin-resolved-quantities" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.Charge.html#hubbard.plot.Charge" title="hubbard.plot.Charge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Charge</span></code></a>(HH[, ext_geom, spin, realspace])</p></td>
+<td><p>Plot the total charge for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.ChargeDifference.html#hubbard.plot.ChargeDifference" title="hubbard.plot.ChargeDifference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChargeDifference</span></code></a>(HH[, ext_geom, realspace])</p></td>
+<td><p>Plot the total charge compared to the neutral atom charge in each site for the HH object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.SpinPolarization.html#hubbard.plot.SpinPolarization" title="hubbard.plot.SpinPolarization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpinPolarization</span></code></a>(HH[, ext_geom, realspace])</p></td>
+<td><p>Plot charge difference between up and down channels <span class="math notranslate nohighlight">\(\langle n_{\uparrow}\rangle-\langle n_{\downarrow}\rangle\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plot-spectra">
+<h2>Plot spectra<a class="headerlink" href="#plot-spectra" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.DOS.html#hubbard.plot.DOS" title="hubbard.plot.DOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS</span></code></a>(HH, egrid[, eta, spin, sites])</p></td>
+<td><p>Plot the total density of states (DOS) as a function of the energy for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.DOS_distribution.html#hubbard.plot.DOS_distribution" title="hubbard.plot.DOS_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS_distribution</span></code></a>(HH, PDOS[, sites, …])</p></td>
+<td><p>Plot LDOS in the configuration space for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.LDOSmap.html#hubbard.plot.LDOSmap" title="hubbard.plot.LDOSmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LDOSmap</span></code></a>(HubbardHamiltonian[, k, spin, …])</p></td>
+<td><p>Plot LDOS(distance, energy) map resolved in energy and axis-coordinates for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.Spectrum.html#hubbard.plot.Spectrum" title="hubbard.plot.Spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spectrum</span></code></a>(HH[, k, xmax, ymin, ymax, fontsize])</p></td>
+<td><p>Plot the orbital charge overlaps for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plot-wavefunctions-for-each-spin-channel">
+<h2>Plot wavefunctions for each spin-channel<a class="headerlink" href="#plot-wavefunctions-for-each-spin-channel" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.Wavefunction.html#hubbard.plot.Wavefunction" title="hubbard.plot.Wavefunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wavefunction</span></code></a>(HH, wf[, ext_geom, cb_label, …])</p></td>
+<td><p>Plot the wavefunction with its complex phase for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plot-geometrical-functions">
+<h2>Plot geometrical functions<a class="headerlink" href="#plot-geometrical-functions" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.BondOrder.html#hubbard.plot.BondOrder" title="hubbard.plot.BondOrder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondOrder</span></code></a>(HH, **kwargs)</p></td>
+<td><p>Plot the Bond order for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.Bonds.html#hubbard.plot.Bonds" title="hubbard.plot.Bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bonds</span></code></a>(G[, annotate, R])</p></td>
+<td><p>Plot bonds between atoms in geometry</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plot-bandstructure-of-the-system">
+<h2>Plot bandstructure of the system<a class="headerlink" href="#plot-bandstructure-of-the-system" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.Bandstructure.html#hubbard.plot.Bandstructure" title="hubbard.plot.Bandstructure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bandstructure</span></code></a>(HH[, bz, ymax, projection, …])</p></td>
+<td><p>Plot the bandstructure for the <em class="xref py py-obj">HubbardHamiltonian</em> object along certain path of the Brillouin Zone</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hubbard.plot.Charge.html" class="btn btn-neutral float-right" title="Charge" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hubbard.sp2.html" class="btn btn-neutral float-left" title="sp2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

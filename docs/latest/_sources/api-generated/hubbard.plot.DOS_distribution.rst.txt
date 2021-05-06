@@ -1,0 +1,41 @@
+DOS_distribution
+=============================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: DOS_distribution
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~DOS_distribution.__init__
+        ~DOS_distribution.add_colorbar
+        ~DOS_distribution.annotate
+        ~DOS_distribution.close
+        ~DOS_distribution.get_colorbar_xticks
+        ~DOS_distribution.get_colorbar_yticks
+        ~DOS_distribution.legend
+        ~DOS_distribution.savefig
+        ~DOS_distribution.set_axes
+        ~DOS_distribution.set_colorbar_xlabel
+        ~DOS_distribution.set_colorbar_xticklabels
+        ~DOS_distribution.set_colorbar_xticks
+        ~DOS_distribution.set_colorbar_ylabel
+        ~DOS_distribution.set_colorbar_yticklabels
+        ~DOS_distribution.set_colorbar_yticks
+        ~DOS_distribution.set_title
+        ~DOS_distribution.set_xlabel
+        ~DOS_distribution.set_xlim
+        ~DOS_distribution.set_ylabel
+        ~DOS_distribution.set_ylim
+    
+    

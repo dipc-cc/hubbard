@@ -1,0 +1,32 @@
+Bonds
+==================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: Bonds
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~Bonds.__init__
+        ~Bonds.add_colorbar
+        ~Bonds.close
+        ~Bonds.legend
+        ~Bonds.plot_bonds
+        ~Bonds.savefig
+        ~Bonds.set_title
+        ~Bonds.set_xlabel
+        ~Bonds.set_xlim
+        ~Bonds.set_ylabel
+        ~Bonds.set_ylim
+    
+    

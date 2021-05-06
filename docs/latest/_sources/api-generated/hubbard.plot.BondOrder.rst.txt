@@ -1,0 +1,41 @@
+BondOrder
+======================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: BondOrder
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~BondOrder.__init__
+        ~BondOrder.add_colorbar
+        ~BondOrder.annotate
+        ~BondOrder.close
+        ~BondOrder.get_colorbar_xticks
+        ~BondOrder.get_colorbar_yticks
+        ~BondOrder.legend
+        ~BondOrder.savefig
+        ~BondOrder.set_axes
+        ~BondOrder.set_colorbar_xlabel
+        ~BondOrder.set_colorbar_xticklabels
+        ~BondOrder.set_colorbar_xticks
+        ~BondOrder.set_colorbar_ylabel
+        ~BondOrder.set_colorbar_yticklabels
+        ~BondOrder.set_colorbar_yticks
+        ~BondOrder.set_title
+        ~BondOrder.set_xlabel
+        ~BondOrder.set_xlim
+        ~BondOrder.set_ylabel
+        ~BondOrder.set_ylim
+    
+    

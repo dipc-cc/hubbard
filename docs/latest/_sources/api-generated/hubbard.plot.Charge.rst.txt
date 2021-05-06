@@ -1,0 +1,41 @@
+Charge
+===================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: Charge
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~Charge.__init__
+        ~Charge.add_colorbar
+        ~Charge.annotate
+        ~Charge.close
+        ~Charge.get_colorbar_xticks
+        ~Charge.get_colorbar_yticks
+        ~Charge.legend
+        ~Charge.savefig
+        ~Charge.set_axes
+        ~Charge.set_colorbar_xlabel
+        ~Charge.set_colorbar_xticklabels
+        ~Charge.set_colorbar_xticks
+        ~Charge.set_colorbar_ylabel
+        ~Charge.set_colorbar_yticklabels
+        ~Charge.set_colorbar_yticks
+        ~Charge.set_title
+        ~Charge.set_xlabel
+        ~Charge.set_xlim
+        ~Charge.set_ylabel
+        ~Charge.set_ylim
+    
+    

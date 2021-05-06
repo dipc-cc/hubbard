@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>NEGF &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ncSilehubbard" href="hubbard.ncSilehubbard.html" />
+    <link rel="prev" title="HubbardHamiltonian" href="hubbard.HubbardHamiltonian.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="hubbard.HubbardHamiltonian.html">HubbardHamiltonian</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">NEGF</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#read-and-write-in-binary-files">Read and write in binary files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a> &raquo;</li>
+        
+      <li>NEGF</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-generated/hubbard.NEGF.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="negf">
+<h1>NEGF<a class="headerlink" href="#negf" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="hubbard.NEGF">
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">NEGF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Hdev</span></em>, <em class="sig-param"><span class="n">elec_SE</span></em>, <em class="sig-param"><span class="n">elec_idx</span></em>, <em class="sig-param"><span class="n">CC</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">V</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class creates the open quantum system object for a N-terminal device</p>
+<p>For the Non-equilibrium case <span class="math notranslate nohighlight">\(V\neq 0\)</span> the current implementation
+only can deal with a 2-terminal device</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Hdev</strong> (<em>HubbardHamiltonian instance</em>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the device</p></li>
+<li><p><strong>elec_SE</strong> (<em>list of sisl.SelfEnergy</em><em> or </em><em>tuple of</em><em> (</em><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a><em>, </em><a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>)</em>) – list of (already converged) <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> objects for the electrodes
+plus the semi-infinite direction for the respective electrode.
+Alternatively one may directly pass sisl.SelfEnergy instances</p></li>
+<li><p><strong>elec_idx</strong> (<em>array_like</em>) – list of atomic positions that <em>each</em> electrode occupies in the device geometry</p></li>
+<li><p><strong>CC</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – name of the file containing the energy contour in the complex plane to integrate the density matrix</p></li>
+<li><p><strong>V</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – applied bias between the two electrodes</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">NEGF</span><span class="p">(</span><span class="n">Hdev</span><span class="p">,</span> <span class="p">[</span><span class="n">sisl</span><span class="o">.</span><span class="n">SelfEnergy</span><span class="p">(),</span> <span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s1">&#39;+A&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl routines to create semi-infinite object (obtain self-energy, etc.)</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This class has to be generalized to non-orthogonal basis</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.NEGF.DOS" title="hubbard.NEGF.DOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS</span></code></a>(H, E[, spin, eta])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p><strong>DOS</strong></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.NEGF.Delta" title="hubbard.NEGF.Delta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Delta</span></code></a>(HC, Ef[, spin])</p></td>
+<td><p>Finds the non-equilibrium integrals to correct the left and right equilibrium integrals</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.NEGF.PDOS" title="hubbard.NEGF.PDOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PDOS</span></code></a>(H, E[, spin, eta])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(Hdev, elec_SE, elec_idx[, CC, V])</p></td>
+<td><p>Initialize NEGF class</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.NEGF.calc_n_open" title="hubbard.NEGF.calc_n_open"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_n_open</span></code></a>(H, q[, qtol])</p></td>
+<td><p>Method to compute the spin densities from the Neq Green’s function</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="hubbard.NEGF.DOS">
+<code class="sig-name descname">DOS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H</span></em>, <em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">[0, 1]</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">0.01</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF.DOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF.DOS" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>DOS</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.NEGF.Delta">
+<code class="sig-name descname">Delta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HC</span></em>, <em class="sig-param"><span class="n">Ef</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF.Delta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF.Delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the non-equilibrium integrals to correct the left and right equilibrium integrals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HC</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a>) – Hamiltonian of the central region in its matrix form</p></li>
+<li><p><strong>Ef</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – Potential of the device</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – spin index (0=up, 1=dn)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Delta</em></p></li>
+<li><p><em>weight</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.NEGF.PDOS">
+<code class="sig-name descname">PDOS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H</span></em>, <em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0, 1</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">0.01</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF.PDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF.PDOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.NEGF.calc_n_open">
+<code class="sig-name descname">calc_n_open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H</span></em>, <em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">qtol</span><span class="o">=</span><span class="default_value">1e-05</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF.calc_n_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF.calc_n_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to compute the spin densities from the Neq Green’s function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>H</strong> (<em>HubbardHamiltonian instances</em>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> of the object that is being iterated</p></li>
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – charge associated to the up and down spin-components</p></li>
+<li><p><strong>qtol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance to which the charge is going to be converged in the internal loop
+that finds the potential of the device (i.e. that makes the device neutrally charged)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>ni</em></p></li>
+<li><p><em>Etot</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hubbard.ncSilehubbard.html" class="btn btn-neutral float-right" title="ncSilehubbard" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hubbard.HubbardHamiltonian.html" class="btn btn-neutral float-left" title="HubbardHamiltonian" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

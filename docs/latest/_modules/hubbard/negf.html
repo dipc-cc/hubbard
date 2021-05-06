@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hubbard.negf &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>hubbard.negf</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for hubbard.negf</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">einsum</span><span class="p">,</span> <span class="n">conj</span>
+<span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">inv</span>
+
+<span class="n">_pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NEGF&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_G</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculate Green function</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    e : complex</span>
+<span class="sd">       energy at which the Green function is calculated</span>
+<span class="sd">    HC : numpy.ndarray</span>
+<span class="sd">       the Hamiltonian</span>
+<span class="sd">    elec_idx : list of indices</span>
+<span class="sd">       indices for the electrode orbitals</span>
+<span class="sd">    SE : list of numpy.ndarray</span>
+<span class="sd">       self-energies for the electrodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">no</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="p">)</span>
+    <span class="n">inv_GF</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">inv_GF</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">inv_GF</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">-=</span> <span class="n">HC</span><span class="p">[:,</span> <span class="p">:]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">se</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">):</span>
+        <span class="n">inv_GF</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">-=</span> <span class="n">se</span>
+    <span class="k">return</span> <span class="n">inv</span><span class="p">(</span><span class="n">inv_GF</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_nested_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_nested_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="k">return</span> <span class="n">l</span>
+
+
+<div class="viewcode-block" id="NEGF"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF">[docs]</a><span class="k">class</span> <span class="nc">NEGF</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; This class creates the open quantum system object for a N-terminal device</span>
+
+<span class="sd">    For the Non-equilibrium case :math:`V\neq 0` the current implementation</span>
+<span class="sd">    only can deal with a 2-terminal device</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Hdev: HubbardHamiltonian instance</span>
+<span class="sd">        `hubbard.HubbardHamiltonian` object of the device</span>
+<span class="sd">    elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)</span>
+<span class="sd">        list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes</span>
+<span class="sd">        plus the semi-infinite direction for the respective electrode.</span>
+<span class="sd">        Alternatively one may directly pass sisl.SelfEnergy instances</span>
+<span class="sd">    elec_idx: array_like</span>
+<span class="sd">        list of atomic positions that *each* electrode occupies in the device geometry</span>
+<span class="sd">    CC: str, optional</span>
+<span class="sd">        name of the file containing the energy contour in the complex plane to integrate the density matrix</span>
+<span class="sd">    V: float, optional</span>
+<span class="sd">        applied bias between the two electrodes</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; NEGF(Hdev, [sisl.SelfEnergy(), (H, &#39;+A&#39;)])</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    `sisl.physics.RecursiveSI` : sisl routines to create semi-infinite object (obtain self-energy, etc.)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class has to be generalized to non-orthogonal basis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Hdev</span><span class="p">,</span> <span class="n">elec_SE</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">CC</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize NEGF class &quot;&quot;&quot;</span>
+
+        <span class="c1"># Global charge neutral reference energy (conveniently named fermi)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ef</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kT</span> <span class="o">=</span> <span class="n">Hdev</span><span class="o">.</span><span class="n">kT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eta</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="c1"># Immediately retrieve the distribution</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CC</span><span class="p">:</span>
+            <span class="n">CC</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/EQCONTOUR&quot;</span>
+        <span class="n">contour_weight</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">tableSile</span><span class="p">(</span><span class="n">CC</span><span class="p">)</span><span class="o">.</span><span class="n">read_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">contour_weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">contour_weight</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w_eq</span> <span class="o">=</span> <span class="p">(</span><span class="n">contour_weight</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">contour_weight</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span> <span class="o">=</span> <span class="n">V</span> <span class="o">!=</span> <span class="mi">0</span>
+
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elec_SE</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span><span class="p">:</span>
+            <span class="c1"># in case the user has WBL electrodes</span>
+            <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span> <span class="o">*</span> <span class="mf">0.5</span>
+            <span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">V</span> <span class="o">*</span> <span class="mf">0.5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+            <span class="c1"># Integration path for the non-Eq window</span>
+            <span class="n">dE</span> <span class="o">=</span> <span class="mf">0.01</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span> <span class="o">+</span> <span class="n">dE</span><span class="p">,</span> <span class="n">dE</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.001</span>
+            <span class="c1"># Weights for the non-Eq integrals</span>
+            <span class="n">w_neq</span> <span class="o">=</span> <span class="n">dE</span> <span class="o">*</span> <span class="p">(</span><span class="n">dist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">dist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="c1"># Store weights for correction to RIGHT [0] and LEFT [1]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">w_neq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">w_neq</span><span class="p">,</span> <span class="o">-</span><span class="n">w_neq</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="k">def</span> <span class="nf">convert2SelfEnergy</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="c1"># here HH *must* be a HubbardHamiltonian (otherwise it will probably crash)</span>
+                <span class="n">HH</span><span class="p">,</span> <span class="n">semi_inf</span> <span class="o">=</span> <span class="n">HH</span>
+                <span class="n">Ef_elec</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">HH</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
+                <span class="c1"># Shift each electrode with its Fermi-level</span>
+                <span class="c1"># And also shift the chemical potential</span>
+                <span class="c1"># Since the electrodes are *bulk* i.e. the entire electronic structure</span>
+                <span class="c1"># is simply shifted we need to subtract since the contour shifts the chemical</span>
+                <span class="c1"># potential back.</span>
+                <span class="n">HH</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">Ef_elec</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">sisl</span><span class="o">.</span><span class="n">RecursiveSI</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">H</span><span class="p">,</span> <span class="n">semi_inf</span><span class="p">)</span>
+
+            <span class="c1"># this will work since SelfEnergy instances overloads unknown attributes</span>
+            <span class="c1"># to the parent.</span>
+            <span class="c1"># This will only shift the electronic structure of the RecursiveSI.spgeom0</span>
+            <span class="c1"># and not RecursiveSI.spgeom1. However, for orthogonal basis, this is equivalent.</span>
+            <span class="c1"># TODO this should be changed when non-orthogonal basis&#39; are used</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">HH</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># the parent does not have the shift method</span>
+                <span class="k">pass</span>
+            <span class="k">return</span> <span class="n">HH</span>
+
+        <span class="c1"># convert all matrices to a sisl.SelfEnergy instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">convert2SelfEnergy</span><span class="p">,</span> <span class="n">elec_SE</span><span class="p">,</span> <span class="n">mu</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">elec_idx</span><span class="p">]</span>
+
+        <span class="c1"># Ensure commensurate shapes</span>
+        <span class="k">for</span> <span class="n">SE</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">SE</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+        <span class="c1"># For a bias calcualtion, ensure that only the first</span>
+        <span class="c1"># two electrodes are RecursiveSI (all others should be WideBandSE)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sisl</span><span class="o">.</span><span class="n">RecursiveSI</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">)):</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sisl</span><span class="o">.</span><span class="n">WideBandSE</span><span class="p">)</span>
+
+        <span class="c1"># In case all self-energies are WB, then we can change the eta value</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">WideBandSE</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">)):</span>
+            <span class="c1"># The wide-band limit ensures that all electrons comes at a constant rate per</span>
+            <span class="c1"># energy.</span>
+            <span class="c1"># Although this *could* potentially be too high, then I think it should be ok</span>
+            <span class="c1"># since the electrodes more govern the DOS.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eta</span> <span class="o">=</span> <span class="mf">1.</span>
+
+        <span class="c1"># spin, electrode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ef_SE</span> <span class="o">=</span> <span class="n">_nested_list</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">))</span>
+        <span class="c1"># spin, EQ-contour, energy, electrode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cc_eq_SE</span> <span class="o">=</span> <span class="n">_nested_list</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">))</span>
+        <span class="c1"># spin, energy, electrode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cc_neq_SE</span> <span class="o">=</span> <span class="n">_nested_list</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">se</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="c1"># Map self-energy at the Fermi-level of each electrode into the device region</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ef_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">mu</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">cc_eq_i</span><span class="p">,</span> <span class="n">CC_eq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">CC_eq</span><span class="p">):</span>
+                        <span class="c1"># Do it also for each point in the CC, for all EQ CC</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cc_eq_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">cc_eq_i</span><span class="p">][</span><span class="n">ic</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span><span class="p">):</span>
+                        <span class="c1"># And for each point in the Neq CC</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cc_neq_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">ic</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NEGF.calc_n_open"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.calc_n_open">[docs]</a>    <span class="k">def</span> <span class="nf">calc_n_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">qtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to compute the spin densities from the Neq Green&#39;s function</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        H: HubbardHamiltonian instances</span>
+<span class="sd">            `hubbard.HubbardHamiltonian` of the object that is being iterated</span>
+<span class="sd">        q: float</span>
+<span class="sd">            charge associated to the up and down spin-components</span>
+<span class="sd">        qtol: float, optional</span>
+<span class="sd">            tolerance to which the charge is going to be converged in the internal loop</span>
+<span class="sd">            that finds the potential of the device (i.e. that makes the device neutrally charged)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ni</span>
+<span class="sd">        Etot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ensure scalar, for open systems one cannot impose a spin-charge</span>
+        <span class="c1"># This spin-charge would be dependent on the system size</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># Create short-hands</span>
+        <span class="n">ef_SE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ef_SE</span>
+        <span class="n">cc_eq_SE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cc_eq_SE</span>
+
+        <span class="n">no</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="p">)</span>
+        <span class="n">ni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="n">no</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">ntot</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="n">Ef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ef</span>
+
+        <span class="n">conv_q</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ntot</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">qtol</span><span class="p">:</span>
+            <span class="c1"># for debug purposes</span>
+            <span class="c1">#print(ntot, q, qtol, Ef)</span>
+
+            <span class="k">if</span> <span class="n">ntot</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="c1"># correct fermi-level</span>
+                <span class="n">dq</span> <span class="o">=</span> <span class="n">ni</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">q</span>
+
+                <span class="n">conv_q</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">dq</span><span class="p">,</span> <span class="n">Ef</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">conv_q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># do a bisection of the fermi level</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conv_q</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">Ef</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">f</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">f</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                                          <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="mf">0.</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">Ef</span> <span class="o">=</span> <span class="n">conv_q</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Ef</span><span class="p">):</span>
+                        <span class="n">Ef</span> <span class="o">=</span> <span class="n">conv_q</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+                    <span class="c1"># check that the fermi-level is not one we already have</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">Ef</span> <span class="o">-</span> <span class="n">f</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-15</span><span class="p">):</span>
+                        <span class="n">conv_q</span> <span class="o">=</span> <span class="p">[</span><span class="n">conv_q</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">conv_q</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+                    <span class="c1"># Fermi-level is at 0.</span>
+                    <span class="c1"># The Lorentzian has ~70% of its integral within</span>
+                    <span class="c1">#   2 * \eta (on both sides)</span>
+                    <span class="c1"># To cover 200 meV ~ 2400 K in the integration window</span>
+                    <span class="c1"># and expect the Lorentzian peak to be positioned at</span>
+                    <span class="c1"># the current Fermi-level we will use eta = 100 meV</span>
+                    <span class="c1"># Calculate charge at the Fermi-level</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="mf">0.</span>
+                    <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">HC</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Hk</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+                        <span class="n">cc</span> <span class="o">=</span> <span class="n">Ef</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span>
+
+                        <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">ef_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">])</span>
+
+                        <span class="c1"># Now we need to calculate the new Fermi level based on the</span>
+                        <span class="c1"># difference in charge and by estimating the current Fermi level</span>
+                        <span class="c1"># as the peak position of a Lorentzian.</span>
+                        <span class="c1"># I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5</span>
+                        <span class="c1">#   F(x) - F(0) = arctan(x) / pi = dq</span>
+                        <span class="c1"># In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi</span>
+                        <span class="c1"># and consider this a pre-factor</span>
+                        <span class="n">f</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">GF</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span> <span class="o">/</span> <span class="n">_pi</span>
+
+                        <span class="c1"># calculate fractional change</span>
+                        <span class="n">f</span> <span class="o">=</span> <span class="n">dq</span> <span class="o">/</span> <span class="n">f</span>
+                        <span class="c1"># Since x above is in units of eta, we have to multiply with eta</span>
+                        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.45</span><span class="p">:</span>
+                            <span class="n">Ef</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">_pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">Ef</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">((</span><span class="n">_pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">_pi</span><span class="p">))))</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+            <span class="n">Etot</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">HC</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Hk</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+                <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="p">)])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span><span class="p">:</span>
+                    <span class="c1"># Correct Density matrix with Non-equilibrium integrals</span>
+                    <span class="n">Delta</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">HC</span><span class="p">,</span> <span class="n">Ef</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+                    <span class="c1"># Store only diagonal</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                    <span class="c1"># Transfer Delta to D</span>
+                    <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Delta</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">Delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="c1"># TODO We need to also calculate the total energy for NEQ</span>
+                    <span class="c1">#      this should probably be done in the Delta method</span>
+                    <span class="k">del</span> <span class="n">Delta</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># This ensures we can calculate for EQ only calculations</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="mf">1.</span>
+
+                <span class="c1"># Loop over all eq. Contours</span>
+                <span class="k">for</span> <span class="n">cc_eq_i</span><span class="p">,</span> <span class="n">CC</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_eq</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="p">[</span><span class="n">cc</span><span class="p">,</span> <span class="n">wi</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">CC</span> <span class="o">+</span> <span class="n">Ef</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_eq</span><span class="p">)):</span>
+
+                        <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">cc_eq_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">cc_eq_i</span><span class="p">][</span><span class="n">ic</span><span class="p">])</span>
+
+                        <span class="c1"># Greens function evaluated at each point of the CC multiplied by the weight</span>
+                        <span class="n">Gf_wi</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">GF</span><span class="p">)</span> <span class="o">*</span> <span class="n">wi</span>
+                        <span class="n">D</span><span class="p">[</span><span class="n">cc_eq_i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Gf_wi</span><span class="o">.</span><span class="n">imag</span>
+
+                        <span class="c1"># Integrate density of states to obtain the total energy</span>
+                        <span class="c1"># For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)</span>
+                        <span class="k">if</span> <span class="n">cc_eq_i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Etot</span> <span class="o">+=</span> <span class="p">((</span><span class="n">w</span> <span class="o">*</span> <span class="n">Gf_wi</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">cc</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">Etot</span> <span class="o">+=</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">Gf_wi</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">cc</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NEQ</span><span class="p">:</span>
+                    <span class="n">D</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">D</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="n">ni</span><span class="p">[</span><span class="n">spin</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">D</span>
+
+            <span class="c1"># Calculate new charge</span>
+            <span class="n">ntot</span> <span class="o">=</span> <span class="n">ni</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># Save Fermi-level of the device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ef</span> <span class="o">=</span> <span class="n">Ef</span>
+
+        <span class="k">return</span> <span class="n">ni</span><span class="p">,</span> <span class="n">Etot</span></div>
+
+<div class="viewcode-block" id="NEGF.Delta"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.Delta">[docs]</a>    <span class="k">def</span> <span class="nf">Delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">Ef</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the non-equilibrium integrals to correct the left and right equilibrium integrals</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        HC: numpy.ndarray</span>
+<span class="sd">            Hamiltonian of the central region in its matrix form</span>
+<span class="sd">        Ef: float</span>
+<span class="sd">            Potential of the device</span>
+<span class="sd">        spin: int</span>
+<span class="sd">            spin index (0=up, 1=dn)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Delta</span>
+<span class="sd">        weight</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">spectral</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">self_energy</span><span class="p">):</span>
+            <span class="c1"># Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)</span>
+            <span class="n">Gamma</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">self_energy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">self_energy</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+            <span class="c1"># Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Gamma</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">)))</span>
+
+        <span class="n">no</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="p">)</span>
+        <span class="n">Delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="n">no</span><span class="p">,</span> <span class="n">no</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="n">cc_neq_SE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cc_neq_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">cc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span> <span class="o">+</span> <span class="n">Ef</span><span class="p">):</span>
+
+            <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">cc_neq_SE</span><span class="p">[</span><span class="n">ic</span><span class="p">])</span>
+
+            <span class="c1"># Elec (0, 1) are (left, right)</span>
+            <span class="c1"># only do for the first two!</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">SE</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cc_neq_SE</span><span class="p">[</span><span class="n">ic</span><span class="p">][:</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">Delta</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">spectral</span><span class="p">(</span><span class="n">GF</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()],</span> <span class="n">SE</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_neq</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">ic</span><span class="p">]</span>
+
+        <span class="c1"># Firstly implement it for two terminals following PRB 65 165401 (2002)</span>
+        <span class="c1"># then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">Delta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">Delta</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Get rid of the numerical imaginary part (which is ~0)</span>
+        <span class="k">return</span> <span class="n">Delta</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">weight</span><span class="o">.</span><span class="n">real</span></div>
+
+<div class="viewcode-block" id="NEGF.DOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.DOS">[docs]</a>    <span class="k">def</span> <span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        DOS : np.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure spin instance is iterable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
+
+        <span class="n">dos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="n">spin</span><span class="p">:</span>
+            <span class="n">HC</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Hk</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">E</span><span class="p">):</span>
+
+                <span class="c1"># Append all the self-energies for the electrodes at each energy point</span>
+                <span class="n">SE</span> <span class="o">=</span> <span class="p">[</span><span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span> <span class="k">for</span> <span class="n">se</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">]</span>
+                <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">)</span>
+
+                <span class="n">dos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">GF</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+
+        <span class="k">return</span> <span class="n">dos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
+
+<div class="viewcode-block" id="NEGF.PDOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.PDOS">[docs]</a>    <span class="k">def</span> <span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="c1"># Ensure spin instance is iterable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
+
+        <span class="n">ldos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">E</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="n">spin</span><span class="p">:</span>
+            <span class="n">HC</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Hk</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">E</span><span class="p">):</span>
+                <span class="n">SE</span> <span class="o">=</span> <span class="p">[</span><span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span> <span class="k">for</span> <span class="n">se</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_SE</span><span class="p">]</span>
+                <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">)</span>
+                <span class="n">ldos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">GF</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">imag</span>
+
+        <span class="k">return</span> <span class="n">ldos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+Spectrum
+=====================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: Spectrum
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~Spectrum.__init__
+        ~Spectrum.add_colorbar
+        ~Spectrum.close
+        ~Spectrum.legend
+        ~Spectrum.savefig
+        ~Spectrum.set_title
+        ~Spectrum.set_xlabel
+        ~Spectrum.set_xlim
+        ~Spectrum.set_ylabel
+        ~Spectrum.set_ylim
+    
+    

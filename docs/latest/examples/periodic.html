@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Electron correlations in periodic systems &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulating an open-quantum system with electron correlations" href="open.html" />
+    <link rel="prev" title="Simulating a molecule with electron correlations" href="molecules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="molecules.html">Simulating a molecule with electron correlations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Electron correlations in periodic systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="open.html">Simulating an open-quantum system with electron correlations</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>Electron correlations in periodic systems</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/examples/periodic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="electron-correlations-in-periodic-systems">
+<h1>Electron correlations in periodic systems<a class="headerlink" href="#electron-correlations-in-periodic-systems" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will create the <em class="xref py py-obj">HubbardHamiltonian</em> object
+of a system with periodic boundary conditions, and find the self-consistent solution using the mean-field Hubbard model.</p>
+<p>We will use as a reference the graphene nanoribbons of ref.
+<a class="reference external" href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.81.245402">Phys. Rev. B 81, 245402 (2010)</a>
+and benchmark the results published there. You can also navigate through the
+<a class="reference external" href="https://github.com/dipc-cc/hubbard/tree/master/examples/periodic">periodic systems examples section</a>.</p>
+<ol class="arabic simple">
+<li><p>We will start by building the tight-binding (TB) Hamiltonian for the sp2 carbon-based
+graphene nanoribbon, by first building the
+<a class="reference external" href="https://sisl.readthedocs.io/en/latest/api-generated/sisl.Geometry.html">sisl.Geometry</a> object.
+You can find the parameters used to model the TB Hamiltonian in the referenced paper above.</p></li>
+<li><p>We will build the <em class="xref py py-obj">HubbardHamiltonian</em> object, which will allow us to use the routines
+stored in this class to converge until we find the self-consistent solution.</p></li>
+<li><p>Then we can plot some physical quantities that may be relevant after the calculation with the hubbard package.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hubbard.hamiltonian</span> <span class="k">as</span> <span class="nn">hh</span>
+<span class="kn">import</span> <span class="nn">hubbard.sp2</span> <span class="k">as</span> <span class="nn">sp2</span>
+<span class="kn">import</span> <span class="nn">hubbard.density</span> <span class="k">as</span> <span class="nn">density</span>
+<span class="kn">import</span> <span class="nn">hubbard.plot</span> <span class="k">as</span> <span class="nn">plot</span>
+
+<span class="c1"># Build sisl.Geometry object of a zigzag graphene nanoribbon of width W=16 C-atoms across,</span>
+<span class="c1"># e.g., by using the function sisl.geom.zgnr.</span>
+<span class="c1"># This function returns a periodic graphene ribbon along the x-axis.</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">zgnr</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="c1"># Build tight-binding Hamiltonian using hubbard.sp2 function</span>
+<span class="n">Hsp2</span> <span class="o">=</span> <span class="n">sp2</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Build the HubbardHamiltonian object with U=2.0 eV at a temperature of kT=1e-5 in units</span>
+<span class="c1"># of the Boltzmann constant.</span>
+<span class="c1"># We have to use a k-points grid along the periodic direction to find the self-consistent solution per k-point</span>
+<span class="n">HH</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">Hsp2</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s plot the band structure of the pure tight-binding Hamiltonian</span>
+<span class="c1"># i.e., before finding the mean-field self-consistent solution</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">Bandstructure</span><span class="p">(</span><span class="n">HH</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;bands_TB.pdf&#39;</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s initiate with a random density as a starting point</span>
+<span class="n">HH</span><span class="o">.</span><span class="n">random_density</span><span class="p">()</span>
+
+<span class="c1"># Converge until a tolerance of tol=1e-10</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">dm</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s plot some relevant physical quantities, such as the final spin-polarization per unit-cell</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;spin-pol.pdf&#39;</span><span class="p">)</span>
+
+<span class="c1"># and the band structure of the self-consistent solution</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">Bandstructure</span><span class="p">(</span><span class="n">HH</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;bands_MFH.pdf&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="open.html" class="btn btn-neutral float-right" title="Simulating an open-quantum system with electron correlations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="molecules.html" class="btn btn-neutral float-left" title="Simulating a molecule with electron correlations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

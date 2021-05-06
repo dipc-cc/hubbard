@@ -1,0 +1,26 @@
+NEGF
+============
+
+.. currentmodule:: hubbard
+
+.. autoclass:: NEGF
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~NEGF.DOS
+        ~NEGF.Delta
+        ~NEGF.PDOS
+        ~NEGF.__init__
+        ~NEGF.calc_n_open
+    
+    

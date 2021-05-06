@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HubbardHamiltonian &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NEGF" href="hubbard.NEGF.html" />
+    <link rel="prev" title="Mean-field Hubbard model (hubbard)" href="hubbard.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">HubbardHamiltonian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.NEGF.html">NEGF</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#read-and-write-in-binary-files">Read and write in binary files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a> &raquo;</li>
+        
+      <li>HubbardHamiltonian</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-generated/hubbard.HubbardHamiltonian.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="hubbardhamiltonian">
+<h1>HubbardHamiltonian<a class="headerlink" href="#hubbardhamiltonian" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="hubbard.HubbardHamiltonian">
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">HubbardHamiltonian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">TBHam</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">U</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em>, <em class="sig-param"><span class="n">nkpt</span><span class="o">=</span><span class="default_value">[1, 1, 1]</span></em>, <em class="sig-param"><span class="n">kT</span><span class="o">=</span><span class="default_value">1e-05</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</p>
+<p>The <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> class opens the possibility to include electron correlations in the tight-binding Hamiltonian
+by solving self-consistently the mean-field Hubbard Hamiltonian</p>
+<p>It enables the convergence of several tight-binding described systems towards a user-defined tolerance criterion</p>
+<p>It takes an input tight-binding Hamiltonian and updates the corresponding matrix elements according to the MFH model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TBHam</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian</span></code></a> instance) – A spin-polarized tight-binding Hamiltonian</p></li>
+<li><p><strong>n</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – initial spin-densities vectors. The shape of <em class="xref py py-obj">n</em> must be (2, len(geometry))</p></li>
+<li><p><strong>U</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – on-site Coulomb repulsion</p></li>
+<li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Two values specifying up, down electron occupations</p></li>
+<li><p><strong>nkpt</strong> (array_like or <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.BrillouinZone.html#sisl.physics.BrillouinZone" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.BrillouinZone</span></code></a> instance, optional) – Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling</p></li>
+<li><p><strong>kT</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Temperature of the system in units of the Boltzmann constant</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.DOS" title="hubbard.HubbardHamiltonian.DOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS</span></code></a>(egrid[, eta, spin, dist, eref])</p></td>
+<td><p>Obtains the density of states (DOS) of the system with a distribution function</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.PDOS" title="hubbard.HubbardHamiltonian.PDOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PDOS</span></code></a>(egrid[, eta, spin, dist, eref])</p></td>
+<td><p>Obtains the projected density of states (PDOS) of the system with a distribution function</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(TBHam[, n, U, q, nkpt, kT])</p></td>
+<td><p>Initialize HubbardHamiltonian</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.band_sym" title="hubbard.HubbardHamiltonian.band_sym"><code class="xref py py-obj docutils literal notranslate"><span class="pre">band_sym</span></code></a>(eigenstate[, diag, axis])</p></td>
+<td><p>Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps" title="hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_orbital_charge_overlaps</span></code></a>([k, spin])</p></td>
+<td><p>Obtain orbital (eigenstate) charge overlaps as <span class="math notranslate nohighlight">\(\int dr |\psi_{\sigma\alpha}|^{4}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.converge" title="hubbard.HubbardHamiltonian.converge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">converge</span></code></a>(calc_n_method[, tol, mixer, steps, …])</p></td>
+<td><p>Iterate Hamiltonian towards a specified tolerance criterion</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.copy" title="hubbard.HubbardHamiltonian.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Return a copy of the <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a> object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.eigenstate" title="hubbard.HubbardHamiltonian.eigenstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigenstate</span></code></a>(k[, spin])</p></td>
+<td><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object containing all eigenstates</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.eigh" title="hubbard.HubbardHamiltonian.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigh</span></code></a>([k, eigvals_only, spin])</p></td>
+<td><p>Diagonalize Hamiltonian using the <code class="docutils literal notranslate"><span class="pre">eigh</span></code> routine</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.fermi_level" title="hubbard.HubbardHamiltonian.fermi_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fermi_level</span></code></a>([q, dist])</p></td>
+<td><p>Find the fermi level for a certain charge <em class="xref py py-obj">q</em> at a certain <em class="xref py py-obj">kT</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.find_midgap" title="hubbard.HubbardHamiltonian.find_midgap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_midgap</span></code></a>()</p></td>
+<td><p>Find the midgap for the system taking into account the up and dn different spectrums</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.get_Zak_phase" title="hubbard.HubbardHamiltonian.get_Zak_phase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Zak_phase</span></code></a>([func, nk, sub, eigvals])</p></td>
+<td><p>Computes the Zak phase for 1D (periodic) systems using <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.electron.berry_phase</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.get_bond_order" title="hubbard.HubbardHamiltonian.get_bond_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bond_order</span></code></a>([format, midgap])</p></td>
+<td><p>Compute Huckel bond order</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.iterate" title="hubbard.HubbardHamiltonian.iterate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterate</span></code></a>(calc_n_method[, q, mixer])</p></td>
+<td><p>Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.normalize_charge" title="hubbard.HubbardHamiltonian.normalize_charge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_charge</span></code></a>()</p></td>
+<td><p>Ensure the total up/down charge in pi-network equals Nup/Ndn</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.polarize_sublattices" title="hubbard.HubbardHamiltonian.polarize_sublattices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polarize_sublattices</span></code></a>()</p></td>
+<td><p>Quick way to polarize the lattices without checking that consequtive atoms actually belong to different sublattices</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.random_density" title="hubbard.HubbardHamiltonian.random_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_density</span></code></a>()</p></td>
+<td><p>Initialize spin polarization  with random density</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.read_density" title="hubbard.HubbardHamiltonian.read_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_density</span></code></a>(fn[, mode])</p></td>
+<td><p>Read density from binary file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.repeat" title="hubbard.HubbardHamiltonian.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(reps, axis)</p></td>
+<td><p>Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_kmesh" title="hubbard.HubbardHamiltonian.set_kmesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_kmesh</span></code></a>([nkpt])</p></td>
+<td><p>Set the k-mesh for the HubbardHamiltonian</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_polarization" title="hubbard.HubbardHamiltonian.set_polarization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_polarization</span></code></a>(up[, dn])</p></td>
+<td><p>Maximize spin polarization on specific atomic sites Optionally, sites with down-polarization can be specified</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.spin_contamination" title="hubbard.HubbardHamiltonian.spin_contamination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spin_contamination</span></code></a>([ret_exact])</p></td>
+<td><p>Obtains the spin contamination for the MFH Hamiltonian following <a class="reference external" href="https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub">Ref.Chemical Physics Letters.183 (5): 423–431</a>..</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.sub" title="hubbard.HubbardHamiltonian.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub</span></code></a>(atoms[, q])</p></td>
+<td><p>Return a new <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a> object of a subset of selected atoms</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.tile" title="hubbard.HubbardHamiltonian.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(reps, axis)</p></td>
+<td><p>Tile the HubbardHamiltonian object along a specified axis to obtain a larger one</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.update_hamiltonian" title="hubbard.HubbardHamiltonian.update_hamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hamiltonian</span></code></a>()</p></td>
+<td><p>Update spin Hamiltonian according to the mean-field Hubbard model It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.write_density" title="hubbard.HubbardHamiltonian.write_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_density</span></code></a>(fn[, mode])</p></td>
+<td><p>Write density in a binary file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.write_initspin" title="hubbard.HubbardHamiltonian.write_initspin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_initspin</span></code></a>(fn[, ext_geom, spinfix, …])</p></td>
+<td><p>Write spin polarization to SIESTA fdf-block</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.DOS">
+<code class="sig-name descname">DOS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">egrid</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">[0, 1]</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">'Lorentzian'</span></em>, <em class="sig-param"><span class="n">eref</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.DOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.DOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains the density of states (DOS) of the system with a distribution function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>egrid</strong> (<em>array_like</em>) – Energy grid at which the DOS will be calculated.</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+If spin is not specified it returns DOS_up + DOS_dn.</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
+<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>DOS</strong> – density of states at the given energies for the selected spin</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.PDOS">
+<code class="sig-name descname">PDOS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">egrid</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">[0, 1]</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">'Lorentzian'</span></em>, <em class="sig-param"><span class="n">eref</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.PDOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.PDOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains the projected density of states (PDOS) of the system with a distribution function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>egrid</strong> (<em>array_like</em>) – Energy grid at which the DOS will be calculated.</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+If spin is not specified it returns DOS_up + DOS_dn.</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
+<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>PDOS</strong> – projected density of states at the given energies for the selected spin</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.band_sym">
+<code class="sig-name descname">band_sym</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">eigenstate</span></em>, <em class="sig-param"><span class="n">diag</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.band_sym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.band_sym" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps">
+<code class="sig-name descname">calc_orbital_charge_overlaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">[0, 0, 0]</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.calc_orbital_charge_overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain orbital (eigenstate) charge overlaps as <span class="math notranslate nohighlight">\(\int dr |\psi_{\sigma\alpha}|^{4}\)</span></p>
+<p>Where <span class="math notranslate nohighlight">\(\sigma\)</span> is the spin index and <span class="math notranslate nohighlight">\(\alpha\)</span> is the eigenstate index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k-point at which the eigenstate is going to be obtained</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – spin index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ev</strong> (<em>numpy.ndarray</em>) – eigenvalues</p></li>
+<li><p><strong>L</strong> (<em>numpy.ndarray</em>) – orbital charge overlaps</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.converge">
+<code class="sig-name descname">converge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">calc_n_method</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">1e-06</span></em>, <em class="sig-param"><span class="n">mixer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">steps</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">print_info</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">func_args</span><span class="o">=</span><span class="default_value">{}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.converge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.converge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate Hamiltonian towards a specified tolerance criterion</p>
+<p>This method calls <a class="reference internal" href="#hubbard.HubbardHamiltonian.iterate" title="hubbard.HubbardHamiltonian.iterate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterate</span></code></a> as many times as it needs until it reaches the specified tolerance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calc_n_method</strong> (<em>callable</em>) – method to obtain the spin-densities
+it <em>must</em> return the corresponding spin-densities (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and the total energy (<code class="docutils literal notranslate"><span class="pre">Etot</span></code>)</p></li>
+<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance criterion</p></li>
+<li><p><strong>mixer</strong> (<em>Mixer</em>) – <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.Mixer</span></code> instance, defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.DIISMixer</span></code></p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – the code will print some relevant information (if <em class="xref py py-obj">print_info</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>) about the convergence
+process when the number of completed iterations reaches a multiple of the specified <em class="xref py py-obj">steps</em>.
+It also will store the densities in a binary file if <em class="xref py py-obj">fn</em> is passed</p></li>
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
+the specified <em class="xref py py-obj">steps</em>), by giving the name of the full name of the <em>binary file</em></p></li>
+<li><p><strong>func_args</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – function arguments to pass to calc_n_method</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#hubbard.HubbardHamiltonian.iterate" title="hubbard.HubbardHamiltonian.iterate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.density.n</span></code></dt><dd><p>method to obtain <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain <em class="xref py py-obj">kT</em></p>
+</dd>
+<dt><a class="reference internal" href="hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code></a></dt><dd><p>class that contains the routines to obtain  <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with open boundary conditions</p>
+</dd>
+</dl>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>difference between the ith and the (i-1)th iteration densities</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dn</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a> object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.eigenstate">
+<code class="sig-name descname">eigenstate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.eigenstate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.eigenstate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object containing all eigenstates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>array_like</em>) – k-point at which the eigenstate is going to be obtained</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>object</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.eigh">
+<code class="sig-name descname">eigh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">[0, 0, 0]</span></em>, <em class="sig-param"><span class="n">eigvals_only</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.eigh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.eigh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diagonalize Hamiltonian using the <code class="docutils literal notranslate"><span class="pre">eigh</span></code> routine</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k-point at which the eigenvalue want to be obtained</p></li>
+<li><p><strong>eigvals_only</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if True only eigenvalues are returned, otherwise
+it also returns the eigenvectors</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – for <code class="docutils literal notranslate"><span class="pre">spin</span></code> = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>eigenvalues</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.fermi_level">
+<code class="sig-name descname">fermi_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">[None, None]</span></em>, <em class="sig-param"><span class="n">dist</span><span class="o">=</span><span class="default_value">'fermi_dirac'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.fermi_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.fermi_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the fermi level for a certain charge <em class="xref py py-obj">q</em> at a certain <em class="xref py py-obj">kT</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – charge per spin channel. First index for spin up, second index for dn</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution function</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class function</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Ef</strong> – Fermi-level for each spin channel</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.find_midgap">
+<code class="sig-name descname">find_midgap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.find_midgap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.find_midgap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the midgap for the system
+taking into account the up and dn different spectrums</p>
+<p>This method makes sense for insulators (where there is a bandgap)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.get_Zak_phase">
+<code class="sig-name descname">get_Zak_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nk</span><span class="o">=</span><span class="default_value">51</span></em>, <em class="sig-param"><span class="n">sub</span><span class="o">=</span><span class="default_value">'filled'</span></em>, <em class="sig-param"><span class="n">eigvals</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.get_Zak_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.get_Zak_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Zak phase for 1D (periodic) systems using <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.electron.berry_phase</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em><em>, </em><em>optional</em>) – function that creates a list of parametrized k-points to generate a new <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.BrillouinZone</span></code> object parametrized in <em class="xref py py-obj">N</em> separations</p></li>
+<li><p><strong>nk</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of k-points generated using the parameterization</p></li>
+<li><p><strong>sub</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of bands that will be summed to obtain the Zak phase</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If no <em class="xref py py-obj">func</em> is passed it assumes the periodicity along the x-axis
+If no <a class="reference internal" href="#hubbard.HubbardHamiltonian.sub" title="hubbard.HubbardHamiltonian.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub</span></code></a> is passed it sums up to the last occuppied band (included)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Zak</strong> – Zak phase for the 1D system</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.get_bond_order">
+<code class="sig-name descname">get_bond_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'csr'</span></em>, <em class="sig-param"><span class="n">midgap</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.get_bond_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.get_bond_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Huckel bond order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<em>{'csr'</em><em>, </em><em>'array'</em><em>, </em><em>'dense'</em><em>, </em><em>'coo'</em><em>, </em><em>..}</em>) – the returned format of the matrix, defaulting to the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.6.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.csr_matrix</span></code></a>,
+however if one always requires operations on dense matrices, one can always
+return in <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> (<em class="xref py py-obj">‘array’</em>) or <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix</span></code></a> (<em class="xref py py-obj">‘dense’</em>).</p></li>
+<li><p><strong>midgap</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy value that separates filled states (lower energy) from empty states (higher energy)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the Huckel bond-order matrix object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.iterate">
+<code class="sig-name descname">iterate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">calc_n_method</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mixer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.iterate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.iterate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation</p>
+<p>The only thing that may change is the way in which the spin-densities (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and total energy (<code class="docutils literal notranslate"><span class="pre">Etot</span></code>) are obtained
+where one needs to use the correct <em class="xref py py-obj">calc_n_method</em> for the particular system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>calc_n_method</strong> (<em>callable</em>) – method to obtain the spin-densities
+it <em>must</em> return the corresponding spin-densities (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and the total energy (<code class="docutils literal notranslate"><span class="pre">Etot</span></code>)</p></li>
+<li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – total charge separated in spin-channels, q=[q_up, q_dn]</p></li>
+<li><p><strong>mixer</strong> (<em>Mixer</em><em>, </em><em>optional</em>) – <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.Mixer</span></code> instance for the SCF loop, defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.DIISMixer</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#hubbard.HubbardHamiltonian.update_hamiltonian" title="hubbard.HubbardHamiltonian.update_hamiltonian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_hamiltonian</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.density.calc_n</span></code></dt><dd><p>method to obtain <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain <em class="xref py py-obj">kT</em></p>
+</dd>
+<dt><a class="reference internal" href="hubbard.NEGF.html#hubbard.NEGF.calc_n_open" title="hubbard.NEGF.calc_n_open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.NEGF.calc_n_open</span></code></a></dt><dd><p>method to obtain  <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with open boundary conditions</p>
+</dd>
+</dl>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dn</strong> – difference between the ith and the (i-1)th iteration densities</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.normalize_charge">
+<code class="sig-name descname">normalize_charge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.normalize_charge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.normalize_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure the total up/down charge in pi-network equals Nup/Ndn</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.polarize_sublattices">
+<code class="sig-name descname">polarize_sublattices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.polarize_sublattices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.polarize_sublattices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick way to polarize the lattices
+without checking that consequtive atoms actually belong to
+different sublattices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.random_density">
+<code class="sig-name descname">random_density</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.random_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.random_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize spin polarization  with random density</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.read_density">
+<code class="sig-name descname">read_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'a'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.read_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.read_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read density from binary file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the file that is going to read from</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.repeat">
+<code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reps</span></em>, <em class="sig-param"><span class="n">axis</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – number of repetitions</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class method</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A new larger <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.set_kmesh">
+<code class="sig-name descname">set_kmesh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nkpt</span><span class="o">=</span><span class="default_value">[1, 1, 1]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.set_kmesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.set_kmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the k-mesh for the HubbardHamiltonian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nkpt</strong> (array_like or <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.BrillouinZone.html#sisl.physics.BrillouinZone" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.BrillouinZone</span></code></a> instance, optional) – k-mesh to be associated with the HubbardHamiltonian instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.set_polarization">
+<code class="sig-name descname">set_polarization</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">up</span></em>, <em class="sig-param"><span class="n">dn</span><span class="o">=</span><span class="default_value">()</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.set_polarization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.set_polarization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximize spin polarization on specific atomic sites
+Optionally, sites with down-polarization can be specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>up</strong> (<em>array_like</em>) – atomic sites where the spin-up density is going to be maximized</p></li>
+<li><p><strong>dn</strong> (<em>array_like</em><em>, </em><em>optional</em>) – atomic sites where the spin-down density is going to be maximized</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.spin_contamination">
+<code class="sig-name descname">spin_contamination</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ret_exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.spin_contamination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.spin_contamination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains the spin contamination for the MFH Hamiltonian following
+<a class="reference external" href="https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub">Ref. Chemical Physics Letters. 183 (5): 423–431</a>.</p>
+<div class="math notranslate nohighlight">
+\[\langle S^{2} \rangle_{MFH} = \langle S^{2} \rangle_{exact} + N_{\beta} - \sum_{ij}^{occ} |\langle \psi^{\alpha}_{i}|\psi^{\beta}_{j}\rangle|^{2}\]</div>
+<p>Where the exact spin squared expectation value is obtained as</p>
+<div class="math notranslate nohighlight">
+\[\langle S^{2} \rangle_{exact}=(\frac{ N_{\alpha}-N_{\beta}}{2})(\frac{N_{\alpha}-N_{\beta} }{2} + 1)\]</div>
+<p class="rubric">Notes</p>
+<p>The current implementation works for non-periodic systems only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ret_exact</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – If true this method will return also the exact spin squared expectation value</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class function</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>S_MFH</strong> (<em>float</em>) – expectation value for the MFH Hamiltonian</p></li>
+<li><p><strong>S</strong> (<em>float</em>) – exact expectation value</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.sub">
+<code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atoms</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">0, 0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a> object of a subset of selected atoms</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em> or </em><em>array_like</em>) – indices/boolean of all atoms to be kept</p></li>
+<li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Two values specifying up, down electron occupations for the subset of atoms</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.tile">
+<code class="sig-name descname">tile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reps</span></em>, <em class="sig-param"><span class="n">axis</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.tile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tile the HubbardHamiltonian object along a specified axis to obtain a larger one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – number of tiles (repetitions)</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class method</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A new larger <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.update_hamiltonian">
+<code class="sig-name descname">update_hamiltonian</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.update_hamiltonian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.update_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update spin Hamiltonian according to the mean-field Hubbard model
+It updtates the diagonal elements for each spin Hamiltonian with the opposite spin densities</p>
+<p class="rubric">Notes</p>
+<p>This method has to be generalized for inter-atomic Coulomb repulsion also</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.write_density">
+<code class="sig-name descname">write_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'a'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.write_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.write_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write density in a binary file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the file in which the densities are going to be stored</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.write_initspin">
+<code class="sig-name descname">write_initspin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">ext_geom</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spinfix</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'a'</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.write_initspin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.write_initspin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write spin polarization to SIESTA fdf-block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the fdf-file</p></li>
+<li><p><strong>ext_geom</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a>, optional) – an “external” geometry that contains the sp2-sites included in the simulation</p></li>
+<li><p><strong>spinfix</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – specifies if the Spin.Fix and Spin.Total lines are written to the fdf</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – atoms within this distance will be considered equivalent in case <code class="docutils literal notranslate"><span class="pre">ext_geom</span> <span class="pre">!=</span> <span class="pre">geometry</span></code> (see <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.overlap" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry.overlap</span></code></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hubbard.NEGF.html" class="btn btn-neutral float-right" title="NEGF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hubbard.html" class="btn btn-neutral float-left" title="Mean-field Hubbard model (hubbard)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

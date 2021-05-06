@@ -1,0 +1,41 @@
+ChargeDifference
+=============================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: ChargeDifference
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~ChargeDifference.__init__
+        ~ChargeDifference.add_colorbar
+        ~ChargeDifference.annotate
+        ~ChargeDifference.close
+        ~ChargeDifference.get_colorbar_xticks
+        ~ChargeDifference.get_colorbar_yticks
+        ~ChargeDifference.legend
+        ~ChargeDifference.savefig
+        ~ChargeDifference.set_axes
+        ~ChargeDifference.set_colorbar_xlabel
+        ~ChargeDifference.set_colorbar_xticklabels
+        ~ChargeDifference.set_colorbar_xticks
+        ~ChargeDifference.set_colorbar_ylabel
+        ~ChargeDifference.set_colorbar_yticklabels
+        ~ChargeDifference.set_colorbar_yticks
+        ~ChargeDifference.set_title
+        ~ChargeDifference.set_xlabel
+        ~ChargeDifference.set_xlim
+        ~ChargeDifference.set_ylabel
+        ~ChargeDifference.set_ylim
+    
+    

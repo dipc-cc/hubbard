@@ -1,0 +1,31 @@
+LDOSmap
+====================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: LDOSmap
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~LDOSmap.__init__
+        ~LDOSmap.add_colorbar
+        ~LDOSmap.close
+        ~LDOSmap.legend
+        ~LDOSmap.savefig
+        ~LDOSmap.set_title
+        ~LDOSmap.set_xlabel
+        ~LDOSmap.set_xlim
+        ~LDOSmap.set_ylabel
+        ~LDOSmap.set_ylim
+    
+    

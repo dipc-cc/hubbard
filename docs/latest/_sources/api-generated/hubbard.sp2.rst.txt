@@ -1,0 +1,6 @@
+sp2
+===========
+
+.. currentmodule:: hubbard
+
+.. autofunction:: sp2

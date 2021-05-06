@@ -1,0 +1,41 @@
+SpinPolarization
+=============================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: SpinPolarization
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~SpinPolarization.__init__
+        ~SpinPolarization.add_colorbar
+        ~SpinPolarization.annotate
+        ~SpinPolarization.close
+        ~SpinPolarization.get_colorbar_xticks
+        ~SpinPolarization.get_colorbar_yticks
+        ~SpinPolarization.legend
+        ~SpinPolarization.savefig
+        ~SpinPolarization.set_axes
+        ~SpinPolarization.set_colorbar_xlabel
+        ~SpinPolarization.set_colorbar_xticklabels
+        ~SpinPolarization.set_colorbar_xticks
+        ~SpinPolarization.set_colorbar_ylabel
+        ~SpinPolarization.set_colorbar_yticklabels
+        ~SpinPolarization.set_colorbar_yticks
+        ~SpinPolarization.set_title
+        ~SpinPolarization.set_xlabel
+        ~SpinPolarization.set_xlim
+        ~SpinPolarization.set_ylabel
+        ~SpinPolarization.set_ylim
+    
+    

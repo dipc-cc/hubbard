@@ -1,0 +1,32 @@
+Bandstructure
+==========================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: Bandstructure
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~Bandstructure.__init__
+        ~Bandstructure.add_bands
+        ~Bandstructure.add_colorbar
+        ~Bandstructure.close
+        ~Bandstructure.legend
+        ~Bandstructure.savefig
+        ~Bandstructure.set_title
+        ~Bandstructure.set_xlabel
+        ~Bandstructure.set_xlim
+        ~Bandstructure.set_ylabel
+        ~Bandstructure.set_ylim
+    
+    
