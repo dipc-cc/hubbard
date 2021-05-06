@@ -24,10 +24,8 @@ section](https://github.com/dipc-cc/hubbard/tree/master/examples/periodic).
     the calculation with the hubbard package.
 
 ``` {.sourceCode .python}
-import hubbard.hamiltonian as hh
-import hubbard.sp2 as sp2
-import hubbard.density as density
-import hubbard.plot as plot
+import sisl
+from hubbard import HubbardHamiltonian, sp2, density, plot
 
 # Build sisl.Geometry object of a zigzag graphene nanoribbon of width W=16 C-atoms across,
 # e.g., by using the function sisl.geom.zgnr.
@@ -40,7 +38,7 @@ Hsp2 = sp2(g, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
 # Build the HubbardHamiltonian object with U=2.0 eV at a temperature of kT=1e-5 in units
 # of the Boltzmann constant.
 # We have to use a k-points grid along the periodic direction to find the self-consistent solution per k-point
-HH = hh.HubbardHamiltonian(Hsp2, U=2.0, nkpt=[100, 1, 1], kT=1e-5)
+HH = HubbardHamiltonian(Hsp2, U=2.0, nkpt=[100, 1, 1], kT=1e-5)
 
 # Let's plot the band structure of the pure tight-binding Hamiltonian
 # i.e., before finding the mean-field self-consistent solution
@@ -48,10 +46,10 @@ p = plot.Bandstructure(HH)
 p.savefig('bands_TB.pdf')
 
 # Let's initiate with a random density as a starting point
-HH.random_density()
+HH.set_polarization([0],dn=[-1])
 
 # Converge until a tolerance of tol=1e-10
-dn = HH.converge(density.dm, tol=1e-10)
+dn = HH.converge(density.calc_n, tol=1e-10)
 
 # Let's plot some relevant physical quantities, such as the final spin-polarization per unit-cell
 p = plot.SpinPolarization(HH, vmin=-0.4, vmax=0.4)
