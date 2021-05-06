@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Bonds" href="hubbard.plot.Bonds.html" />
+    <link rel="next" title="BondHoppings" href="hubbard.plot.BondHoppings.html" />
     <link rel="prev" title="Wavefunction" href="hubbard.plot.Wavefunction.html" /> 
 </head>
 
@@ -92,7 +92,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul class="current">
@@ -104,6 +105,7 @@
 <li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-wavefunctions-for-each-spin-channel">Plot wavefunctions for each spin-channel</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="hubbard.plot.html#plot-geometrical-functions">Plot geometrical functions</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">BondOrder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.BondHoppings.html">BondHoppings</a></li>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Bonds.html">Bonds</a></li>
 </ul>
 </li>
@@ -203,13 +205,13 @@
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.add_colorbar" title="hubbard.plot.BondOrder.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
-<td><p></p></td>
+<td><p>Add figure colorbar</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.annotate" title="hubbard.plot.BondOrder.annotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotate</span></code></a>([sites, size])</p></td>
 <td><p>Annotate the site indices in the pi-network</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.close" title="hubbard.plot.BondOrder.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Close figure</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.get_colorbar_xticks" title="hubbard.plot.BondOrder.get_colorbar_xticks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_colorbar_xticks</span></code></a>()</p></td>
 <td><p></p></td>
@@ -218,10 +220,10 @@
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.legend" title="hubbard.plot.BondOrder.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
-<td><p></p></td>
+<td><p>Add legend to figure.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.savefig" title="hubbard.plot.BondOrder.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
-<td><p></p></td>
+<td><p>Save figure to external file</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_axes" title="hubbard.plot.BondOrder.set_axes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_axes</span></code></a>([bdx])</p></td>
 <td><p></p></td>
@@ -245,37 +247,54 @@
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_title" title="hubbard.plot.BondOrder.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set figure title</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_xlabel" title="hubbard.plot.BondOrder.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set label for the x-axis</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_xlim" title="hubbard.plot.BondOrder.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
-<td><p></p></td>
+<td><p>Set maximum and minimum x-axis values</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_ylabel" title="hubbard.plot.BondOrder.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set label for the y-axis</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.set_ylim" title="hubbard.plot.BondOrder.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
-<td><p></p></td>
+<td><p>Set maximum and minimum y-axis values</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.add_colorbar">
 <code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.add_colorbar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add figure colorbar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.annotate">
 <code class="sig-name descname">annotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sites</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">6</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotate the site indices in the pi-network</p>
+<dl class="simple">
+<dt>sites: array_like, optional</dt><dd><p>specify sites to be annotated in figure</p>
+</dd>
+<dt>size: int, optional</dt><dd><p>font size for the annotation</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.close">
 <code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Close figure</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.get_colorbar_xticks">
@@ -290,12 +309,23 @@
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.legend">
 <code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.legend" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add legend to figure. It takes into account possible repeated labels and show them once</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.savefig">
 <code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.savefig" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save figure to external file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – external file name to save plot</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_axes">
@@ -335,27 +365,72 @@
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_title">
 <code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.set_title" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set figure title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – figure title</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_xlabel">
 <code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.set_xlabel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set label for the x-axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the x-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_xlim">
 <code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.set_xlim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set maximum and minimum x-axis values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_ylabel">
 <code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.set_ylabel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set label for the y-axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the y-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.BondOrder.set_ylim">
 <code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondOrder.set_ylim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set maximum and minimum y-axis values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -369,7 +444,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hubbard.plot.Bonds.html" class="btn btn-neutral float-right" title="Bonds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hubbard.plot.BondHoppings.html" class="btn btn-neutral float-right" title="BondHoppings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="hubbard.plot.Wavefunction.html" class="btn btn-neutral float-left" title="Wavefunction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -381,7 +456,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

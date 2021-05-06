@@ -20,7 +20,6 @@ HubbardHamiltonian
         ~HubbardHamiltonian.DOS
         ~HubbardHamiltonian.PDOS
         ~HubbardHamiltonian.__init__
-        ~HubbardHamiltonian.band_sym
         ~HubbardHamiltonian.calc_orbital_charge_overlaps
         ~HubbardHamiltonian.converge
         ~HubbardHamiltonian.copy

@@ -97,7 +97,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -191,12 +192,9 @@ that will tell us which one is the groundstate.</p></li>
 of the above referenced paper.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sisl</span>
-<span class="kn">import</span> <span class="nn">hubbard.hamiltonian</span> <span class="k">as</span> <span class="nn">hh</span>
-<span class="kn">import</span> <span class="nn">hubbard.sp2</span> <span class="k">as</span> <span class="nn">sp2</span>
-<span class="kn">import</span> <span class="nn">hubbard.density</span> <span class="k">as</span> <span class="nn">density</span>
-<span class="kn">import</span> <span class="nn">hubbard.plot</span> <span class="k">as</span> <span class="nn">plot</span>
+<span class="kn">from</span> <span class="nn">hubbard</span> <span class="kn">import</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">sp2</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">plot</span>
 
-<span class="c1"># Build sisl.Geometry object from the &#39;XV&#39; file</span>
+<span class="c1"># Build sisl.Geometry object from the &#39;XV&#39; file (previously downloaded)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_sile</span><span class="p">(</span><span class="s1">&#39;junction-2-2.XV&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_geometry</span><span class="p">()</span>
 
 <span class="c1"># Build sisl.Hamiltonian object using the sp2 function</span>
@@ -204,13 +202,14 @@ of the above referenced paper.</p></li>
 
 <span class="c1"># Build the HubbardHamiltonian object with U=3.5 at a temperature of kT=1e-5</span>
 <span class="c1"># in units of the Boltzmann constant</span>
-<span class="n">HH</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">Hsp2</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">HH</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">Hsp2</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
 
-<span class="c1"># Let&#39;s initiate with a random density as a starting point</span>
-<span class="n">HH</span><span class="o">.</span><span class="n">random_density</span><span class="p">()</span>
+<span class="c1"># Let&#39;s initiate with a custom spin density distribution</span>
+<span class="c1"># by placing up-spin components in atom 23 and down spin components in atom 77</span>
+<span class="n">HH</span><span class="o">.</span><span class="n">set_polarization</span><span class="p">([</span><span class="mi">23</span><span class="p">],</span><span class="n">dn</span><span class="o">=</span><span class="p">[</span><span class="mi">77</span><span class="p">])</span>
 
 <span class="c1"># Converge until a tolerance of tol=1e-10</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">dm</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
 
 <span class="c1"># Save total energy</span>
 <span class="n">E_0</span> <span class="o">=</span>  <span class="n">HH</span><span class="o">.</span><span class="n">Etot</span>
@@ -227,7 +226,7 @@ of the above referenced paper.</p></li>
 <span class="n">HH</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
 
 <span class="c1"># Converge until a tolerance of tol=1e-10</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">dm</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
 
 <span class="c1"># Let&#39;s visualize some the final result:</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">)</span>
@@ -246,7 +245,7 @@ imbalance between the A and B sublattices:</p>
 \[S = \frac{1}{2}|N_{A}-N_{B}|\]</div>
 <p>Therefore, if we create an imbalance between the A and B sublattices,
 we will find that the state with lower energy appears for <span class="math notranslate nohighlight">\(S&gt;0\)</span>.</p>
-<p>A real example to this can be found in ref. <a class="reference external" href="https://arxiv.org/abs/1912.08298">arXiv:1912.08298</a>. Where triangular shaped
+<p>A real example of this can be found in    <a class="reference external" href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.177201">Phys. Rev. Lett. 124, 177201 (2020)</a>. Where triangular shaped
 graphene nanoflakes show a groundstate with <span class="math notranslate nohighlight">\(S=1\)</span>.</p>
 </div>
 
@@ -270,7 +269,7 @@ graphene nanoflakes show a groundstate with <span class="math notranslate nohigh
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

@@ -92,7 +92,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul class="current">
@@ -223,78 +224,145 @@
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.add_colorbar" title="hubbard.plot.LDOSmap.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
-<td><p></p></td>
+<td><p>Add figure colorbar</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.close" title="hubbard.plot.LDOSmap.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Close figure</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.legend" title="hubbard.plot.LDOSmap.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
-<td><p></p></td>
+<td><p>Add legend to figure.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.savefig" title="hubbard.plot.LDOSmap.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
-<td><p></p></td>
+<td><p>Save figure to external file</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.set_title" title="hubbard.plot.LDOSmap.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set figure title</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.set_xlabel" title="hubbard.plot.LDOSmap.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set label for the x-axis</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.set_xlim" title="hubbard.plot.LDOSmap.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
-<td><p></p></td>
+<td><p>Set maximum and minimum x-axis values</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.set_ylabel" title="hubbard.plot.LDOSmap.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
-<td><p></p></td>
+<td><p>Set label for the y-axis</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.LDOSmap.set_ylim" title="hubbard.plot.LDOSmap.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
-<td><p></p></td>
+<td><p>Set maximum and minimum y-axis values</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.add_colorbar">
 <code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.add_colorbar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add figure colorbar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.close">
 <code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Close figure</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.legend">
 <code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.legend" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add legend to figure. It takes into account possible repeated labels and show them once</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.savefig">
 <code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.savefig" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save figure to external file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – external file name to save plot</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.set_title">
 <code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.set_title" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set figure title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – figure title</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.set_xlabel">
 <code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.set_xlabel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set label for the x-axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the x-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.set_xlim">
 <code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.set_xlim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set maximum and minimum x-axis values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.set_ylabel">
 <code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.set_ylabel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set label for the y-axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the y-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="hubbard.plot.LDOSmap.set_ylim">
 <code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.LDOSmap.set_ylim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set maximum and minimum y-axis values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -320,7 +388,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

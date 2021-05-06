@@ -1,0 +1,6 @@
+calc_n
+==============
+
+.. currentmodule:: hubbard
+
+.. autofunction:: calc_n

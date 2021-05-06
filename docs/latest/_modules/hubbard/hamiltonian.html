@@ -90,7 +90,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -164,7 +165,6 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">inv</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="n">_pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
@@ -184,15 +184,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    TBHam: `sisl.physics.Hamiltonian` instance</span>
+<span class="sd">    TBHam: sisl.physics.Hamiltonian</span>
 <span class="sd">        A spin-polarized tight-binding Hamiltonian</span>
-<span class="sd">    n: np.ndarray, optional</span>
+<span class="sd">    n: numpy.ndarray, optional</span>
 <span class="sd">        initial spin-densities vectors. The shape of `n` must be (2, len(geometry))</span>
 <span class="sd">    U: float, optional</span>
 <span class="sd">        on-site Coulomb repulsion</span>
 <span class="sd">    q: array_like, optional</span>
 <span class="sd">        Two values specifying up, down electron occupations</span>
-<span class="sd">    nkpt: array_like or `sisl.physics.BrillouinZone` instance, optional</span>
+<span class="sd">    nkpt: array_like or sisl.physics.BrillouinZone, optional</span>
 <span class="sd">        Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling</span>
 <span class="sd">    kT: float, optional</span>
 <span class="sd">        Temperature of the system in units of the Boltzmann constant</span>
@@ -258,8 +258,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        nkpt : array_like or `sisl.physics.BrillouinZone` instance, optional</span>
-<span class="sd">            k-mesh to be associated with the HubbardHamiltonian instance</span>
+<span class="sd">        nkpt : array_like or sisl.physics.BrillouinZone, optional</span>
+<span class="sd">            k-mesh to be associated with the `hubbard.HubbardHamiltonian` instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nkpt</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">BrillouinZone</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> <span class="n">nkpt</span>
@@ -325,7 +325,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        `sisl.Geometry.tile` : sisl class method</span>
+<span class="sd">        `sisl.Geometry.tile`: sisl class method</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -348,7 +348,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        `sisl.Geometry.repeat` : sisl class method</span>
+<span class="sd">        `sisl.Geometry.repeat`: sisl class method</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -440,6 +440,10 @@
 <span class="sd">        taking into account the up and dn different spectrums</span>
 
 <span class="sd">        This method makes sense for insulators (where there is a bandgap)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        midgap: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">HOMO</span><span class="p">,</span> <span class="n">LUMO</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span><span class="p">,</span> <span class="mf">1e10</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
@@ -528,7 +532,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        fn: str</span>
 <span class="sd">            name of the fdf-file</span>
-<span class="sd">        ext_geom: `sisl.Geometry`, optional</span>
+<span class="sd">        ext_geom: sisl.Geometry, optional</span>
 <span class="sd">            an &quot;external&quot; geometry that contains the sp2-sites included in the simulation</span>
 <span class="sd">        spinfix: bool, optional</span>
 <span class="sd">            specifies if the Spin.Fix and Spin.Total lines are written to the fdf</span>
@@ -583,7 +587,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        update_hamiltonian</span>
-<span class="sd">        hubbard.density.calc_n</span>
+<span class="sd">        hubbard.calc_n</span>
 <span class="sd">            method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`</span>
 <span class="sd">        hubbard.NEGF.calc_n_open</span>
 <span class="sd">            method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions</span>
@@ -837,38 +841,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">S_MFH</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.band_sym"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.band_sym">[docs]</a>    <span class="k">def</span> <span class="nf">band_sym</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenstate</span><span class="p">,</span> <span class="n">diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">geom0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span>
-        <span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">vec</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">geom180</span> <span class="o">=</span> <span class="n">geom0</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">geom0</span><span class="o">.</span><span class="n">center</span><span class="p">())</span>
-        <span class="n">sites180</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="n">geom180</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="n">geom0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">geom0</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ib</span><span class="p">],</span> <span class="n">geom180</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ia</span><span class="p">]):</span>
-                    <span class="n">sites180</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eigenstate</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">EigenstateElectron</span><span class="p">):</span>
-            <span class="c1"># In eigenstate instance dimensions are: (En, sites)</span>
-            <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">eigenstate</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
-            <span class="n">v2</span> <span class="o">=</span> <span class="n">eigenstate</span><span class="o">.</span><span class="n">state</span><span class="p">[:,</span> <span class="n">sites180</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Transpose to have dimensions (En, sites)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eigenstate</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">eigenstate</span> <span class="o">=</span> <span class="n">eigenstate</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">eigenstate</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">eigenstate</span> <span class="o">=</span> <span class="n">eigenstate</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">eigenstate</span><span class="p">)</span>
-            <span class="n">v2</span> <span class="o">=</span> <span class="n">eigenstate</span><span class="p">[:,</span> <span class="n">sites180</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">diag</span><span class="p">:</span>
-            <span class="n">sym</span> <span class="o">=</span> <span class="p">(</span><span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sym</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sym</span></div>
-
 <div class="viewcode-block" id="HubbardHamiltonian.DOS"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.DOS">[docs]</a>    <span class="k">def</span> <span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dist</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">,</span> <span class="n">eref</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Obtains the density of states (DOS) of the system with a distribution function</span>
 
@@ -893,7 +865,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        DOS: array_like</span>
+<span class="sd">        DOS: numpy.ndarray</span>
 <span class="sd">            density of states at the given energies for the selected spin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Ensure spin is iterable</span>
@@ -935,7 +907,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        `sisl.get_distribution`</span>
+<span class="sd">        `sisl.physics.distribution.get_distribution`</span>
 <span class="sd">        `sisl.physics.electron.PDOS`</span>
 
 <span class="sd">        Returns</span>
@@ -976,7 +948,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

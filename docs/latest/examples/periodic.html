@@ -97,7 +97,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -185,10 +186,8 @@ You can find the parameters used to model the TB Hamiltonian in the referenced p
 stored in this class to converge until we find the self-consistent solution.</p></li>
 <li><p>Then we can plot some physical quantities that may be relevant after the calculation with the hubbard package.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hubbard.hamiltonian</span> <span class="k">as</span> <span class="nn">hh</span>
-<span class="kn">import</span> <span class="nn">hubbard.sp2</span> <span class="k">as</span> <span class="nn">sp2</span>
-<span class="kn">import</span> <span class="nn">hubbard.density</span> <span class="k">as</span> <span class="nn">density</span>
-<span class="kn">import</span> <span class="nn">hubbard.plot</span> <span class="k">as</span> <span class="nn">plot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">from</span> <span class="nn">hubbard</span> <span class="kn">import</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">sp2</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">plot</span>
 
 <span class="c1"># Build sisl.Geometry object of a zigzag graphene nanoribbon of width W=16 C-atoms across,</span>
 <span class="c1"># e.g., by using the function sisl.geom.zgnr.</span>
@@ -201,7 +200,7 @@ stored in this class to converge until we find the self-consistent solution.</p>
 <span class="c1"># Build the HubbardHamiltonian object with U=2.0 eV at a temperature of kT=1e-5 in units</span>
 <span class="c1"># of the Boltzmann constant.</span>
 <span class="c1"># We have to use a k-points grid along the periodic direction to find the self-consistent solution per k-point</span>
-<span class="n">HH</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">Hsp2</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="n">HH</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">Hsp2</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
 
 <span class="c1"># Let&#39;s plot the band structure of the pure tight-binding Hamiltonian</span>
 <span class="c1"># i.e., before finding the mean-field self-consistent solution</span>
@@ -209,10 +208,10 @@ stored in this class to converge until we find the self-consistent solution.</p>
 <span class="n">p</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;bands_TB.pdf&#39;</span><span class="p">)</span>
 
 <span class="c1"># Let&#39;s initiate with a random density as a starting point</span>
-<span class="n">HH</span><span class="o">.</span><span class="n">random_density</span><span class="p">()</span>
+<span class="n">HH</span><span class="o">.</span><span class="n">set_polarization</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span><span class="n">dn</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="c1"># Converge until a tolerance of tol=1e-10</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">dm</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
 
 <span class="c1"># Let&#39;s plot some relevant physical quantities, such as the final spin-polarization per unit-cell</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
@@ -245,7 +244,7 @@ stored in this class to converge until we find the self-consistent solution.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

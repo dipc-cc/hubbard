@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DOS &mdash; hubbard documentation</title>
+  <title>BondHoppings &mdash; hubbard documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="DOS_distribution" href="hubbard.plot.DOS_distribution.html" />
-    <link rel="prev" title="SpinPolarization" href="hubbard.plot.SpinPolarization.html" /> 
+    <link rel="next" title="Bonds" href="hubbard.plot.Bonds.html" />
+    <link rel="prev" title="BondOrder" href="hubbard.plot.BondOrder.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,15 +101,14 @@
 <li class="toctree-l2"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-spin-resolved-quantities">Plot spin-resolved quantities</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="hubbard.plot.html#plot-spectra">Plot spectra</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">DOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOS_distribution.html">DOS_distribution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOSmap.html">LDOSmap</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Spectrum.html">Spectrum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-spectra">Plot spectra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-wavefunctions-for-each-spin-channel">Plot wavefunctions for each spin-channel</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.plot.html#plot-geometrical-functions">Plot geometrical functions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.BondOrder.html">BondOrder</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">BondHoppings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Bonds.html">Bonds</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-wavefunctions-for-each-spin-channel">Plot wavefunctions for each spin-channel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-geometrical-functions">Plot geometrical functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-bandstructure-of-the-system">Plot bandstructure of the system</a></li>
 </ul>
 </li>
@@ -164,13 +163,13 @@
         
           <li><a href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a> &raquo;</li>
         
-      <li>DOS</li>
+      <li>BondHoppings</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api-generated/hubbard.plot.DOS.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api-generated/hubbard.plot.BondHoppings.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -183,28 +182,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dos">
-<h1>DOS<a class="headerlink" href="#dos" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="bondhoppings">
+<h1>BondHoppings<a class="headerlink" href="#bondhoppings" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="hubbard.plot.DOS">
-<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">DOS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HH</span></em>, <em class="sig-param"><span class="n">egrid</span></em>, <em class="sig-param"><span class="n">eta</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">[0, 1]</span></em>, <em class="sig-param"><span class="n">sites</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/spectrum.html#DOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.DOS" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings">
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">BondHoppings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H</span></em>, <em class="sig-param"><span class="n">annotate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">off_diagonal_only</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/bonds.html#BondHoppings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.BondHoppings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">hubbard.plot.plot.Plot</span></code></p>
-<p>Plot the total density of states (DOS) as a function of the energy for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
+<p>Plot matrix element of a tight-binding Hamiltonian in real space</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>HH</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – mean-field Hubbard Hamiltonian</p></li>
-<li><p><strong>egrid</strong> (<em>array_like</em>) – energy grid to compute the density of states</p></li>
-<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – smearing parameter to compute DOS</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – plot DOS for selected spin index or sum them both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
-<li><p><strong>sites</strong> (<em>array_like</em><em>, </em><em>optional</em>) – sum projected DOS into selected atomic sites</p></li>
+<li><p><strong>H</strong> (<em>sisl.Hamiltonian</em><em> or </em><em>hubbard.HubbardHamiltonian object</em>) – tight-binding Hamitlonian</p></li>
+<li><p><strong>annotate</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it annotates the numerical value of the matrix element</p></li>
+<li><p><strong>off_diagonal_only</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it also plots the onsite energy</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">None</span></code></p>
-</div>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -212,41 +205,41 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HH, egrid[, eta, spin, sites])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(H[, annotate, off_diagonal_only])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOS.add_colorbar" title="hubbard.plot.DOS.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.add_colorbar" title="hubbard.plot.BondHoppings.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
 <td><p>Add figure colorbar</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOS.close" title="hubbard.plot.DOS.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.close" title="hubbard.plot.BondHoppings.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
 <td><p>Close figure</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOS.legend" title="hubbard.plot.DOS.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.legend" title="hubbard.plot.BondHoppings.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
 <td><p>Add legend to figure.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOS.savefig" title="hubbard.plot.DOS.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.savefig" title="hubbard.plot.BondHoppings.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
 <td><p>Save figure to external file</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOS.set_title" title="hubbard.plot.DOS.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.set_title" title="hubbard.plot.BondHoppings.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
 <td><p>Set figure title</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOS.set_xlabel" title="hubbard.plot.DOS.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.set_xlabel" title="hubbard.plot.BondHoppings.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
 <td><p>Set label for the x-axis</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOS.set_xlim" title="hubbard.plot.DOS.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.set_xlim" title="hubbard.plot.BondHoppings.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
 <td><p>Set maximum and minimum x-axis values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOS.set_ylabel" title="hubbard.plot.DOS.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.set_ylabel" title="hubbard.plot.BondHoppings.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
 <td><p>Set label for the y-axis</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOS.set_ylim" title="hubbard.plot.DOS.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondHoppings.set_ylim" title="hubbard.plot.BondHoppings.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
 <td><p>Set maximum and minimum y-axis values</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt id="hubbard.plot.DOS.add_colorbar">
-<code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.add_colorbar" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.add_colorbar">
+<code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.add_colorbar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add figure colorbar</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -260,20 +253,20 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.close" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close figure</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.legend">
-<code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.legend" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.legend">
+<code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.legend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add legend to figure. It takes into account possible repeated labels and show them once</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.savefig">
-<code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.savefig" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.savefig">
+<code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.savefig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save figure to external file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -287,8 +280,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.set_title">
-<code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.set_title" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.set_title">
+<code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.set_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set figure title</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -301,8 +294,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.set_xlabel">
-<code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.set_xlabel" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.set_xlabel">
+<code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.set_xlabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set label for the x-axis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -315,8 +308,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.set_xlim">
-<code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.set_xlim" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.set_xlim">
+<code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.set_xlim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maximum and minimum x-axis values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -329,8 +322,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.set_ylabel">
-<code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.set_ylabel" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.set_ylabel">
+<code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.set_ylabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set label for the y-axis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -343,8 +336,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.DOS.set_ylim">
-<code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOS.set_ylim" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.BondHoppings.set_ylim">
+<code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.BondHoppings.set_ylim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maximum and minimum y-axis values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -368,10 +361,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hubbard.plot.DOS_distribution.html" class="btn btn-neutral float-right" title="DOS_distribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hubbard.plot.Bonds.html" class="btn btn-neutral float-right" title="Bonds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hubbard.plot.SpinPolarization.html" class="btn btn-neutral float-left" title="SpinPolarization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hubbard.plot.BondOrder.html" class="btn btn-neutral float-left" title="BondOrder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

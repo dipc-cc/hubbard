@@ -92,7 +92,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul class="current">
@@ -118,6 +119,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#plot-geometrical-functions">Plot geometrical functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.BondOrder.html">BondOrder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.BondHoppings.html">BondHoppings</a></li>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Bonds.html">Bonds</a></li>
 </ul>
 </li>
@@ -251,7 +253,7 @@ self-consistent solution for the system.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.Wavefunction.html#hubbard.plot.Wavefunction" title="hubbard.plot.Wavefunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wavefunction</span></code></a>(HH, wf[, ext_geom, cb_label, …])</p></td>
-<td><p>Plot the wavefunction with its complex phase for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p></td>
+<td><p>Plot the wavefunction with its complex phase for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
 </tr>
 </tbody>
 </table>
@@ -267,7 +269,10 @@ self-consistent solution for the system.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.BondOrder.html#hubbard.plot.BondOrder" title="hubbard.plot.BondOrder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondOrder</span></code></a>(HH, **kwargs)</p></td>
 <td><p>Plot the Bond order for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.Bonds.html#hubbard.plot.Bonds" title="hubbard.plot.Bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bonds</span></code></a>(G[, annotate, R])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.BondHoppings.html#hubbard.plot.BondHoppings" title="hubbard.plot.BondHoppings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondHoppings</span></code></a>(H[, annotate, off_diagonal_only])</p></td>
+<td><p>Plot matrix element of a tight-binding Hamiltonian in real space</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.Bonds.html#hubbard.plot.Bonds" title="hubbard.plot.Bonds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bonds</span></code></a>(G[, annotate, R])</p></td>
 <td><p>Plot bonds between atoms in geometry</p></td>
 </tr>
 </tbody>
@@ -309,7 +314,7 @@ self-consistent solution for the system.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

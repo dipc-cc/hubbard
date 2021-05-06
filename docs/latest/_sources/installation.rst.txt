@@ -31,17 +31,9 @@ Manual installation is performed with the command
 
 .. code-block:: bash
 
-   python setup.py install --prefix=<prefix>
-
-for Python 2, and
-
-.. code-block:: bash
-
    python3 setup.py install --prefix=<prefix>
 
-for Python 3.
-
-One can also use the auxiliary files `install-py2.sh` and `install-py3.sh`
+One can also use the auxiliary file `install-py3.sh`
 
 One may also wish to set the following environment variables
 

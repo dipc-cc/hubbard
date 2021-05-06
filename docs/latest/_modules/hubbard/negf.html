@@ -90,7 +90,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -211,12 +212,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Hdev: HubbardHamiltonian instance</span>
+<span class="sd">    Hdev: HubbardHamiltonian</span>
 <span class="sd">        `hubbard.HubbardHamiltonian` object of the device</span>
 <span class="sd">    elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)</span>
 <span class="sd">        list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes</span>
 <span class="sd">        plus the semi-infinite direction for the respective electrode.</span>
-<span class="sd">        Alternatively one may directly pass sisl.SelfEnergy instances</span>
+<span class="sd">        Alternatively one may directly pass `sisl.SelfEnergy` instances</span>
 <span class="sd">    elec_idx: array_like</span>
 <span class="sd">        list of atomic positions that *each* electrode occupies in the device geometry</span>
 <span class="sd">    CC: str, optional</span>
@@ -231,7 +232,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    `sisl.physics.RecursiveSI` : sisl routines to create semi-infinite object (obtain self-energy, etc.)</span>
+<span class="sd">    `sisl.physics.RecursiveSI`: sisl routines to create semi-infinite object (obtain self-energy, etc.)</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -345,11 +346,11 @@
 
 <div class="viewcode-block" id="NEGF.calc_n_open"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.calc_n_open">[docs]</a>    <span class="k">def</span> <span class="nf">calc_n_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">qtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method to compute the spin densities from the Neq Green&#39;s function</span>
+<span class="sd">        Method to compute the spin densities from the non-equilibrium Green&#39;s function</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        H: HubbardHamiltonian instances</span>
+<span class="sd">        H: HubbardHamiltonian</span>
 <span class="sd">            `hubbard.HubbardHamiltonian` of the object that is being iterated</span>
 <span class="sd">        q: float</span>
 <span class="sd">            charge associated to the up and down spin-components</span>
@@ -359,8 +360,10 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ni</span>
-<span class="sd">        Etot</span>
+<span class="sd">        ni: numpy.ndarray</span>
+<span class="sd">            spin densities</span>
+<span class="sd">        Etot: float</span>
+<span class="sd">            total energy</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># ensure scalar, for open systems one cannot impose a spin-charge</span>
         <span class="c1"># This spin-charge would be dependent on the system size</span>
@@ -529,10 +532,27 @@
         <span class="k">return</span> <span class="n">Delta</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">weight</span><span class="o">.</span><span class="n">real</span></div>
 
 <div class="viewcode-block" id="NEGF.DOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.DOS">[docs]</a>    <span class="k">def</span> <span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains the density of states (DOS) from the Green&#39;s function of the device</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \mathrm{DOS}_\sigma = -\frac{1}{\pi}\Im\lbrace\mathrm{Tr}[G^{\sigma}]\rbrace</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        H: HubbardHamiltonian</span>
+<span class="sd">            `hubbard.HubbardHamiltonian` object of the system</span>
+<span class="sd">        E: array_like</span>
+<span class="sd">            energy grid to obtan the DOS</span>
+<span class="sd">        spin: int, array_like, optional</span>
+<span class="sd">            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices</span>
+<span class="sd">        eta: float, optional</span>
+<span class="sd">            smearing parameter (complex term in the Green&#39;s function)</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        DOS : np.ndarray</span>
+<span class="sd">        DOS : numpy.ndarray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Ensure spin instance is iterable</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
@@ -552,6 +572,30 @@
         <span class="k">return</span> <span class="n">dos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
 
 <div class="viewcode-block" id="NEGF.PDOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.PDOS">[docs]</a>    <span class="k">def</span> <span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains the projected density of states (PDOS) onto the atomic sites from the Green&#39;s function of the device</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \mathrm{PDOS}_{i\sigma} = -\frac{1}{\pi} \Im\lbrace G^{\sigma}_{ii}\rbrace</span>
+
+<span class="sd">        Where :math:`i` represents the atomic site position</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        H: HubbardHamiltonian</span>
+<span class="sd">            `hubbard.HubbardHamiltonian` object of the system</span>
+<span class="sd">        E: array_like</span>
+<span class="sd">            energy grid to obtan the PDOS</span>
+<span class="sd">        spin: int, array_like, optional</span>
+<span class="sd">            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices</span>
+<span class="sd">        eta: float, optional</span>
+<span class="sd">            smearing parameter (complex term in the Green&#39;s function)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PDOS : numpy.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Ensure spin instance is iterable</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
             <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
@@ -577,7 +621,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

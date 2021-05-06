@@ -1,0 +1,31 @@
+BondHoppings
+=========================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: BondHoppings
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~BondHoppings.__init__
+        ~BondHoppings.add_colorbar
+        ~BondHoppings.close
+        ~BondHoppings.legend
+        ~BondHoppings.savefig
+        ~BondHoppings.set_title
+        ~BondHoppings.set_xlabel
+        ~BondHoppings.set_xlim
+        ~BondHoppings.set_ylabel
+        ~BondHoppings.set_ylim
+    
+    

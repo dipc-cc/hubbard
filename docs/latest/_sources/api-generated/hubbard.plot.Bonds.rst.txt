@@ -21,7 +21,6 @@ Bonds
         ~Bonds.add_colorbar
         ~Bonds.close
         ~Bonds.legend
-        ~Bonds.plot_bonds
         ~Bonds.savefig
         ~Bonds.set_title
         ~Bonds.set_xlabel

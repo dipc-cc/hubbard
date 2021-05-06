@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Publications using the hubbard package" href="../publications.html" />
+    <link rel="next" title="Publications using the hubbard library" href="../publications.html" />
     <link rel="prev" title="Electron correlations in periodic systems" href="periodic.html" /> 
 </head>
 
@@ -97,7 +97,8 @@
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -194,10 +195,8 @@ stored in this class to converge until we find the self-consistent solution.</p>
 to obtain the spin-densities. To do so, we can make use of the methods available in the <a class="reference internal" href="../api-generated/hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code></a> class.</p></li>
 <li><p>Optionally, you can also compute the transmission function of the converged system using <a class="reference external" href="https://gitlab.com/siesta/-project/siesta">TBtrans</a>.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hubbard.hamiltonian</span> <span class="k">as</span> <span class="nn">hh</span>
-<span class="kn">import</span> <span class="nn">hubbard.sp2</span> <span class="k">as</span> <span class="nn">sp2</span>
-<span class="kn">import</span> <span class="nn">hubbard.density</span> <span class="k">as</span> <span class="nn">density</span>
-<span class="kn">from</span> <span class="nn">hubbard.negf</span> <span class="kn">import</span> <span class="n">NEGF</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">from</span> <span class="nn">hubbard</span> <span class="kn">import</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">sp2</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">NEGF</span>
 
 <span class="c1"># Build sisl.Geometry object of a ZGNR of width W=5 C-atoms across,</span>
 <span class="c1"># e.g., by using the function sisl.geom.zgnr.</span>
@@ -211,10 +210,10 @@ to obtain the spin-densities. To do so, we can make use of the methods available
 <span class="c1"># Build tight-binding Hamiltonian using sp2 function</span>
 <span class="n">H_elec</span> <span class="o">=</span> <span class="n">sp2</span><span class="p">(</span><span class="n">ZGNR</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="c1"># Hubbard Hamiltonian of elecs</span>
-<span class="n">MFH_elec</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">H_elec</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="n">kT</span><span class="p">)</span>
+<span class="n">MFH_elec</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">H_elec</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="n">kT</span><span class="p">)</span>
 
 <span class="c1"># Converge Electrode Hamiltonians</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_elec</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_elec</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">)</span>
 
 <span class="c1"># Central region is a repetition of the electrodes</span>
 <span class="n">HC</span> <span class="o">=</span> <span class="n">H_elec</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -226,20 +225,20 @@ to obtain the spin-densities. To do so, we can make use of the methods available
 <span class="n">elec_indx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H_elec</span><span class="p">)),</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="o">.</span><span class="n">H</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">H_elec</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">HC</span><span class="o">.</span><span class="n">H</span><span class="p">))]</span>
 
 <span class="c1"># MFH object of the central region</span>
-<span class="n">MFH_HC</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">HC</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="n">kT</span><span class="p">)</span>
+<span class="n">MFH_HC</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">HC</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="n">kT</span><span class="p">)</span>
 <span class="c1"># Use initial random density</span>
 <span class="n">MFH_HC</span><span class="o">.</span><span class="n">random_density</span><span class="p">()</span>
 
 <span class="c1"># First create the NEGF object, where we pass the MFH converged electrodes and</span>
 <span class="c1"># the central region HubbardHamiltonian object</span>
-<span class="n">negf</span> <span class="o">=</span> <span class="n">NEGF</span><span class="p">(</span><span class="n">MFH_HC</span><span class="p">,</span> <span class="p">[</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="n">MFH_elec</span><span class="p">],</span> <span class="n">elec_indx</span><span class="p">,</span> <span class="n">elec_dir</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-A&#39;</span><span class="p">,</span> <span class="s1">&#39;+A&#39;</span><span class="p">])</span>
+<span class="n">negf</span> <span class="o">=</span> <span class="n">NEGF</span><span class="p">(</span><span class="n">MFH_HC</span><span class="p">,</span> <span class="p">[(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="s1">&#39;-A&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="s1">&#39;+A&#39;</span><span class="p">)],</span> <span class="n">elec_indx</span><span class="p">)</span>
 
 <span class="c1"># Converge using Green&#39;s function method to obtain the densities</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_HC</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">negf</span><span class="o">.</span><span class="n">dm_open</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_HC</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">negf</span><span class="o">.</span><span class="n">calc_n_open</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As you might probably observed, each iteration using the non-equilibrium Green’s function formalism takes much more
-time. This is due to the fact that it has to invert the Green’s function matrix for each energy point along the
+<p>Usually, each iteration using the non-equilibrium Green’s function formalism takes more time than if the system is finite or periodic.
+This is due to the fact that for open quantum systems it has to invert the Green’s function matrix for each energy point along the
 integration path in each iteration.
 For this reason, using a good initial guess (initial spin-densities) can be crucial if we want the code to perform
 less iterations to find the self-consistent solution.</p>
@@ -256,7 +255,7 @@ and use this spin-densities to start the convergence for the device with open bo
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../publications.html" class="btn btn-neutral float-right" title="Publications using the hubbard package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../publications.html" class="btn btn-neutral float-right" title="Publications using the hubbard library" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="periodic.html" class="btn btn-neutral float-left" title="Electron correlations in periodic systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -268,7 +267,7 @@ and use this spin-densities to start the convergence for the device with open bo
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

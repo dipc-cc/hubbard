@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hubbard.density &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html">Publications using the hubbard library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>hubbard.density</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for hubbard.density</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">einsum</span><span class="p">,</span> <span class="n">conj</span>
+<span class="kn">import</span> <span class="nn">sisl</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;calc_n&#39;</span><span class="p">,</span> <span class="s1">&#39;calc_n_insulator&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="calc_n"><a class="viewcode-back" href="../../api-generated/hubbard.calc_n.html#hubbard.calc_n">[docs]</a><span class="k">def</span> <span class="nf">calc_n</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot; General method to obtain the spin densities for periodic or finite systems at a given temperature</span>
+
+<span class="sd">    It obtains the spin densities from the direct diagonalization of the Hamiltonian (``H.H``) taking into account</span>
+<span class="sd">    a possible overlap matrix (``H.H.S``):</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \langle n_{i\sigma} \rangle = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij}</span>
+
+<span class="sd">    Where :math:`f_{\alpha\sigma}` is the weight of eigenstate :math:`\alpha` for spin :math:`\sigma` at temperature ``kT`` (Fermi-Dirac distribution),</span>
+<span class="sd">    :math:`c^{\alpha}_{i\sigma}` are coefficients for eigenstate :math:`\alpha` with spin :math:`\sigma` represented in the basis of atomic orbitals</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    H: HubbardHamiltonian</span>
+<span class="sd">        `hubbard.HubbardHamiltonian` object of the system to obtain the spin-densities from</span>
+<span class="sd">    q: array_like</span>
+<span class="sd">        charge resolved in spin channels (first index for up-electrons and second index for down-electrons)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    `sisl.physics.EigenstateElectron.norm2`: sisl routine to obtain the dot product of the eigenstates with the overlap matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create fermi-level determination distribution</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+    <span class="n">Ef</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
+    <span class="n">dist_up</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">Ef</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">dist_dn</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">Ef</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">ni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+    <span class="n">Etot</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Solve eigenvalue problems</span>
+    <span class="k">def</span> <span class="nf">calc_occ</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">ni</span><span class="p">)</span>
+        <span class="n">es_up</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">es_dn</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Reduce to occupied stuff</span>
+        <span class="n">occ_up</span> <span class="o">=</span> <span class="n">es_up</span><span class="o">.</span><span class="n">occupation</span><span class="p">(</span><span class="n">dist_up</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;i,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">occ_up</span><span class="p">,</span> <span class="n">es_up</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="n">occ_dn</span> <span class="o">=</span> <span class="n">es_dn</span><span class="o">.</span><span class="n">occupation</span><span class="p">(</span><span class="n">dist_dn</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;i,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">occ_dn</span><span class="p">,</span> <span class="n">es_dn</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="n">Etot</span> <span class="o">=</span> <span class="n">es_up</span><span class="o">.</span><span class="n">eig</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">occ_up</span><span class="p">)</span> <span class="o">+</span> <span class="n">es_dn</span><span class="o">.</span><span class="n">eig</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">occ_dn</span><span class="p">)</span>
+
+        <span class="c1"># Return values</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">Etot</span>
+
+    <span class="c1"># Loop k-points and weights</span>
+    <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">etot</span> <span class="o">=</span> <span class="n">calc_occ</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">ni</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">Etot</span> <span class="o">+=</span> <span class="n">etot</span>
+
+    <span class="k">return</span> <span class="n">ni</span><span class="p">,</span> <span class="n">Etot</span></div>
+
+
+<span class="k">def</span> <span class="nf">calc_n_insulator</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* &quot;&quot;&quot;</span>
+    <span class="n">ni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+    <span class="n">Etot</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">iup</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="n">idn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="c1"># Solve eigenvalue problems</span>
+    <span class="k">def</span> <span class="nf">calc_occ</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">ni</span><span class="p">)</span>
+        <span class="n">es_up</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">es_dn</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">conj</span><span class="p">(</span><span class="n">es_up</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">iup</span><span class="p">]),</span> <span class="n">es_up</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">iup</span><span class="p">])</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">conj</span><span class="p">(</span><span class="n">es_dn</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">idn</span><span class="p">]),</span> <span class="n">es_dn</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">idn</span><span class="p">])</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">weight</span>
+
+        <span class="c1"># Calculate total energy</span>
+        <span class="n">Etot</span> <span class="o">=</span> <span class="p">(</span><span class="n">es_up</span><span class="o">.</span><span class="n">eig</span><span class="p">[</span><span class="n">iup</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">es_dn</span><span class="o">.</span><span class="n">eig</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="c1"># Return values</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">Etot</span>
+
+    <span class="c1"># Loop k-points and weights</span>
+    <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">etot</span> <span class="o">=</span> <span class="n">calc_occ</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">ni</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">Etot</span> <span class="o">+=</span> <span class="n">etot</span>
+
+    <span class="k">return</span> <span class="n">ni</span><span class="p">,</span> <span class="n">Etot</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
