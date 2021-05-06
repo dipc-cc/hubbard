@@ -15,8 +15,8 @@ Self Consistent field class
    :toctree:
 
     HubbardHamiltonian
-    n
     NEGF
+    calc_n
 
 Read and write in binary files
 ==============================

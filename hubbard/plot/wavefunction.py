@@ -7,7 +7,7 @@ __all__ = ['Wavefunction']
 
 
 class Wavefunction(GeometryPlot):
-    """ Plot the wavefunction with its complex phase for the `HubbardHamiltonian` object
+    """ Plot the wavefunction with its complex phase for the `hubbard.HubbardHamiltonian` object
 
     Parameters
     ----------
@@ -17,7 +17,7 @@ class Wavefunction(GeometryPlot):
         vector that contains the eigenstate to plot
     ext_geom: sisl.Geometry instance
         external geometry to plot the GeometryPlot behind the wavefunction layer
-        if no ext_geom is passed, it uses the geometry stored in the HubbardHamiltonian object
+        if no ext_geom is passed, it uses the geometry stored in the `hubbard.HubbardHamiltonian` object
 
     Notes
     -----

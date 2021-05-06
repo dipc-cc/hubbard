@@ -45,6 +45,7 @@ Plot geometrical functions
    :toctree:
 
     BondOrder
+    BondHoppings
     Bonds
 
 Plot bandstructure of the system
