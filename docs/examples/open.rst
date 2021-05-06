@@ -35,10 +35,8 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
 
 .. code-block:: python
 
-      import hubbard.hamiltonian as hh
-      import hubbard.sp2 as sp2
-      import hubbard.density as density
-      from hubbard.negf import NEGF
+      import sisl
+      from hubbard import HubbardHamiltonian, sp2, density, NEGF
 
       # Build sisl.Geometry object of a ZGNR of width W=5 C-atoms across,
       # e.g., by using the function sisl.geom.zgnr.
@@ -52,10 +50,10 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
       # Build tight-binding Hamiltonian using sp2 function
       H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18, s1=0, s2=0, s3=0)
       # Hubbard Hamiltonian of elecs
-      MFH_elec = hh.HubbardHamiltonian(H_elec, U=U, nkpt=[100, 1, 1], kT=kT)
+      MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[100, 1, 1], kT=kT)
 
       # Converge Electrode Hamiltonians
-      dn = MFH_elec.converge(density.dm)
+      dn = MFH_elec.converge(density.calc_n)
 
       # Central region is a repetition of the electrodes
       HC = H_elec.tile(3,axis=0)
@@ -67,19 +65,19 @@ performed for a temperature of `kT=0.025` eV, which we will set as common for al
       elec_indx = [range(len(H_elec)), range(len(HC.H)-len(H_elec), len(HC.H))]
 
       # MFH object of the central region
-      MFH_HC = hh.HubbardHamiltonian(HC, U=U, kT=kT)
+      MFH_HC = HubbardHamiltonian(HC, U=U, kT=kT)
       # Use initial random density
       MFH_HC.random_density()
 
       # First create the NEGF object, where we pass the MFH converged electrodes and
       # the central region HubbardHamiltonian object
-      negf = NEGF(MFH_HC, [MFH_elec, MFH_elec], elec_indx, elec_dir=['-A', '+A'])
+      negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 
       # Converge using Green's function method to obtain the densities
-      dn = MFH_HC.converge(negf.dm_open, steps=1, tol=1e-6)
+      dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-6, print_info=True)
 
-As you might probably observed, each iteration using the non-equilibrium Green's function formalism takes much more
-time. This is due to the fact that it has to invert the Green's function matrix for each energy point along the
+Usually, each iteration using the non-equilibrium Green's function formalism takes more time than if the system is finite or periodic.
+This is due to the fact that for open quantum systems it has to invert the Green's function matrix for each energy point along the
 integration path in each iteration.
 For this reason, using a good initial guess (initial spin-densities) can be crucial if we want the code to perform
 less iterations to find the self-consistent solution.
