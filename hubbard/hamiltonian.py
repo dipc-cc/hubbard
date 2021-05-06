@@ -241,26 +241,6 @@ class HubbardHamiltonian(object):
         a = np.arange(len(self.H))
         self.H[a, a, [0, 1]] = E.T
 
-    def build_density_matrix(self):
-        """ Build the full density matrix
-
-        Notes
-        -----
-        This method can be generalized to return the density matrix with off-diagonal elements
-        i.e. for non-orthogonal basis, instead of the summed Mulliken populations (as in `hubbard.n`)
-
-        Returns
-        -------
-        `sisl.DensityMatrix`
-        """
-
-        # TODO Generalize this method to return the density matrix with off-diagonal elements
-        # for non-orthogonal LCAO basis
-        DM = sisl.DensityMatrix(self.geometry, dim=2, orthogona=self.TBHam.orthogonal)
-        a = np.arange(len(self.H))
-        DM[a, a, [0, 1]] = self.n.T
-        return DM
-
     def random_density(self):
         """ Initialize spin polarization  with random density """
         self.n = np.random.rand(2, self.sites)
