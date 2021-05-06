@@ -19,6 +19,11 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
 
     The function will also take into account the possible presence of Boron or Nitrogen atoms,
     for which one would need to specify the on-site energy for those atoms (``eB`` and ``eN``)
+
+    Returns
+    -------
+    H: sisl.physics.Hamiltonian
+        tight-binding Hamiltonian for the sp2 structure of ``dim=2`` (for the two spin channels)
     """
 
     # Determine pz sites

@@ -6,30 +6,27 @@ __all__ = ['calc_n', 'calc_n_insulator']
 
 
 def calc_n(H, q):
-    r""" General method to obtain the spin-densities for periodic or finite systems at a given temperature
+    r""" General method to obtain the spin densities for periodic or finite systems at a given temperature
 
-    It obtains the densities from the direct diagonalization of the Hamiltonian (``H.H``) taking into account
-    a possible overlap matrix (``H.H.S``). 
-
-    It computes the densities as Mulliken populations:
+    It obtains the spin densities from the direct diagonalization of the Hamiltonian (``H.H``) taking into account
+    a possible overlap matrix (``H.H.S``):
 
     .. math::
-        \langle n_{i\sigma} \rangle = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij} = \sum_{j}D_{ij\sigma}S_{ij} =  (\textbf{D}_{\sigma}\textbf{S})_{ii}
+        \langle n_{i\sigma} \rangle = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij}
 
     Where :math:`f_{\alpha\sigma}` is the weight of eigenstate :math:`\alpha` for spin :math:`\sigma` at temperature ``kT`` (Fermi-Dirac distribution),
-    :math:`c^{\alpha}_{i\sigma}` are the elements of the eigenstate :math:`\alpha` and spin :math:`\sigma` represented in the basis of atomic orbitals,
-    and :math:`D_{ij\sigma}` is the full density matrix in the basis of atomic orbitals (indices :math:`i,j`)
+    :math:`c^{\alpha}_{i\sigma}` are coefficients for eigenstate :math:`\alpha` with spin :math:`\sigma` represented in the basis of atomic orbitals
 
     Parameters
     ----------
-    H: `hubbard.HubbardHamiltonian` instance
-        `HubbardHamiltonian` object of the system to obtain the spin-densities from
+    H: HubbardHamiltonian
+        `hubbard.HubbardHamiltonian` object of the system to obtain the spin-densities from
     q: array_like
         charge resolved in spin channels (first index for up-electrons and second index for down-electrons)
 
     See Also
     --------
-    `sisl.physics.EigenstateElectron.norm2` sisl routine to obtain the dot product of the eigenstates with the overlap matrix
+    `sisl.physics.EigenstateElectron.norm2`: sisl routine to obtain the dot product of the eigenstates with the overlap matrix
     """
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)

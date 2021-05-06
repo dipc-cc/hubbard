@@ -165,9 +165,9 @@ class DOS_distribution(GeometryPlot):
 
     Parameters
     ----------
-    HH: hubbard.Hamiltonian instance
+    HH: HubbardHamiltonian
         mean-field Hubbard Hamiltonian
-    PDOS: np.ndarray
+    PDOS: numpy.ndarray
         Density of states projected in atomic sites obtained at certain energy
     realspace:
         If True it will plot the DOS in a realspace grid otherwise it plots it as a scatter plot
@@ -213,7 +213,7 @@ class DOS(Plot):
 
     Parameters
     ----------
-    HH: hubbard.Hamiltonian instance
+    HH: HubbardHamiltonian
         mean-field Hubbard Hamiltonian
     egrid: array_like
         energy grid to compute the density of states

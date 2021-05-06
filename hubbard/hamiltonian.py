@@ -4,7 +4,6 @@ import hubbard.ncsile as nc
 import hashlib
 import os
 import math
-from scipy.linalg import inv
 import warnings
 
 _pi = math.pi
@@ -24,15 +23,15 @@ class HubbardHamiltonian(object):
 
     Parameters
     ----------
-    TBHam: `sisl.physics.Hamiltonian` instance
+    TBHam: sisl.physics.Hamiltonian
         A spin-polarized tight-binding Hamiltonian
-    n: np.ndarray, optional
+    n: numpy.ndarray, optional
         initial spin-densities vectors. The shape of `n` must be (2, len(geometry))
     U: float, optional
         on-site Coulomb repulsion
     q: array_like, optional
         Two values specifying up, down electron occupations
-    nkpt: array_like or `sisl.physics.BrillouinZone` instance, optional
+    nkpt: array_like or sisl.physics.BrillouinZone, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
@@ -98,8 +97,8 @@ class HubbardHamiltonian(object):
 
         Parameters
         ----------
-        nkpt : array_like or `sisl.physics.BrillouinZone` instance, optional
-            k-mesh to be associated with the HubbardHamiltonian instance
+        nkpt : array_like or sisl.physics.BrillouinZone, optional
+            k-mesh to be associated with the `hubbard.HubbardHamiltonian` instance
         """
         if isinstance(nkpt, sisl.BrillouinZone):
             self.mp = nkpt
@@ -165,7 +164,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.tile` : sisl class method
+        `sisl.Geometry.tile`: sisl class method
 
         Returns
         -------
@@ -188,7 +187,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.Geometry.repeat` : sisl class method
+        `sisl.Geometry.repeat`: sisl class method
 
         Returns
         -------
@@ -280,6 +279,10 @@ class HubbardHamiltonian(object):
         taking into account the up and dn different spectrums
 
         This method makes sense for insulators (where there is a bandgap)
+
+        Returns
+        -------
+        midgap: float
         """
         HOMO, LUMO = -1e10, 1e10
         for k in self.mp.k:
@@ -368,7 +371,7 @@ class HubbardHamiltonian(object):
         ----------
         fn: str
             name of the fdf-file
-        ext_geom: `sisl.Geometry`, optional
+        ext_geom: sisl.Geometry, optional
             an "external" geometry that contains the sp2-sites included in the simulation
         spinfix: bool, optional
             specifies if the Spin.Fix and Spin.Total lines are written to the fdf
@@ -423,7 +426,7 @@ class HubbardHamiltonian(object):
         See Also
         --------
         update_hamiltonian
-        hubbard.density.calc_n
+        hubbard.calc_n
             method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
         hubbard.NEGF.calc_n_open
             method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
@@ -677,38 +680,6 @@ class HubbardHamiltonian(object):
         else:
             return S_MFH
 
-    def band_sym(self, eigenstate, diag=True, axis=2):
-        '''
-        Obtains the parity of vector(s) with respect to the rotation of its parent geometry by 180 degrees
-        '''
-        geom0 = self.geometry
-        vec = [0, 0, 0]
-        vec[axis] = 1
-        geom180 = geom0.rotate(180, vec, geom0.center())
-        sites180 = []
-        for ia in geom180:
-            for ib in geom0:
-                if np.allclose(geom0.xyz[ib], geom180.xyz[ia]):
-                    sites180.append(ib)
-        if isinstance(eigenstate, sisl.physics.electron.EigenstateElectron):
-            # In eigenstate instance dimensions are: (En, sites)
-            v1 = np.conjugate(eigenstate.state)
-            v2 = eigenstate.state[:, sites180]
-        else:
-            # Transpose to have dimensions (En, sites)
-            if len(eigenstate.shape) == 1:
-                eigenstate = eigenstate.reshape(1, eigenstate.shape[0])
-            else:
-                eigenstate = eigenstate.T
-            v1 = np.conjugate(eigenstate)
-            v2 = eigenstate[:, sites180]
-
-        if diag:
-            sym = (v1 * v2).sum(axis=1)
-        else:
-            sym = np.dot(v1, v2.T)
-        return sym
-
     def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref=0.):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
@@ -733,7 +704,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        DOS: array_like
+        DOS: numpy.ndarray
             density of states at the given energies for the selected spin
         """
         # Ensure spin is iterable
@@ -775,7 +746,7 @@ class HubbardHamiltonian(object):
 
         See Also
         --------
-        `sisl.get_distribution`
+        `sisl.physics.distribution.get_distribution`
         `sisl.physics.electron.PDOS`
 
         Returns

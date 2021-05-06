@@ -11,6 +11,7 @@ plt.rc('font', family='Dejavu Sans', size=16)
 
 
 class Plot(object):
+    """ Class to create plot objects """
 
     def __init__(self, **kwargs):
         # Figure size
@@ -26,37 +27,106 @@ class Plot(object):
             self.axes = axes[0]
 
     def savefig(self, fn):
+        """ Save figure to external file
+
+        Parameters
+        ----------
+        fn: str
+            external file name to save plot
+
+        See Also
+        --------
+        `matplotlib.pyplot.savefig`
+        """
         self.fig.tight_layout()
         self.fig.savefig(fn)
 
     def close(self):
+        """ Close figure """
         # matplotlib does not have close method on Figure class
         # weird.
         self.fig.clear()
         plt.close(self.fig)
 
     def set_title(self, title, fontsize=16):
+        """ Set figure title
+
+        Parameters
+        ----------
+        title: str
+            figure title
+        fontsize: int, optional
+            title fontsize, defaults to 16
+        """
         self.axes.set_title(title, size=fontsize)
 
     def set_xlabel(self, label, fontsize=16):
+        """ Set label for the x-axis
+
+        Parameters
+        ----------
+        label: str
+            label for the x-axis
+        fontsize: int, optional
+            label fontsize
+        """
         self.axes.set_xlabel(label, fontsize=fontsize)
 
     def set_ylabel(self, label, fontsize=16):
+        """ Set label for the y-axis
+
+        Parameters
+        ----------
+        label: str
+            label for the y-axis
+        fontsize: int, optional
+            label fontsize
+        """
         self.axes.set_ylabel(label, fontsize=fontsize)
 
     def set_xlim(self, xmin, xmax):
+        """ Set maximum and minimum x-axis values
+
+        Parameters
+        ----------
+        xmin: float
+            minimum value to show in the x-axis
+        xmax: float
+            maximum value to show in the x-axis
+        """
         self.axes.set_xlim(xmin, xmax)
 
     def set_ylim(self, ymin, ymax):
+        """ Set maximum and minimum y-axis values
+
+        Parameters
+        ----------
+        ymin: float
+            minimum value to show in the y-axis
+        ymax: float
+            maximum value to show in the y-axis
+        """
         self.axes.set_ylim(ymin, ymax)
 
     def add_colorbar(self, layer, pos='right', size='5%'):
+        """ Add figure colorbar
+
+        Parameters
+        ----------
+        layer: matplotlib.cm.ScalarMappable
+            i.e., `AxesImage`, `ContourSet`, etc. described by this colorbar
+        pos: str, optional
+            position of the colorbar with respect to axes
+        size: str, optional
+            size of the colorbar in %
+        """
         divider = make_axes_locatable(self.axes)
         cax = divider.append_axes(pos, size=size, pad=0.1)
         self.colorbar = plt.colorbar(layer, cax=cax)
         self.fig.subplots_adjust(right=0.8)
 
     def legend(self, **kwargs):
+        """ Add legend to figure. It takes into account possible repeated labels and show them once """
         handles, labels = self.fig.gca().get_legend_handles_labels()
         # Reduce in case there are repeated labels
         labels, ids = np.unique(labels, return_index=True)
@@ -65,6 +135,18 @@ class Plot(object):
 
 
 class GeometryPlot(Plot):
+    """ Class to create geometry plots
+
+    Parameters
+    ----------
+    geometry: sisl.Geoemtry
+        geometry
+    ext_geom: sisl.Geometry, optional
+        full sp2 geometry that may include other atoms that are typically not involved
+        in a pi-tight-binding or mean-feild Hubbard calculation e.g., as Hydrogen atoms
+    bdx: int, optional
+        added space between geometry and figure axes
+    """
 
     def __init__(self, geometry, ext_geom=None, bdx=2, **kwargs):
 
@@ -257,7 +339,13 @@ class GeometryPlot(Plot):
         self.colorbar.ax.set_xticklabels(labels, fontsize=fontsize)
 
     def annotate(self, sites=[], size=6):
-        """ Annotate the site indices in the pi-network """
+        """ Annotate the site indices in the pi-network
+
+        sites: array_like, optional
+            specify sites to be annotated in figure
+        size: int, optional
+            font size for the annotation
+        """
         g = self.geometry
         x = g.xyz[:, 0]
         y = g.xyz[:, 1]

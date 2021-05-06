@@ -63,12 +63,13 @@ rst_prolog = """
 """
 
 import glob
+from datetime import date
 autosummary_generate = glob.glob('*.rst') + glob.glob('*/*.rst')
 autosummary_generate = [f for f in autosummary_generate if 'api-generated' not in f]
 
 # General information about the project.
 project = u'hubbard'
-copyright = u'2018-2020, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
+copyright = f'2018-{date.today().year}, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 author = u'Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen'
 
 # The version info for the project you're documenting, acts as replacement for

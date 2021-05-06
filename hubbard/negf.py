@@ -51,12 +51,12 @@ class NEGF:
 
     Parameters
     ----------
-    Hdev: HubbardHamiltonian instance
+    Hdev: HubbardHamiltonian
         `hubbard.HubbardHamiltonian` object of the device
     elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)
         list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes
         plus the semi-infinite direction for the respective electrode.
-        Alternatively one may directly pass sisl.SelfEnergy instances
+        Alternatively one may directly pass `sisl.SelfEnergy` instances
     elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
     CC: str, optional
@@ -71,7 +71,7 @@ class NEGF:
 
     See Also
     --------
-    `sisl.physics.RecursiveSI` : sisl routines to create semi-infinite object (obtain self-energy, etc.)
+    `sisl.physics.RecursiveSI`: sisl routines to create semi-infinite object (obtain self-energy, etc.)
 
     Notes
     -----
@@ -185,11 +185,11 @@ class NEGF:
 
     def calc_n_open(self, H, q, qtol=1e-5):
         """
-        Method to compute the spin densities from the Neq Green's function
+        Method to compute the spin densities from the non-equilibrium Green's function
 
         Parameters
         ----------
-        H: HubbardHamiltonian instances
+        H: HubbardHamiltonian
             `hubbard.HubbardHamiltonian` of the object that is being iterated
         q: float
             charge associated to the up and down spin-components
@@ -199,8 +199,10 @@ class NEGF:
 
         Returns
         -------
-        ni
-        Etot
+        ni: numpy.ndarray
+            spin densities
+        Etot: float
+            total energy
         """
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -369,10 +371,27 @@ class NEGF:
         return Delta.real, weight.real
 
     def DOS(self, H, E, spin=[0, 1], eta=0.01):
-        """
+        r"""
+        Obtains the density of states (DOS) from the Green's function of the device
+
+        .. math::
+
+            \mathrm{DOS}_\sigma = -\frac{1}{\pi}\Im\lbrace\mathrm{Tr}[G^{\sigma}]\rbrace
+
+        Parameters
+        ----------
+        H: HubbardHamiltonian
+            `hubbard.HubbardHamiltonian` object of the system
+        E: array_like
+            energy grid to obtan the DOS
+        spin: int, array_like, optional
+            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices
+        eta: float, optional
+            smearing parameter (complex term in the Green's function)
+
         Returns
         -------
-        DOS : np.ndarray
+        DOS : numpy.ndarray
         """
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
@@ -392,6 +411,30 @@ class NEGF:
         return dos / np.pi
 
     def PDOS(self, H, E, spin=(0, 1), eta=0.01):
+        r"""
+        Obtains the projected density of states (PDOS) onto the atomic sites from the Green's function of the device
+
+        .. math::
+
+            \mathrm{PDOS}_{i\sigma} = -\frac{1}{\pi} \Im\lbrace G^{\sigma}_{ii}\rbrace
+
+        Where :math:`i` represents the atomic site position
+
+        Parameters
+        ----------
+        H: HubbardHamiltonian
+            `hubbard.HubbardHamiltonian` object of the system
+        E: array_like
+            energy grid to obtan the PDOS
+        spin: int, array_like, optional
+            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices
+        eta: float, optional
+            smearing parameter (complex term in the Green's function)
+
+        Returns
+        -------
+        PDOS : numpy.ndarray
+        """
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
