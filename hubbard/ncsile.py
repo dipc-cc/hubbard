@@ -8,8 +8,8 @@ class ncSilehubbard(sisl.SileCDF):
     """ Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 
     See Also
-    --------
-    `sisl.SileCDF` : sisl class
+    ------------
+    sisl.SileCDF : sisl class
     """
 
     def read_density(self, group):

@@ -174,8 +174,8 @@ class DOS_distribution(GeometryPlot):
         with varying size depending on the PDOS numerical value
 
     See Also
-    -----
-    `hubbard.HubbardHamiltonian.PDOS`
+    ------------
+    hubbard.HubbardHamiltonian.PDOS
     """
 
     def __init__(self, HH, PDOS, sites=[], ext_geom=None, realspace=False, **kwargs):
@@ -225,9 +225,9 @@ class DOS(Plot):
         sum projected DOS into selected atomic sites
 
     See Also
-    ---------
-    `hubbard.HubbardHamiltonian.DOS`
-    `hubbard.HubbardHamiltonian.PDOS`
+    ------------
+    hubbard.HubbardHamiltonian.DOS
+    hubbard.HubbardHamiltonian.PDOS
     """
 
     def __init__(self, HH, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):

@@ -35,8 +35,8 @@ class Plot(object):
             external file name to save plot
 
         See Also
-        --------
-        `matplotlib.pyplot.savefig`
+        ------------
+        matplotlib.pyplot.savefig
         """
         self.fig.tight_layout()
         self.fig.savefig(fn)

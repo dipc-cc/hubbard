@@ -127,8 +127,8 @@ class HubbardHamiltonian(object):
             for ``spin`` = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian
 
         See Also
-        --------
-        `sisl.physics.SparseOrbitalBZ.eigh` : sisl class
+        ------------
+        sisl.physics.SparseOrbitalBZ.eigh : sisl class
 
         Returns
         -------
@@ -137,7 +137,7 @@ class HubbardHamiltonian(object):
         return self.H.eigh(k=k, eigvals_only=eigvals_only, spin=spin)
 
     def eigenstate(self, k, spin=0):
-        """ Solve the eigenvalue problem at `k` and return it as a `sisl.physics.EigenstateElectron` object containing all eigenstates
+        """ Solve the eigenvalue problem at `k` and return it as a `sisl.physics.electron.EigenstateElectron` object containing all eigenstates
 
         Parameters
         ----------
@@ -148,7 +148,7 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        object: `sisl.physics.EigenstateElectron` object
+        object: `sisl.physics.electron.EigenstateElectron` object
         """
         return self.H.eigenstate(k, spin=spin)
 
@@ -163,8 +163,8 @@ class HubbardHamiltonian(object):
             direction of tiling, 0, 1, 2 according to the cell-direction
 
         See Also
-        --------
-        `sisl.Geometry.tile`: sisl class method
+        ------------
+        sisl.Geometry.tile: sisl class method
 
         Returns
         -------
@@ -186,8 +186,8 @@ class HubbardHamiltonian(object):
             direction of tiling, 0, 1, 2 according to the cell-direction
 
         See Also
-        --------
-        `sisl.Geometry.repeat`: sisl class method
+        ------------
+        sisl.Geometry.repeat: sisl class method
 
         Returns
         -------
@@ -304,8 +304,8 @@ class HubbardHamiltonian(object):
             distribution function
 
         See Also
-        --------
-        `sisl.physics.Hamiltonian.fermi_level` : sisl class function
+        ------------
+        sisl.physics.Hamiltonian.fermi_level : sisl class function
 
         Returns
         -------
@@ -424,13 +424,12 @@ class HubbardHamiltonian(object):
             `sisl.mixing.Mixer` instance for the SCF loop, defaults to `sisl.mixing.DIISMixer`
 
         See Also
-        --------
+        ------------
         update_hamiltonian
-        hubbard.calc_n
-            method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        hubbard.NEGF.calc_n_open
-            method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
+        hubbard.calc_n: method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        hubbard.NEGF.calc_n_open: method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+        sisl.mixing.AdaptiveDIISMixer: for adaptative DIIS (Pulay) mixing scheme
+        sisl.mixing.LinearMixer: for linear mixing scheme
 
         Returns
         -------
@@ -489,13 +488,12 @@ class HubbardHamiltonian(object):
             function arguments to pass to calc_n_method
 
         See Also
-        --------
+        ------------
         iterate
-        hubbard.density.n
-            method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
-        hubbard.NEGF
-            class that contains the routines to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
-        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`
+        hubbard.calc_n: method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`
+        hubbard.NEGF: class that contains the routines to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions
+        sisl.mixing.AdaptiveDIISMixer: for adaptative DIIS (Pulay) mixing scheme
+        sisl.mixing.LinearMixer: for linear mixing scheme
 
         Returns
         -------
@@ -546,12 +544,12 @@ class HubbardHamiltonian(object):
         return ev, L
 
     def get_Zak_phase(self, func=None, nk=51, sub='filled', eigvals=False):
-        """ Computes the Zak phase for 1D (periodic) systems using `sisl.electron.berry_phase`
+        """ Computes the Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`
 
         Parameters
         ----------
         func: callable, optional
-            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations
+            function that creates a list of parametrized k-points to generate a new `sisl.physics.BrillouinZone` object parametrized in `N` separations
         nk: int, optional
             number of k-points generated using the parameterization
         sub: int, optional
@@ -647,8 +645,8 @@ class HubbardHamiltonian(object):
             If true this method will return also the exact spin squared expectation value
 
         See Also
-        --------
-        `sisl.physics.electron.spin_squared` : sisl class function
+        ------------
+        sisl.physics.electron.spin_squared: sisl class function
 
         Returns
         -------
@@ -692,15 +690,15 @@ class HubbardHamiltonian(object):
         spin: int, optional
             If spin=0(1) it calculates the DOS for up (down) electrons in the system.
             If spin is not specified it returns DOS_up + DOS_dn.
-        dist: str or sisl.distribution, optional
+        dist: str or sisl.physics.distribution, optional
             distribution for the convolution, defaults to Lorentzian
         eref: float, optional
             energy reference, defaults to zero
 
         See Also
-        --------
-        `sisl.get_distribution`
-        `sisl.electron.DOS`
+        ------------
+        sisl.physics.get_distribution: sisl method to create distribution function
+        sisl.physics.electron.DOS: sisl method to obtain DOS
 
         Returns
         -------
@@ -745,9 +743,9 @@ class HubbardHamiltonian(object):
             energy reference, defaults to zero
 
         See Also
-        --------
-        `sisl.physics.distribution.get_distribution`
-        `sisl.physics.electron.PDOS`
+        ------------
+        sisl.get_distribution: sisl method to create distribution function
+        sisl.physics.electron.PDOS: sisl method to obtain PDOS
 
         Returns
         -------

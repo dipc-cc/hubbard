@@ -69,9 +69,10 @@ class NEGF:
     --------
     >>> NEGF(Hdev, [sisl.SelfEnergy(), (H, '+A')])
 
+
     See Also
-    --------
-    `sisl.physics.RecursiveSI`: sisl routines to create semi-infinite object (obtain self-energy, etc.)
+    ------------
+    sisl.physics.RecursiveSI: sisl routines to create semi-infinite object (obtain self-energy, etc.)
 
     Notes
     -----
