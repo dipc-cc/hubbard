@@ -1,6 +1,6 @@
 .. _publications:
 
-Publications using the hubbard library
+Publications using the hubbard package
 ======================================
 
 This implementation of the `hubbard` package has been used in the listed
@@ -21,12 +21,23 @@ publications below.
 #. S. Sanz et al., manuscript in preparation (2021).
 
 
+.. _funding:
+
+Funding
+=======
+
+Financial support from Spanish AEI (FIS2017-83780-P), the Basque Departamento de Educación through the PhD scholarship no. PRE_2020_2_0049 (S.S.) and the European Union's Horizon 2020
+(FET-Open project [SPRING][spring] Grant No. 863098) is acknowledged.
+
+
 .. _citing:
 
 Citing the hubbard package
 ==========================
 
-If you are using the hubbard package to obtain the spin densities for molecules or periodic structures, you should cite this
+If hubbard is used to produce scientific contributions please include citations, in addition to `sisl <https://sisl.readthedocs.io/en/latest/cite.html>`_, to the following works:
+
+* For molecules/periodic structures
 
 .. code-block:: bash
 
@@ -56,7 +67,7 @@ and/or this
 
 .. code-block:: bash
 
-    @article{PhysRevLett.124.177201,
+    @article{Li2020,
       title = {Uncovering the Triplet Ground State of Triangular Graphene Nanoflakes Engineered with Atomic Precision on a Metal Surface},
       author = {Li, Jingcheng
       and Sanz, Sofia
@@ -80,11 +91,12 @@ and/or this
 
 
 
-If you are performing spin calculations for devices with open boundary conditions with the `hubbard.NEGF` library, you should cite this:
+* For open boundary conditions:
+
 
 .. code-block:: bash
 
-    @misc{sanz21,
+    @misc{sanz2021,
       author       = {Sofia Sanz et al.},
       year         = {2021},
       howpublished = {In preparation}
