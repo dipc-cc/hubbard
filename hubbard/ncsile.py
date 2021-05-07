@@ -9,7 +9,7 @@ class ncSilehubbard(sisl.SileCDF):
 
     See Also
     ------------
-    sisl.SileCDF : sisl class
+    sisl.io.SileCDF : sisl class
     """
 
     def read_density(self, group):
