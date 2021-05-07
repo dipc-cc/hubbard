@@ -198,6 +198,29 @@ class HubbardHamiltonian(object):
         q = nrep.sum(1)
         return self.__class__(Hrep, n=nrep, U=self.U, q=q, nkpt=self.mp, kT=self.kT)
 
+    def remove(self, atoms, q=(0,0)):
+        """ Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`
+
+        Parameters
+        ----------
+        atoms: array_like of int
+            atomic ndices of removed atoms
+        q: array_like, optional
+            Two values specifying up, down electron occupations for the remaining subset of atoms after removal
+
+        See Also
+        ------------
+        sisl.physics.Hamiltonian.remove
+        sisl.Geometry.remove
+        """
+        atoms = self.geometry.sc2uc(atoms)
+        import sisl._array as _a
+        atoms = np.delete(_a.arangei(self.geometry.na), atoms)
+        Hsub = self.H.sub(atoms)
+        nsub = self.n[:,atoms]
+        return self.__class__(Hsub, n=nsub, U=self.U,
+                    q=q, nkpt=self.mp, kT=self.kT)
+
     def sub(self, atoms, q=(0,0)):
         """ Return a new `HubbardHamiltonian` object of a subset of selected atoms
 
@@ -321,6 +344,20 @@ class HubbardHamiltonian(object):
 
         Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
         return Ef
+
+    def shift(self, E):
+        """ Shift the electronic structure by a constant energy (in-place operation)
+
+        Parameters
+        ----------
+        E: float or (2,)
+            the energy (in eV) to shift the electronic structure, if two values are passed the two spin-components get shifted individually
+
+        See Also
+        ------------
+        sisl.physics.Hamiltonian.shift
+        """
+        self.H.shift(E)
 
     def _get_hash(self):
         s = 'U=%.4f' % self.U
