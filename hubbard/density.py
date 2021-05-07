@@ -25,8 +25,8 @@ def calc_n(H, q):
         charge resolved in spin channels (first index for up-electrons and second index for down-electrons)
 
     See Also
-    --------
-    `sisl.physics.EigenstateElectron.norm2`: sisl routine to obtain the dot product of the eigenstates with the overlap matrix
+    ------------
+    sisl.physics.electron.EigenstateElectron.norm2: sisl routine to obtain the dot product of the eigenstates with the overlap matrix
     """
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)
