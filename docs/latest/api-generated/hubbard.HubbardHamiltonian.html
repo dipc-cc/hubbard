@@ -229,7 +229,7 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <td><p>Return a copy of the <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a> object</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.eigenstate" title="hubbard.HubbardHamiltonian.eigenstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigenstate</span></code></a>(k[, spin])</p></td>
-<td><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object containing all eigenstates</p></td>
+<td><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.electron.EigenstateElectron.html#sisl.physics.electron.EigenstateElectron" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron</span></code></a> object containing all eigenstates</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.eigh" title="hubbard.HubbardHamiltonian.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigh</span></code></a>([k, eigvals_only, spin])</p></td>
 <td><p>Diagonalize Hamiltonian using the <code class="docutils literal notranslate"><span class="pre">eigh</span></code> routine</p></td>
@@ -241,7 +241,7 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <td><p>Find the midgap for the system taking into account the up and dn different spectrums</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.get_Zak_phase" title="hubbard.HubbardHamiltonian.get_Zak_phase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Zak_phase</span></code></a>([func, nk, sub, eigvals])</p></td>
-<td><p>Computes the Zak phase for 1D (periodic) systems using <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.electron.berry_phase</span></code></p></td>
+<td><p>Computes the Zak phase for 1D (periodic) systems using <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.electron.berry_phase.html#sisl.physics.electron.berry_phase" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.berry_phase</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.get_bond_order" title="hubbard.HubbardHamiltonian.get_bond_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bond_order</span></code></a>([format, midgap])</p></td>
 <td><p>Compute Huckel bond order</p></td>
@@ -301,14 +301,19 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
 <li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
 If spin is not specified it returns DOS_up + DOS_dn.</p></li>
-<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.physics.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
 <li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.get_distribution</span></code></dt><dd><p>sisl method to create distribution function</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.electron.DOS</span></code></dt><dd><p>sisl method to obtain DOS</p>
+</dd>
+</dl>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -338,7 +343,12 @@ If spin is not specified it returns DOS_up + DOS_dn.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.get_distribution</span></code></dt><dd><p>sisl method to create distribution function</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.electron.PDOS</span></code></dt><dd><p>sisl method to obtain PDOS</p>
+</dd>
+</dl>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -397,12 +407,15 @@ the specified <em class="xref py py-obj">steps</em>), by giving the name of the 
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#hubbard.HubbardHamiltonian.iterate" title="hubbard.HubbardHamiltonian.iterate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterate</span></code></a></p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.density.n</span></code></dt><dd><p>method to obtain <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain <em class="xref py py-obj">kT</em></p>
+<dt><a class="reference internal" href="hubbard.calc_n.html#hubbard.calc_n" title="hubbard.calc_n"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.calc_n</span></code></a></dt><dd><p>method to obtain <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain <em class="xref py py-obj">kT</em></p>
 </dd>
 <dt><a class="reference internal" href="hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code></a></dt><dd><p>class that contains the routines to obtain  <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with open boundary conditions</p>
 </dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.mixing.AdaptiveDIISMixer</span></code></dt><dd><p>for adaptative DIIS (Pulay) mixing scheme</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.mixing.LinearMixer</span></code></dt><dd><p>for linear mixing scheme</p>
+</dd>
 </dl>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -423,7 +436,7 @@ the specified <em class="xref py py-obj">steps</em>), by giving the name of the 
 <dl class="py method">
 <dt id="hubbard.HubbardHamiltonian.eigenstate">
 <code class="sig-name descname">eigenstate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.eigenstate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.eigenstate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object containing all eigenstates</p>
+<dd><p>Solve the eigenvalue problem at <em class="xref py py-obj">k</em> and return it as a <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.electron.EigenstateElectron.html#sisl.physics.electron.EigenstateElectron" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron</span></code></a> object containing all eigenstates</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -435,7 +448,7 @@ the specified <em class="xref py py-obj">steps</em>), by giving the name of the 
 <dd class="field-even"><p><strong>object</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.EigenstateElectron</span></code> object</p>
+<dd class="field-odd"><p><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.electron.EigenstateElectron.html#sisl.physics.electron.EigenstateElectron" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron</span></code></a> object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -457,7 +470,7 @@ it also returns the eigenvectors</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class</p>
+<dt><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.SparseOrbitalBZ.html#sisl.physics.SparseOrbitalBZ.eigh" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.SparseOrbitalBZ.eigh</span></code></a></dt><dd><p>sisl class</p>
 </dd>
 </dl>
 </div>
@@ -486,7 +499,7 @@ it also returns the eigenvectors</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class function</p>
+<dt><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.fermi_level" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian.fermi_level</span></code></a></dt><dd><p>sisl class function</p>
 </dd>
 </dl>
 </div>
@@ -519,11 +532,11 @@ taking into account the up and dn different spectrums</p>
 <dl class="py method">
 <dt id="hubbard.HubbardHamiltonian.get_Zak_phase">
 <code class="sig-name descname">get_Zak_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nk</span><span class="o">=</span><span class="default_value">51</span></em>, <em class="sig-param"><span class="n">sub</span><span class="o">=</span><span class="default_value">'filled'</span></em>, <em class="sig-param"><span class="n">eigvals</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.get_Zak_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.get_Zak_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the Zak phase for 1D (periodic) systems using <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.electron.berry_phase</span></code></p>
+<dd><p>Computes the Zak phase for 1D (periodic) systems using <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.electron.berry_phase.html#sisl.physics.electron.berry_phase" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.berry_phase</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<em>callable</em><em>, </em><em>optional</em>) – function that creates a list of parametrized k-points to generate a new <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.BrillouinZone</span></code> object parametrized in <em class="xref py py-obj">N</em> separations</p></li>
+<li><p><strong>func</strong> (<em>callable</em><em>, </em><em>optional</em>) – function that creates a list of parametrized k-points to generate a new <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.BrillouinZone.html#sisl.physics.BrillouinZone" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.BrillouinZone</span></code></a> object parametrized in <em class="xref py py-obj">N</em> separations</p></li>
 <li><p><strong>nk</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of k-points generated using the parameterization</p></li>
 <li><p><strong>sub</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of bands that will be summed to obtain the Zak phase</p></li>
 </ul>
@@ -588,8 +601,11 @@ it <em>must</em> return the corresponding spin-densities (<code class="docutils 
 </dd>
 <dt><a class="reference internal" href="hubbard.NEGF.html#hubbard.NEGF.calc_n_open" title="hubbard.NEGF.calc_n_open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hubbard.NEGF.calc_n_open</span></code></a></dt><dd><p>method to obtain  <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">Etot</span></code> for tight-binding Hamiltonians with open boundary conditions</p>
 </dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.mixing.AdaptiveDIISMixer</span></code></dt><dd><p>for adaptative DIIS (Pulay) mixing scheme</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.mixing.LinearMixer</span></code></dt><dd><p>for linear mixing scheme</p>
+</dd>
 </dl>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -650,7 +666,7 @@ different sublattices</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class method</p>
+<dt><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.repeat" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.Geometry.repeat</span></code></a></dt><dd><p>sisl class method</p>
 </dd>
 </dl>
 </div>
@@ -710,7 +726,7 @@ Optionally, sites with down-polarization can be specified</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class function</p>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.electron.spin_squared</span></code></dt><dd><p>sisl class function</p>
 </dd>
 </dl>
 </div>
@@ -754,7 +770,7 @@ Optionally, sites with down-polarization can be specified</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>sisl class method</p>
+<dt><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.tile" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.Geometry.tile</span></code></a></dt><dd><p>sisl class method</p>
 </dd>
 </dl>
 </div>

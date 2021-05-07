@@ -288,8 +288,8 @@
 <span class="sd">            for ``spin`` = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.physics.SparseOrbitalBZ.eigh` : sisl class</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.SparseOrbitalBZ.eigh : sisl class</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -298,7 +298,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="n">eigvals_only</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubbardHamiltonian.eigenstate"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigenstate">[docs]</a>    <span class="k">def</span> <span class="nf">eigenstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Solve the eigenvalue problem at `k` and return it as a `sisl.physics.EigenstateElectron` object containing all eigenstates</span>
+        <span class="sd">&quot;&quot;&quot; Solve the eigenvalue problem at `k` and return it as a `sisl.physics.electron.EigenstateElectron` object containing all eigenstates</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -309,7 +309,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        object: `sisl.physics.EigenstateElectron` object</span>
+<span class="sd">        object: `sisl.physics.electron.EigenstateElectron` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
@@ -324,8 +324,8 @@
 <span class="sd">            direction of tiling, 0, 1, 2 according to the cell-direction</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.Geometry.tile`: sisl class method</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.Geometry.tile: sisl class method</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -347,8 +347,8 @@
 <span class="sd">            direction of tiling, 0, 1, 2 according to the cell-direction</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.Geometry.repeat`: sisl class method</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.Geometry.repeat: sisl class method</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -465,8 +465,8 @@
 <span class="sd">            distribution function</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.physics.Hamiltonian.fermi_level` : sisl class function</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.Hamiltonian.fermi_level : sisl class function</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -585,13 +585,12 @@
 <span class="sd">            `sisl.mixing.Mixer` instance for the SCF loop, defaults to `sisl.mixing.DIISMixer`</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
+<span class="sd">        ------------</span>
 <span class="sd">        update_hamiltonian</span>
-<span class="sd">        hubbard.calc_n</span>
-<span class="sd">            method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`</span>
-<span class="sd">        hubbard.NEGF.calc_n_open</span>
-<span class="sd">            method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions</span>
-<span class="sd">        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`</span>
+<span class="sd">        hubbard.calc_n: method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`</span>
+<span class="sd">        hubbard.NEGF.calc_n_open: method to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions</span>
+<span class="sd">        sisl.mixing.AdaptiveDIISMixer: for adaptative DIIS (Pulay) mixing scheme</span>
+<span class="sd">        sisl.mixing.LinearMixer: for linear mixing scheme</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -650,13 +649,12 @@
 <span class="sd">            function arguments to pass to calc_n_method</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
+<span class="sd">        ------------</span>
 <span class="sd">        iterate</span>
-<span class="sd">        hubbard.density.n</span>
-<span class="sd">            method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`</span>
-<span class="sd">        hubbard.NEGF</span>
-<span class="sd">            class that contains the routines to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions</span>
-<span class="sd">        `sisl.mixing.AdaptiveDIISMixer`, `sisl.mixing.LinearMixer`</span>
+<span class="sd">        hubbard.calc_n: method to obtain ``n`` and ``Etot`` for tight-binding Hamiltonians with finite or periodic boundary conditions at a certain `kT`</span>
+<span class="sd">        hubbard.NEGF: class that contains the routines to obtain  ``n`` and ``Etot`` for tight-binding Hamiltonians with open boundary conditions</span>
+<span class="sd">        sisl.mixing.AdaptiveDIISMixer: for adaptative DIIS (Pulay) mixing scheme</span>
+<span class="sd">        sisl.mixing.LinearMixer: for linear mixing scheme</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -707,12 +705,12 @@
         <span class="k">return</span> <span class="n">ev</span><span class="p">,</span> <span class="n">L</span></div>
 
 <div class="viewcode-block" id="HubbardHamiltonian.get_Zak_phase"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_Zak_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_Zak_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nk</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Computes the Zak phase for 1D (periodic) systems using `sisl.electron.berry_phase`</span>
+        <span class="sd">&quot;&quot;&quot; Computes the Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        func: callable, optional</span>
-<span class="sd">            function that creates a list of parametrized k-points to generate a new `sisl.BrillouinZone` object parametrized in `N` separations</span>
+<span class="sd">            function that creates a list of parametrized k-points to generate a new `sisl.physics.BrillouinZone` object parametrized in `N` separations</span>
 <span class="sd">        nk: int, optional</span>
 <span class="sd">            number of k-points generated using the parameterization</span>
 <span class="sd">        sub: int, optional</span>
@@ -808,8 +806,8 @@
 <span class="sd">            If true this method will return also the exact spin squared expectation value</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.physics.electron.spin_squared` : sisl class function</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.electron.spin_squared: sisl class function</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -853,15 +851,15 @@
 <span class="sd">        spin: int, optional</span>
 <span class="sd">            If spin=0(1) it calculates the DOS for up (down) electrons in the system.</span>
 <span class="sd">            If spin is not specified it returns DOS_up + DOS_dn.</span>
-<span class="sd">        dist: str or sisl.distribution, optional</span>
+<span class="sd">        dist: str or sisl.physics.distribution, optional</span>
 <span class="sd">            distribution for the convolution, defaults to Lorentzian</span>
 <span class="sd">        eref: float, optional</span>
 <span class="sd">            energy reference, defaults to zero</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.get_distribution`</span>
-<span class="sd">        `sisl.electron.DOS`</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.get_distribution: sisl method to create distribution function</span>
+<span class="sd">        sisl.physics.electron.DOS: sisl method to obtain DOS</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -906,9 +904,9 @@
 <span class="sd">            energy reference, defaults to zero</span>
 
 <span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        `sisl.physics.distribution.get_distribution`</span>
-<span class="sd">        `sisl.physics.electron.PDOS`</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.get_distribution: sisl method to create distribution function</span>
+<span class="sd">        sisl.physics.electron.PDOS: sisl method to obtain PDOS</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
