@@ -101,3 +101,21 @@ and/or this
       year         = {2021},
       howpublished = {In preparation}
     }
+
+Related bibliography
+====================
+
+There are several works that have employed the Hubbard model in the mean-field approximation to study magnetic fingerprints in several graphene-based nanostructures (appart from those cited in the `publications`_ section).
+Here we list some of them:
+
+#. `J. Hubbard Proceedings of the Royal Society of London A: Mathematical, Physical and Engineering Sciences 276, No. 1365 The Royal Society 238-257 (1963) <https://royalsocietypublishing.org/doi/abs/10.1098/rspa.1963.0204>`_
+#. `M. Fujita et al., J. Phys. Soc. Jpn. 65, 7, 1920-1923 (1996)  <https://journals.jps.jp/doi/10.1143/JPSJ.65.1920>`_
+#. `J. Fernández-Rossier and J. J. Palacios Phys. Rev. Lett. 99, 177204 (2007) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.99.177204>`_
+#. `J. J. Palacios et al., Phys. Rev. B 77, 195428 (2008) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.77.195428>`_
+#. `F. Muñoz-Rojas et al., Phys. Rev. Lett. 102, 136810 (2009) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.102.136810>`_
+#. `K. Wakabayashi et al., Science and Technology of Advanced Materials 11, 5, 054504 (2010) <https://www.tandfonline.com/doi/full/10.1088/1468-6996/11/5/054504>`_
+#. `Oleg V Yazyev Rep. Prog. Phys. 73 056501 (2010) <https://arxiv.org/abs/1004.2034>`_
+#. `Y. Hancock et al., Phys. Rev. B 81, 245402 (2010) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.81.245402>`_
+#. `S. Mishra et al., J. Am. Chem. Soc. 141, 27, 10621–10625 (2019) <https://pubs.acs.org/doi/10.1021/jacs.9b05319>`_
+#. `S. Mishra et al., Angewandte Chemie International Edition 59, 12041-12047 (2020) <https://onlinelibrary.wiley.com/doi/full/10.1002/anie.202002687>`_
+#. `S. Mishra et al., Nature Nanotechnology 15, 22–28 (2020) <https://www.nature.com/articles/s41565-019-0577-9>`_
