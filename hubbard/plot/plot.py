@@ -7,7 +7,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # Install font rc params
 plt.rc('text', usetex=True)
-plt.rc('font', family='Bitstream Vera Serif', size=16)
+plt.rc('font', family='Dejavu Sans', size=16)
 
 
 class Plot(object):
