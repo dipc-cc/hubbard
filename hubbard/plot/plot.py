@@ -341,6 +341,8 @@ class GeometryPlot(Plot):
     def annotate(self, sites=[], size=6):
         """ Annotate the site indices in the pi-network
 
+        Parameters
+        ----------
         sites: array_like, optional
             specify sites to be annotated in figure
         size: int, optional
