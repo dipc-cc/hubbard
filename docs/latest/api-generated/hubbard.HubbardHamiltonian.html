@@ -25,7 +25,9 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -181,12 +183,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="hubbardhamiltonian">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="hubbardhamiltonian">
 <h1>HubbardHamiltonian<a class="headerlink" href="#hubbardhamiltonian" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="hubbard.HubbardHamiltonian">
 <em class="property">class </em><code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">HubbardHamiltonian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">TBHam</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">U</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">0.0, 0.0</span></em>, <em class="sig-param"><span class="n">nkpt</span><span class="o">=</span><span class="default_value">[1, 1, 1]</span></em>, <em class="sig-param"><span class="n">kT</span><span class="o">=</span><span class="default_value">1e-05</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</p>
 <p>The <a class="reference internal" href="#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> class opens the possibility to include electron correlations in the tight-binding Hamiltonian
 by solving self-consistently the mean-field Hubbard Hamiltonian</p>
@@ -197,10 +223,10 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>TBHam</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl vlatest)"><em>sisl.physics.Hamiltonian</em></a>) – A spin-polarized tight-binding Hamiltonian</p></li>
 <li><p><strong>n</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – initial spin-densities vectors. The shape of <em class="xref py py-obj">n</em> must be (2, len(geometry))</p></li>
-<li><p><strong>U</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – on-site Coulomb repulsion</p></li>
+<li><p><strong>U</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – on-site Coulomb repulsion</p></li>
 <li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Two values specifying up, down electron occupations</p></li>
 <li><p><strong>nkpt</strong> (<em>array_like</em><em> or </em><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.BrillouinZone.html#sisl.physics.BrillouinZone" title="(in sisl vlatest)"><em>sisl.physics.BrillouinZone</em></a><em>, </em><em>optional</em>) – Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling</p></li>
-<li><p><strong>kT</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Temperature of the system in units of the Boltzmann constant</p></li>
+<li><p><strong>kT</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Temperature of the system in units of the Boltzmann constant</p></li>
 </ul>
 </dd>
 </dl>
@@ -262,14 +288,20 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.read_density" title="hubbard.HubbardHamiltonian.read_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_density</span></code></a>(fn[, mode])</p></td>
 <td><p>Read density from binary file</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.repeat" title="hubbard.HubbardHamiltonian.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(reps, axis)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.remove" title="hubbard.HubbardHamiltonian.remove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code></a>(atoms[, q])</p></td>
+<td><p>Remove a subset of this sparse matrix by only retaining the atoms corresponding to <em class="xref py py-obj">atom</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.repeat" title="hubbard.HubbardHamiltonian.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(reps, axis)</p></td>
 <td><p>Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_kmesh" title="hubbard.HubbardHamiltonian.set_kmesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_kmesh</span></code></a>([nkpt])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_kmesh" title="hubbard.HubbardHamiltonian.set_kmesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_kmesh</span></code></a>([nkpt])</p></td>
 <td><p>Set the k-mesh for the HubbardHamiltonian</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_polarization" title="hubbard.HubbardHamiltonian.set_polarization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_polarization</span></code></a>(up[, dn])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.set_polarization" title="hubbard.HubbardHamiltonian.set_polarization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_polarization</span></code></a>(up[, dn])</p></td>
 <td><p>Maximize spin polarization on specific atomic sites Optionally, sites with down-polarization can be specified</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.shift" title="hubbard.HubbardHamiltonian.shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code></a>(E)</p></td>
+<td><p>Shift the electronic structure by a constant energy (in-place operation)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.HubbardHamiltonian.spin_contamination" title="hubbard.HubbardHamiltonian.spin_contamination"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spin_contamination</span></code></a>([ret_exact])</p></td>
 <td><p>Obtains the spin contamination for the MFH Hamiltonian following <a class="reference external" href="https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub">Ref.Chemical Physics Letters.183 (5): 423–431</a>..</p></td>
@@ -299,11 +331,11 @@ by solving self-consistently the mean-field Hubbard Hamiltonian</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>egrid</strong> (<em>array_like</em>) – Energy grid at which the DOS will be calculated.</p></li>
-<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
 If spin is not specified it returns DOS_up + DOS_dn.</p></li>
-<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.physics.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
-<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>sisl.physics.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
+<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
 </ul>
 </dd>
 </dl>
@@ -334,11 +366,11 @@ If spin is not specified it returns DOS_up + DOS_dn.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>egrid</strong> (<em>array_like</em>) – Energy grid at which the DOS will be calculated.</p></li>
-<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Smearing parameter</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – If spin=0(1) it calculates the DOS for up (down) electrons in the system.
 If spin is not specified it returns DOS_up + DOS_dn.</p></li>
-<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
-<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution for the convolution, defaults to Lorentzian</p></li>
+<li><p><strong>eref</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – energy reference, defaults to zero</p></li>
 </ul>
 </dd>
 </dl>
@@ -370,7 +402,7 @@ If spin is not specified it returns DOS_up + DOS_dn.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k-point at which the eigenstate is going to be obtained</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – spin index</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – spin index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -393,12 +425,12 @@ If spin is not specified it returns DOS_up + DOS_dn.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>calc_n_method</strong> (<em>callable</em>) – method to obtain the spin-densities
 it <em>must</em> return the corresponding spin-densities (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and the total energy (<code class="docutils literal notranslate"><span class="pre">Etot</span></code>)</p></li>
-<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance criterion</p></li>
+<li><p><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance criterion</p></li>
 <li><p><strong>mixer</strong> (<em>Mixer</em>) – <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.Mixer</span></code> instance, defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.mixing.DIISMixer</span></code></p></li>
-<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – the code will print some relevant information (if <em class="xref py py-obj">print_info</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>) about the convergence
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – the code will print some relevant information (if <em class="xref py py-obj">print_info</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>) about the convergence
 process when the number of completed iterations reaches a multiple of the specified <em class="xref py py-obj">steps</em>.
 It also will store the densities in a binary file if <em class="xref py py-obj">fn</em> is passed</p></li>
-<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
 the specified <em class="xref py py-obj">steps</em>), by giving the name of the full name of the <em>binary file</em></p></li>
 <li><p><strong>func_args</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – function arguments to pass to calc_n_method</p></li>
 </ul>
@@ -442,7 +474,7 @@ the specified <em class="xref py py-obj">steps</em>), by giving the name of the 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>array_like</em>) – k-point at which the eigenstate is going to be obtained</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – for spin=0(1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -462,9 +494,9 @@ the specified <em class="xref py py-obj">steps</em>), by giving the name of the 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k-point at which the eigenvalue want to be obtained</p></li>
-<li><p><strong>eigvals_only</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if True only eigenvalues are returned, otherwise
+<li><p><strong>eigvals_only</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True only eigenvalues are returned, otherwise
 it also returns the eigenvectors</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – for <code class="docutils literal notranslate"><span class="pre">spin</span></code> = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – for <code class="docutils literal notranslate"><span class="pre">spin</span></code> = 0 (1) it solves the eigenvalue problem for the spin up (down) Hamiltonian</p></li>
 </ul>
 </dd>
 </dl>
@@ -493,7 +525,7 @@ it also returns the eigenvectors</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – charge per spin channel. First index for spin up, second index for dn</p></li>
-<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution function</p></li>
+<li><p><strong>dist</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>sisl.distribution</em><em>, </em><em>optional</em>) – distribution function</p></li>
 </ul>
 </dd>
 </dl>
@@ -525,7 +557,7 @@ taking into account the up and dn different spectrums</p>
 <dd class="field-odd"><p><strong>midgap</strong></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)">float</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -538,8 +570,8 @@ taking into account the up and dn different spectrums</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>callable</em><em>, </em><em>optional</em>) – function that creates a list of parametrized k-points to generate a new <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.BrillouinZone.html#sisl.physics.BrillouinZone" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.BrillouinZone</span></code></a> object parametrized in <em class="xref py py-obj">N</em> separations</p></li>
-<li><p><strong>nk</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of k-points generated using the parameterization</p></li>
-<li><p><strong>sub</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – number of bands that will be summed to obtain the Zak phase</p></li>
+<li><p><strong>nk</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – number of k-points generated using the parameterization</p></li>
+<li><p><strong>sub</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – number of bands that will be summed to obtain the Zak phase</p></li>
 </ul>
 </dd>
 </dl>
@@ -551,7 +583,7 @@ If no <a class="reference internal" href="#hubbard.HubbardHamiltonian.sub" title
 <dd class="field-odd"><p><strong>Zak</strong> – Zak phase for the 1D system</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)">float</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -566,7 +598,7 @@ If no <a class="reference internal" href="#hubbard.HubbardHamiltonian.sub" title
 <li><p><strong>format</strong> (<em>{'csr'</em><em>, </em><em>'array'</em><em>, </em><em>'dense'</em><em>, </em><em>'coo'</em><em>, </em><em>..}</em>) – the returned format of the matrix, defaulting to the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html#scipy.sparse.csr_matrix" title="(in SciPy v1.6.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.csr_matrix</span></code></a>,
 however if one always requires operations on dense matrices, one can always
 return in <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> (<em class="xref py py-obj">‘array’</em>) or <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matrix.html#numpy.matrix" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matrix</span></code></a> (<em class="xref py py-obj">‘dense’</em>).</p></li>
-<li><p><strong>midgap</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – energy value that separates filled states (lower energy) from empty states (higher energy)</p></li>
+<li><p><strong>midgap</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – energy value that separates filled states (lower energy) from empty states (higher energy)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -645,11 +677,29 @@ different sublattices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the file that is going to read from</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – name of the file that is going to read from</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.remove">
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atoms</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">0, 0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a subset of this sparse matrix by only retaining the atoms corresponding to <em class="xref py py-obj">atom</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<em>array_like of int</em>) – atomic ndices of removed atoms</p></li>
+<li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Two values specifying up, down electron occupations for the remaining subset of atoms after removal</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.remove" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian.remove</span></code></a>, <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.remove" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.Geometry.remove</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -659,8 +709,8 @@ different sublattices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – number of repetitions</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
+<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – number of repetitions</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
 </ul>
 </dd>
 </dl>
@@ -708,6 +758,21 @@ Optionally, sites with down-polarization can be specified</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="hubbard.HubbardHamiltonian.shift">
+<code class="sig-name descname">shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">E</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the electronic structure by a constant energy (in-place operation)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>E</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em> or </em><em>(</em><em>2</em><em>,</em><em>)</em>) – the energy (in eV) to shift the electronic structure, if two values are passed the two spin-components get shifted individually</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian.shift" title="(in sisl vlatest)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian.shift</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt id="hubbard.HubbardHamiltonian.spin_contamination">
 <code class="sig-name descname">spin_contamination</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ret_exact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/hamiltonian.html#HubbardHamiltonian.spin_contamination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.HubbardHamiltonian.spin_contamination" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtains the spin contamination for the MFH Hamiltonian following
@@ -721,7 +786,7 @@ Optionally, sites with down-polarization can be specified</p>
 <p>The current implementation works for non-periodic systems only.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ret_exact</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – If true this method will return also the exact spin squared expectation value</p>
+<dd class="field-odd"><p><strong>ret_exact</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – If true this method will return also the exact spin squared expectation value</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -749,7 +814,7 @@ Optionally, sites with down-polarization can be specified</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>atoms</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em> or </em><em>array_like</em>) – indices/boolean of all atoms to be kept</p></li>
+<li><p><strong>atoms</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><em>array_like</em>) – indices/boolean of all atoms to be kept</p></li>
 <li><p><strong>q</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Two values specifying up, down electron occupations for the subset of atoms</p></li>
 </ul>
 </dd>
@@ -763,8 +828,8 @@ Optionally, sites with down-polarization can be specified</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – number of tiles (repetitions)</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
+<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – number of tiles (repetitions)</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – direction of tiling, 0, 1, 2 according to the cell-direction</p></li>
 </ul>
 </dd>
 </dl>
@@ -801,8 +866,8 @@ It updtates the diagonal elements for each spin Hamiltonian with the opposite sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the file in which the densities are going to be stored</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – name of the file in which the densities are going to be stored</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
 </ul>
 </dd>
 </dl>
@@ -815,11 +880,11 @@ It updtates the diagonal elements for each spin Hamiltonian with the opposite sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – name of the fdf-file</p></li>
+<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – name of the fdf-file</p></li>
 <li><p><strong>ext_geom</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl vlatest)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – an “external” geometry that contains the sp2-sites included in the simulation</p></li>
-<li><p><strong>spinfix</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – specifies if the Spin.Fix and Spin.Total lines are written to the fdf</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
-<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – atoms within this distance will be considered equivalent in case <code class="docutils literal notranslate"><span class="pre">ext_geom</span> <span class="pre">!=</span> <span class="pre">geometry</span></code> (see <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.overlap" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry.overlap</span></code></a>)</p></li>
+<li><p><strong>spinfix</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – specifies if the Spin.Fix and Spin.Total lines are written to the fdf</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – mode in which the file is opened</p></li>
+<li><p><strong>eps</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – atoms within this distance will be considered equivalent in case <code class="docutils literal notranslate"><span class="pre">ext_geom</span> <span class="pre">!=</span> <span class="pre">geometry</span></code> (see <a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry.overlap" title="(in sisl vlatest)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry.overlap</span></code></a>)</p></li>
 </ul>
 </dd>
 </dl>

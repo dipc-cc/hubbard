@@ -25,7 +25,9 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -168,11 +170,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="examples">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Here we will compute some examples to show the different functionalities
-of the hubbard package. The systems that we will study in the examples section
-can be also found in the <a class="reference external" href="https://github.com/dipc-cc/hubbard/tree/master/examples">examples</a> folder in the main repository.
+<p>These examples will show how to use the <a class="reference internal" href="api-generated/hubbard.html#module-hubbard" title="hubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard</span></code></a> package to solve the mean-field Hubbard (MFH) equation to simulate electron interactions in graphene nanostructures:</p>
+<div class="math notranslate nohighlight">
+\[H_{MFH} = H_0 + \sum_{i} U_i \left(\left\langle n_{i\downarrow}\right\rangle n_{i\uparrow}+\left\langle n_{i\uparrow}\right\rangle n_{i\downarrow}\right)- U\sum_i \left\langle n_{i\uparrow}\right\rangle\left\langle n_{i\downarrow}\right\rangle\]</div>
+<p>Where <span class="math notranslate nohighlight">\(H_0\)</span> is the pure tight-binding (TB) Hamiltonian of the structure.</p>
+<p>The systems that we will study in the examples section can be also found in the <a class="reference external" href="https://github.com/dipc-cc/hubbard/tree/master/examples">examples</a> folder in the main repository.
 One can also go through this section to explore more examples suitable to solve with the hubbard package.</p>
 <div class="toctree-wrapper compound">
 <ul>

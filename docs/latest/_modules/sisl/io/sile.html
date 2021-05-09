@@ -25,7 +25,9 @@
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -242,7 +244,7 @@
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nl</span><span class="p">:</span>
             <span class="n">nl</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
             <span class="c1"># Remove baseclasses everybody have</span>
-            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">BaseSile</span><span class="p">,</span> <span class="n">Sile</span><span class="p">,</span> <span class="n">SileBin</span><span class="p">,</span> <span class="n">SileCDF</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">BaseSile</span><span class="p">,</span> <span class="n">Sile</span><span class="p">,</span> <span class="n">SileBin</span><span class="p">,</span> <span class="n">SileCDF</span><span class="p">]:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">i</span> <span class="o">=</span> <span class="n">children</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                     <span class="n">children</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -726,8 +728,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_keys</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns true if ``not isinstance(keys, str)`` &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if ``isinstance(keys,(list,np.ndarray))`` &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">key2case</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
@@ -776,22 +778,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_line</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">l</span>
 
-    <span class="k">def</span> <span class="nf">step_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword(s) is found in the input &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">step_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword is found in the input &quot;&quot;&quot;</span>
         <span class="c1"># If keyword is a list, it just matches one of the inputs</span>
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># The previously read line...</span>
         <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_line</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># convert to list</span>
-            <span class="n">keywords</span> <span class="o">=</span> <span class="p">[</span><span class="n">keywords</span><span class="p">]</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="c1"># Do checking outside line checks</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_keys</span><span class="p">(</span><span class="n">keywords</span><span class="p">):</span>
+            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="p">(</span><span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">line</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">reread</span><span class="p">:</span>
             <span class="c1"># We may be in the case where the user request</span>
@@ -806,22 +812,42 @@
                 <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">ret_index</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
-                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="c1"># force return an index</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">i</span>
-            <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">idx</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
 
         <span class="c1"># sometimes the line contains information, as a</span>
         <span class="c1"># default we return the line found</span>
         <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span>
+
+    <span class="k">def</span> <span class="nf">step_either</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword is found in the input &quot;&quot;&quot;</span>
+        <span class="c1"># If keyword is a list, it just matches one of the inputs</span>
+
+        <span class="c1"># Do checking outside line checks</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_keys</span><span class="p">(</span><span class="n">keywords</span><span class="p">):</span>
+            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">found</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_to</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">l</span>
+
+        <span class="c1"># initialize</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># sometimes the line contains information, as a</span>
+        <span class="c1"># default we return the line found</span>
+        <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span>
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Wrapper to default the write statements &quot;&quot;&quot;</span>

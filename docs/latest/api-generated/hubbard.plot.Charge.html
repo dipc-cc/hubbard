@@ -25,7 +25,9 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -183,7 +185,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="charge">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="charge">
 <h1>Charge<a class="headerlink" href="#charge" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="hubbard.plot.Charge">
@@ -200,8 +226,8 @@ by specifying the <em class="xref py py-obj">spin</em> index.</p>
 <li><p><strong>ext_geom</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl vlatest)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don’t play
 a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system
 otherwise it only uses the geometry associated to the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> (carbon backbone)</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional:</em>) – plot charge associated to one specific spin index, or both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
-<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional:</em>) – plot charge associated to one specific spin index, or both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
+<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations</p></li>
 </ul>
 </dd>
 </dl>
@@ -282,8 +308,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
-<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
 </dd>
 </dl>
@@ -329,7 +355,7 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dd><p>Save figure to external file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – external file name to save plot</p>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – external file name to save plot</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -380,8 +406,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – figure title</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – figure title</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
 </ul>
 </dd>
 </dl>
@@ -394,8 +420,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the x-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – label for the x-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -408,8 +434,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
-<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
 </ul>
 </dd>
 </dl>
@@ -422,8 +448,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – label for the y-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – label for the y-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -436,8 +462,8 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
-<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
 </ul>
 </dd>
 </dl>

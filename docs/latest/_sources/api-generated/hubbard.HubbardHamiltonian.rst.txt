@@ -34,9 +34,11 @@ HubbardHamiltonian
         ~HubbardHamiltonian.polarize_sublattices
         ~HubbardHamiltonian.random_density
         ~HubbardHamiltonian.read_density
+        ~HubbardHamiltonian.remove
         ~HubbardHamiltonian.repeat
         ~HubbardHamiltonian.set_kmesh
         ~HubbardHamiltonian.set_polarization
+        ~HubbardHamiltonian.shift
         ~HubbardHamiltonian.spin_contamination
         ~HubbardHamiltonian.sub
         ~HubbardHamiltonian.tile

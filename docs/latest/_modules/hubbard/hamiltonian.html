@@ -25,7 +25,9 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -360,6 +362,29 @@
         <span class="n">q</span> <span class="o">=</span> <span class="n">nrep</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hrep</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nrep</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="HubbardHamiltonian.remove"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot; Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms: array_like of int</span>
+<span class="sd">            atomic ndices of removed atoms</span>
+<span class="sd">        q: array_like, optional</span>
+<span class="sd">            Two values specifying up, down electron occupations for the remaining subset of atoms after removal</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.Hamiltonian.remove</span>
+<span class="sd">        sisl.Geometry.remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">sc2uc</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">sisl._array</span> <span class="k">as</span> <span class="nn">_a</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">_a</span><span class="o">.</span><span class="n">arangei</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">),</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">Hsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="n">nsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span><span class="n">atoms</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hsub</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span>
+                    <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="HubbardHamiltonian.sub"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.sub">[docs]</a>    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot; Return a new `HubbardHamiltonian` object of a subset of selected atoms</span>
 
@@ -483,6 +508,20 @@
 
         <span class="n">Ef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">Q</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Ef</span></div>
+
+<div class="viewcode-block" id="HubbardHamiltonian.shift"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Shift the electronic structure by a constant energy (in-place operation)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        E: float or (2,)</span>
+<span class="sd">            the energy (in eV) to shift the electronic structure, if two values are passed the two spin-components get shifted individually</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.Hamiltonian.shift</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">E</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;U=</span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span>

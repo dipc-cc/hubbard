@@ -25,7 +25,9 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -181,12 +183,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="negf">
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="negf">
 <h1>NEGF<a class="headerlink" href="#negf" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="hubbard.NEGF">
 <em class="property">class </em><code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">NEGF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Hdev</span></em>, <em class="sig-param"><span class="n">elec_SE</span></em>, <em class="sig-param"><span class="n">elec_idx</span></em>, <em class="sig-param"><span class="n">CC</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">V</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/negf.html#NEGF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.NEGF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/dev/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This class creates the open quantum system object for a N-terminal device</p>
 <p>For the Non-equilibrium case <span class="math notranslate nohighlight">\(V\neq 0\)</span> the current implementation
 only can deal with a 2-terminal device</p>
@@ -194,12 +220,12 @@ only can deal with a 2-terminal device</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Hdev</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the device</p></li>
-<li><p><strong>elec_SE</strong> (<em>list of sisl.SelfEnergy</em><em> or </em><em>tuple of</em><em> (</em><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a><em>, </em><a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>)</em>) – list of (already converged) <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> objects for the electrodes
+<li><p><strong>elec_SE</strong> (<em>list of sisl.SelfEnergy</em><em> or </em><em>tuple of</em><em> (</em><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a><em>, </em><a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>)</em>) – list of (already converged) <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> objects for the electrodes
 plus the semi-infinite direction for the respective electrode.
 Alternatively one may directly pass <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.SelfEnergy</span></code> instances</p></li>
 <li><p><strong>elec_idx</strong> (<em>array_like</em>) – list of atomic positions that <em>each</em> electrode occupies in the device geometry</p></li>
-<li><p><strong>CC</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – name of the file containing the energy contour in the complex plane to integrate the density matrix</p></li>
-<li><p><strong>V</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – applied bias between the two electrodes</p></li>
+<li><p><strong>CC</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – name of the file containing the energy contour in the complex plane to integrate the density matrix</p></li>
+<li><p><strong>V</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – applied bias between the two electrodes</p></li>
 </ul>
 </dd>
 </dl>
@@ -251,8 +277,8 @@ Alternatively one may directly pass <code class="xref py py-obj docutils literal
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the system</p></li>
 <li><p><strong>E</strong> (<em>array_like</em>) – energy grid to obtan the DOS</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>array_like</em><em>, </em><em>optional</em>) – spin index. If <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code> (default) it sums the DOS corresponding to both spin indices</p></li>
-<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – smearing parameter (complex term in the Green’s function)</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>array_like</em><em>, </em><em>optional</em>) – spin index. If <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code> (default) it sums the DOS corresponding to both spin indices</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – smearing parameter (complex term in the Green’s function)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -272,8 +298,8 @@ Alternatively one may directly pass <code class="xref py py-obj docutils literal
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>HC</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a>) – Hamiltonian of the central region in its matrix form</p></li>
-<li><p><strong>Ef</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – Potential of the device</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – spin index (0=up, 1=dn)</p></li>
+<li><p><strong>Ef</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – Potential of the device</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – spin index (0=up, 1=dn)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -298,8 +324,8 @@ Alternatively one may directly pass <code class="xref py py-obj docutils literal
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the system</p></li>
 <li><p><strong>E</strong> (<em>array_like</em>) – energy grid to obtan the PDOS</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>array_like</em><em>, </em><em>optional</em>) – spin index. If <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code> (default) it sums the PDOS corresponding to both spin indices</p></li>
-<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – smearing parameter (complex term in the Green’s function)</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>array_like</em><em>, </em><em>optional</em>) – spin index. If <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code> (default) it sums the PDOS corresponding to both spin indices</p></li>
+<li><p><strong>eta</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – smearing parameter (complex term in the Green’s function)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -319,8 +345,8 @@ Alternatively one may directly pass <code class="xref py py-obj docutils literal
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> of the object that is being iterated</p></li>
-<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – charge associated to the up and down spin-components</p></li>
-<li><p><strong>qtol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance to which the charge is going to be converged in the internal loop
+<li><p><strong>q</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – charge associated to the up and down spin-components</p></li>
+<li><p><strong>qtol</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – tolerance to which the charge is going to be converged in the internal loop
 that finds the potential of the device (i.e. that makes the device neutrally charged)</p></li>
 </ul>
 </dd>
