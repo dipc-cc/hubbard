@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simulating an open-quantum system with electron correlations &mdash; hubbard documentation</title>
+  <title>Open quantum systems (Green’s functions) &mdash; hubbard documentation</title>
   
 
   
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Publications using the hubbard package" href="../publications.html" />
-    <link rel="prev" title="Electron correlations in periodic systems" href="periodic.html" /> 
+    <link rel="prev" title="Periodic structures (perfect crystals, Bloch’s theorem)" href="periodic.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,9 +91,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="molecules.html">Simulating a molecule with electron correlations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="periodic.html">Electron correlations in periodic systems</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulating an open-quantum system with electron correlations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="molecules.html">Isolated structures (molecules)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic.html">Periodic structures (perfect crystals, Bloch’s theorem)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Open quantum systems (Green’s functions)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Note">Note</a></li>
 </ul>
 </li>
@@ -103,9 +103,12 @@
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html#funding">Funding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#related-bibliography">Related bibliography</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Funding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -157,7 +160,7 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Simulating an open-quantum system with electron correlations</li>
+      <li>Open quantum systems (Green’s functions)</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -458,9 +461,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Simulating-an-open-quantum-system-with-electron-correlations">
-<h1>Simulating an open-quantum system with electron correlations<a class="headerlink" href="#Simulating-an-open-quantum-system-with-electron-correlations" title="Permalink to this headline">¶</a></h1>
-<p>In this example we will study the electron correlations in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green’s function (NEGF) formalism within the <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package.</p>
+<div class="section" id="Open-quantum-systems-(Green’s-functions)">
+<h1>Open quantum systems (Green’s functions)<a class="headerlink" href="#Open-quantum-systems-(Green’s-functions)" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will study the effect of Coulomb repulsion interactions in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green’s function (NEGF) formalism within the <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package.</p>
 <p>The sysem of this example is composed by a central region coupled to two electrodes (left and right). The central region in this case will be just a repetition of the unit-cell of the electrodes (perfect system), for the sake of simplicity. We will consider the electrodes to be the unit cell of a zigzag graphene nanoribbon (ZGNR) periodic along the x-axis of width W=5 C-atoms across.</p>
 <p>We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes <em>must coincide</em>. The complex contour that we use to integrate the density matrix in the <code class="docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code> class is extracted from a <a class="reference external" href="https://gitlab.com/siesta-project/siesta">Transiesta</a> calculation performed for a temperature of <code class="docutils literal notranslate"><span class="pre">kT=0.025</span></code> eV, which we will set as common for all the composing element calculations.</p>
 <div class="nbinput docutils container">
@@ -803,7 +806,7 @@ Text(0, 0.5, &#39;Transmission [a.u.]&#39;)
         <a href="../publications.html" class="btn btn-neutral float-right" title="Publications using the hubbard package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="periodic.html" class="btn btn-neutral float-left" title="Electron correlations in periodic systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="periodic.html" class="btn btn-neutral float-left" title="Periodic structures (perfect crystals, Bloch’s theorem)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

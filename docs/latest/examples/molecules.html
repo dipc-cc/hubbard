@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simulating a molecule with electron correlations &mdash; hubbard documentation</title>
+  <title>Isolated structures (molecules) &mdash; hubbard documentation</title>
   
 
   
@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Electron correlations in periodic systems" href="periodic.html" />
+    <link rel="next" title="Periodic structures (perfect crystals, Bloch’s theorem)" href="periodic.html" />
     <link rel="prev" title="Examples" href="../examples.html" /> 
 </head>
 
@@ -91,23 +91,26 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulating a molecule with electron correlations</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Isolated structures (molecules)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Important-note-before-starting-the-convergence-process">Important note before starting the convergence process</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Understanding-the-final-results">Understanding the final results</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Using-output-of-the-mean-field-Hubbard-model-to-start-SIESTA-calculation">Using output of the mean-field Hubbard model to start SIESTA calculation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="periodic.html">Electron correlations in periodic systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="open.html">Simulating an open-quantum system with electron correlations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic.html">Periodic structures (perfect crystals, Bloch’s theorem)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="open.html">Open quantum systems (Green’s functions)</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Publications</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../publications.html#funding">Funding</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#related-bibliography">Related bibliography</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Funding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -159,7 +162,7 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Simulating a molecule with electron correlations</li>
+      <li>Isolated structures (molecules)</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -459,8 +462,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Simulating-a-molecule-with-electron-correlations">
-<h1>Simulating a molecule with electron correlations<a class="headerlink" href="#Simulating-a-molecule-with-electron-correlations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Isolated-structures-(molecules)">
+<h1>Isolated structures (molecules)<a class="headerlink" href="#Isolated-structures-(molecules)" title="Permalink to this headline">¶</a></h1>
+<p>In this example we study the effect of on-site Coulomb interactions for electrons in a carbon-based molecular geometry by solving the mean-field Hubbard equation</p>
 <p>We will start by building the geometry and the TB Hamiltonian for an sp2 carbon-based structure using <code class="docutils literal notranslate"><span class="pre">sisl</span></code>. The geometry will be read with <code class="docutils literal notranslate"><span class="pre">sisl</span></code> from this <a class="reference external" href="https://github.com/dipc-cc/hubbard/blob/master/examples/molecules/clar-goblet/clar-goblet.xyz">file</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -627,7 +631,7 @@ Total energy = -246.59819622643164
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="periodic.html" class="btn btn-neutral float-right" title="Electron correlations in periodic systems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="periodic.html" class="btn btn-neutral float-right" title="Periodic structures (perfect crystals, Bloch’s theorem)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
