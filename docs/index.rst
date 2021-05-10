@@ -37,6 +37,12 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 
 .. toctree::
    :maxdepth: 2
+   :caption: Funding
+
+   funding
+
+.. toctree::
+   :maxdepth: 2
    :caption: Contents
 
    api
