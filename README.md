@@ -2,10 +2,11 @@
 
 # hubbard #
 
-__hubbard__ is a Python package for solving the mean-field Hubbard model built on [sisl].
+__hubbard__ is a Python package built on [sisl] for solving the mean-field Hubbard model.
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 
+Recommended [online documentation][doc]
 
 ## Dependencies ##
 Before installation of __hubbard__ the following packages are required
@@ -16,6 +17,7 @@ Before installation of __hubbard__ the following packages are required
    - matplotlib >= 2.2.2
    - [sisl][sisl] >= 0.11.0
 
+
 ## Installation ##
 Manual installation is performed with the command
 
@@ -23,10 +25,6 @@ Manual installation is performed with the command
     # or
     python setup.py install --home=<my-python-home>
 
-One may also wish to set the following environment variables
-
-    export PYTHONPATH=<my-python-home>/lib/python/
-    export PATH=$PATH:<my-python-home>/bin/
 
 ## Contributions, issues and bugs ##
 Contributions are highly appreciated.
@@ -35,14 +33,14 @@ If you find any bugs please form a [bug report/issue][issues]
 
 If you have a fix please consider adding a [pull request][pulls].
 
+
 ## License ##
 __hubbard__ is distributed under [LGPL][lgpl], please see the LICENSE file.
 
 
 ## Funding ##
-Financial support from Spanish AEI (FIS2017-83780-P), the Basque Departamento de Educación
-through the PhD scholarship no. PRE_2020_2_0049 (S.S.) and the European Union's Horizon 2020
-(FET-Open project [SPRING][spring] Grant No. 863098) is acknowledged.
+Financial support from Spanish AEI (FIS2017-83780-P), the Basque Departamento de Educación through the PhD scholarship no. PRE_2020_2_0049 (S.S.) and the European Union's Horizon 2020 (FET-Open project [SPRING][spring] Grant No. 863098) is acknowledged.
+
 
 <!---
 Links to external and internal sites.
@@ -52,3 +50,4 @@ Links to external and internal sites.
 [lgpl]: http://www.gnu.org/licenses/lgpl.html
 [sisl]: https://github.com/zerothi/sisl
 [spring]: https://www.springfetopen.eu/
+[doc]: https://dipc-cc.github.io/hubbard/docs/latest/index.html
