@@ -15,7 +15,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Electron correlations in periodic systems\n",
+    "# Periodic structures (perfect crystals, Bloch's theorem)\n",
+    "\n",
+    "In this example we study the effect of on-site Coulomb interactions for electrons in periodic systems by solving the mean-field Hubbard equation.\n",
     "\n",
     "We will start by building the geometry and the TB Hamiltonian for a 1D periodic chain of Carbon atoms using `sisl`."
    ]

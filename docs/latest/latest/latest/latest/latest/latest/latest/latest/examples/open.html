@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Simulating an open-quantum system with electron correlations &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../../../" src="../../../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../../../../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../publications.html#related-bibliography">Related bibliography</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Funding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../funding.html">Funding</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../api.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Simulating an open-quantum system with electron correlations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../../../../_sources/latest/latest/latest/latest/latest/latest/latest/examples/open.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">from</span> <span class="nn">hubbard</span> <span class="kn">import</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">sp2</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">NEGF</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<div class="section" id="Simulating-an-open-quantum-system-with-electron-correlations">
+<h1>Simulating an open-quantum system with electron correlations<a class="headerlink" href="#Simulating-an-open-quantum-system-with-electron-correlations" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will create the <code class="docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code> object of a system with open boundary conditions, and find the self-consistent solution using the mean-field Hubbard Hamiltonian.</p>
+<p>The sysem of this example is composed by a central region coupled to two electrodes (left and right). The central region in this case will be just a repetition of the unit-cell of the electrodes (perfect system), for the sake of simplicity. We will consider the electrodes to be the unit cell of a zigzag graphene nanoribbon (ZGNR) of width W=5 C-atoms across periodic along the x-axis.</p>
+<p>We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes <em>must coincide</em>. The complex contour that we use to integrate the density matrix in the <code class="docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code> class is extracted from a <a class="reference external" href="https://gitlab.com/siesta/-project/siesta">Transiesta</a> calculation performed for a temperature of <code class="docutils literal notranslate"><span class="pre">kT=0.025</span></code> eV, which we will set as common for all the composing element calculations.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Build sisl.Geometry object</span>
+<span class="n">geom</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">zgnr</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Plot geometry of the unit cell</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">GeometryPlot</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_2_0.png" src="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_2_0.png" />
+</div>
+</div>
+<p>To build the TB Hamiltonian (which describes the kinetic part of the system’s Hamiltonian) we will use the function from the <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package <code class="docutils literal notranslate"><span class="pre">sp2</span></code> that builds the TB <code class="docutils literal notranslate"><span class="pre">sisl.Hamiltonian</span></code> of an sp2 carbon system. We will use the first nearest neighbors interactions (1NN) TB model, typically used to simulate graphene.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Build sisl.Hamiltonian object using the sp2 function</span>
+<span class="n">H_elec</span> <span class="o">=</span> <span class="n">sp2</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we build the <code class="docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code> object for the electrodes. As in <a class="reference external" href="https://dipc-cc.github.io/hubbard/docs/latest/examples/periodic.html">this example</a>, one needs to pass the argument <code class="docutils literal notranslate"><span class="pre">nkpt=[nkx,nky,nkz]</span></code> to sample the Hamiltonian along the periodic directions in k-space. To model the interaction part (Hubbard term) we will use <code class="docutils literal notranslate"><span class="pre">U=3.</span></code> eV</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Build the HubbardHamiltonian object with U=3.5.</span>
+<span class="n">MFH_elec</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">H_elec</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>As in <a class="reference external" href="https://dipc-cc.github.io/hubbard/docs/latest/examples/molecules.html">this example</a> one has to break symmetry between up and down electrons so the program can find a self-consistent solution. To do so we can place one up electron at the lower edge of the ribbon and one down electron on the upper edge of the ribbon.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">MFH_elec</span><span class="o">.</span><span class="n">set_polarization</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dn</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Now we can start the convergence until we find the self-consistent solution up to a desired tolerance (<code class="docutils literal notranslate"><span class="pre">tol</span></code>) by calling the <code class="docutils literal notranslate"><span class="pre">HubbardHamiltonian.converge</span></code> method. This method needs of another method to tell the code how to build the spin-densities. For instance, to compute the spin-densities for TB Hamiltonians with finite or periodic boundary conditions, one could use the method <code class="docutils literal notranslate"><span class="pre">density.calc_n</span></code> of the <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Converge until a tolerance of tol=1e-10, print info for each 10 completed iterations</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_elec</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   HubbardHamiltonian: converge towards tol=1.00e-10
+   10 iterations completed: 2.6818192494504345e-07 -62.28270695954717
+   found solution in 14 iterations
+</pre></div></div>
+</div>
+<p>Let’s visualize some relevant physical quantities of the final result</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_12_0.png" src="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_12_0.png" />
+</div>
+</div>
+<p>Let’s also plot the bandstructure of the electrodes</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">Bandstructure</span><span class="p">(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_14_0.png" src="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_14_0.png" />
+</div>
+</div>
+<p>Build central region TB Hamiltonian as a repetition of the electrodes, but without periodic boundary conditions</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Central region is a repetition of the electrodes</span>
+<span class="n">HC</span> <span class="o">=</span> <span class="n">H_elec</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># without periodic boundary conditions</span>
+<span class="n">HC</span><span class="o">.</span><span class="n">set_nsc</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>In this case we will have to use a method based on the non-equilibrium Green’s function of the central region to obtain the spin-densities. To do so, we can make use of the methods available in the <code class="docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code> class.</p>
+<ol class="arabic simple">
+<li><p>Build HubbardHmamiltonian for the non-periodic device</p></li>
+<li><p>Build NEGF object for the device by passing:</p>
+<ul class="simple">
+<li><p>The HubbardHamiltonian of the device</p></li>
+<li><p>A list of tuples containing the electrode Hamiltonians and their respective semi-infinite directions: <code class="docutils literal notranslate"><span class="pre">[(Helec1,</span> <span class="pre">dir1),</span> <span class="pre">(Helec2,</span> <span class="pre">dir2),</span> <span class="pre">...]</span></code></p></li>
+<li><p>The atomic positions of the electrodes inside the device (<code class="docutils literal notranslate"><span class="pre">elec_indx</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Converge the HubbardHamiltonian using the <code class="docutils literal notranslate"><span class="pre">NEGF.calc_n_open</span></code> method to obtain the spin densities for the open-quantum system</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># MFH object of the central region, same kT and U as electrodes!</span>
+<span class="n">MFH_HC</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">HC</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
+
+<span class="c1"># Use initial random density</span>
+<span class="n">MFH_HC</span><span class="o">.</span><span class="n">random_density</span><span class="p">()</span>
+
+<span class="c1"># Map electrodes in the device region, i.e., extract the atomic indices that correspond</span>
+<span class="c1"># to the electrodes inside the device region. In this case the first and last blocks</span>
+<span class="n">elec_indx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H_elec</span><span class="p">)),</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">H_elec</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+
+<span class="c1"># First create the NEGF object, where we pass the MFH converged electrodes and</span>
+<span class="c1"># the central region HubbardHamiltonian object</span>
+<span class="n">negf</span> <span class="o">=</span> <span class="n">NEGF</span><span class="p">(</span><span class="n">MFH_HC</span><span class="p">,</span> <span class="p">[(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="s1">&#39;-A&#39;</span><span class="p">),</span> <span class="p">(</span><span class="n">MFH_elec</span><span class="p">,</span> <span class="s1">&#39;+A&#39;</span><span class="p">)],</span> <span class="n">elec_indx</span><span class="p">)</span>
+
+<span class="c1"># Converge using Green&#39;s function method to obtain the densities</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">MFH_HC</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">negf</span><span class="o">.</span><span class="n">calc_n_open</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   HubbardHamiltonian: converge towards tol=1.00e-06
+   1 iterations completed: 0.6907919873591728 -141.75659820580825
+   2 iterations completed: 0.23550738419612038 -186.87926130181484
+   3 iterations completed: 0.07635094156235045 -186.84311896612778
+   4 iterations completed: 0.03776834710624577 -186.7947978236932
+   5 iterations completed: 0.004017911081927283 -186.83373155081924
+   6 iterations completed: 0.0017106374034986382 -186.84415393264413
+   7 iterations completed: 0.000560796067242797 -186.8480495945991
+   8 iterations completed: 0.00013891807002341938 -186.84794710949447
+   9 iterations completed: 1.1324088620923156e-05 -186.84808577997268
+   10 iterations completed: 3.6185934606525194e-06 -186.84808169963537
+   11 iterations completed: 6.068986472262949e-07 -186.84808545330458
+   found solution in 11 iterations
+</pre></div></div>
+</div>
+<p>Let’s visualize the spin polarization of the device</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">MFH_HC</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_20_0.png" src="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_20_0.png" />
+</div>
+</div>
+<p>Write electrode and device Hamiltonians to netCDF files so TBtrans can read them</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Shift electrodes with Fermi level and write it to nc file</span>
+<span class="n">MFH_elec</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="n">MFH_elec</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">())</span>
+<span class="n">MFH_elec</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MFH_elec.nc&#39;</span><span class="p">)</span>
+
+<span class="c1"># Shift device with its Fermi level and write nc file</span>
+<span class="n">MFH_HC</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;MFH_HC.nc&#39;</span><span class="p">,</span> <span class="n">Ef</span><span class="o">=</span><span class="n">negf</span><span class="o">.</span><span class="n">Ef</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Write the input file for a <a class="reference external" href="https://gitlab.com/siesta/-project/siesta">TBtrans</a> calculation for this system</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;RUN.fdf&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="sd">&quot;&quot;&quot;SystemLabel device</span>
+<span class="sd">TBT.HS MFH_HC.nc</span>
+
+<span class="sd">%block TBT.Contours</span>
+<span class="sd">  window</span>
+<span class="sd">%endblock</span>
+
+<span class="sd">%block TBT.Contour.window</span>
+<span class="sd"> part line</span>
+<span class="sd">   from -10.0 eV to 10.0 eV</span>
+<span class="sd">    delta 0.01 eV</span>
+<span class="sd">     method mid-rule</span>
+<span class="sd">%endblock</span>
+
+<span class="sd">%block TS.Elecs</span>
+<span class="sd">  LEFT</span>
+<span class="sd">  RIGHT</span>
+<span class="sd">%endblock TS.Elecs</span>
+
+<span class="sd">%block TS.Elec.LEFT</span>
+<span class="sd">  TSHS MFH_elec.nc</span>
+<span class="sd">  semi-inf-dir -a1</span>
+<span class="sd">  elec-pos begin 1</span>
+<span class="sd">%endblock TS.Elec.LEFT</span>
+
+<span class="sd">%block TS.Elec.RIGHT</span>
+<span class="sd">  TSHS MFH_elec.nc</span>
+<span class="sd">  semi-inf-dir +a1</span>
+<span class="sd">  elec-pos end -1</span>
+<span class="sd">%endblock TS.Elec.RIGHT</span>
+<span class="sd">&quot;&quot;&quot;</span>
+       <span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Clean possible previous TBtrans output files and run again</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># TBtrans calculation</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="c1"># Clean output</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rm device.TBT*&#39;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rm fdf*&#39;</span><span class="p">)</span>
+<span class="c1"># Run TBtrans</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;tbtrans RUN.fdf &gt; RUN.out&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0
+</pre></div></div>
+</div>
+<p>Extract data from TBtrans calculation for each spin channel using <a class="reference external" href="https://github.com/zerothi/sisl">sisl</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">tbt_up</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_sile</span><span class="p">(</span><span class="s1">&#39;device.TBT_UP.nc&#39;</span><span class="p">)</span>
+<span class="n">tbt_dn</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_sile</span><span class="p">(</span><span class="s1">&#39;device.TBT_DN.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Plot transmission probabilities for each spin channel</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tbt_up</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">tbt_up</span><span class="o">.</span><span class="n">transmission</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\sigma=\uparrow$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tbt_dn</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">tbt_dn</span><span class="o">.</span><span class="n">transmission</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\sigma=\downarrow$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Energy [eV]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Transmission [a.u.]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0, 0.5, &#39;Transmission [a.u.]&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_30_1.png" src="../../../../../../../../_images/latest_latest_latest_latest_latest_latest_latest_examples_open_30_1.png" />
+</div>
+</div>
+<div class="section" id="Note">
+<h2>Note<a class="headerlink" href="#Note" title="Permalink to this headline">¶</a></h2>
+<p>Usually, each iteration using the non-equilibrium Green’s function formalism takes more time than if the system is finite or periodic. This is due to the fact that it has to invert the Green’s function matrix for each energy point along the integration path in each iteration. For this reason, using a good initial guess (initial spin-densities) can be crucial if we want to improve the performance.</p>
+<p>Try again the example from above but using a specific initial guess for the spin-densities. For instance, you could find the self-consistent solution for the device Hamiltonian with periodic boundary conditions and use this spin-densities to start the convergence for the device with open boundary conditions.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -16,16 +16,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Simulating an open-quantum system with electron correlations\n",
+    "# Open quantum systems (Green's functions)\n",
     "\n",
-    "In this example we will study the electron correlations in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green's function (NEGF) formalism within the `hubbard` package.\n",
+    "In this example we will study the effect of Coulomb repulsion interactions in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green's function (NEGF) formalism within the `hubbard` package.\n",
     "\n",
     "The sysem of this example is composed by a central region coupled to two electrodes (left and right). \n",
     "The central region in this case will be just a repetition of the unit-cell of the electrodes (perfect system),\n",
     "for the sake of simplicity. We will consider the electrodes to be the unit cell of a zigzag graphene nanoribbon (ZGNR) periodic along the x-axis of width W=5 C-atoms across.\n",
     "\n",
     "We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes *must coincide*.\n",
-    "The complex contour that we use to integrate the density matrix in the `hubbard.NEGF` class is extracted from a [Transiesta](https://gitlab.com/siesta/-project/siesta) calculation\n",
+    "The complex contour that we use to integrate the density matrix in the `hubbard.NEGF` class is extracted from a [Transiesta](https://gitlab.com/siesta-project/siesta) calculation\n",
     "performed for a temperature of `kT=0.025` eV, which we will set as common for all the composing element calculations."
    ]
   },
@@ -325,7 +325,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Write the input file for a [TBtrans](https://gitlab.com/siesta/-project/siesta) calculation for this system"
+    "Write the input file for a [TBtrans](https://gitlab.com/siesta-project/siesta) calculation for this system"
    ]
   },
   {
@@ -410,7 +410,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Extract data from TBtrans calculation for each spin channel using [sisl](https://github.com/zerothi/sisl)"
+    "Extract data from [TBtrans](https://gitlab.com/siesta-project/siesta) calculation for each spin channel using [sisl](https://github.com/zerothi/sisl)"
    ]
   },
   {

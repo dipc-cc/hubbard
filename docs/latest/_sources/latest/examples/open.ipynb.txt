@@ -16,9 +16,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Simulating an open-quantum system with electron correlations\n",
+    "# Open quantum systems (Green's functions)\n",
     "\n",
-    "In this example we will study the electron correlations in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green's function (NEGF) formalism within the `hubbard` package.\n",
+    "In this example we will study the effect of Coulomb repulsion interactions in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green's function (NEGF) formalism within the `hubbard` package.\n",
     "\n",
     "The sysem of this example is composed by a central region coupled to two electrodes (left and right). \n",
     "The central region in this case will be just a repetition of the unit-cell of the electrodes (perfect system),\n",
