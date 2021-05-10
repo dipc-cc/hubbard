@@ -32,11 +32,11 @@ def configuration(parent_package='', top_path=None):
 def git_version():
     # Default release info
     MAJOR = 0
-    MINOR = 0
-    MICRO = 2
+    MINOR = 1
+    MICRO = 0
     VERSION = [MAJOR, MINOR, MICRO]
     # Git revision prior to release:
-    GIT_REVISION = "e97014e7f402ade5c6b18c03454b78862d13ea6e"
+    GIT_REVISION = "dacd7ee2bc2941efae907389a767fa285757e273"
     GIT_LABEL = '.'.join(map(str, [MAJOR, MINOR, MICRO]))
 
     def _minimal_ext_cmd(cmd):
