@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                v0.0.2
+                v0.1.0
               </div>
             
           
@@ -453,7 +453,7 @@ div.rendered_html tbody tr:hover {
 <h1>Simulating an open-quantum system with electron correlations<a class="headerlink" href="#Simulating-an-open-quantum-system-with-electron-correlations" title="Permalink to this headline">¶</a></h1>
 <p>In this example we will study the electron correlations in an open-quantum system, and find the self-consistent solution using the non-equilibrium Green’s function (NEGF) formalism within the <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package.</p>
 <p>The sysem of this example is composed by a central region coupled to two electrodes (left and right). The central region in this case will be just a repetition of the unit-cell of the electrodes (perfect system), for the sake of simplicity. We will consider the electrodes to be the unit cell of a zigzag graphene nanoribbon (ZGNR) periodic along the x-axis of width W=5 C-atoms across.</p>
-<p>We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes <em>must coincide</em>. The complex contour that we use to integrate the density matrix in the <code class="docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code> class is extracted from a <a class="reference external" href="https://gitlab.com/siesta/-project/siesta">Transiesta</a> calculation performed for a temperature of <code class="docutils literal notranslate"><span class="pre">kT=0.025</span></code> eV, which we will set as common for all the composing element calculations.</p>
+<p>We will focus on the equilibrium situation, therefore the temperature and chemical potentials of the electrodes <em>must coincide</em>. The complex contour that we use to integrate the density matrix in the <code class="docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code> class is extracted from a <a class="reference external" href="https://gitlab.com/siesta-project/siesta">Transiesta</a> calculation performed for a temperature of <code class="docutils literal notranslate"><span class="pre">kT=0.025</span></code> eV, which we will set as common for all the composing element calculations.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -665,7 +665,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Write the input file for a <a class="reference external" href="https://gitlab.com/siesta/-project/siesta">TBtrans</a> calculation for this system</p>
+<p>Write the input file for a <a class="reference external" href="https://gitlab.com/siesta-project/siesta">TBtrans</a> calculation for this system</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -734,7 +734,7 @@ div.rendered_html tbody tr:hover {
 0
 </pre></div></div>
 </div>
-<p>Extract data from TBtrans calculation for each spin channel using <a class="reference external" href="https://github.com/zerothi/sisl">sisl</a></p>
+<p>Extract data from <a class="reference external" href="https://gitlab.com/siesta-project/siesta">TBtrans</a> calculation for each spin channel using <a class="reference external" href="https://github.com/zerothi/sisl">sisl</a></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>

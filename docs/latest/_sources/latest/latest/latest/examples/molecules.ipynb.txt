@@ -15,7 +15,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Simulating a molecule with electron correlations\n",
+    "# Isolated structures (molecules)\n",
+    "\n",
+    "In this example we study the effect of on-site Coulomb interactions for electrons in a carbon-based molecular geometry by solving the mean-field Hubbard equation\n",
     "\n",
     "We will start by building the geometry and the TB Hamiltonian for an sp2 carbon-based structure using `sisl`. The geometry will be read with `sisl` from this [file](https://github.com/dipc-cc/hubbard/blob/master/examples/molecules/clar-goblet/clar-goblet.xyz)."
    ]
