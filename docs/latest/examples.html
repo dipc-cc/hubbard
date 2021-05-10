@@ -199,10 +199,9 @@
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
 <p>These examples will show how to use the <a class="reference internal" href="api-generated/hubbard.html#module-hubbard" title="hubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard</span></code></a> package to solve the mean-field Hubbard (MFH) equation to simulate electron interactions in graphene nanostructures:</p>
 <div class="math notranslate nohighlight">
-\[H_{MFH} = H_0 + \sum_{i} U_i \left(\left\langle n_{i\downarrow}\right\rangle n_{i\uparrow}+\left\langle n_{i\uparrow}\right\rangle n_{i\downarrow}\right)- U\sum_i \left\langle n_{i\uparrow}\right\rangle\left\langle n_{i\downarrow}\right\rangle\]</div>
-<p>Where <span class="math notranslate nohighlight">\(H_0\)</span> is the pure tight-binding (TB) Hamiltonian of the structure.</p>
-<p>The systems that we will study in the examples section can be also found in the <a class="reference external" href="https://github.com/dipc-cc/hubbard/tree/master/examples">examples</a> folder in the main repository.
-One can also go through this section to explore more examples suitable to solve with the hubbard package.</p>
+\[H_{MFH} = H_0 + U\sum_{i} \left(\left\langle n_{i\downarrow}\right\rangle n_{i\uparrow}+\left\langle n_{i\uparrow}\right\rangle n_{i\downarrow}\right)- U\sum_i \left\langle n_{i\uparrow}\right\rangle\left\langle n_{i\downarrow}\right\rangle\]</div>
+<p>Where <span class="math notranslate nohighlight">\(H_0\)</span> is the pure tight-binding (TB) Hamiltonian of the structure, <span class="math notranslate nohighlight">\(U\)</span> is the Coulomb repulsion between electrons occupying the same site and <span class="math notranslate nohighlight">\(\langle n_{i\sigma}\rangle\)</span> is the <span class="math notranslate nohighlight">\(\sigma=\uparrow,\downarrow\)</span>-spin density on site <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>One can also go through the <a class="reference external" href="https://github.com/dipc-cc/hubbard/tree/master/examples">examples</a> section in the main repository to explore more systems suitable to solve with the hubbard package.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="examples/molecules.html">Simulating a molecule with electron correlations</a></li>
