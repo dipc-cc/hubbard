@@ -9,8 +9,7 @@ These examples will show how to use the `hubbard` package to solve the mean-fiel
 
 Where :math:`H_0` is the pure tight-binding (TB) Hamiltonian of the structure.
 
-The systems that we will study in the examples section can be also found in the `examples <https://github.com/dipc-cc/hubbard/tree/master/examples>`_ folder in the main repository.
-One can also go through this section to explore more examples suitable to solve with the hubbard package.
+One can also go through the `examples <https://github.com/dipc-cc/hubbard/tree/master/examples>`_ section in the main repository to explore more systems suitable to solve with the hubbard package.
 
 .. toctree::
    :maxdepth: 1
