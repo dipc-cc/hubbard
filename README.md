@@ -1,4 +1,5 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![DOI for citation](https://zenodo.org/badge/DOI/10.5281/zenodo.4748765.svg)](http://dx.doi.org/10.5281/zenodo.4748765)
 
 # hubbard #
 
@@ -6,7 +7,7 @@ __hubbard__ is a Python package built on [sisl] for solving the mean-field Hubba
 
 This project was initiated by Sofia Sanz and Thomas Frederiksen at DIPC in 2018.
 
-Recommended [online documentation][doc]
+Recommended [online documentation][doc].
 
 ## Dependencies ##
 Before installation of __hubbard__ the following packages are required
@@ -29,7 +30,7 @@ Manual installation is performed with the command
 ## Contributions, issues and bugs ##
 Contributions are highly appreciated.
 
-If you find any bugs please form a [bug report/issue][issues]
+If you find any bugs please form a [bug report/issue][issues].
 
 If you have a fix please consider adding a [pull request][pulls].
 
