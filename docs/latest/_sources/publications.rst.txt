@@ -25,7 +25,22 @@ publications below.
 Citing the hubbard package
 ==========================
 
-If hubbard is used to produce scientific contributions please include citations, in addition to `sisl <https://sisl.readthedocs.io/en/latest/cite.html>`_, to the following works:
+If hubbard is used to produce scientific contributions please include citations, in addition to `sisl <https://sisl.readthedocs.io/en/latest/cite.html>`_, to the following Zenodo DOI:
+
+.. code-block:: bash
+
+    @misc{dipc_hubbard,
+      author       = {Sanz Wuhl, Sofia and
+                      Papior, Nick and
+                      Brandbyge, Mads and
+                      Frederiksen, Thomas},
+      title        = {hubbard: v<fill-version>},
+      year         = {2021},
+      doi          = {10.5281/zenodo.4748765},
+      url          = {https://doi.org/10.5281/zenodo.4748765}
+    }
+
+and also to the following works:
 
 * For molecules/periodic structures
 
