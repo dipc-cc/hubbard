@@ -44,4 +44,15 @@ from .ncsile import *
 from .density import *
 from .negf import *
 
+from . import info
+from .info import (
+    git_revision as __git_revision__,
+    version as __version__,
+    major as __major__,
+    minor as __minor__,
+    micro as __micro__,
+)
+
 __all__ = [s for s in dir() if not s.startswith('_')]
+__all__ += [f'__{s}__' for s in ['version', 'major', 'minor', 'micro']]
+__all__ += [f'__{s}__' for s in ['git_revision']]
