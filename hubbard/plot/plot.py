@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.collections import PatchCollection
@@ -6,7 +7,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 # Install font rc params
-plt.rc('text', usetex=True)
+usetex = matplotlib.checkdep_usetex(True)
+plt.rc('text', usetex=usetex)
 plt.rc('font', family='Dejavu Sans', size=16)
 
 
