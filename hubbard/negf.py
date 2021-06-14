@@ -92,55 +92,57 @@ class NEGF:
 
         if not CC:
             CC = os.path.split(__file__)[0] + "/EQCONTOUR"
+
+        # Extract weights and energy points from CC
         contour_weight = sisl.io.tableSile(CC).read_data()
         self.CC_eq = np.array([contour_weight[0] + 1j * contour_weight[1]])
         self.w_eq = (contour_weight[2] + 1j * contour_weight[3]) / np.pi
         self.NEQ = V != 0
 
-        mu = np.zeros(len(elec_SE))
+        self.mu = np.zeros(len(elec_SE))
         if self.NEQ:
             # in case the user has WBL electrodes
-            mu[0] = V * 0.5
-            mu[1] = -V * 0.5
-            self.CC_eq = np.array([self.CC_eq[0] + mu[0], self.CC_eq[0] + mu[1]])
+            self.mu[0] = V * 0.5
+            self.mu[1] = -V * 0.5
+            # Define equilibrium contours
+            self.CC_eq = np.array([self.CC_eq[0] + self.mu[0], self.CC_eq[0] + self.mu[1]])
 
             # Integration path for the non-Eq window
             dE = 0.01
-            self.CC_neq = np.arange(min(mu) - 5 * self.kT, max(mu) + 5 * self.kT + dE, dE) + 1j * 0.001
+            self.CC_neq = np.arange(min(self.mu) - 5 * self.kT, max(self.mu) + 5 * self.kT + dE, dE) + 1j * 0.001
             # Weights for the non-Eq integrals
-            w_neq = dE * (dist(self.CC_neq.real - mu[0]) - dist(self.CC_neq.real - mu[1]))
-            # Store weights for correction to RIGHT [0] and LEFT [1]
-            self.w_neq = np.array([w_neq, -w_neq]) / np.pi
+            w_neq = dE * (dist(self.CC_neq.real - self.mu[0]) - dist(self.CC_neq.real - self.mu[1]))
+            # Store weights for calculation of DELTA_L [0] and DELTA_R [1]
+            self.w_neq = np.array([w_neq, -w_neq]) / _pi
         else:
             self.CC_neq = np.array([])
 
-        def convert2SelfEnergy(HH, mu):
-            if isinstance(HH, (tuple, list)):
+        def convert2SelfEnergy(elec_SE, mu):
+            if isinstance(elec_SE, (tuple, list)):
                 # here HH *must* be a HubbardHamiltonian (otherwise it will probably crash)
-                HH, semi_inf = HH
-                Ef_elec = HH.H.fermi_level(HH.mp, q=HH.q, distribution=dist)
-                # Shift each electrode with its Fermi-level
-                # And also shift the chemical potential
+                HH, semi_inf = elec_SE
+                Ef_elec = HH.fermi_level(q=HH.q, dist=dist)
+                # Shift each electrode with its Fermi-level and chemical potential
                 # Since the electrodes are *bulk* i.e. the entire electronic structure
-                # is simply shifted we need to subtract since the contour shifts the chemical
-                # potential back.
-                HH.H.shift(-Ef_elec - mu)
+                # is simply shifted
+                HH.shift(-Ef_elec + mu)
                 return sisl.RecursiveSI(HH.H, semi_inf)
 
+            # If elec_SE is already a SelfEnergy instance
             # this will work since SelfEnergy instances overloads unknown attributes
             # to the parent.
             # This will only shift the electronic structure of the RecursiveSI.spgeom0
             # and not RecursiveSI.spgeom1. However, for orthogonal basis, this is equivalent.
             # TODO this should be changed when non-orthogonal basis' are used
             try:
-                HH.shift(-mu)
+                elec_SE.shift(mu)
             except:
                 # the parent does not have the shift method
                 pass
-            return HH
+            return elec_SE
 
         # convert all matrices to a sisl.SelfEnergy instance
-        self.elec_SE = list(map(convert2SelfEnergy, elec_SE, mu))
+        self.elec_SE = list(map(convert2SelfEnergy, elec_SE, self.mu))
         self.elec_idx = [np.array(idx).reshape(-1, 1) for idx in elec_idx]
 
         # Ensure commensurate shapes
@@ -173,7 +175,7 @@ class NEGF:
         for i, se in enumerate(self.elec_SE):
             for spin in [0, 1]:
                 # Map self-energy at the Fermi-level of each electrode into the device region
-                self._ef_SE[spin][i] = se.self_energy(2 * mu[i] + 1j * self.eta, spin=spin)
+                self._ef_SE[spin][i] = se.self_energy(1j * self.eta, spin=spin)
 
                 for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                     for ic, cc in enumerate(CC_eq):
@@ -279,20 +281,20 @@ class NEGF:
             Etot = 0.
             for spin in [0, 1]:
                 HC = H.H.Hk(spin=spin, format='array')
-                D = np.zeros([len(self.CC_eq), len(HC)])
+                D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, Ef, spin=spin)
+                    Delta, w = self.Delta(HC, spin=spin)
                     # Store only diagonal
                     w = np.diag(w)
                     # Transfer Delta to D
-                    D[0, :] = np.diag(Delta[1])
-                    D[1, :] = np.diag(Delta[0])
+                    D[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
+                    D[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
                     # TODO We need to also calculate the total energy for NEQ
                     #      this should probably be done in the Delta method
                     del Delta
                 else:
-                    # This ensures we can calculate for EQ only calculations
+                    # This ensures we can calculate energy for EQ only calculations
                     w = 1.
 
                 # Loop over all eq. Contours
@@ -317,7 +319,7 @@ class NEGF:
                 else:
                     D = D[0]
 
-                ni[spin, :] = D
+                ni[spin, :] = D.real
 
             # Calculate new charge
             ntot = ni.sum()
@@ -368,8 +370,7 @@ class NEGF:
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
         weight = Delta[0] ** 2 / (Delta ** 2).sum(axis=0)
 
-        # Get rid of the numerical imaginary part (which is ~0)
-        return Delta.real, weight.real
+        return Delta, weight
 
     def DOS(self, H, E, spin=[0, 1], eta=0.01):
         r"""
