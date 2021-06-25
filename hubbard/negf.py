@@ -63,6 +63,8 @@ class NEGF:
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
         applied bias between the two electrodes
+    H_eq: HubbardHamiltonian, optional
+        If ``V!=0`` one needs to pass also the equilibrium solution as the NEQ solution depends on this
 
 
     Examples
@@ -79,7 +81,7 @@ class NEGF:
     This class has to be generalized to non-orthogonal basis
     """
 
-    def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
+    def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, H_eq=None, **kwargs):
         """ Initialize NEGF class """
 
         # Global charge neutral reference energy (conveniently named fermi)
@@ -101,6 +103,10 @@ class NEGF:
 
         self.mu = np.zeros(len(elec_SE))
         if self.NEQ:
+            self.H_eq = H_eq
+            if self.H_eq is None:
+                raise ValueError('You need to run the equlibrium calculation first!')
+
             # in case the user has WBL electrodes
             self.mu[0] = V * 0.5
             self.mu[1] = -V * 0.5
@@ -192,7 +198,7 @@ class NEGF:
                             # And for each point in the Neq CC
                             self._cc_neq_SE[spin][ik][ic][i] = se.self_energy(cc, k=k, **kw)
 
-    def calc_n_open(self, H, q, qtol=1e-5):
+    def calc_n_open(self, H, q, qtol=1e-5, a=1.):
         """
         Method to compute the spin densities from the non-equilibrium Green's function
 
@@ -345,6 +351,18 @@ class NEGF:
         # Save Fermi-level of the device
         self.Ef = Ef
 
+
+        if self.NEQ:
+            # Calculate the free energy for the NEQ calculation
+            # We remove the interaction term from the total energy of the EQ situation
+            # TODO: Fix this expression (need the total number of particles for each electrode left and right)
+            Etot = self.H_eq.Etot - (self.mu[0] + self.mu[1]) + self.H_eq.U*np.multiply.reduce(self.H_eq.n, axis=0).sum()
+            # Add potential in each site depending on how much the neq charges deviate from the eq situation. This term comes from the extended Huckel model
+            # a should be positive: if q_neq > q_eq then the potential should rise (less favrourable for electrons to occupy that site)
+            # TODO: improve how we set the a parameter so it does not go crazy if the charge difference is too large (especially important in the first iterations)
+            q_neq = ni.sum(axis=0)
+            q_eq = ni.sum(axis=0)
+            self.H.TBHam[np.arange(self.H.sites), np.arange(self.H.sites)] = self.H.e0 + a * (q_neq - q_eq)
         # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
