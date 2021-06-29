@@ -24,13 +24,15 @@ class HubbardHamiltonian(object):
     Parameters
     ----------
     TBHam: sisl.physics.Hamiltonian
-        A spin-polarized tight-binding Hamiltonian
+        An unpolarized or spin-polarized tight-binding Hamiltonian
     n: numpy.ndarray, optional
-        initial spin-densities vectors. The shape of `n` must be (2, len(geometry))
+        initial spin-densities vectors. The shape of `n` must be (spin deg. of freedom, no. of sites)
     U: float, optional
         on-site Coulomb repulsion
     q: array_like, optional
-        Two values specifying up, down electron occupations
+        One or two values specifying the total charge associated to each spin component.
+        The array should contain as many values as the dimension of the problem. I.e., if the
+        Hamiltonian is unpolarized q should be a single value
     nkpt: array_like or sisl.physics.BrillouinZone, optional
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
@@ -39,9 +41,6 @@ class HubbardHamiltonian(object):
 
     def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
-
-        if not TBHam.spin.is_polarized:
-            raise ValueError(self.__class__.__name__ + ' requires a spin-polarized system')
 
         # Use sum of all matrix elements as a basis for hash function calls
         H0 = TBHam.copy()
@@ -55,6 +54,8 @@ class HubbardHamiltonian(object):
         self.H = TBHam.copy()
         self.H.finalize()
         self.geometry = TBHam.geometry
+        # So far we only consider either unpolarized or spin-polarized Hamiltonians
+        self.spin_size = self.H.spin.spinor
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -62,13 +63,16 @@ class HubbardHamiltonian(object):
             ntot = len(self.geometry)
 
         self.q = np.array(q, dtype=np.float64).copy()
-        assert len(self.q) == 2 # Users *must* specify two values
+        # Ensure the length of q is equal to the dimension of the problem
+        self.q = self.q[:self.spin_size]
 
-        # Use default (low-spin) filling?
-        if self.q[1] <= 0:
-            self.q[1] = int(ntot / 2)
         if self.q[0] <= 0:
-            self.q[0] = int(ntot - self.q[1])
+            if self.spin_size == 2:
+                if self.q[1] <= 0:
+                    self.q[1] = ntot / 2
+                self.q[0] = ntot - self.q[1]
+            else:
+                self.q[0] = ntot / 2
 
         self.sites = len(self.geometry)
         self._update_e0()
@@ -80,13 +84,13 @@ class HubbardHamiltonian(object):
 
         # Initialize spin-densities vector
         if not isinstance(n, (np.ndarray, list)):
-            self.n = 0.5*np.ones((2, self.sites))
+            self.n = 0.5*np.ones((self.spin_size, self.sites))
         else:
             # Ensure n is an array
             n = np.array(n)
-            if n.shape != (2, self.sites):
-                warnings.warn("Incorrect shape of n, initializing with equal distribution")
-                self.n = 0.5*np.ones((2, self.sites))
+            if n.shape != (self.spin_size, self.sites):
+                warnings.warn("Incorrect shape of n, initializing spin densities")
+                self.n = (1./self.spin_size)*np.ones((self.spin_size, self.sites))
             else:
                 self.n = n
         # Ensure normalized charge
@@ -242,9 +246,10 @@ class HubbardHamiltonian(object):
 
     def _update_e0(self):
         """ Internal routine to update e0 """
-        e0 = self.H.tocsr(0).diagonal()
-        e1 = self.H.tocsr(1).diagonal()
-        self.e0 = np.array([e0, e1])
+        self.e0 = np.empty((self.spin_size, self.sites))
+        for spin in range(self.spin_size):
+            e = self.H.tocsr(spin).diagonal()
+            self.e0[spin] = e
 
     def update_hamiltonian(self):
         """ Update spin Hamiltonian according to the mean-field Hubbard model
@@ -259,13 +264,14 @@ class HubbardHamiltonian(object):
 
         q0 = self.geometry.atoms.q0
         E = self.e0.copy()
-        E += self.U * (self.n[[1, 0], :] - q0)
+        ispin = np.arange(self.spin_size)[::-1]
+        E += self.U * (self.n[ispin, :] - q0)
         a = np.arange(len(self.H))
-        self.H[a, a, [0, 1]] = E.T
+        self.H[a, a, range(self.spin_size)] = E.T
 
     def random_density(self):
         """ Initialize spin polarization  with random density """
-        self.n = np.random.rand(2, self.sites)
+        self.n = np.random.rand(self.spin_size, self.sites)
         self.normalize_charge()
 
     def normalize_charge(self):
@@ -308,11 +314,13 @@ class HubbardHamiltonian(object):
         midgap: float
         """
         HOMO, LUMO = -1e10, 1e10
+        ev = np.zeros((self.spin_size, self.sites))
         for k in self.mp.k:
-            ev_up = self.eigh(k=k, spin=0)
-            ev_dn = self.eigh(k=k, spin=1)
-            HOMO = max(HOMO, ev_up[int(round(self.q[0] - 1))], ev_dn[int(round(self.q[1] - 1))])
-            LUMO = min(LUMO, ev_up[int(round(self.q[0]))], ev_dn[int(round(self.q[1]))])
+            for s in range(self.spin_size):
+                ev[s] = self.eigh(k=k, spin=s)
+            # If the Hamiltonian is not spin-polarized then ev is just repeated
+            HOMO = max(HOMO, ev[0, int(round(self.q[0] - 1))], ev[-1, int(round(self.q[-1] - 1))])
+            LUMO = min(LUMO, ev[0, int(round(self.q[0]))], ev[-1, int(round(self.q[-1]))])
         midgap = (HOMO + LUMO) * 0.5
         return midgap
 
@@ -323,6 +331,8 @@ class HubbardHamiltonian(object):
         ----------
         q: array_like, optional
             charge per spin channel. First index for spin up, second index for dn
+            If the Hamiltonian is unpolarized q should have only one component
+            otherwise it will take the first one
         dist: str or sisl.distribution, optional
             distribution function
 
@@ -336,7 +346,7 @@ class HubbardHamiltonian(object):
             Fermi-level for each spin channel
         """
         Q = 1 * q
-        for i in (0, 1):
+        for i in range(self.spin_size):
             if Q[i] is None:
                 Q[i] = self.q[i]
         if isinstance(dist, str):
@@ -361,7 +371,10 @@ class HubbardHamiltonian(object):
 
     def _get_hash(self):
         s = 'U=%.4f' % self.U
-        s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
+        if self.spin_size > 1:
+            s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
+        else:
+            s += ' N=(%.4f)' % self.q[0]
         s += ' base=%.3f' % self.hash_base
         return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
 
@@ -403,6 +416,7 @@ class HubbardHamiltonian(object):
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
+        This function only makes sense for spin-polarized calculations
 
         Parameters
         ----------
@@ -476,10 +490,9 @@ class HubbardHamiltonian(object):
         if q is None:
             q = self.q
         else:
-            if q[0] is None:
-                q[0] = int(round(self.q[0]))
-            if q[1] is None:
-                q[1] = int(round(self.q[1]))
+            for s in self.spin_size:
+                if q[s] is None:
+                    q[s] = int(round(self.q[s]))
 
         ni, Etot = calc_n_method(self, q, **kwargs)
 
@@ -496,7 +509,7 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - self.U * np.multiply.reduce(self.n, axis=0).sum()
+        self.Etot = Etot - self.U * (ni[0]*ni[-1]).sum()
 
         return dn
 
@@ -692,6 +705,7 @@ class HubbardHamiltonian(object):
         S: float
             exact expectation value
         """
+
         # Define Nalpha and Nbeta, where Nalpha >= Nbeta
         Nalpha = np.amax(self.q)
         Nbeta = np.amin(self.q)
@@ -700,12 +714,13 @@ class HubbardHamiltonian(object):
         S = (Nalpha - Nbeta) * ((Nalpha - Nbeta) * .25 + 0.5)
 
         # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
-        ev_up, evec_up = self.eigh(eigvals_only=False, spin=0)
-        ev_dn, evec_dn = self.eigh(eigvals_only=False, spin=1)
+        ev, evec = np.zeros((self.spin_size, self.sites)), np.zeros((self.spin_size, self.sites, self.sites))
+        for s in range(self.spin_size):
+            ev[s], evec[s] = self.eigh(eigvals_only=False, spin=s)
 
         # No need to tell which matrix of eigenstates correspond to alpha or beta,
         # the sisl function spin_squared already takes this into account
-        s2alpha, s2beta = sisl.electron.spin_squared(evec_up[:, :int(round(self.q[0]))].T, evec_dn[:, :int(round(self.q[1]))].T)
+        s2alpha, s2beta = sisl.electron.spin_squared(evec[0, :, :int(round(self.q[0]))].T, evec[-1, :, :int(round(self.q[-1]))].T)
 
         # Spin contamination
         S_MFH = S + Nbeta - s2beta.sum()

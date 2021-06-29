@@ -31,63 +31,63 @@ def calc_n(H, q):
     # Create fermi-level determination distribution
     dist = sisl.get_distribution('fermi_dirac', smearing=H.kT)
     Ef = H.H.fermi_level(H.mp, q=q, distribution=dist)
-    dist_up = sisl.get_distribution('fermi_dirac', smearing=H.kT, x0=Ef[0])
-    dist_dn = sisl.get_distribution('fermi_dirac', smearing=H.kT, x0=Ef[1])
+    if not isinstance(Ef, (tuple, list, np.ndarray)):
+        Ef = np.array([Ef])
+    dist = [sisl.get_distribution('fermi_dirac', smearing=H.kT, x0=Ef[s]) for s in range(H.spin_size)]
 
-    ni = np.zeros((2, H.sites))
+    ni = np.zeros((H.spin_size, H.sites))
     Etot = 0
 
     # Solve eigenvalue problems
-    def calc_occ(k, weight):
+    def calc_occ(k, weight, spin):
         n = np.empty_like(ni)
-        es_up = H.eigenstate(k, spin=0)
-        es_dn = H.eigenstate(k, spin=1)
+        es = H.eigenstate(k, spin=spin)
 
         # Reduce to occupied stuff
-        occ_up = es_up.occupation(dist_up) * weight
-        n[0] = einsum('i,ij->j', occ_up, es_up.norm2(False).real)
-        occ_dn = es_dn.occupation(dist_dn) * weight
-        n[1] = einsum('i,ij->j', occ_dn, es_dn.norm2(False).real)
-        Etot = es_up.eig.dot(occ_up) + es_dn.eig.dot(occ_dn)
+        occ = es.occupation(dist[spin]) * weight
+        n = einsum('i,ij->j', occ, es.norm2(False).real)
+
+        Etot = es.eig.dot(occ)
 
         # Return values
         return n, Etot
 
     # Loop k-points and weights
     for w, k in zip(H.mp.weight, H.mp.k):
-        n, etot = calc_occ(k, w)
-        ni += n
-        Etot += etot
+        for s in range(H.spin_size):
+            n, etot = calc_occ(k, w, s)
+            ni[s] += n
+            Etot += etot
 
-    return ni, Etot
+    # Return spin densities and total energy
+    # if the Hamiltonian is not spin-polarized multiply Etot by 2 for spin degeneracy
+    return ni, (2./H.spin_size)*Etot
 
 
 def calc_n_insulator(H, q):
     """ Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* """
-    ni = np.zeros((2, H.sites))
+    ni = np.zeros((H.spin_size, H.sites))
     Etot = 0
 
-    iup = np.arange(int(round(q[0])))
-    idn = np.arange(int(round(q[1])))
+    idx = [np.arange(int(round(q[s]))) for s in range(H.spin_size)]
 
     # Solve eigenvalue problems
-    def calc_occ(k, weight):
+    def calc_occ(k, weight, spin):
         n = np.empty_like(ni)
-        es_up = H.eigenstate(k, spin=0)
-        es_dn = H.eigenstate(k, spin=1)
+        es = H.eigenstate(k, spin=spin)
 
-        n[0] = einsum('ij,ij->j', conj(es_up.state[iup]), es_up.state[iup]).real * weight
-        n[1] = einsum('ij,ij->j', conj(es_dn.state[idn]), es_dn.state[idn]).real * weight
+        n = einsum('ij,ij->j', conj(es.state[idx[spin]]), es.state[idx[spin]]).real * weight
 
         # Calculate total energy
-        Etot = (es_up.eig[iup].sum() + es_dn.eig[idn].sum()) * weight
+        Etot = es.eig[idx[spin]].sum() * weight
         # Return values
         return n, Etot
 
     # Loop k-points and weights
     for w, k in zip(H.mp.weight, H.mp.k):
-        n, etot = calc_occ(k, w)
-        ni += n
-        Etot += etot
+        for s in range(H.spin_size):
+            n, etot = calc_occ(k, w, s)
+            ni[s] += n
+            Etot += etot
 
-    return ni, Etot
+    return ni, (2./H.spin_size)*Etot

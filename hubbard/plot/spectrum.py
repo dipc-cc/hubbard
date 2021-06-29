@@ -33,7 +33,7 @@ class Spectrum(Plot):
         self.axes.fill_between([-xmax, 0], 0, 1.0, facecolor='k', alpha=0.1)
         lmax = 0.0
         midgap = HH.find_midgap()
-        for ispin in range(2):
+        for ispin in range(HH.spin_size):
             ev, L = HH.calc_orbital_charge_overlaps(k=k, spin=ispin)
             ev -= midgap
             L = np.diagonal(L)

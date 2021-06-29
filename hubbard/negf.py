@@ -168,12 +168,12 @@ class NEGF:
         # spin, electrode
         self._ef_SE = _nested_list(2, len(self.elec_SE))
         # spin, EQ-contour, energy, electrode
-        self._cc_eq_SE = _nested_list(2, *self.CC_eq.shape, len(self.elec_SE))
+        self._cc_eq_SE = _nested_list(Hdev.size, *self.CC_eq.shape, len(self.elec_SE))
         # spin, energy, electrode
-        self._cc_neq_SE = _nested_list(2, self.CC_neq.shape[0], len(self.elec_SE))
+        self._cc_neq_SE = _nested_list(Hdev.size, self.CC_neq.shape[0], len(self.elec_SE))
 
         for i, se in enumerate(self.elec_SE):
-            for spin in [0, 1]:
+            for spin in range(Hdev.size):
                 # Map self-energy at the Fermi-level of each electrode into the device region
                 self._ef_SE[spin][i] = se.self_energy(1j * self.eta, spin=spin)
 
@@ -216,7 +216,7 @@ class NEGF:
         cc_eq_SE = self._cc_eq_SE
 
         no = len(H.H)
-        ni = np.empty([2, no], dtype=np.float64)
+        ni = np.empty([H.spin_size, no], dtype=np.float64)
         ntot = -1.
         Ef = self.Ef
 
@@ -255,8 +255,11 @@ class NEGF:
                     # the current Fermi-level we will use eta = 100 meV
                     # Calculate charge at the Fermi-level
                     f = 0.
-                    for spin in [0, 1]:
-                        HC = H.H.Hk(spin=spin, format='array')
+                    for spin in range(H.spin_size):
+                        if H.spin_size == 2:
+                            HC = H.H.Hk(spin=spin, format='array')
+                        else:
+                            HC = H.H.Hk(format='array')
                         cc = Ef + 1j * self.eta
 
                         GF = _G(cc, HC, self.elec_idx, ef_SE[spin])
@@ -279,8 +282,11 @@ class NEGF:
                             Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
 
             Etot = 0.
-            for spin in [0, 1]:
-                HC = H.H.Hk(spin=spin, format='array')
+            for spin in range(H.spin_size):
+                if H.spin_size==2:
+                    HC = H.H.Hk(spin=spin, format='array')
+                else:
+                    HC = H.H.Hk(format='array')
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
@@ -327,7 +333,9 @@ class NEGF:
         # Save Fermi-level of the device
         self.Ef = Ef
 
-        return ni, Etot
+        # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
+        # multiply Etot by 2 for spin degeneracy
+        return ni, (2./H.spin_size)*Etot
 
     def Delta(self, HC, Ef, spin=0):
         """

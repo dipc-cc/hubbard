@@ -64,6 +64,9 @@ class Bandstructure(Plot):
         ev = np.empty([len(spin), len(lk), HH.sites])
         # Set energy reference to the Fermi level
         Ef = HH.fermi_level(q=HH.q)
+        if not isinstance(Ef, (tuple, list, np.ndarray)):
+            Ef = np.array([Ef])
+
         for i,s in enumerate(spin):
             ev[i] = band.apply.array.eigh(spin=s)
             ev[i] -= Ef[s]

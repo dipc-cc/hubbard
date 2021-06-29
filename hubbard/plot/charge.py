@@ -141,7 +141,7 @@ class SpinPolarization(GeometryPlot):
         super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute charge difference between up and down channels
-        chg = np.diff(HH.n[[1, 0]], axis=0).ravel()
+        chg = np.diff(HH.n[[-1, 0]], axis=0).ravel()
 
         if realspace:
             self.__realspace__(chg, density=True, **kwargs)
