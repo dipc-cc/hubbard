@@ -69,7 +69,7 @@ class HubbardHamiltonian(object):
         if self.q[0] <= 0:
             if self.spin_size == 2:
                 if self.q[1] <= 0:
-                    self.q[1] = ntot / 2
+                    self.q[1] = ntot // 2
                 self.q[0] = ntot - self.q[1]
             else:
                 self.q[0] = ntot / 2
