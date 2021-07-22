@@ -168,12 +168,12 @@ class NEGF:
         # spin, electrode
         self._ef_SE = _nested_list(2, len(self.elec_SE))
         # spin, EQ-contour, energy, electrode
-        self._cc_eq_SE = _nested_list(Hdev.size, *self.CC_eq.shape, len(self.elec_SE))
+        self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
         # spin, energy, electrode
-        self._cc_neq_SE = _nested_list(Hdev.size, self.CC_neq.shape[0], len(self.elec_SE))
+        self._cc_neq_SE = _nested_list(Hdev.spin_size, self.CC_neq.shape[0], len(self.elec_SE))
 
         for i, se in enumerate(self.elec_SE):
-            for spin in range(Hdev.size):
+            for spin in range(Hdev.spin_size):
                 # Map self-energy at the Fermi-level of each electrode into the device region
                 self._ef_SE[spin][i] = se.self_energy(1j * self.eta, spin=spin)
 
