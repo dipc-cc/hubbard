@@ -4,7 +4,6 @@ import sisl
 import os
 import math
 from scipy.interpolate import interp1d
-from scipy.linalg import inv
 
 _pi = math.pi
 
@@ -26,12 +25,14 @@ def _G(e, HC, elec_idx, SE):
        self-energies for the electrodes
     """
     no = len(HC)
-    inv_GF = np.zeros([no, no], dtype=np.complex128)
-    np.fill_diagonal(inv_GF, e)
-    inv_GF[:, :] -= HC[:, :]
-    for idx, se in zip(elec_idx, SE):
-        inv_GF[idx, idx.T] -= se
-    return inv(inv_GF)
+
+    inv_GF = np.zeros([len(e), no, no], dtype=np.complex128)
+
+    for ie, e_i in enumerate(e):
+        inv_GF[ie] = e_i * np.identity(no) - HC
+        for idx, se in zip(elec_idx, SE[ie]):
+            inv_GF[ie, idx, idx.T] -= se
+    return np.linalg.inv(inv_GF)
 
 
 def _nested_list(*args):
@@ -265,9 +266,8 @@ class NEGF:
                             HC = H.H.Hk(spin=spin, format='array')
                         else:
                             HC = H.H.Hk(format='array')
-                        cc = Ef + 1j * self.eta
 
-                        GF = _G(cc, HC, self.elec_idx, ef_SE[spin])
+                        GF = _G([Ef + 1j * self.eta], HC, self.elec_idx, ef_SE[spin])
 
                         # Now we need to calculate the new Fermi level based on the
                         # difference in charge and by estimating the current Fermi level
@@ -276,7 +276,7 @@ class NEGF:
                         #   F(x) - F(0) = arctan(x) / pi = dq
                         # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                         # and consider this a pre-factor
-                        f -= np.trace(GF).imag / _pi
+                        f -= GF[:, np.arange(no), np.arange(no)].sum(axis=1).imag / _pi
 
                         # calculate fractional change
                         f = dq / f
@@ -310,20 +310,22 @@ class NEGF:
 
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
+                    cc = CC + Ef
+                    self_energy = cc_eq_SE[spin][cc_eq_i]
+                    GF = _G(cc, HC, self.elec_idx, self_energy)
 
-                        GF = _G(cc, HC, self.elec_idx, cc_eq_SE[spin][cc_eq_i][ic])
+                    # Greens function evaluated at each point of the CC multiplied by the weight
+                    # Each row is the diagonal of Gf(e) multiplied by the weight
+                    Gf_wi = - GF[:, np.arange(no), np.arange(no)] * self.w_eq.reshape(-1,1)
+                    D[cc_eq_i] = Gf_wi.imag.sum(axis=0) # sum elements of each row to evaluate integral over energy
 
-                        # Greens function evaluated at each point of the CC multiplied by the weight
-                        Gf_wi = - np.diag(GF) * wi
-                        D[cc_eq_i] += Gf_wi.imag
-
-                        # Integrate density of states to obtain the total energy
-                        # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
-                        if cc_eq_i == 0:
-                            Etot += ((w * Gf_wi).sum() * cc).imag
-                        else:
-                            Etot += (((1 - w) * Gf_wi).sum() * cc).imag
+                    # Integrate density of states to obtain the total energy
+                    # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
+                    if cc_eq_i == 0:
+                        # Sum over spin components
+                        Etot += ((w * Gf_wi).sum(axis=1) * cc).sum().imag
+                    else:
+                        Etot += (((1 - w) * Gf_wi).sum(axis=1) * cc).sum().imag
 
                 if self.NEQ:
                     D = w * D[0] + (1 - w) * D[1]
@@ -361,23 +363,23 @@ class NEGF:
         weight
         """
         def spectral(G, self_energy):
-            # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
-            Gamma = 1j * (self_energy - np.conjugate(self_energy.T))
-            # Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)
-            return np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
+            # Use self-energy of elec, now the matrix will have dimension (E, Nelec, Nelec)
+            Gamma = 1j * (self_energy - np.conjugate(np.transpose(self_energy, axes=[0,2,1])))
+            # Product of (E, Ndev, Nelec) x (E, Nelec, Nelec) x (E, Nelec, Ndev) -> (E, Ndev, Ndev)
+            return np.einsum('ijk, ikm, iml ->  ijl', G, Gamma, np.conjugate(np.transpose(G, axes=[0,2,1])))
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
         cc_neq_SE = self._cc_neq_SE[spin]
 
-        for ic, cc in enumerate(self.CC_neq + Ef):
+        GF = _G(self.CC_neq + Ef, HC, self.elec_idx, cc_neq_SE)
 
-            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ic])
-
-            # Elec (0, 1) are (left, right)
-            # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[ic][:2]):
-                Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
+        # Elec (0, 1) are (left, right)
+        # only do for the first two!
+        for i in range(2):
+            A = spectral(GF[:, :, self.elec_idx[i].ravel()], np.array(cc_neq_SE)[:, i])
+            # Build Delta for each electrode
+            Delta[i] = np.einsum('i, ijk -> jk', self.w_neq[i], A)
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
@@ -419,7 +421,7 @@ class NEGF:
 
                 # Append all the self-energies for the electrodes at each energy point
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
+                GF = _G([e + 1j * eta], HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
 
@@ -459,7 +461,7 @@ class NEGF:
             HC = H.H.Hk(spin=ispin, format='array')
             for i, e in enumerate(E):
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
+                GF = _G([e + 1j * eta], HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 
         return ldos / np.pi
