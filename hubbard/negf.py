@@ -368,7 +368,7 @@ class NEGF:
             spin index (0=up, 1=dn)
         Nblocks: int, optional
             number of blocks in which the energy contour will be split to obtain the Green's matrix, this number should be larger
-            for a relative number of orbitals
+            for a relative large number of orbitals
 
         Returns
         -------
