@@ -306,11 +306,9 @@ class NEGF:
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
                     Delta, w = self.Delta(HC, Ef, spin=spin, Nblocks=Nblocks)
-                    # Store only diagonal
-                    w = np.diag(w)
                     # Transfer Delta to D
-                    D[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
-                    D[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
+                    D[0, :] = Delta[1] # Correction to left: Delta_R
+                    D[1, :] = Delta[0] # Correction to right: Delta_L
                     # TODO We need to also calculate the total energy for NEQ
                     #      this should probably be done in the Delta method
                     del Delta
@@ -379,10 +377,10 @@ class NEGF:
             # Use self-energy of elec, now the matrix will have dimension (E, Nelec, Nelec)
             Gamma = 1j * (self_energy - np.conjugate(np.transpose(self_energy, axes=[0,2,1])))
             # Product of (E, Ndev, Nelec) x (E, Nelec, Nelec) x (E, Nelec, Ndev) -> (E, Ndev, Ndev)
-            return einsum('ijk, ikm, iml ->  ijl', G, Gamma, np.conjugate(np.transpose(G, axes=[0,2,1])))
+            return einsum('ijk, ikm, imj ->  ij', G, Gamma, np.conjugate(np.transpose(G, axes=[0,2,1])))
 
         no = len(HC)
-        Delta = np.zeros([2, no, no], dtype=np.complex128)
+        Delta = np.zeros([2, no], dtype=np.complex128)
         cc_neq_SE = self._cc_neq_SE[spin]
 
         # Elec (0, 1) are (left, right)
@@ -392,7 +390,7 @@ class NEGF:
                 GF = _G(CC, HC, self.elec_idx, cc_neq_SE, mode='Full')
                 A = spectral(GF[:, :, self.elec_idx[i].ravel()], np.array_split(np.array(cc_neq_SE)[:, i], Nblocks)[ic])
                 # Build Delta for each electrode
-                Delta[i] += einsum('i, ijk -> jk', np.array_split(self.w_neq[i], Nblocks)[ic], A)
+                Delta[i] += einsum('i, ij -> j', np.array_split(self.w_neq[i], Nblocks)[ic], A)
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
