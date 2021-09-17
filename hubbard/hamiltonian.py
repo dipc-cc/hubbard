@@ -369,16 +369,20 @@ class HubbardHamiltonian(object):
         """
         self.H.shift(E)
 
-    def _get_hash(self):
+    def _info(self):
         s = 'U=%.4f' % self.U
         if self.spin_size > 1:
             s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
         else:
             s += ' N=(%.4f)' % self.q[0]
         s += ' base=%.3f' % self.hash_base
-        return s, hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+        return s
 
-    def read_density(self, fn, mode='a'):
+    def _get_hash(self):
+        s = self._info()
+        return hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+
+    def read_density(self, fn, mode='r', group=None):
         """ Read density from binary file
 
         Parameters
@@ -387,18 +391,20 @@ class HubbardHamiltonian(object):
             name of the file that is going to read from
         mode: str, optional
             mode in which the file is opened
+        group: optional
+            netCDF4 group
         """
         if os.path.isfile(fn):
-            s, group = self._get_hash()
-            fh = nc.ncSilehubbard(fn, mode=mode)
-            if group in fh.groups:
-                n = fh.read_density(group)
-                self.n = np.array(n)
-                self.update_hamiltonian()
-                return True
-        return False
+            fh = nc.get_sile(fn, mode=mode)
+            if group is not None:
+                if group in fh.groups:
+                    n = fh.read_density(group)
+                    self.n = np.array(n)
+                    self.update_hamiltonian()
+            else:
+                n = fh.read_density()
 
-    def write_density(self, fn, mode='a'):
+    def write_density(self, fn, mode='w', group=None):
         """ Write density in a binary file
 
         Parameters
@@ -407,12 +413,13 @@ class HubbardHamiltonian(object):
             name of the file in which the densities are going to be stored
         mode: str, optional
             mode in which the file is opened
+        group: optional
         """
         if not os.path.isfile(fn):
             mode = 'w'
-        s, group = self._get_hash()
-        fh = nc.ncSilehubbard(fn, mode=mode)
-        fh.write_density(s, group, self.n)
+        fh = nc.get_sile(fn, mode=mode)
+        s = self._info()
+        fh.write_density(self.n, self.U, self.kT, group)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
