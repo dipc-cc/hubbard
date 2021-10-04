@@ -17,61 +17,101 @@ class ncSilehubbard(sisl.SileCDF):
     sisl.io.SileCDF : sisl class
     """
     def read_U(self, group=None):
+        """
+        Read Coulomb repulsion U parameter from netcdf file
+
+        Parameters:
+        -----------
+        group: str, optional
+            netcdf group
+
+        Returns:
+        --------
+        Float or list of floats containing the temperature for each netcdf group
+        """
         # Find group
         if group is not None:
             if group in self.groups:
                 g = self.groups[group]
+                U = np.ma.getdata(g.variables['U'][:])
             else:
-                warnings.warn(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {file}')
         else:
             if self.groups:
+                U = []
                 for k in self.groups:
-                    # If there are any groups read the density from the first one
+                    # Read Coulomb repulsion U parameter from all groups and append them in a list
                     g = self.groups[k]
-                    break
+                    _U = np.ma.getdata(g.variables['U'][:])
+                    U.append(_U)
             else:
-                g = self
-        # Read U
-        U = g.variables['U'][:]
+                U = np.ma.getdata(self.variables['U'][:])
         return U
 
     def read_kT(self, group=None):
+        """
+        Read temperature from netcdf file
+
+        Parameters:
+        -----------
+        group: str, optional
+            netcdf group
+
+        Returns:
+        --------
+        Float or list of floats containing the temperature times the Boltzmann constant (k) for each netcdf group
+        """
         # Find group
         if group is not None:
             if group in self.groups:
                 g = self.groups[group]
+                # Read kT
+                kT = np.ma.getdata(g.variables['kT'][:])
             else:
-                warnings.warn(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {file}')
         else:
             if self.groups:
+                kT = []
                 for k in self.groups:
-                    # If there are any groups read the density from the first one
                     g = self.groups[k]
-                    break
+                    # Read temperatures from all groups and append them in a list
+                    _kT = np.ma.getdata(g.variables['kT'][:])
+                    kT.append(_kT)
             else:
-                g = self
-        # Read kT
-        kT = g.variables['kT'][:]
+                kT = np.ma.getdata(self.variables['kT'][:])
         return kT
 
     def read_density(self, group=None):
+        """
+        Read density from netcdf file
+
+        Parameters:
+        -----------
+        group: str, optional
+           netcdf group. If there are groups in the file and no group is found then it reads the n variable from all groups found
+
+        Return:
+        -------
+        numpy.ndarray or list of numpy.ndarrays
+        """
         # Find group
         if group is not None:
             if group in self.groups:
                 g = self.groups[group]
+                n = np.ma.getdata(g.variables['n'][:])
             else:
-                warnings.warn(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {file}')
         else:
             if self.groups:
+                n = []
                 for k in self.groups:
-                    # If there are any groups read the density from the first one
                     g = self.groups[k]
-                    break
+                    # Read densities from all groups and append them in a list
+                    _n = np.ma.getdata(g.variables['n'][:])
+                    n.append(_n)
             else:
-                g = self
-
-        # Read densities
-        n = g.variables['n'][:]
+                # Read densities
+                n = np.ma.getdata(self.variables['n'][:])
         return n
 
     def write_density(self, n, U, kT, group=None):

@@ -5,7 +5,6 @@ import hashlib
 import os
 import math
 import warnings
-
 _pi = math.pi
 
 __all__ = ['HubbardHamiltonian']
@@ -42,11 +41,6 @@ class HubbardHamiltonian(object):
     def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
         """ Initialize HubbardHamiltonian """
 
-        # Use sum of all matrix elements as a basis for hash function calls
-        H0 = TBHam.copy()
-        H0.shift(np.pi) # Apply a shift to incorporate effect of S
-        self.hash_base = H0.H.tocsr().sum()
-
         self.U = U # hubbard onsite Coulomb parameter
 
         # Copy TB Hamiltonian to store the converged one in a different variable
@@ -56,6 +50,16 @@ class HubbardHamiltonian(object):
         self.geometry = TBHam.geometry
         # So far we only consider either unpolarized or spin-polarized Hamiltonians
         self.spin_size = self.H.spin.spinor
+
+        # Use sum of all matrix elements as a basis for hash function calls
+        H0 = self.TBHam.copy()
+        H0.shift(np.pi) # Apply a shift to incorporate effect of S
+        if self.spin_size > 1:
+            s = H0.H.tocsr(0).data.tostring() + H0.H.tocsr(1).data.tostring()
+        else:
+            s = H0.H.tocsr(0).data.tostring()
+        self._hash_base = s
+        del H0
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -369,18 +373,8 @@ class HubbardHamiltonian(object):
         """
         self.H.shift(E)
 
-    def _info(self):
-        s = 'U=%.4f' % self.U
-        if self.spin_size > 1:
-            s += ' N=(%.4f,%.4f)' % (self.q[0], self.q[1])
-        else:
-            s += ' N=(%.4f)' % self.q[0]
-        s += ' base=%.3f' % self.hash_base
-        return s
-
-    def _get_hash(self):
-        s = self._info()
-        return hashlib.md5(s.encode('utf-8')).hexdigest()[:7]
+    def __hash__(self):
+        return hashlib.md5((self.q.tostring()+np.array([self.U]).tostring()+np.array([self.kT]).tostring()+self._hash_base)).hexdigest()[:7]
 
     def read_density(self, fn, mode='r', group=None):
         """ Read density from binary file
@@ -398,11 +392,12 @@ class HubbardHamiltonian(object):
             fh = nc.get_sile(fn, mode=mode)
             if group is not None:
                 if group in fh.groups:
-                    n = fh.read_density(group)
-                    self.n = np.array(n)
-                    self.update_hamiltonian()
+                    self.n = fh.read_density(group)
             else:
-                n = fh.read_density()
+                warnings.warn(f'Groups found in {fn}, using the density from the first one')
+                # Read only the first element from the list
+                self.n = fh.read_density()[0]
+            self.update_hamiltonian()
 
     def write_density(self, fn, mode='w', group=None):
         """ Write density in a binary file
@@ -418,7 +413,6 @@ class HubbardHamiltonian(object):
         if not os.path.isfile(fn):
             mode = 'w'
         fh = nc.get_sile(fn, mode=mode)
-        s = self._info()
         fh.write_density(self.n, self.U, self.kT, group)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
