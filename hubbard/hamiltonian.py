@@ -385,7 +385,7 @@ class HubbardHamiltonian(object):
             name of the file that is going to read from
         mode: str, optional
             mode in which the file is opened
-        group: optional
+        group: str, optional
             netCDF4 group
         """
         if os.path.isfile(fn):
@@ -408,7 +408,8 @@ class HubbardHamiltonian(object):
             name of the file in which the densities are going to be stored
         mode: str, optional
             mode in which the file is opened
-        group: optional
+        group: str, optional
+            netCDF4 group
         """
         if not os.path.isfile(fn):
             mode = 'w'

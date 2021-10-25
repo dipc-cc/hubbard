@@ -1,6 +1,5 @@
 import numpy as np
 import sisl
-import warnings
 
 __all__ = ['ncSilehubbard']
 
