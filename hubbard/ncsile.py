@@ -32,7 +32,7 @@ class ncSilehubbard(sisl.SileCDF):
         if group is not None:
             if group in self.groups:
                 g = self.groups[group]
-                U = np.ma.getdata(g.variables['U'][:])
+                U = np.array(g.variables['U'][:])
             else:
                 raise ValueError(f'group {group} does not exist in file {file}')
         else:
@@ -41,10 +41,10 @@ class ncSilehubbard(sisl.SileCDF):
                 for k in self.groups:
                     # Read Coulomb repulsion U parameter from all groups and append them in a list
                     g = self.groups[k]
-                    _U = np.ma.getdata(g.variables['U'][:])
+                    _U = np.array(g.variables['U'][:])
                     U.append(_U)
             else:
-                U = np.ma.getdata(self.variables['U'][:])
+                U = np.array(self.variables['U'][:])
         return U
 
     def read_kT(self, group=None):
@@ -65,7 +65,7 @@ class ncSilehubbard(sisl.SileCDF):
             if group in self.groups:
                 g = self.groups[group]
                 # Read kT
-                kT = np.ma.getdata(g.variables['kT'][:])
+                kT = np.array(g.variables['kT'][:])
             else:
                 raise ValueError(f'group {group} does not exist in file {file}')
         else:
@@ -74,10 +74,10 @@ class ncSilehubbard(sisl.SileCDF):
                 for k in self.groups:
                     g = self.groups[k]
                     # Read temperatures from all groups and append them in a list
-                    _kT = np.ma.getdata(g.variables['kT'][:])
+                    _kT = np.array(g.variables['kT'][:])
                     kT.append(_kT)
             else:
-                kT = np.ma.getdata(self.variables['kT'][:])
+                kT = np.array(self.variables['kT'][:])
         return kT
 
     def read_density(self, group=None):
@@ -97,7 +97,7 @@ class ncSilehubbard(sisl.SileCDF):
         if group is not None:
             if group in self.groups:
                 g = self.groups[group]
-                n = np.ma.getdata(g.variables['n'][:])
+                n = np.array(g.variables['n'][:])
             else:
                 raise ValueError(f'group {group} does not exist in file {file}')
         else:
@@ -106,11 +106,11 @@ class ncSilehubbard(sisl.SileCDF):
                 for k in self.groups:
                     g = self.groups[k]
                     # Read densities from all groups and append them in a list
-                    _n = np.ma.getdata(g.variables['n'][:])
+                    _n = np.array(g.variables['n'][:])
                     n.append(_n)
             else:
                 # Read densities
-                n = np.ma.getdata(self.variables['n'][:])
+                n = np.array(self.variables['n'][:])
         return n
 
     def write_density(self, n, U, kT, group=None):
@@ -121,14 +121,14 @@ class ncSilehubbard(sisl.SileCDF):
             g = self
 
         # Create dimensions
-        self._crt_dim(self, 'ncomp', n.shape[0])
+        self._crt_dim(self, 'nspin', n.shape[0])
         self._crt_dim(self, 'norb', n.shape[1])
 
         # Write variable n
-        v = self._crt_var(g, 'n', ('f8', 'f8'), ('ncomp', 'norb'))
+        v = self._crt_var(g, 'n', ('f8', 'f8'), ('nspin', 'norb'))
         v = self._crt_var(g, 'U', 'f8')
         v = self._crt_var(g, 'kT', 'f8')
-        v.info = 'Densities'
+        v.info = 'Mean Field Hubbard calculation'
         g.variables['n'][:] = n
         g.variables['U'][:] = U
         g.variables['kT'][:] = kT
