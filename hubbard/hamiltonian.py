@@ -373,7 +373,7 @@ class HubbardHamiltonian(object):
         """
         self.H.shift(E)
 
-    def __hash__(self):
+    def get_hash(self):
         return hashlib.md5((self.q.tostring()+np.array([self.U]).tostring()+np.array([self.kT]).tostring()+self._hash_base)).hexdigest()[:7]
 
     def read_density(self, fn, mode='r', group=None):
