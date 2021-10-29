@@ -389,11 +389,9 @@ class HubbardHamiltonian(object):
             netCDF4 group
         """
         if os.path.isfile(fn):
-            fh = nc.get_sile(fn, mode=mode)
-            if group is not None:
-                if group in fh.groups:
-                    self.n = fh.read_density(group)
-            else:
+            fh = nc.ncSilehubbard(fn, mode=mode)
+            self.n = fh.read_density(group=group)
+            if isinstance(self.n, list):
                 warnings.warn(f'Groups found in {fn}, using the density from the first one')
                 # Read only the first element from the list
                 self.n = fh.read_density()[0]
@@ -413,7 +411,7 @@ class HubbardHamiltonian(object):
         """
         if not os.path.isfile(fn):
             mode = 'w'
-        fh = nc.get_sile(fn, mode=mode)
+        fh = nc.ncSilehubbard(fn, mode=mode)
         fh.write_density(self.n, self.U, self.kT, group)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
