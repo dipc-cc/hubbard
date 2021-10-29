@@ -34,7 +34,7 @@ class ncSilehubbard(sisl.SileCDF):
         else:
             # Try reading U saved without group
             try:
-                U = np.array(self.variables['n'][:])
+                U = np.array(self.variables['U'][:])
             except:
                 # Read from all groups, append all U
                 if self.groups:
