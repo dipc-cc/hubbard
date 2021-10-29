@@ -4,10 +4,6 @@ import sisl
 __all__ = ['ncSilehubbard']
 
 
-def get_sile(file, *args, **kwargs):
-    # returns a sile object
-    return ncSilehubbard(file, *args, **kwargs)
-
 class ncSilehubbard(sisl.SileCDF):
     """ Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 
@@ -34,17 +30,20 @@ class ncSilehubbard(sisl.SileCDF):
                 g = self.groups[group]
                 U = np.array(g.variables['U'][:])
             else:
-                raise ValueError(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {self._file}')
         else:
-            if self.groups:
-                U = []
-                for k in self.groups:
-                    # Read Coulomb repulsion U parameter from all groups and append them in a list
-                    g = self.groups[k]
-                    _U = np.array(g.variables['U'][:])
-                    U.append(_U)
-            else:
-                U = np.array(self.variables['U'][:])
+            # Try reading U saved without group
+            try:
+                U = np.array(self.variables['n'][:])
+            except:
+                # Read from all groups, append all U
+                if self.groups:
+                    U  = []
+                    for k in self.groups:
+                        g = self.groups[k]
+                        # Read U from all groups and append them in a list
+                        _U = np.array(g.variables['U'][:])
+                        U.append(_U)
         return U
 
     def read_kT(self, group=None):
@@ -67,17 +66,20 @@ class ncSilehubbard(sisl.SileCDF):
                 # Read kT
                 kT = np.array(g.variables['kT'][:])
             else:
-                raise ValueError(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {self._file}')
         else:
-            if self.groups:
-                kT = []
-                for k in self.groups:
-                    g = self.groups[k]
-                    # Read temperatures from all groups and append them in a list
-                    _kT = np.array(g.variables['kT'][:])
-                    kT.append(_kT)
-            else:
+            # Try reading kT saved without group
+            try:
                 kT = np.array(self.variables['kT'][:])
+            except:
+                # Read from all groups, append all kT
+                if self.groups:
+                    kT  = []
+                    for k in self.groups:
+                        g = self.groups[k]
+                        # Read kT from all groups and append them in a list
+                        _kT = np.array(g.variables['kT'][:])
+                        kT.append(_kT)
         return kT
 
     def read_density(self, group=None):
@@ -99,18 +101,20 @@ class ncSilehubbard(sisl.SileCDF):
                 g = self.groups[group]
                 n = np.array(g.variables['n'][:])
             else:
-                raise ValueError(f'group {group} does not exist in file {file}')
+                raise ValueError(f'group {group} does not exist in file {self._file}')
         else:
-            if self.groups:
-                n = []
-                for k in self.groups:
-                    g = self.groups[k]
-                    # Read densities from all groups and append them in a list
-                    _n = np.array(g.variables['n'][:])
-                    n.append(_n)
-            else:
-                # Read densities
+            # Try reading densities saved without group
+            try:
                 n = np.array(self.variables['n'][:])
+            except:
+                # Read from all groups, append all densities
+                if self.groups:
+                    n  = []
+                    for k in self.groups:
+                        g = self.groups[k]
+                        # Read densities from all groups and append them in a list
+                        _n = np.array(g.variables['n'][:])
+                        n.append(_n)
         return n
 
     def write_density(self, n, U, kT, group=None):
