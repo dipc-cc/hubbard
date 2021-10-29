@@ -117,7 +117,7 @@ class ncSilehubbard(sisl.SileCDF):
                         n.append(_n)
         return n
 
-    def write_density(self, n, U, kT, group=None):
+    def write_density(self, n, U, kT, units, group=None):
         # Create group
         if group is not None:
             g = self._crt_grp(self, group)
@@ -133,8 +133,8 @@ class ncSilehubbard(sisl.SileCDF):
         v2 = self._crt_var(g, 'U', 'f8')
         v3 = self._crt_var(g, 'kT', 'f8')
         v1.info = 'Spin densities'
-        v2.info = 'Coulomb repulsion parameter'
-        v3.info = 'Temperature of the system'
+        v2.info = 'Coulomb repulsion parameter in ' + units
+        v3.info = 'Temperature of the system in '+ units
         g.variables['n'][:] = n
         g.variables['U'][:] = U
         g.variables['kT'][:] = kT

@@ -36,12 +36,16 @@ class HubbardHamiltonian(object):
         Number of k-points along (a1, a2, a3) for Monkhorst-Pack BZ sampling
     kT: float, optional
         Temperature of the system in units of the Boltzmann constant
+    units: str, optional
+        (energy) units of U, kT and the TB Hamiltonian parameters (namely the hopping term and the onsite energies).
+        If one uses another units then it should be specified here. electron volts are used by default
     """
 
-    def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5):
+    def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5, units='eV'):
         """ Initialize HubbardHamiltonian """
 
         self.U = U # hubbard onsite Coulomb parameter
+        self.units = units # Label to know the used units
 
         # Copy TB Hamiltonian to store the converged one in a different variable
         self.TBHam = TBHam
@@ -117,7 +121,7 @@ class HubbardHamiltonian(object):
 
     def __str__(self):
         """ Representation of the model """
-        s = self.__class__.__name__ + f'{{q: {self.q}, U: {self.U}, kT: {self.kT}\n'
+        s = self.__class__.__name__ + f'{{q: {self.q}, U: {self.U} {self.units}, kT: {self.kT} {self.units}\n'
         s += str(self.H).replace('\n', '\n ')
         return s + '\n}'
 
@@ -412,7 +416,7 @@ class HubbardHamiltonian(object):
         if not os.path.isfile(fn):
             mode = 'w'
         fh = nc.ncSilehubbard(fn, mode=mode)
-        fh.write_density(self.n, self.U, self.kT, group)
+        fh.write_density(self.n, self.U, self.kT, self.units, group)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
