@@ -1,5 +1,4 @@
 from hubbard import HubbardHamiltonian, sp2, density, NEGF
-import numpy as np
 import sisl
 
 # Build sisl Geometry object
@@ -14,7 +13,7 @@ dn = H.iterate(density.calc_n_insulator, mixer=sisl.mixing.LinearMixer())
 print('   dn, Etot: ', dn, H.Etot, '\n')
 
 print('2. Run one iteration with data from ncfile')
-H.read_density('mol-ref/density.nc')
+H.read_density('mol-ref/density.nc', group='3abe772')
 dn = H.iterate(density.calc_n_insulator, mixer=sisl.mixing.LinearMixer())
 etot = 1 * H.Etot
 print('   dn, Etot: ', dn, etot, '\n')
