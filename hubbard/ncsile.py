@@ -125,10 +125,12 @@ class ncSilehubbard(sisl.SileCDF):
         self._crt_dim(self, 'norb', n.shape[1])
 
         # Write variable n
-        v = self._crt_var(g, 'n', ('f8', 'f8'), ('nspin', 'norb'))
-        v = self._crt_var(g, 'U', 'f8')
-        v = self._crt_var(g, 'kT', 'f8')
-        v.info = 'Mean Field Hubbard calculation'
+        v1 = self._crt_var(g, 'n', ('f8', 'f8'), ('nspin', 'norb'))
+        v2 = self._crt_var(g, 'U', 'f8')
+        v3 = self._crt_var(g, 'kT', 'f8')
+        v1.info = 'Spin densities'
+        v2.info = 'Coulomb repulsion parameter'
+        v3.info = 'Temperature of the system'
         g.variables['n'][:] = n
         g.variables['U'][:] = U
         g.variables['kT'][:] = kT
