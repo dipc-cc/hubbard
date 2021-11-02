@@ -138,3 +138,5 @@ class ncSilehubbard(sisl.SileCDF):
         g.variables['n'][:] = n
         g.variables['U'][:] = U
         g.variables['kT'][:] = kT
+
+sisl.io.add_sile("HU.nc", ncSilehubbard, gzip=False)
