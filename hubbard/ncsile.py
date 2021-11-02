@@ -1,10 +1,10 @@
 import numpy as np
 import sisl
 
-__all__ = ['ncSilehubbard']
+__all__ = ['ncSileHubbard']
 
 
-class ncSilehubbard(sisl.SileCDF):
+class ncSileHubbard(sisl.SileCDF):
     """ Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 
     See Also
@@ -139,4 +139,4 @@ class ncSilehubbard(sisl.SileCDF):
         v2[:] = U
         v3[:] = kT
 
-sisl.io.add_sile("HU.nc", ncSilehubbard, gzip=False)
+sisl.io.add_sile("HU.nc", ncSileHubbard, gzip=False)
