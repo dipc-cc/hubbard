@@ -135,8 +135,8 @@ class ncSilehubbard(sisl.SileCDF):
         v1.info = 'Spin densities'
         v2.info = 'Coulomb repulsion parameter in ' + units
         v3.info = 'Temperature of the system in '+ units
-        g.variables['n'][:] = n
-        g.variables['U'][:] = U
-        g.variables['kT'][:] = kT
+        v1[:] = n
+        v2[:] = U
+        v3[:] = kT
 
 sisl.io.add_sile("HU.nc", ncSilehubbard, gzip=False)
