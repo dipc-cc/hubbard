@@ -31,15 +31,17 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
         GF = np.zeros([len(e), no], dtype=np.complex128)
     elif mode == 'Full':
         GF = np.zeros([len(e), no, no], dtype=np.complex128)
-
+    # This if statement overcomes cases where there are no electrodes
+    if np.array(SE).shape == (0,):
+        SE = [SE]
     for ie, e_i in enumerate(e):
         inv_GF = e_i * np.identity(no) - HC
         for idx, se in zip(elec_idx, SE[ie]):
             inv_GF[idx, idx.T] -= se
-            if mode == 'DOS':
-                GF[ie] = np.linalg.inv(inv_GF)[np.arange(no), np.arange(no)]
-            elif mode == 'Full':
-                GF[ie] = np.linalg.inv(inv_GF)
+        if mode == 'DOS':
+            GF[ie] = np.linalg.inv(inv_GF)[np.arange(no), np.arange(no)]
+        elif mode == 'Full':
+            GF[ie] = np.linalg.inv(inv_GF)
     return GF
 
 
