@@ -31,13 +31,12 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
         GF = np.zeros([len(e), no], dtype=np.complex128)
     elif mode == 'Full':
         GF = np.zeros([len(e), no, no], dtype=np.complex128)
+
     # This if statement overcomes cases where there are no electrodes
-    if np.array(SE).shape == (0,):
-        SE = [SE]
     for ie, e_i in enumerate(e):
         inv_GF = e_i * np.identity(no) - HC
-        for idx, se in zip(elec_idx, SE[ie]):
-            inv_GF[idx, idx.T] -= se
+        for idx, se in zip(elec_idx, SE):
+            inv_GF[idx, idx.T] -= se[ie]
         if mode == 'DOS':
             GF[ie] = np.linalg.inv(inv_GF)[np.arange(no), np.arange(no)]
         elif mode == 'Full':
@@ -178,10 +177,10 @@ class NEGF:
 
         # spin, electrode
         self._ef_SE = _nested_list(Hdev.spin_size, len(self.elec_SE))
-        # spin, EQ-contour, energy, electrode
-        self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
-        # spin, energy, electrode
-        self._cc_neq_SE = _nested_list(Hdev.spin_size, self.CC_neq.shape[0], len(self.elec_SE))
+        # spin, EQ-contour, electrode, energy
+        self._cc_eq_SE = _nested_list(Hdev.spin_size, self.CC_eq.shape[0], len(self.elec_SE), self.CC_eq.shape[1])
+        # spin, electrode, energy
+        self._cc_neq_SE = _nested_list(Hdev.spin_size, len(self.elec_SE), self.CC_neq.shape[0])
 
         kw = {}
         for i, se in enumerate(self.elec_SE):
@@ -195,12 +194,11 @@ class NEGF:
                 for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                     for ic, cc in enumerate(CC_eq):
                         # Do it also for each point in the CC, for all EQ CC
-                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, **kw)
-
+                        self._cc_eq_SE[spin][cc_eq_i][i][ic] = se.self_energy(cc, **kw)
                 if self.NEQ:
                     for ic, cc in enumerate(self.CC_neq):
                         # And for each point in the Neq CC
-                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, **kw)
+                        self._cc_neq_SE[spin][i][ic] = se.self_energy(cc, **kw)
 
     def calc_n_open(self, H, q, qtol=1e-5, Nblocks=5):
         """
@@ -278,7 +276,6 @@ class NEGF:
                             HC = H.H.Hk(spin=spin, format='array')
                         else:
                             HC = H.H.Hk(format='array')
-
                         GF = _G([Ef + 1j * self.eta], HC, self.elec_idx, ef_SE[spin])
 
                         # Now we need to calculate the new Fermi level based on the
