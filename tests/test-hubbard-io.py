@@ -24,14 +24,14 @@ H.n *= 2
 H.write_density('mol-ref/test.HU.nc', group='group2', mode='a')
 
 
-print('3. Read density, U and kT using ncsile')
-# Since there are two groups in the file at this point and none is specified it reads everything
+print('3. Read density, U and kT using ncsile from all groups')
 fh = sisl.get_sile('mol-ref/test.HU.nc', mode='r')
-print('n: ', fh.read_density(group=None))
-print('U: ', fh.read_U(group=None))
-print('kT: ', fh.read_kT(group=None))
-
-print('\n')
+for g in fh.groups:
+    print('group: ', g)
+    print('n:', fh.read_density(group=g))
+    print('U:', fh.read_U(group=g))
+    print('kT:', fh.read_kT(group=g))
+    print('\n')
 
 print('4. Read using HubbardHamiltoninan class')
 # Read density using the HubbardHamiltonian class
