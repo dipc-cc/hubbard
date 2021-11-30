@@ -48,7 +48,6 @@ class HubbardHamiltonian(object):
     def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5, units='eV'):
         """ Initialize HubbardHamiltonian """
 
-        self.U = U # hubbard onsite Coulomb parameter
         self.units = units # Label to know the used units
 
         # Copy TB Hamiltonian to store the converged one in a different variable
@@ -309,9 +308,9 @@ class HubbardHamiltonian(object):
         E = self.e0.copy()
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
-        E += self.U_ii * (self.n[ispin, :] - q0)
+        E += self._U_ii * (self.n[ispin, :] - q0)
         # off-diagonal elements
-        E += 0.5*(self.U_ij+self.U_ij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
+        E += 0.5*(self._U_ij+self._U_ij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
         a = np.arange(len(self.H))
         self.H[a, a, range(self.spin_size)] = E.T
 
@@ -551,7 +550,7 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - (self.U_ii * ni[0]*ni[-1]).sum() - 0.5*self.U_ij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
+        self.Etot = Etot - (self._U_ii * ni[0]*ni[-1]).sum() - 0.5*self._U_ij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
         return dn
 
     def converge(self, calc_n_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):

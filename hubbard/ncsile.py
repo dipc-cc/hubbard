@@ -130,7 +130,7 @@ class ncSileHubbard(sisl.SileCDF):
 
         # Write variable n
         v1 = self._crt_var(g, 'n', ('f8', 'f8'), ('nspin', 'norb'))
-        v2 = self._crt_var(g, 'U', 'f8')
+        v2 = self._crt_var(g, 'U', ('f8', 'f8'), ('norb', 'norb'))
         v3 = self._crt_var(g, 'kT', 'f8')
         v1.info = 'Spin densities'
         v2.info = 'Coulomb repulsion parameter in ' + units
