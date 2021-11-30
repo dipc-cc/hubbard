@@ -399,6 +399,7 @@ class HubbardHamiltonian(object):
                 warnings.warn(f'Groups found in {fn}, using the density from the first one')
                 # Read only the first element from the list
                 self.n = fh.read_density()[0]
+            fh.close()
             self.update_hamiltonian()
 
     def write_density(self, fn, mode='w', group=None):
