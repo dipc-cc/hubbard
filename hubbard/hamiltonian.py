@@ -1,6 +1,7 @@
 import numpy as np
 import sisl
 import hubbard.ncsile as nc
+import hashlib
 import os
 import math
 import warnings
