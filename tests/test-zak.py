@@ -20,7 +20,7 @@ zak = H.get_Zak_phase(axis=1)
 zako = H.get_Zak_phase(axis=1, method='zak:origin')
 print(f'SSH topo : zak={zak:7.3f}, zak:origin={zako:7.3f}')
 
-# SSH model, topological cell
+# SSH model, trivial cell
 g = sisl.Geometry([[0, 0, 0], [0, 1.42, 0]], sisl.Atom(6, 1.001), sc=[10, 3, 10])
 g.set_nsc([1, 3, 1])
 H0 = sp2(g)
