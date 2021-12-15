@@ -69,7 +69,7 @@ class LDOSmap(Plot):
         spin index
     direction : 3-vector, optional
         vector defining the direction of the real-space projection
-    origo : 3-vector, optional
+    origin : 3-vector, optional
         coordinate on the real-space projection axis
     projection : {'2D', '1D'}
         whether the projection is for the perpendicular plane (2D) or on the axis (1D)
@@ -98,7 +98,7 @@ class LDOSmap(Plot):
     """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
-                 direction=[1, 0, 0], origo=[0, 0, 0], projection='2D',
+                 direction=[1, 0, 0], origin=[0, 0, 0], projection='2D',
                  nx=601, gamma_x=0.5, dx=5.0, dist_x='gaussian',
                  ne=501, gamma_e=0.05, emax=10., dist_e='lorentzian',
                  vmin=0, vmax=None, scale='linear', **kwargs):
@@ -107,8 +107,8 @@ class LDOSmap(Plot):
         ev, evec = HubbardHamiltonian.eigh(k=k, eigvals_only=False, spin=spin)
         ev -= HubbardHamiltonian.find_midgap()
         xyz = np.array(HubbardHamiltonian.geometry.xyz[:])
-        # coordinates relative to selected origo
-        xyz -= np.array(origo).reshape(1, 3)
+        # coordinates relative to selected origin
+        xyz -= np.array(origin).reshape(1, 3)
         # distance along projection axis
         unitvec = np.array(direction)
         unitvec = unitvec / unitvec.dot(unitvec) ** 0.5
@@ -151,7 +151,7 @@ class LDOSmap(Plot):
                                        origin='lower', norm=norm, vmax=vmax)
         title = f'LDOS projection in {projection.upper()}'
         if projection.upper() == '1D':
-            title += r': origo [%.2f,%.2f,%.2f] (\AA)' % tuple(origo)
+            title += r': origin [%.2f,%.2f,%.2f] (\AA)' % tuple(origin)
         self.set_title(title)
         self.set_xlabel(r'distance along [%.2f,%.2f,%.2f] (\AA)' % tuple(direction))
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')

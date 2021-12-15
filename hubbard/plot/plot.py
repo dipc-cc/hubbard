@@ -238,7 +238,7 @@ class GeometryPlot(Plot):
             g = self.geometry.copy()
 
             # Set new sc to create real-space grid
-            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origo=[0, 0, -z])
+            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origin=[0, 0, -z])
             g.set_sc(sc)
 
             # Move geometry within the supercell
