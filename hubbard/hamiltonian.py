@@ -598,7 +598,7 @@ class HubbardHamiltonian(object):
         L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
         return ev, L
 
-    def get_Zak_phase(self, func=None, nk=51, sub='filled', eigvals=False, intercell=True):
+    def get_Zak_phase(self, func=None, nk=51, sub='filled', eigvals=False, method='zak'):
         """ Computes the Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`
 
         Parameters
@@ -611,8 +611,9 @@ class HubbardHamiltonian(object):
             number of bands that will be summed to obtain the Zak phase
         eigvals : bool, optional
             return the eigenvalues of the product of the overlap matrices, see sisl.physics.electron.berry_phase
-        intercell : bool, optional
-            shifts the origin to the geometry center to compute the intercell Zak phase
+        method : {'zak', 'zak:origin'}
+            whether to compute intercell Zak phase (default) or the total Zak phase including the origin-dependent contribution,
+            see `sisl.electron.berry_phase` for details.
 
         Notes
         -----
@@ -624,19 +625,15 @@ class HubbardHamiltonian(object):
         Zak: float
             Zak phase for the 1D system
         """
-        H = self.H.copy()
-        if intercell:
-            # shift origin to the geometric center
-            H.geometry.xyz -= H.geometry.center()
         if not func:
             # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
             def func(sc, frac):
                 return [frac, 0, 0]
-        bz = sisl.BrillouinZone.parametrize(H, func, nk)
+        bz = sisl.BrillouinZone.parametrize(self.H, func, nk)
         if sub == 'filled':
             # Sum up over all occupied bands:
             sub = np.arange(int(round(self.q[0])))
-        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method='zak')
+        return sisl.electron.berry_phase(bz, sub=sub, eigvals=eigvals, method=method)
 
     def get_bond_order(self, format='csr', midgap=0.):
         """ Compute Huckel bond order
