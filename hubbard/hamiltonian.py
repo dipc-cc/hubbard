@@ -58,6 +58,12 @@ class HubbardHamiltonian(object):
         # So far we only consider either unpolarized or spin-polarized Hamiltonians
         self.spin_size = self.H.spin.spinor
 
+        # Check that there is only one obrital per atom (at least for the moment)
+        try:
+            assert self.geometry.na == self.geometry.no
+        except AssertionError:
+            raise ValueError('The number of orbitals has to be equal to the number of atoms in the geometry')
+
         # Use sum of all matrix elements as a basis for hash function calls
         H0 = self.TBHam.copy()
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
