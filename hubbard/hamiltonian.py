@@ -218,11 +218,16 @@ class HubbardHamiltonian(object):
         Returns
         -------
         A new larger `hubbard.HubbardHamiltonian` object
+
+        Note
+        ----
+        We need to update this function so Uij also gets tiled like the geometry
         """
         Htile = self.H.tile(reps, axis)
         ntile = np.tile(self.n, reps)
         q = ntile.sum(1)
-        return self.__class__(Htile, n=ntile, U=self.U, q=q, nkpt=self.mp, kT=self.kT)
+        U = np.tile(self.U, reps)
+        return self.__class__(Htile, n=ntile, U=U, q=q, nkpt=self.mp, kT=self.kT)
 
     def repeat(self, reps, axis):
         """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
@@ -241,11 +246,16 @@ class HubbardHamiltonian(object):
         Returns
         -------
         A new larger `hubbard.HubbardHamiltonian` object
+
+        Note
+        ----
+        We need to update this function so Uij also gets repeated like the geometry
         """
         Hrep = self.H.repeat(reps, axis)
         nrep = np.repeat(self.n, reps, axis=1)
         q = nrep.sum(1)
-        return self.__class__(Hrep, n=nrep, U=self.U, q=q, nkpt=self.mp, kT=self.kT)
+        U = np.repeat(self.U, reps)
+        return self.__class__(Hrep, n=nrep, U=U, q=q, nkpt=self.mp, kT=self.kT)
 
     def remove(self, atoms, q=(0,0)):
         """ Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`
@@ -267,7 +277,10 @@ class HubbardHamiltonian(object):
         atoms = np.delete(_a.arangei(self.geometry.na), atoms)
         Hsub = self.H.sub(atoms)
         nsub = self.n[:,atoms]
-        return self.__class__(Hsub, n=nsub, U=self.U,
+        U = self.U[atoms]
+        if self.Uij is not None:
+            Uij = self.Uij[np.ix_(atoms, atoms)]
+        return self.__class__(Hsub, n=nsub, U=U, Uij=Uij,
                     q=q, nkpt=self.mp, kT=self.kT)
 
     def sub(self, atoms, q=(0,0)):
@@ -281,7 +294,10 @@ class HubbardHamiltonian(object):
             Two values specifying up, down electron occupations for the subset of atoms
         """
         nsub = self.n[:, atoms]
-        return self.__class__(self.H.sub(atoms), n=nsub, U=self.U,
+        U = self.U[atoms]
+        if self.Uij is not None:
+            Uij = self.Uij[np.ix_(atoms, atoms)]
+        return self.__class__(self.H.sub(atoms), n=nsub, U=U, Uij=Uij,
                     q=q, nkpt=self.mp, kT=self.kT)
 
     def copy(self):
