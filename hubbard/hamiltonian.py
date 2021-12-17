@@ -27,7 +27,9 @@ class HubbardHamiltonian(object):
     n: numpy.ndarray, optional
         initial spin-densities vectors. The shape of `n` must be (spin deg. of freedom, no. of sites)
     U: float or np.ndarray, optional
-        Coulomb repulsion parameter
+        intra-orbital Coulomb repulsion parameter. If an array is passed, the length has to be equal to the number of orbitals
+    Uij: np.ndarray, optional
+        inter-orbital Coulomb repulsion parameter. The size of the matrix has to be equal to the number of orbitals
     q: array_like, optional
         One or two values specifying the total charge associated to each spin component.
         The array should contain as many values as the dimension of the problem. I.e., if the
@@ -45,7 +47,7 @@ class HubbardHamiltonian(object):
     The implementation to solve the extended Hubbard model (with inter-atomic interactions) has not been tested
     """
 
-    def __init__(self, TBHam, n=0, U=0.0, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5, units='eV'):
+    def __init__(self, TBHam, n=0, U=None, Uij=None, q=(0., 0.), nkpt=[1, 1, 1], kT=1e-5, units='eV'):
         """ Initialize HubbardHamiltonian """
 
         self.units = units # Label to know the used units
@@ -76,15 +78,17 @@ class HubbardHamiltonian(object):
 
         if U is None:
             try:
-                # Try to extract U stored in sisl.Geometry object
+                # Try to extract U stored in sisl.Geometry object (intra-orbital Coulomb repulsion)
                 U = np.array(len(self.geometry))
                 for ia in self.geometry:
                     U[ia] = self.geometry.atoms[ia].U
             except AttributeError:
                 U = 0.0
 
-        # Hubbard Coulomb parameter (use setter)
+        # Hubbard (intra-orbital) Coulomb parameter (use setter)
         self.U = U
+        # Separate inter-orbital interactions:
+        self.Uij = Uij
 
         # Total initial charge
         ntot = self.geometry.q0
@@ -127,19 +131,15 @@ class HubbardHamiltonian(object):
 
     @property
     def U(self):
-        """ U values in full matrix form """
+        """ U values for the intra-Coulombrepulsion term """
         return self._U
 
     @U.setter
     def U(self, U):
         """ Set U values """
         # Hubbard Coulomb parameter
-        # Multiply with the identity matrix to ensure that the U variable is a matrix
-        self._U = U * np.identity(len(self.geometry))
-        # Separate into intra and inter-atomic interactions:
-        self._U_ii = np.diag(self._U)
-        self._U_ij = self._U.copy()
-        np.fill_diagonal(self._U_ij, 0.)
+        # Multiply with ones to ensure that the U variable is a vector with the proper size
+        self._U = U * np.ones(self.geometry.no)
 
     def set_kmesh(self, nkpt=[1, 1, 1]):
         """ Set the k-mesh for the HubbardHamiltonian
@@ -314,9 +314,10 @@ class HubbardHamiltonian(object):
         E = self.e0.copy()
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
-        E += self._U_ii * (self.n[ispin, :] - q0)
+        E += self.U * (self.n[ispin, :] - q0)
         # off-diagonal elements
-        E += 0.5*(self._U_ij+self._U_ij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
+        if self.Uij is not None:
+            E += 0.5*(self.Uij+self.Uij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
         a = np.arange(len(self.H))
         self.H[a, a, range(self.spin_size)] = E.T
 
@@ -556,7 +557,10 @@ class HubbardHamiltonian(object):
         self.update_hamiltonian()
 
         # Store total energy
-        self.Etot = Etot - (self._U_ii * ni[0]*ni[-1]).sum() - 0.5*self._U_ij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
+        self.Etot = Etot - (self.U * ni[0]*ni[-1]).sum()
+        # Inter-orbital term
+        if self.Uij is not None:
+            self.Etot -= 0.5*self.Uij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
         return dn
 
     def converge(self, calc_n_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
