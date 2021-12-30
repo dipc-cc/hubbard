@@ -50,7 +50,10 @@ class Charge(GeometryPlot):
         if not isinstance(spin, list):
             spin = [spin]
 
-        chg = HH.n[spin].sum(axis=0)
+        # Sum over all orbitals
+        chg = np.zeros((HH.geometry.na))
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            chg[ia] += HH.n[0, io] + HH.n[1, io]
 
         if realspace:
             self.__realspace__(chg, density=True, **kwargs)
@@ -96,9 +99,13 @@ class ChargeDifference(GeometryPlot):
         super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute total charge on each site, subtract neutral atom charge
-        chg = HH.n.sum(0)
-        for ia in HH.geometry:
-            chg[ia] -= HH.geometry.atoms[ia].Z-5
+        chg = np.zeros((HH.geometry.na))
+        q = np.zeros_like(chg)
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            q[ia] = HH.geometry.atoms[ia].Z-5
+            chg[ia] += HH.n[0,io] + HH.n[1,io]
+
+        chg -= q
 
         if realspace:
             self.__realspace__(chg, density=True, **kwargs)
@@ -140,8 +147,10 @@ class SpinPolarization(GeometryPlot):
 
         super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
-        # Compute charge difference between up and down channels
-        chg = np.diff(HH.n[[-1, 0]], axis=0).ravel()
+        # Sum over all orbitals
+        chg = np.zeros((HH.geometry.na))
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            chg[ia] += (HH.n[0, io] - HH.n[1, io])
 
         if realspace:
             self.__realspace__(chg, density=True, **kwargs)

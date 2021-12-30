@@ -60,12 +60,6 @@ class HubbardHamiltonian(object):
         # So far we only consider either unpolarized or spin-polarized Hamiltonians
         self.spin_size = self.H.spin.spinor
 
-        # Check that there is only one obrital per atom (at least for the moment)
-        try:
-            assert self.geometry.na == self.geometry.no
-        except AssertionError:
-            raise ValueError('The number of orbitals has to be equal to the number of atoms in the geometry')
-
         # Use sum of all matrix elements as a basis for hash function calls
         H0 = self.TBHam.copy()
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
@@ -92,8 +86,10 @@ class HubbardHamiltonian(object):
 
         # Total initial charge
         ntot = self.geometry.q0
+        self.sites = self.geometry.no
+
         if ntot == 0:
-            ntot = len(self.geometry)
+            ntot = self.geometry.na
 
         self.q = np.array(q, dtype=np.float64).copy()
         # Ensure the length of q is equal to the dimension of the problem
@@ -107,7 +103,12 @@ class HubbardHamiltonian(object):
             else:
                 self.q[0] = ntot / 2
 
-        self.sites = len(self.geometry)
+        self.q0 = np.zeros((self.sites))
+        for atom, a_idx in self.geometry.atoms.iter(True):
+            for ia in a_idx:
+                io =  self.geometry.a2o(ia, all=True)
+                self.q0[io] = atom.q0
+
         self._update_e0()
 
         # Set k-mesh
@@ -128,18 +129,6 @@ class HubbardHamiltonian(object):
                 self.n = n
         # Ensure normalized charge
         self.normalize_charge()
-
-    @property
-    def U(self):
-        """ U values for the intra-Coulombrepulsion term """
-        return self._U
-
-    @U.setter
-    def U(self, U):
-        """ Set U values """
-        # Hubbard Coulomb parameter
-        # Multiply with ones to ensure that the U variable is a vector with the proper size
-        self._U = U * np.ones(self.geometry.no)
 
     def set_kmesh(self, nkpt=[1, 1, 1]):
         """ Set the k-mesh for the HubbardHamiltonian
@@ -325,15 +314,13 @@ class HubbardHamiltonian(object):
         The constat term :math:`C = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle - \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle + \langle n_{j\downarrow}\rangle\right)`
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-
-        q0 = self.geometry.atoms.q0
         E = self.e0.copy()
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
-        E += self.U * (self.n[ispin, :] - q0)
+        E += self.U * (self.n[ispin, :] - self.q0)
         # off-diagonal elements
         if self.Uij is not None:
-            E += 0.5*(self.Uij+self.Uij.T) @ ((self.n[0]+self.n[-1]) - q0) # Same thing adds to both spin components
+            E += 0.5*(self.Uij+self.Uij.T) @ ((self.n[0]+self.n[-1]) - self.q0) # Same thing adds to both spin components
         a = np.arange(len(self.H))
         self.H[a, a, range(self.spin_size)] = E.T
 
@@ -630,7 +617,7 @@ class HubbardHamiltonian(object):
                 if print_info:
                     print('   %i iterations completed:' % i, dn, self.Etot)
                 if fn:
-                    self.write_density(fn)
+                    self.write_density(fn, 'a')
         if print_info:
             print('   found solution in %i iterations' % i)
         return dn
