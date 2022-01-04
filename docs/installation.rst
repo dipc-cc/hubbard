@@ -6,9 +6,9 @@ Installation
 Required dependencies
 ---------------------
 
-* Python_ 2.7, 3.4 or newer
-* NumPy_ 1.10 or newer
-* SciPy_ 0.17 or newer
+* Python_ 3.6 or newer
+* NumPy_ 1.13 or newer
+* SciPy_ 0.18 or newer
 * sisl_ 0.11.0 or newer
 
 Optional:
@@ -31,7 +31,7 @@ Manual installation is performed with the command
 
 .. code-block:: bash
 
-   python3 setup.py install --prefix=<prefix>
+   python3 -m pip install . --prefix=<prefix>
 
 One can also use the auxiliary file `install-py3.sh`
 
