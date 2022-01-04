@@ -629,9 +629,9 @@ class HubbardHamiltonian(object):
         """
         if not func:
             # Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)
-            def func(sc, frac):
+            def func(sc, N, i):
                 f = [0, 0, 0]
-                f[axis] = frac
+                f[axis] = i / N
                 return f
         bz = sisl.BrillouinZone.parametrize(self.H, func, nk)
         if sub == 'filled':
