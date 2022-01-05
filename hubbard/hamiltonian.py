@@ -103,7 +103,7 @@ class HubbardHamiltonian(object):
             else:
                 self.q[0] = ntot / 2
 
-        self.q0 = np.zeros((self.sites))
+        self.q0 = np.zeros(self.sites)
         for atom, a_idx in self.geometry.atoms.iter(True):
             for ia in a_idx:
                 io =  self.geometry.a2o(ia, all=True)
@@ -304,14 +304,20 @@ class HubbardHamiltonian(object):
     def update_hamiltonian(self):
         r""" Update spin Hamiltonian according to the extended Hubbard model,
         see for instance `PRL 106, 236805 (2011)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
-        It updtates the diagonal elements for each spin Hamiltonian following the mean field approximation:
+        It updates the diagonal elements for each spin Hamiltonian following the mean field approximation:
 
         .. math::
 
-            H &= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} + \frac{1}{2}\sum_{i\neq j\sigma\sigma^\prime}U_{ij}n_{i\sigma}n_{j\sigma^\prime} \approx\\
-	        & -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} + \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij} + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + C
+            H &= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} +
+            \frac{1}{2}\sum_{i\neq j\sigma\sigma^\prime}U_{ij}n_{i\sigma}n_{j\sigma^\prime} \approx\\
+	        & -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} +
+            \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} +
+            \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij}
+            + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + C
 
-        The constat term :math:`C = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle - \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle + \langle n_{j\downarrow}\rangle\right)`
+        The constant term :math:`C = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle -
+        \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle
+        + \langle n_{j\downarrow}\rangle\right)`
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
         E = self.e0.copy()
