@@ -1,6 +1,7 @@
+import sisl
 from sisl import geom, Atom
+import numpy as np
 import os
-from add_Hatoms import *
 from hubbard import HubbardHamiltonian, sp2, density, plot
 
 W = 7
@@ -24,10 +25,10 @@ s = sisl.Orbital(1.42, q0=0)
 C = sisl.Atom(6, orbitals=[pz, s])
 g = geom.zgnr(W, atoms=C)
 
-# Add another atom to have also "heteroatom" situation
-B = sisl.Atom(6, orbitals=[pz])
-G_B = sisl.Geometry(g.xyz[0], atoms=B)
-g = g.replace(0,G_B)
+# Add another atom to have heterogeneous number of orbitals per atoms
+C2 = sisl.Atom(6, orbitals=[pz])
+G_C2 = sisl.Geometry(g.xyz[0], atoms=C2)
+g = g.replace(0,G_C2)
 
 # Identify index for atoms
 idx = g.a2o(range(len(g)))
@@ -59,9 +60,9 @@ p.add_bands(HH, c='--r')
 p.savefig('bands.pdf')
 
 # Plot charge for multi-orbital case
-p = plot.Charge(HH)
+p = plot.Charge(HH, vmin=0.9, vmax=1.1, colorbar=True)
 p.savefig('charge.pdf')
 
 # Plot spin polarization for multi-orbital case
-p = plot.SpinPolarization(HH, vmax=0.2, vmin=-0.2)
+p = plot.SpinPolarization(HH, vmax=0.2, vmin=-0.2, colorbar=True)
 p.savefig('spinpol.pdf')
