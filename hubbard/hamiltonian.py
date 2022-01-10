@@ -59,6 +59,7 @@ class HubbardHamiltonian(object):
         self.geometry = TBHam.geometry
         # So far we only consider either unpolarized or spin-polarized Hamiltonians
         self.spin_size = self.H.spin.spinor
+        self.sites = self.geometry.no
 
         # Use sum of all matrix elements as a basis for hash function calls
         H0 = self.TBHam.copy()
@@ -73,9 +74,9 @@ class HubbardHamiltonian(object):
         if U is None:
             try:
                 # Try to extract U stored in sisl.Geometry object (intra-orbital Coulomb repulsion)
-                U = np.array(len(self.geometry))
-                for ia in self.geometry:
-                    U[ia] = self.geometry.atoms[ia].U
+                U = np.empty(self.sites)
+                for ia,io in self.geometry.iter_orbitals():
+                    U[ia] = self.geometry.atoms[ia].orbitals[io].U
             except AttributeError:
                 U = 0.0
 
@@ -86,7 +87,6 @@ class HubbardHamiltonian(object):
 
         # Total initial charge
         ntot = self.geometry.q0
-        self.sites = self.geometry.no
 
         if ntot == 0:
             ntot = self.geometry.na
