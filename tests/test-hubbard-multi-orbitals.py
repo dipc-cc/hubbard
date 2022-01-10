@@ -11,7 +11,6 @@ bond = 1.42
 g = geom.zgnr(W)
 TBHam = sp2(g, t1=2.7, t2=0, t3=0)
 HH = HubbardHamiltonian(TBHam, U=3, nkpt=[100,1,1])
-#print(HH.geometry.atoms.atom[0].q0)
 HH.set_polarization([0], dn=[-1])
 HH.converge(density.calc_n, print_info=True, tol=1e-10, steps=3)
 n_single = HH.n*1
@@ -19,9 +18,20 @@ n_single = HH.n*1
 # Start bands-plot, the single-orbital case will be plotted in black
 p = plot.Bandstructure(HH, c='k')
 
-# Multi-orbital tight-binding Hamiltonian
-pz = sisl.Orbital(1.42, q0=1.0)
-s = sisl.Orbital(1.42, q0=0)
+class OrbitalU(sisl.Orbital):
+    __slots__ = ('U',)
+    def __init__(self, *args, U=0., **kwargs):
+        super().__init__(*args, **kwargs)
+        self.U = U
+
+    def copy(self, *args, **kwargs):
+        copy = super().copy(*args, **kwargs)
+        copy.U = self.U
+        return copy
+
+# Multi-orbital tight-binding Hamiltonian, set U in the geometry
+pz = OrbitalU(1.42, q0=1.0, U=3.)
+s = OrbitalU(1.42, q0=0, U=3.)
 C = sisl.Atom(6, orbitals=[pz, s])
 g = geom.zgnr(W, atoms=C)
 
@@ -34,8 +44,8 @@ g = g.replace(0,G_C2)
 idx = g.a2o(range(len(g)))
 
 # Build U for each orbital in each atom
-U = np.zeros(g.no)
-U[idx] = 3.
+#U = np.zeros(g.no)
+#U[idx] = 3.
 
 # Build TB Hamiltonian, zeroes for non-pz orbitals
 TBham = sisl.Hamiltonian(g, spin='polarized')
@@ -47,7 +57,7 @@ for ia in g:
         TBham[io_a[0], io_b[0]] = -2.7
 
 # HubbardHamiltonian object and converge
-HH = HubbardHamiltonian(TBham, U=U, nkpt=[100,1,1])
+HH = HubbardHamiltonian(TBham, U=None, nkpt=[100,1,1])
 HH.set_polarization([0], dn=[g.a2o(13)])
 HH.converge(density.calc_n, print_info=True, tol=1e-10, steps=3)
 
