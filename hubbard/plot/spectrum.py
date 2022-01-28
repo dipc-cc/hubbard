@@ -198,7 +198,7 @@ class DOS_distribution(GeometryPlot):
         if realspace:
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
-            self.__realspace__(PDOS, density=True, **kwargs)
+            self.__realspace__(PDOS, mode='density', **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:

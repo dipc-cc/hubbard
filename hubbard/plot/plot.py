@@ -229,9 +229,9 @@ class GeometryPlot(Plot):
                 if 'label' in kwargs:
                     self.set_colorbar_ylabel(kwargs['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=[100, 100, 1], density=False, smooth=False, **kwargs):
+    def __realspace__(self, v, z=1.1, grid_unit=[100, 100, 1], smooth=False, mode='wavefunction', **kwargs):
 
-        def real_space_grid(v, grid_unit, density):
+        def real_space_grid(v, grid_unit, mode):
             import sisl
 
             # Create a temporary copy of the geometry
@@ -249,12 +249,7 @@ class GeometryPlot(Plot):
             # Create the real-space grid
             grid = sisl.Grid(grid_unit, sc=g.sc, geometry=g)
 
-            if density:
-                D = sisl.physics.DensityMatrix(g)
-                a = np.arange(len(D))
-                D.D[a, a] = v
-                D.density(grid)
-            else:
+            if mode in ['wavefunction', 'density']:
                 if isinstance(v, sisl.physics.electron.EigenstateElectron):
                     # Set parent geometry equal to the temporary one
                     v.parent = g
@@ -262,10 +257,16 @@ class GeometryPlot(Plot):
                 else:
                     # In case v is a vector
                     sisl.electron.wavefunction(v, grid, geometry=g)
+            elif mode in ['charge']:
+                D = sisl.physics.DensityMatrix(g)
+                a = np.arange(len(D))
+                D.D[a, a] = v
+                D.density(grid)
+
             del g
             return grid
 
-        grid = real_space_grid(v, grid_unit, density)
+        grid = real_space_grid(v, grid_unit, mode)
         if smooth:
             # Smooth grid with gaussian function
             if 'r_smooth' in kwargs:
@@ -275,6 +276,9 @@ class GeometryPlot(Plot):
             grid = grid.smooth(method='gaussian', r=r_smooth)
 
         slice_grid = grid.grid[:, :, 0].T.real
+
+        if mode in ['density']:
+            slice_grid = slice_grid**2
 
         if 'vmax' in kwargs:
             vmax = kwargs['vmax']

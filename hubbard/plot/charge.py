@@ -56,7 +56,7 @@ class Charge(GeometryPlot):
             chg[ia] += HH.n[0, io] + HH.n[1, io]
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            self.__realspace__(chg, mode='charge', **kwargs)
 
         else:
             self.__orbitals__(chg, **kwargs)
@@ -108,7 +108,7 @@ class ChargeDifference(GeometryPlot):
         chg -= q
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            self.__realspace__(chg, mode='charge', **kwargs)
 
         else:
             # Default symmetric colorscale
@@ -158,7 +158,7 @@ class SpinPolarization(GeometryPlot):
             chg[ia] += (HH.n[0, io] - HH.n[1, io])
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            self.__realspace__(chg, mode='charge', **kwargs)
 
         else:
             # Default symmetric colorscale
