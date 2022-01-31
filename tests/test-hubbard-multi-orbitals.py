@@ -31,7 +31,7 @@ class OrbitalU(sisl.Orbital):
 
 # Multi-orbital tight-binding Hamiltonian, set U in the geometry
 pz = OrbitalU(1.42, q0=1.0, U=3.)
-s = OrbitalU(1.42, q0=0, U=3.)
+s = OrbitalU(1.42, q0=0, U=0.)
 C = sisl.Atom(6, orbitals=[pz, s])
 g = geom.zgnr(W, atoms=C)
 

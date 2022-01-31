@@ -76,7 +76,8 @@ class HubbardHamiltonian(object):
                 # Try to extract U stored in sisl.Geometry object (intra-orbital Coulomb repulsion)
                 U = np.empty(self.sites)
                 for ia,io in self.geometry.iter_orbitals():
-                    U[ia] = self.geometry.atoms[ia].orbitals[io].U
+                    i = self.geometry.a2o(ia, all=True)
+                    U[i[io]] = self.geometry.atoms[ia].orbitals[io].U
             except AttributeError:
                 U = 0.0
 
