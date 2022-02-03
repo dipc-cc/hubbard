@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
+from hubbard.grid import *
 
 __all__ = ['Charge', 'ChargeDifference', 'SpinPolarization']
 
@@ -56,7 +57,18 @@ class Charge(GeometryPlot):
             chg[ia] += HH.n[0, io] + HH.n[1, io]
 
         if realspace:
-            self.__realspace__(chg, mode='charge', **kwargs)
+            if 'grid_unit' not in kwargs:
+                kwargs['grid_unit'] = [100,100,1]
+            if 'z' not in kwargs:
+                kwargs['z'] = 1.1
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
+            self.__realspace__(grid, **kwargs)
 
         else:
             self.__orbitals__(chg, **kwargs)
@@ -108,7 +120,18 @@ class ChargeDifference(GeometryPlot):
         chg -= q
 
         if realspace:
-            self.__realspace__(chg, mode='charge', **kwargs)
+            if 'grid_unit' not in kwargs:
+                kwargs['grid_unit'] = [100,100,1]
+            if 'z' not in kwargs:
+                kwargs['z'] = 1.1
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
+            self.__realspace__(grid, **kwargs)
 
         else:
             # Default symmetric colorscale
@@ -158,7 +181,18 @@ class SpinPolarization(GeometryPlot):
             chg[ia] += (HH.n[0, io] - HH.n[1, io])
 
         if realspace:
-            self.__realspace__(chg, mode='charge', **kwargs)
+            if 'grid_unit' not in kwargs:
+                kwargs['grid_unit'] = [100,100,1]
+            if 'z' not in kwargs:
+                kwargs['z'] = 1.1
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
+            self.__realspace__(grid, **kwargs)
 
         else:
             # Default symmetric colorscale

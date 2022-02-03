@@ -1,4 +1,5 @@
 import numpy as np
+import sisl
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -229,61 +230,18 @@ class GeometryPlot(Plot):
                 if 'label' in kwargs:
                     self.set_colorbar_ylabel(kwargs['label'])
 
-    def __realspace__(self, v, z=1.1, grid_unit=[100, 100, 1], smooth=False, mode='wavefunction', **kwargs):
-
-        def real_space_grid(v, grid_unit, mode):
-            import sisl
-
-            # Create a temporary copy of the geometry
-            g = self.geometry.copy()
-
-            # Set new sc to create real-space grid
-            sc = sisl.SuperCell([self.xmax-self.xmin, self.ymax-self.ymin, 1000], origin=[0, 0, -z])
-            g.set_sc(sc)
-
-            # Move geometry within the supercell
-            g = g.move([-self.xmin, -self.ymin, -np.amin(g.xyz[:, 2])])
-            # Make z~0 -> z = 0
-            g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
-
-            # Create the real-space grid
-            grid = sisl.Grid(grid_unit, sc=g.sc, geometry=g)
-
-            if mode in ['wavefunction', 'density']:
-                if isinstance(v, sisl.physics.electron.EigenstateElectron):
-                    # Set parent geometry equal to the temporary one
-                    v.parent = g
-                    v.wavefunction(grid)
-                else:
-                    # In case v is a vector
-                    sisl.electron.wavefunction(v, grid, geometry=g)
-            elif mode in ['charge']:
-                D = sisl.physics.DensityMatrix(g)
-                a = np.arange(len(D))
-                D.D[a, a] = v
-                D.density(grid)
-
-            del g
-            return grid
-
-        grid = real_space_grid(v, grid_unit, mode)
-        if smooth:
-            # Smooth grid with gaussian function
-            if 'r_smooth' in kwargs:
-                r_smooth = kwargs['r_smooth']
-            else:
-                r_smooth = 0.7
-            grid = grid.smooth(method='gaussian', r=r_smooth)
-
-        slice_grid = grid.grid[:, :, 0].T.real
-
-        if mode in ['density']:
-            slice_grid = slice_grid**2
+    def __realspace__(self, grid, **kwargs):
+        """
+        Parameters
+        ----------
+        grid: numpy.ndarray
+            real space grid to be plotted as a colormap (imshow plot)
+        """
 
         if 'vmax' in kwargs:
             vmax = kwargs['vmax']
         else:
-            vmax = np.amax(np.absolute(slice_grid))
+            vmax = np.amax(np.absolute(grid))
 
         if 'vmin' in kwargs:
             vmin = kwargs['vmin']
@@ -292,7 +250,7 @@ class GeometryPlot(Plot):
 
         # Plot only the real part of the grid
         # The image will be created in an imshow layer (stored in self.imshow)
-        self.imshow = self.axes.imshow(slice_grid, cmap='seismic', origin='lower',
+        self.imshow = self.axes.imshow(grid, cmap='seismic', origin='lower',
                               vmax=vmax, vmin=vmin, extent=self.extent)
         # Colorbars
         if 'colorbar' in kwargs:

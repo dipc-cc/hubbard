@@ -4,8 +4,9 @@ from hubbard.plot import Plot
 from hubbard.plot import GeometryPlot
 import matplotlib.colors as colors
 import numpy as np
+from hubbard.grid import *
 
-__all__ = ['Spectrum', 'LDOSmap', 'DOS_distribution', 'DOS']
+__all__ = ['Spectrum', 'LDOSmap', 'EigenLDOS', 'PDOS']
 
 
 class Spectrum(Plot):
@@ -160,15 +161,15 @@ class LDOSmap(Plot):
         self.axes.set_aspect('auto')
 
 
-class DOS_distribution(GeometryPlot):
+class EigenLDOS(GeometryPlot):
     """ Plot LDOS in the configuration space for the `hubbard.HubbardHamiltonian` object
 
     Parameters
     ----------
     HH: HubbardHamiltonian
         mean-field Hubbard Hamiltonian
-    PDOS: numpy.ndarray
-        Density of states projected in atomic sites obtained at certain energy
+    WF: numpy.ndarray or sisl.physics.electron.EigenstateElectron
+        Eigenstate to be plotted as LDOS
     realspace:
         If True it will plot the DOS in a realspace grid otherwise it plots it as a scatter plot
         with varying size depending on the PDOS numerical value
@@ -178,7 +179,7 @@ class DOS_distribution(GeometryPlot):
     hubbard.HubbardHamiltonian.PDOS
     """
 
-    def __init__(self, HH, PDOS, sites=[], ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, WF, sites=[], ext_geom=None, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -196,13 +197,24 @@ class DOS_distribution(GeometryPlot):
         y = HH.geometry[:, 1]
 
         if realspace:
+            if 'grid_unit' not in kwargs:
+                kwargs['grid_unit'] = [100,100,1]
+            if 'z' not in kwargs:
+                kwargs['z'] = 1.1
+
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
-            self.__realspace__(PDOS, mode='density', **kwargs)
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            grid = real_space_grid(self.geometry, WF, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
+            grid = grid ** 2
+            self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            self.axes.scatter(x, y, PDOS, 'b')
+            WF = WF ** 2
+            self.axes.scatter(x, y, WF, 'b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
