@@ -6,7 +6,7 @@ import matplotlib.colors as colors
 import numpy as np
 from hubbard.grid import *
 
-__all__ = ['Spectrum', 'LDOSmap', 'EigenLDOS', 'PDOS']
+__all__ = ['Spectrum', 'DOSmap', 'EigenLDOS', 'PDOS']
 
 
 class Spectrum(Plot):
@@ -56,14 +56,14 @@ class Spectrum(Plot):
             self.set_ylim(ymin, ymax)
 
 
-class LDOSmap(Plot):
-    """ Plot LDOS(distance, energy) map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object
+class DOSmap(Plot):
+    """ Plot DOS(distance, energy) map resolved in energy and axis-coordinates for the `HubbardHamiltonian` object
 
     Parameters
     ----------
 
     HubbardHamiltonian : HubbardHamiltonian
-        the HubbardHamiltonian from which the LDOS should be computed
+        the HubbardHamiltonian from which the DOS should be computed
     k : array_like, optional
         k-point in the Brillouin zone to sample
     spin : int, optional
@@ -72,8 +72,6 @@ class LDOSmap(Plot):
         vector defining the direction of the real-space projection
     origin : 3-vector, optional
         coordinate on the real-space projection axis
-    projection : {'2D', '1D'}
-        whether the projection is for the perpendicular plane (2D) or on the axis (1D)
     nx : int, optional
         number of grid points along real-space axis
     gamma_x : float, optional
@@ -99,7 +97,7 @@ class LDOSmap(Plot):
     """
 
     def __init__(self, HubbardHamiltonian, k=[0, 0, 0], spin=0,
-                 direction=[1, 0, 0], origin=[0, 0, 0], projection='2D',
+                 direction=[1, 0, 0], origin=[0, 0, 0],
                  nx=601, gamma_x=0.5, dx=5.0, dist_x='gaussian',
                  ne=501, gamma_e=0.05, emax=10., dist_e='lorentzian',
                  vmin=0, vmax=None, scale='linear', **kwargs):
@@ -122,11 +120,7 @@ class LDOSmap(Plot):
         x = np.linspace(xmin, xmax, nx)
         dist_x = sisl.get_distribution(dist_x, smearing=gamma_x)
         xcoord = x.reshape(-1, 1) - coord.reshape(1, -1) # (nx, natoms)
-        if projection.upper() == '1D':
-            # distance perpendicular to projection axis
-            perp = xyz - coord.reshape(-1, 1) * unitvec
-            perp = np.einsum('ij,ij->i', perp, perp)
-            xcoord = (xcoord ** 2 + perp) ** 0.5
+
         DX = dist_x(xcoord)
 
         # Broaden along energy axis
@@ -138,7 +132,7 @@ class LDOSmap(Plot):
         prob_dens = np.abs(evec) ** 2
         DOS = DX.dot(prob_dens).dot(DE.T)
         intdat = np.sum(DOS) * (x[1] - x[0]) * (e[1] - e[0])
-        print('Integrated LDOS spectrum (states within plot):', intdat, DOS.shape)
+        print('Integrated DOS spectrum (states within plot):', intdat, DOS.shape)
 
         cm = plt.cm.hot
         if scale == 'log':
@@ -150,10 +144,7 @@ class LDOSmap(Plot):
             norm = colors.Normalize(vmin=vmin)
         self.imshow = self.axes.imshow(DOS.T, extent=[xmin, xmax, emin, emax], cmap=cm, \
                                        origin='lower', norm=norm, vmax=vmax)
-        title = f'LDOS projection in {projection.upper()}'
-        if projection.upper() == '1D':
-            title += r': origin [%.2f,%.2f,%.2f] (\AA)' % tuple(origin)
-        self.set_title(title)
+
         self.set_xlabel(r'distance along [%.2f,%.2f,%.2f] (\AA)' % tuple(direction))
         self.set_ylabel(r'$E-E_\mathrm{midgap}$ (eV)')
         self.set_xlim(xmin, xmax)
@@ -219,9 +210,8 @@ class EigenLDOS(GeometryPlot):
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
 
-
-class DOS(Plot):
-    """ Plot the total density of states (DOS) as a function of the energy for the `hubbard.HubbardHamiltonian` object
+class PDOS(Plot):
+    """ Plot the projected density of states (PDOS) onto a subset of sites as a function of the energy for the `hubbard.HubbardHamiltonian` object
 
     Parameters
     ----------
@@ -235,6 +225,7 @@ class DOS(Plot):
         plot DOS for selected spin index or sum them both if ``spin=[0,1]``
     sites: array_like, optional
         sum projected DOS into selected atomic sites
+        by default it projects onto all sites
 
     See Also
     ------------

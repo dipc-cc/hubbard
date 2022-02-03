@@ -37,24 +37,23 @@ p.savefig('wf.pdf')
 p = plot.Spectrum(H)
 p.savefig('spectrum.pdf')
 
-p = plot.LDOSmap(H)
-p.savefig('ldos_map.pdf')
+p = plot.DOSmap(H)
+p.savefig('2Ddos_map.pdf')
 
-p = plot.DOS(H, np.linspace(-0.2, 0.2, 101))
+p = plot.PDOS(H, np.linspace(-0.2, 0.2, 101))
 p.savefig('total_dos.pdf')
 
-p = plot.DOS(H, np.linspace(-0.2, 0.2, 101), sites=[60])
-p.savefig('ldos.pdf')
+p = plot.PDOS(H, np.linspace(-0.2, 0.2, 101), sites=[60])
+p.savefig('pdos_energy_resolved.pdf')
 
-DOS = H.PDOS(ev[10], eta=1e-3, spin=[0])
-p = plot.DOS_distribution(H, DOS * 100, sites=[60], ext_geom=molecule)
+p = plot.EigenLDOS(H, evec[:, 10] * 200, sites=[60], ext_geom=molecule)
 p.savefig('pdos.pdf')
 
 # Test real-space plots?
 if True:
 
-    p = plot.DOS_distribution(H, evec[:, 10], z=5, vmax=2e-15, realspace=True, ext_geom=molecule, colorbar=True)
-    p.savefig('pdos_rs.pdf')
+    p = plot.EigenLDOS(H, evec[:, 10], z=5, vmax=2e-15, realspace=True, ext_geom=molecule, colorbar=True)
+    p.savefig('ldos_rs.pdf')
 
     p = plot.Charge(H, realspace=True, ext_geom=molecule, vmax=1e-4, vmin=-1e-4, colorbar=True)
     p.savefig('chg_rs.pdf')
