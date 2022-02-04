@@ -6,7 +6,7 @@ import matplotlib.colors as colors
 import numpy as np
 from hubbard.grid import *
 
-__all__ = ['Spectrum', 'DOSmap', 'EigenLDOS', 'PDOS']
+__all__ = ['Spectrum', 'DOSmap', 'EigenLDOS', 'LDOS', 'PDOS']
 
 
 class Spectrum(Plot):
@@ -160,17 +160,98 @@ class EigenLDOS(GeometryPlot):
     HH: HubbardHamiltonian
         mean-field Hubbard Hamiltonian
     WF: numpy.ndarray or sisl.physics.electron.EigenstateElectron
-        Eigenstate to be plotted as LDOS
+        Eigenstate to be plotted as LDOS, WF can be an array-like containing more than WF
+        The WF have to be stored along the second axis, i.e. each WF is stored as column vectors
+        in this case this method sums the EigenLDOS corresponding to each WF in the grid
+        This can be handy if one wants to plot the LDOS = LDOS_up + LDOS_dn
     realspace:
-        If True it will plot the DOS in a realspace grid otherwise it plots it as a scatter plot
+        If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
+        with varying size depending on the PDOS numerical value
+    """
+
+    def __init__(self, HH, WF, sites=[], ext_geom=None, realspace=False, **kwargs):
+
+        # Set default kwargs
+        if realspace:
+            if 'facecolor' not in kwargs:
+                kwargs['facecolor'] = 'None'
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = 'Greys'
+        else:
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = plt.cm.bwr
+
+        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+
+        x = HH.geometry[:, 0]
+        y = HH.geometry[:, 1]
+
+        # Ensure WF is an array of correct dimensions
+        WF = np.array(WF)
+        if WF.shape == (len(WF),):
+            WF = np.expand_dims(WF, axis=1)
+
+        if realspace:
+            if 'grid_unit' not in kwargs:
+                kwargs['grid_unit'] = [100,100,1]
+            if 'z' not in kwargs:
+                kwargs['z'] = 1.1
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            grid = 0
+            for i in range(WF.shape[1]):
+                wf = WF[:,i]
+                grid_i = real_space_grid(self.geometry, wf, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
+                grid += grid_i ** 2
+
+            self.__realspace__(grid, **kwargs)
+            self.imshow.set_cmap(plt.cm.afmhot)
+
+        else:
+            wf = 0
+            for i in range(WF.shape[1]):
+                v = WF[:,i]
+                wf += v ** 2
+
+            self.axes.scatter(x, y, wf, 'b')
+
+        for i, s in enumerate(sites):
+            self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
+
+class LDOS(GeometryPlot):
+    """ Plot LDOS for an energy E with a certain distribution function for the `hubbard.HubbardHamiltonian` object
+
+    Parameters
+    ----------
+    HH: HubbardHamiltonian
+        mean-field Hubbard Hamiltonian
+    E: float
+        energy at which the LDOS will be computed
+    eta: float, optional
+        smearing parameter. Defaults to 1e-3 eV
+    dist: str, optional
+        distribution function. Defaults to Lorentzian distribution
+    eref: float, optional
+        Reference energy to rigidly shift the eigenvalues with respect to this value. Defaults to vacuum (``eref=0``)
+    spin: array_like, optional
+        To plot the LDOS corresponding to the specified spin index. Default to ``spin=[0,1]``
+        i.e. it sums the LDOS corresponding to both spin components
+    realspace:
+        If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
 
     See Also
     ------------
     hubbard.HubbardHamiltonian.PDOS
+    sisl.get_distribution: sisl method to create distribution function
+    sisl.physics.electron.PDOS: sisl method to obtain PDOS
     """
 
-    def __init__(self, HH, WF, sites=[], ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, dist='lorentzian', eref=0, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -198,14 +279,32 @@ class EigenLDOS(GeometryPlot):
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, WF, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
-            grid = grid ** 2
+            grid = 0
+            for s in spin:
+                ev, evec = HH.eigh(spin=s, eigvals_only=False)
+                ev -= eref
+
+                if 'energy_window' in kwargs:
+                    energy_window = kwargs['energy_window']
+                    window_states = np.where(np.abs(ev-E)<energy_window)[0]
+                else:
+                    window_states = range(HH.sites)
+
+                # Computing grids for all states is too slow... Let's use a window
+                energy_window = np.where(np.abs(ev-E)<1.5)[0]
+                for ni in window_states:
+                    v = evec[:,ni]
+                    grid_n = real_space_grid(self.geometry, v, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
+                    f = sisl.get_distribution(dist, smearing=eta, x0=ev[ni])
+                    weight = f(E)
+                    grid += (grid_n**2) * weight
+
             self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            WF = WF ** 2
-            self.axes.scatter(x, y, WF, 'b')
+            pdos = HH.PDOS(E, eta=eta, spin=spin, dist=dist, eref=eref)
+            self.axes.scatter(x, y, pdos, 'b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
@@ -231,6 +330,8 @@ class PDOS(Plot):
     ------------
     hubbard.HubbardHamiltonian.DOS
     hubbard.HubbardHamiltonian.PDOS
+    sisl.get_distribution: sisl method to create distribution function
+    sisl.physics.electron.PDOS: sisl method to obtain PDOS
     """
 
     def __init__(self, HH, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):
