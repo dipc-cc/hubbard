@@ -111,6 +111,11 @@ class ChargeDifference(GeometryPlot):
             self.__realspace__(chg, density=True, **kwargs)
 
         else:
+            # Default symmetric colorscale
+            if 'vmax' not in kwargs:
+                kwargs['vmax'] = np.amax(np.abs(chg))
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = -kwargs['vmax']
             self.__orbitals__(chg, **kwargs)
 
 
@@ -156,4 +161,10 @@ class SpinPolarization(GeometryPlot):
             self.__realspace__(chg, density=True, **kwargs)
 
         else:
+            # Default symmetric colorscale
+            if 'vmax' not in kwargs:
+                kwargs['vmax'] = np.amax(np.abs(chg))
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = -kwargs['vmax']
+
             self.__orbitals__(chg, **kwargs)
