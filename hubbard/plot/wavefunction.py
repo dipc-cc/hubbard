@@ -23,6 +23,7 @@ class Wavefunction(GeometryPlot):
     Notes
     -----
     If `realspace` kwarg is passed it plots the wavefunction in a realspace grid
+    In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
     In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
     of the coefficient of `wf` on the atomic sites
     """
@@ -45,18 +46,22 @@ class Wavefunction(GeometryPlot):
 
     def plot_wf(self, HH, wf, cb_label=r'Phase', realspace=False, **kwargs):
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, wf, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
-            self.__realspace__(grid, **kwargs)
+            grid = real_space_grid(self.geometry, wf, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
             # Create custom map to differenciate it from polarization cmap
             import matplotlib.colors as mcolors

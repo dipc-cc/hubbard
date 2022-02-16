@@ -2,18 +2,26 @@ import numpy as np
 import sisl
 
 
-def real_space_grid(geometry, v, grid_unit, xmin, xmax, ymin, ymax, z=1.1, mode='wavefunction', **kwargs):
+def real_space_grid(geometry, vector, shape, xmin, xmax, ymin, ymax, z, mode='wavefunction', **kwargs):
     """
     Parameters
     ----------
     g : sisl.Geometry
-    v : numpy.array
-    grid_unit: 3-array-like
-    mode: str, optinoal
+        geometry
+    vector : numpy.array
+        vector to expand in the real space grid
+    shape: float or (3,) of int
+        the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
+        (see `sisl.Grid`)
+    z: float
+        z coordinate
+    mode: str, optional
         to build the grid from sisl.electron.wavefunction object (``mode=wavefunction``)
         or from the sisl.physics.DensityMatrix (``mode=`charge`), e.g. for charge-related plots
-    sc: sisl.SuperCell, optional
-        super cell, defaults to the sc saved in the geometry
+
+    See Also
+    --------
+    sisl.Grid
     """
     # Create a temporary copy of the geometry
     g = geometry.copy()
@@ -24,26 +32,24 @@ def real_space_grid(geometry, v, grid_unit, xmin, xmax, ymin, ymax, z=1.1, mode=
 
     # Move geometry within the supercell
     g = g.move([-xmin, -ymin, -np.amin(g.xyz[:, 2])])
-    # Make z~0 -> z = 0
-    g.xyz[np.where(np.abs(g.xyz[:, 2]) < 1e-3), 2] = 0
 
     # Create the real-space grid
-    grid = sisl.Grid(grid_unit, sc=sc, geometry=g)
+    grid = sisl.Grid(shape, sc=sc, geometry=g)
 
     if mode in ['wavefunction']:
-        if isinstance(v, sisl.physics.electron.EigenstateElectron):
+        if isinstance(vector, sisl.physics.electron.EigenstateElectron):
             # Set parent geometry equal to the temporary one
-            v.parent = g
-            v.wavefunction(grid)
+            vector.parent = g
+            vector.wavefunction(grid)
         else:
             # In case v is a vector
-            sisl.electron.wavefunction(v, grid, geometry=g)
+            sisl.electron.wavefunction(vector, grid, geometry=g)
     elif mode in ['charge']:
         # The input vector v corresponds to charge-related quantities
         # including spin-polarization understood as charge_up - charge_dn
         D = sisl.physics.DensityMatrix(g)
         a = np.arange(len(D))
-        D.D[a, a] = v
+        D.D[a, a] = vector
         D.density(grid)
     
     if 'smooth' in kwargs:
@@ -53,9 +59,6 @@ def real_space_grid(geometry, v, grid_unit, xmin, xmax, ymin, ymax, z=1.1, mode=
         else:
             r_smooth = 0.7
         grid = grid.smooth(method='gaussian', r=r_smooth)
-
-    # Slice it to obtain a 2D grid
-    grid = grid.grid[:, :, 0].T.real
 
     del g
     return grid

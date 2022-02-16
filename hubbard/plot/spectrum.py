@@ -6,7 +6,7 @@ import matplotlib.colors as colors
 import numpy as np
 from hubbard.grid import *
 
-__all__ = ['Spectrum', 'DOSmap', 'EigenLDOS', 'LDOS', 'PDOS']
+__all__ = ['Spectrum', 'DOSmap', 'LDOS_from_eigenstate', 'LDOS', 'PDOS']
 
 
 class Spectrum(Plot):
@@ -152,7 +152,7 @@ class DOSmap(Plot):
         self.axes.set_aspect('auto')
 
 
-class EigenLDOS(GeometryPlot):
+class LDOS_from_eigenstate(GeometryPlot):
     """ Plot LDOS in the configuration space for the `hubbard.HubbardHamiltonian` object
 
     Parameters
@@ -167,9 +167,10 @@ class EigenLDOS(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
+        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
     """
 
-    def __init__(self, HH, WF, sites=[], ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -187,15 +188,15 @@ class EigenLDOS(GeometryPlot):
         y = HH.geometry[:, 1]
 
         # Ensure WF is an array of correct dimensions
-        WF = np.array(WF)
+        WF = np.array(wavefunction)
         if WF.shape == (len(WF),):
             WF = np.expand_dims(WF, axis=1)
-
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
+
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
@@ -204,20 +205,22 @@ class EigenLDOS(GeometryPlot):
 
             grid = 0
             for i in range(WF.shape[1]):
-                wf = WF[:,i]
-                grid_i = real_space_grid(self.geometry, wf, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
-                grid += grid_i ** 2
+                dos = WF[:,i]
+                grid_i = real_space_grid(self.geometry, dos, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+                # Slice it to obtain a 2D grid
+                slice_grid = grid_i.grid[:, :, 0].T.real
+                grid += slice_grid ** 2
 
             self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            wf = 0
+            dos = 0
             for i in range(WF.shape[1]):
-                v = WF[:,i]
-                wf += v ** 2
+                wf = WF[:,i]
+                dos += wf ** 2
 
-            self.axes.scatter(x, y, wf, 'b')
+            self.axes.scatter(x, y, dos, 'b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
@@ -235,14 +238,13 @@ class LDOS(GeometryPlot):
         smearing parameter. Defaults to 1e-3 eV
     dist: str, optional
         distribution function. Defaults to Lorentzian distribution
-    eref: float, optional
-        Reference energy to rigidly shift the eigenvalues with respect to this value. Defaults to vacuum (``eref=0``)
     spin: array_like, optional
         To plot the LDOS corresponding to the specified spin index. Default to ``spin=[0,1]``
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
+        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
 
     See Also
     ------------
@@ -251,7 +253,7 @@ class LDOS(GeometryPlot):
     sisl.physics.electron.PDOS: sisl method to obtain PDOS
     """
 
-    def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, dist='lorentzian', eref=0, **kwargs):
+    def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, distribution='lorentzian', **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -269,10 +271,11 @@ class LDOS(GeometryPlot):
         y = HH.geometry[:, 1]
 
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
+
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
@@ -282,7 +285,6 @@ class LDOS(GeometryPlot):
             grid = 0
             for s in spin:
                 ev, evec = HH.eigh(spin=s, eigvals_only=False)
-                ev -= eref
 
                 if 'energy_window' in kwargs:
                     energy_window = kwargs['energy_window']
@@ -294,16 +296,18 @@ class LDOS(GeometryPlot):
                 energy_window = np.where(np.abs(ev-E)<1.5)[0]
                 for ni in window_states:
                     v = evec[:,ni]
-                    grid_n = real_space_grid(self.geometry, v, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='wavefunction')
-                    f = sisl.get_distribution(dist, smearing=eta, x0=ev[ni])
+                    grid_n = real_space_grid(self.geometry, v, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+                    f = sisl.get_distribution(distribution, smearing=eta, x0=ev[ni])
                     weight = f(E)
-                    grid += (grid_n**2) * weight
+                    # Slice it to obtain a 2D grid
+                    slice_grid = grid_n.grid[:, :, 0].T.real
+                    grid += (slice_grid ** 2) * weight
 
             self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            pdos = HH.PDOS(E, eta=eta, spin=spin, dist=dist, eref=eref)
+            pdos = HH.PDOS(E, eta=eta, spin=spin, dist=distribution)
             self.axes.scatter(x, y, pdos, 'b')
 
         for i, s in enumerate(sites):

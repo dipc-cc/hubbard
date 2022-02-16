@@ -57,18 +57,22 @@ class Charge(GeometryPlot):
             chg[ia] += HH.n[0, io] + HH.n[1, io]
 
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
-            self.__realspace__(grid, **kwargs)
+            grid = real_space_grid(self.geometry, chg, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
             self.__orbitals__(chg, **kwargs)
@@ -89,7 +93,8 @@ class ChargeDifference(GeometryPlot):
         a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
-        if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken populations
+        if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken
+        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -120,18 +125,23 @@ class ChargeDifference(GeometryPlot):
         chg -= q
 
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
+
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
+
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
-            self.__realspace__(grid, **kwargs)
+            grid = real_space_grid(self.geometry, chg, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.grid[:, :, 0].T.real
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
             # Default symmetric colorscale
@@ -155,6 +165,7 @@ class SpinPolarization(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the spin polarization in a realspace grid. In other case it will be plotted as Mulliken populations
+        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -181,18 +192,21 @@ class SpinPolarization(GeometryPlot):
             chg[ia] += (HH.n[0, io] - HH.n[1, io])
 
         if realspace:
-            if 'grid_unit' not in kwargs:
-                kwargs['grid_unit'] = [100,100,1]
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                kwargs['z'] = 1.1
+                raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, chg, kwargs['grid_unit'], xmin, xmax, ymin, ymax, z=kwargs['z'], mode='charge')
-            self.__realspace__(grid, **kwargs)
+            grid = real_space_grid(self.geometry, chg, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.grid[:, :, 0].T.real
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
             # Default symmetric colorscale
