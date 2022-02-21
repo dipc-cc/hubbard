@@ -208,8 +208,8 @@ class LDOS_from_eigenstate(GeometryPlot):
                 dos = WF[:,i]
                 grid_i = real_space_grid(self.geometry, dos, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
                 # Slice it to obtain a 2D grid
-                slice_grid = grid_i.grid[:, :, 0].T.real
-                grid += slice_grid ** 2
+                slice_grid = grid_i.grid[:, :, 0].T
+                grid += slice_grid.real**2 + slice_grid.imag**2
 
             self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
@@ -300,8 +300,8 @@ class LDOS(GeometryPlot):
                     f = sisl.get_distribution(distribution, smearing=eta, x0=ev[ni])
                     weight = f(E)
                     # Slice it to obtain a 2D grid
-                    slice_grid = grid_n.grid[:, :, 0].T.real
-                    grid += (slice_grid ** 2) * weight
+                    slice_grid = grid_n.grid[:, :, 0].T
+                    grid += (slice_grid.real**2 + slice_grid.imag**2) * weight
 
             self.__realspace__(grid, **kwargs)
             self.imshow.set_cmap(plt.cm.afmhot)
