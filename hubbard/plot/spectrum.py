@@ -167,7 +167,6 @@ class LDOS_from_eigenstate(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
-        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
     """
 
     def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, **kwargs):
@@ -194,21 +193,30 @@ class LDOS_from_eigenstate(GeometryPlot):
         if realspace:
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
-            if 'z' not in kwargs:
-                raise ValueError('z coordinate needs to be passed to slice the real space grid')
-
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
             grid = 0
             for i in range(WF.shape[1]):
                 dos = WF[:,i]
-                grid_i = real_space_grid(self.geometry, dos, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+                grid_i = real_space_grid(self.geometry, kwargs['sc'], dos, kwargs['shape'], mode='wavefunction')
                 # Slice it to obtain a 2D grid
-                slice_grid = grid_i.grid[:, :, 0].T
+                slice_grid = grid_i.swapaxes(kwargs['axis'], 2).grid[:,:,0].T
                 grid += slice_grid.real**2 + slice_grid.imag**2
 
             self.__realspace__(grid, **kwargs)
@@ -274,13 +282,23 @@ class LDOS(GeometryPlot):
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
             if 'z' not in kwargs:
-                raise ValueError('z coordinate needs to be passed to slice the real space grid')
-
+                  raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
 
             grid = 0
             for s in spin:
@@ -296,11 +314,11 @@ class LDOS(GeometryPlot):
                 energy_window = np.where(np.abs(ev-E)<1.5)[0]
                 for ni in window_states:
                     v = evec[:,ni]
-                    grid_n = real_space_grid(self.geometry, v, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+                    grid_n = real_space_grid(self.geometry, kwargs['sc'], v, kwargs['shape'], mode='wavefunction')
                     f = sisl.get_distribution(distribution, smearing=eta, x0=ev[ni])
                     weight = f(E)
                     # Slice it to obtain a 2D grid
-                    slice_grid = grid_n.grid[:, :, 0].T
+                    slice_grid = grid_n.swapaxes(kwargs['axis'], 2).grid[:, :, 0].T
                     grid += (slice_grid.real**2 + slice_grid.imag**2) * weight
 
             self.__realspace__(grid, **kwargs)

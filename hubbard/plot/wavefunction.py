@@ -56,10 +56,21 @@ class Wavefunction(GeometryPlot):
 
             xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
 
-            grid = real_space_grid(self.geometry, wf, kwargs['shape'], xmin, xmax, ymin, ymax, kwargs['z'], mode='wavefunction')
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
+            grid = real_space_grid(self.geometry, kwargs['sc'], wf, kwargs['shape'], mode='wavefunction')
 
             # Slice it to obtain a 2D grid
-            slice_grid = grid.grid[:, :, 0].T.real
+            slice_grid = grid.swapaxes(kwargs['axis'], 2).grid[:, :, 0].T.real
 
             self.__realspace__(slice_grid, **kwargs)
 
