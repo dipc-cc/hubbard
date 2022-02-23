@@ -131,6 +131,11 @@ class HubbardHamiltonian(object):
         # Ensure normalized charge
         self.normalize_charge()
 
+    @property
+    def shape(self):
+        """ The shape of the Hamiltonian matrix """
+        return self.H.shape
+
     def set_kmesh(self, nkpt=[1, 1, 1]):
         """ Set the k-mesh for the HubbardHamiltonian
 
