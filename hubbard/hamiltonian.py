@@ -110,8 +110,6 @@ class HubbardHamiltonian(object):
                 io =  self.geometry.a2o(ia, all=True)
                 self.q0[io] = atom.q0
 
-        self._update_e0()
-
         # Set k-mesh
         self.set_kmesh(nkpt)
 
@@ -300,13 +298,6 @@ class HubbardHamiltonian(object):
         return self.__class__(self.H, n=self.n, U=self.U,
                     q=(self.q[0], self.q[1]), nkpt=self.mp, kT=self.kT)
 
-    def _update_e0(self):
-        """ Internal routine to update e0 """
-        self.e0 = np.empty((self.spin_size, self.sites))
-        for spin in range(self.spin_size):
-            e = self.H.tocsr(spin).diagonal()
-            self.e0[spin] = e
-
     def update_hamiltonian(self):
         r""" Update spin Hamiltonian according to the extended Hubbard model,
         see for instance `PRL 106, 236805 (2011)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
@@ -326,7 +317,11 @@ class HubbardHamiltonian(object):
         + \langle n_{j\downarrow}\rangle\right)`
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-        E = self.e0.copy()
+        E = np.empty((self.spin_size, self.sites), dtype=self.H.dtype)
+        for spin in range(self.spin_size):
+            # Extract diagonal elements of TB Hamiltonian
+            E[spin] = self.TBHam.tocsr(spin).diagonal()
+
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
         E += self.U * (self.n[ispin, :] - self.q0)
