@@ -167,6 +167,7 @@ class LDOS_from_eigenstate(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
+        In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, **kwargs):
@@ -203,7 +204,7 @@ class LDOS_from_eigenstate(GeometryPlot):
                 if 'z' in kwargs:
                     origin = [xmin, ymin, -kwargs['z']]
                 else:
-                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
                 kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
@@ -252,7 +253,7 @@ class LDOS(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
-        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
+        In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
     ------------
@@ -281,8 +282,6 @@ class LDOS(GeometryPlot):
         if realspace:
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
-            if 'z' not in kwargs:
-                  raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
@@ -293,7 +292,7 @@ class LDOS(GeometryPlot):
                 if 'z' in kwargs:
                     origin = [xmin, ymin, -kwargs['z']]
                 else:
-                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
                 kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
 

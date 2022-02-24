@@ -27,6 +27,7 @@ class Charge(GeometryPlot):
         plot charge associated to one specific spin index, or both if ``spin=[0,1]``
     realspace: bool, optional
         if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     """
 
@@ -59,8 +60,6 @@ class Charge(GeometryPlot):
         if realspace:
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
-            if 'z' not in kwargs:
-                raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
@@ -71,7 +70,7 @@ class Charge(GeometryPlot):
                 if 'z' in kwargs:
                     origin = [xmin, ymin, -kwargs['z']]
                 else:
-                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
                 kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
@@ -104,8 +103,8 @@ class ChargeDifference(GeometryPlot):
         a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
-        if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken
-        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
+        if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken populations
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -139,10 +138,6 @@ class ChargeDifference(GeometryPlot):
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
 
-            if 'z' not in kwargs:
-                raise ValueError('z coordinate needs to be passed to slice the real space grid')
-
-
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
 
@@ -152,7 +147,7 @@ class ChargeDifference(GeometryPlot):
                 if 'z' in kwargs:
                     origin = [xmin, ymin, -kwargs['z']]
                 else:
-                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
                 kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
@@ -188,7 +183,7 @@ class SpinPolarization(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the spin polarization in a realspace grid. In other case it will be plotted as Mulliken populations
-        In this case the `z` kwarg needs to be passed to slice the real space grid at the desired z coordinate
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -217,8 +212,6 @@ class SpinPolarization(GeometryPlot):
         if realspace:
             if 'shape' not in kwargs:
                 kwargs['shape'] = [100,100,1]
-            if 'z' not in kwargs:
-                raise ValueError('z coordinate needs to be passed to slice the real space grid')
 
             if 'vmin' not in kwargs:
                 kwargs['vmin'] = 0
@@ -229,7 +222,7 @@ class SpinPolarization(GeometryPlot):
                 if 'z' in kwargs:
                     origin = [xmin, ymin, -kwargs['z']]
                 else:
-                    origin = [xmin, ymin, np.amin(HH.geometry.xyz[:,2])]
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
                 kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
