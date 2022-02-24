@@ -62,7 +62,7 @@ if True:
     egrid = np.linspace(-1, 1, 50)
     import hubbard.plot as plot
     H.H.shift(-H.fermi_level())
-    p = plot.DOS(H, egrid, eta=1e-2, spin=0)
+    p = plot.PDOS(H, egrid, eta=1e-2, spin=0)
 
     # Now compute same molecule with the WBL approximation with gamma=0
     from hubbard.negf import NEGF

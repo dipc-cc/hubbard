@@ -121,7 +121,7 @@ class NEGF:
             if isinstance(elec_SE, (tuple, list)):
                 # here HH *must* be a HubbardHamiltonian (otherwise it will probably crash)
                 HH, semi_inf = elec_SE
-                Ef_elec = HH.fermi_level(q=HH.q, dist=dist)
+                Ef_elec = HH.fermi_level(q=HH.q, distribution=dist)
                 # Shift each electrode with its Fermi-level and chemical potential
                 # Since the electrodes are *bulk* i.e. the entire electronic structure
                 # is simply shifted

@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
+from hubbard.grid import *
 
 __all__ = ['Wavefunction']
 
@@ -22,6 +23,7 @@ class Wavefunction(GeometryPlot):
     Notes
     -----
     If `realspace` kwarg is passed it plots the wavefunction in a realspace grid
+    In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
     of the coefficient of `wf` on the atomic sites
     """
@@ -44,7 +46,31 @@ class Wavefunction(GeometryPlot):
 
     def plot_wf(self, HH, wf, cb_label=r'Phase', realspace=False, **kwargs):
         if realspace:
-            self.__realspace__(wf, **kwargs)
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
+            grid = real_space_grid(self.geometry, kwargs['sc'], wf, kwargs['shape'], mode='wavefunction')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.swapaxes(kwargs['axis'], 2).grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
             # Create custom map to differenciate it from polarization cmap
             import matplotlib.colors as mcolors

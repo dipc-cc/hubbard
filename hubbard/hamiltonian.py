@@ -386,7 +386,7 @@ class HubbardHamiltonian(object):
         midgap = (HOMO + LUMO) * 0.5
         return midgap
 
-    def fermi_level(self, q=[None, None], dist='fermi_dirac'):
+    def fermi_level(self, q=[None, None], distribution='fermi_dirac'):
         """ Find the fermi level for a certain charge `q` at a certain `kT`
 
         Parameters
@@ -395,7 +395,7 @@ class HubbardHamiltonian(object):
             charge per spin channel. First index for spin up, second index for dn
             If the Hamiltonian is unpolarized q should have only one component
             otherwise it will take the first one
-        dist: str or sisl.distribution, optional
+        distribution: str or sisl.distribution, optional
             distribution function
 
         See Also
@@ -411,10 +411,10 @@ class HubbardHamiltonian(object):
         for i in range(self.spin_size):
             if Q[i] is None:
                 Q[i] = self.q[i]
-        if isinstance(dist, str):
-            dist = sisl.get_distribution(dist, smearing=self.kT)
+        if isinstance(distribution, str):
+            distribution = sisl.get_distribution(distribution, smearing=self.kT)
 
-        Ef = self.H.fermi_level(self.mp, q=Q, distribution=dist)
+        Ef = self.H.fermi_level(self.mp, q=Q, distribution=distribution)
         return Ef
 
     def shift(self, E):
@@ -795,7 +795,7 @@ class HubbardHamiltonian(object):
         else:
             return S_MFH
 
-    def DOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref=0.):
+    def DOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
         Parameters
@@ -807,10 +807,8 @@ class HubbardHamiltonian(object):
         spin: int, optional
             If spin=0(1) it calculates the DOS for up (down) electrons in the system.
             If spin is not specified it returns DOS_up + DOS_dn.
-        dist: str or sisl.physics.distribution, optional
+        distribution: str or sisl.physics.distribution, optional
             distribution for the convolution, defaults to Lorentzian
-        eref: float, optional
-            energy reference, defaults to zero
 
         See Also
         ------------
@@ -830,19 +828,19 @@ class HubbardHamiltonian(object):
         if not isinstance(egrid, np.ndarray):
             egrid = np.array(egrid)
 
-        if isinstance(dist, str):
-            dist = sisl.get_distribution(dist, smearing=eta)
+        if isinstance(distribution, str):
+            distribution = sisl.get_distribution(distribution, smearing=eta)
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
         # Obtain eigenvalues
         dos = 0
         for ispin in spin:
-            eig = self.eigh(spin=ispin) - eref
-            dos += sisl.electron.DOS(egrid, eig, distribution=dist)
+            eig = self.eigh(spin=ispin)
+            dos += sisl.electron.DOS(egrid, eig, distribution=distribution)
         return dos
 
-    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], dist='Lorentzian', eref=0.):
+    def PDOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
 
         Parameters
@@ -854,10 +852,8 @@ class HubbardHamiltonian(object):
         spin: int, optional
             If spin=0(1) it calculates the DOS for up (down) electrons in the system.
             If spin is not specified it returns DOS_up + DOS_dn.
-        dist: str or sisl.distribution, optional
+        distribution: str or sisl.distribution, optional
             distribution for the convolution, defaults to Lorentzian
-        eref: float, optional
-            energy reference, defaults to zero
 
         See Also
         ------------
@@ -877,8 +873,8 @@ class HubbardHamiltonian(object):
         if not isinstance(egrid, np.ndarray):
             egrid = np.array(egrid)
 
-        if isinstance(dist, str):
-            dist = sisl.get_distribution(dist, smearing=eta)
+        if isinstance(distribution, str):
+            distribution = sisl.get_distribution(distribution, smearing=eta)
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
@@ -886,7 +882,6 @@ class HubbardHamiltonian(object):
         pdos = 0
         for ispin in spin:
             ev, evec = self.eigh(eigvals_only=False, spin=ispin)
-            ev -= eref
-            pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=dist)
+            pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
 
         return pdos
