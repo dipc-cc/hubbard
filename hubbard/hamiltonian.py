@@ -300,7 +300,7 @@ class HubbardHamiltonian(object):
 
     def update_hamiltonian(self):
         r""" Update spin Hamiltonian according to the extended Hubbard model,
-        see for instance `PRL 106, 236805 (2011)<https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
+        see for instance `PRL 106, 236805 (2011) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805>`_
         It updates the diagonal elements for each spin Hamiltonian following the mean field approximation:
 
         .. math::

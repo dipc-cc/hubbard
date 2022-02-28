@@ -3,7 +3,8 @@ import sisl
 
 
 def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
-    """
+    """ Create real space `sisl.Grid` object for a `sisl.Geometry` and a `sisl.Supercell`
+
     Parameters
     ----------
     g : sisl.Geometry
@@ -13,15 +14,16 @@ def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
     shape: float or (3,) of int
         the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
         (see `sisl.Grid`)
-    sc:
-        sisl.SuperCell object of the grid
+    sc : sisl.SuperCell
+        supercell object of the grid
     mode: str, optional
-        to build the grid from sisl.electron.wavefunction object (``mode=wavefunction``)
-        or from the sisl.physics.DensityMatrix (``mode=`charge`), e.g. for charge-related plots
+        to build the grid from sisl.electron.wavefunction object (``mode='wavefunction'``)
+        or from the sisl.physics.DensityMatrix (``mode='charge'``), e.g. for charge-related plots
 
     See Also
     --------
     sisl.Grid
+
     """
     # Create a temporary copy of the geometry
     g = geometry.copy()

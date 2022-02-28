@@ -25,9 +25,9 @@ Plot spectra
 .. autosummary::
    :toctree:
 
-    DOS
-    DOS_distribution
-    LDOSmap
+    LDOS
+    LDOS_from_eigenstate
+    DOSmap
     Spectrum
 
 Plot wavefunctions for each spin-channel

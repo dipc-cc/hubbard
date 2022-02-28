@@ -8,20 +8,19 @@ class ncSileHubbard(sisl.SileCDF):
     """ Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)
 
     See Also
-    ------------
+    --------
     sisl.io.SileCDF : sisl class
     """
     def read_U(self, group=None):
-        """
-        Read Coulomb repulsion U parameter from netcdf file
+        """ Read Coulomb repulsion U parameter from netcdf file
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         group: str, optional
             netcdf group
 
-        Returns:
-        --------
+        Returns
+        -------
         Float or list of floats containing the temperature for each netcdf group
         """
         # Find group
@@ -47,16 +46,15 @@ class ncSileHubbard(sisl.SileCDF):
         return U
 
     def read_kT(self, group=None):
-        """
-        Read temperature from netcdf file
+        """ Read temperature from netcdf file
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         group: str, optional
             netcdf group
 
-        Returns:
-        --------
+        Returns
+        -------
         Float or list of floats containing the temperature times the Boltzmann constant (k) for each netcdf group
         """
         # Find group
@@ -83,17 +81,17 @@ class ncSileHubbard(sisl.SileCDF):
         return kT
 
     def read_density(self, group=None):
-        """
-        Read density from netcdf file
+        """ Read density from netcdf file
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         group: str, optional
            netcdf group. If there are groups in the file and no group is found then it reads the n variable from all groups found
 
-        Return:
+        Returns
         -------
         numpy.ndarray or list of numpy.ndarrays
+
         """
         # Find group
         if group is not None:
