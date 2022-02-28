@@ -5,7 +5,7 @@ __all__ = ['sp2']
 
 
 def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
-        s0=1.0, s1=0, s2=0, s3=0, dq=0, dim=2):
+        s1=0, s2=0, s3=0, dq=0, spin=sisl.physics.Spin('polarized')):
     """ Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems
 
     It takes advantage of the `sisl` class for building sparse Hamiltonian matrices,
@@ -20,11 +20,39 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     The function will also take into account the possible presence of Boron or Nitrogen atoms,
     for which one would need to specify the on-site energy for those atoms (``eB`` and ``eN``)
 
+    Parameters
+    ----------
+    ext_geom: sisl.Geometry
+        geometry of the sp2 carbon system
+    t1: float, optional
+        1NN hopping defaults to 2.7 eV
+    t2: float, optional
+        2NN hopping defaults to 0.2 eV
+    t3: float, optional
+        3NN hopping defaults to 0.18 eV
+    eB: float, optional
+        on-site energy for Boron atoms
+    eN: float, optional
+        on-site energy for Nitrogen atoms
+    s1: float, optional
+        overlap between 1NN, default to zero (orthogonal basis)
+    s2: float, optional
+        overlap between 2NN, default to zero
+    s3: float, optional
+        overlap between 3NN, default to zero
+    dq: float, optional
+        additional atomic charge, defaults to zero
+    spin: str or sisl.physics.Spin, optional
+        to define a polarized or unpolarized system pass ``spin=polarized`` or ``spin=unpolarized``
+        or the corresponding `sisl.physics.Spin` object
+
     Returns
     -------
     H: sisl.physics.Hamiltonian
-        tight-binding Hamiltonian for the sp2 structure of ``dim=2`` (for the two spin channels)
+        tight-binding Hamiltonian for the sp2 structure
     """
+    if isinstance(spin,str):
+        spin = sisl.physics.Spin(spin)
 
     # Determine pz sites
     aux = []
@@ -58,7 +86,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         orthogonal = False
     else:
         orthogonal = True
-    H = sisl.Hamiltonian(pi_geom, orthogonal=orthogonal, dim=dim)
+    H = sisl.Hamiltonian(pi_geom, orthogonal=orthogonal, spin=spin)
 
     # Radii defining 1st, 2nd, and 3rd neighbors
     R = [0.1, 1.6, 2.6, 3.1]
@@ -78,7 +106,7 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
         if t3 != 0:
             H[ia, idx[3], :] = -t3
         if not H.orthogonal:
-            H.S[ia, ia] = s0
+            H.S[ia, ia] = 1.0
             H.S[ia, idx[1]] = s1
             H.S[ia, idx[2]] = s2
             H.S[ia, idx[3]] = s3

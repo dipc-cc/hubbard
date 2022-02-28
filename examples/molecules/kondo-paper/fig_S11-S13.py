@@ -18,7 +18,7 @@ mixer = sisl.mixing.PulayMixer(0.7, history=12)
 
 for u in [0.0, 3.5]:
     H.U = u
-    if H.U == 0:
+    if np.allclose(H.U, 0):
         lab = 'Fig_S12'
     else:
         lab = 'Fig_S13'
@@ -31,8 +31,8 @@ for u in [0.0, 3.5]:
 
     # Plot Eigenspectrum
     p = plot.Spectrum(H, ymax=0.12)
-    p.set_title(r'3NN, $U=%.2f$ eV'%H.U)
-    p.savefig('Fig_S11_eigenspectrum_U%i.pdf'%(H.U*100))
+    p.set_title(r'3NN, $U=%.2f$ eV'%np.average(H.U))
+    p.savefig('Fig_S11_eigenspectrum_U%i.pdf'%(np.average(H.U)*100))
 
     # Plot HOMO and LUMO level wavefunctions for up- and down-electrons
     spin = ['up', 'dn']

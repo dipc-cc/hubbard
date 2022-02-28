@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from hubbard.plot import GeometryPlot
 import sisl
 import numpy as np
+from hubbard.grid import *
 
 __all__ = ['Charge', 'ChargeDifference', 'SpinPolarization']
 
@@ -26,6 +27,7 @@ class Charge(GeometryPlot):
         plot charge associated to one specific spin index, or both if ``spin=[0,1]``
     realspace: bool, optional
         if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     """
 
@@ -50,10 +52,37 @@ class Charge(GeometryPlot):
         if not isinstance(spin, list):
             spin = [spin]
 
-        chg = HH.n[spin].sum(axis=0)
+        # Sum over all orbitals
+        chg = np.zeros((HH.geometry.na))
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            chg[ia] += HH.n[0, io] + HH.n[1, io]
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
+            grid = real_space_grid(self.geometry, kwargs['sc'], chg, kwargs['shape'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.swapaxes(kwargs['axis'], 2).grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
             self.__orbitals__(chg, **kwargs)
@@ -75,6 +104,7 @@ class ChargeDifference(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken populations
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -96,14 +126,47 @@ class ChargeDifference(GeometryPlot):
         super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
         # Compute total charge on each site, subtract neutral atom charge
-        chg = HH.n.sum(0)
-        for ia in HH.geometry:
-            chg[ia] -= HH.geometry.atoms[ia].Z-5
+        chg = np.zeros((HH.geometry.na))
+        q = np.zeros_like(chg)
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            q[ia] = HH.geometry.atoms[ia].Z-5
+            chg[ia] += HH.n[0,io] + HH.n[1,io]
+
+        chg -= q
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
+            grid = real_space_grid(self.geometry, kwargs['sc'], chg, kwargs['shape'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.swapaxes(kwargs['axis'],2).grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
+            # Default symmetric colorscale
+            if 'vmax' not in kwargs:
+                kwargs['vmax'] = np.amax(np.abs(chg))
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = -kwargs['vmax']
             self.__orbitals__(chg, **kwargs)
 
 
@@ -120,6 +183,7 @@ class SpinPolarization(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the spin polarization in a realspace grid. In other case it will be plotted as Mulliken populations
+        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -140,11 +204,44 @@ class SpinPolarization(GeometryPlot):
 
         super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
 
-        # Compute charge difference between up and down channels
-        chg = np.diff(HH.n[[1, 0]], axis=0).ravel()
+        # Sum over all orbitals
+        chg = np.zeros((HH.geometry.na))
+        for ia, io in HH.geometry.iter_orbitals(local=False):
+            chg[ia] += (HH.n[0, io] - HH.n[1, io])
 
         if realspace:
-            self.__realspace__(chg, density=True, **kwargs)
+            if 'shape' not in kwargs:
+                kwargs['shape'] = [100,100,1]
+
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = 0
+
+            xmin, xmax, ymin, ymax = self.xmin, self.xmax, self.ymin, self.ymax
+
+            if 'sc' not in kwargs:
+                if 'z' in kwargs:
+                    origin = [xmin, ymin, -kwargs['z']]
+                else:
+                    raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
+
+                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+
+
+            if 'axis' not in kwargs:
+                kwargs['axis'] = 2
+
+            grid = real_space_grid(self.geometry, kwargs['sc'], chg, kwargs['shape'], mode='charge')
+
+            # Slice it to obtain a 2D grid
+            slice_grid = grid.swapaxes(kwargs['axis'],2).grid[:, :, 0].T.real
+
+            self.__realspace__(slice_grid, **kwargs)
 
         else:
+            # Default symmetric colorscale
+            if 'vmax' not in kwargs:
+                kwargs['vmax'] = np.amax(np.abs(chg))
+            if 'vmin' not in kwargs:
+                kwargs['vmin'] = -kwargs['vmax']
+
             self.__orbitals__(chg, **kwargs)

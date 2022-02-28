@@ -240,7 +240,7 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'sisl': ('http://zerothi.github.io/sisl/docs/latest', None),
+    'sisl': ('https://zerothi.github.io/sisl/', None),
 }
 
 

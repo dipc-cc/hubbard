@@ -24,7 +24,7 @@ Read and write in binary files
 .. autosummary::
    :toctree:
 
-   ncSilehubbard
+   ncSileHubbard
 
 Build the specific TB Hamiltonian for a sp2 system
 ==================================================
@@ -34,8 +34,20 @@ Build the specific TB Hamiltonian for a sp2 system
 
    sp2
 
+Create real space grid for a geometry and supercell
+===================================================
+
+.. autosummary::
+   :toctree:
+
+   real_space_grid
 
 """
+
+# Add version information
+from . import _version
+__version__ = _version.version
+__version_tuple__ = _version.version_tuple
 
 from .hamiltonian import *
 from . import plot
@@ -43,5 +55,4 @@ from .sp2 import *
 from .ncsile import *
 from .density import *
 from .negf import *
-
-__all__ = [s for s in dir() if not s.startswith('_')]
+from .grid import *

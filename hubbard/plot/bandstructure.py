@@ -63,10 +63,10 @@ class Bandstructure(Plot):
 
         ev = np.empty([len(spin), len(lk), HH.sites])
         # Set energy reference to the Fermi level
-        Ef = HH.fermi_level(q=HH.q)
+
         for i,s in enumerate(spin):
             ev[i] = band.apply.array.eigh(spin=s)
-            ev[i] -= Ef[s]
+
             # Add spin-up component to plot (top layer)
             self.axes.plot(lk, ev[i], c[i])
 

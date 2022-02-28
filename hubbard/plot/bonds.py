@@ -17,12 +17,16 @@ class BondOrder(GeometryPlot):
         Mean-field Hubbard Hamiltonian
     """
 
-    def __init__(self, HH, **kwargs):
+    def __init__(self, HH, selection=None, **kwargs):
 
         if 'cmap' not in kwargs:
             kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HH.geometry, **kwargs)
+        if selection is None:
+            super().__init__(HH.geometry, **kwargs)
+        else:
+            print("doing sub")
+            super().__init__(HH.geometry.sub(selection), **kwargs)
 
         bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
 
@@ -32,6 +36,12 @@ class BondOrder(GeometryPlot):
 
         # Plot results
         row, col = BO.nonzero()
+
+        if selection is not None:
+            idx = np.concatenate([np.where(row == ia)[0] for ia in selection])
+            row = row[idx]
+            col = col[idx]
+
         for i, r in enumerate(row):
             xr = HH.geometry.xyz[r]
             c = col[i]
@@ -69,11 +79,12 @@ class BondHoppings(Plot):
     annotate: bool, optional
         if True it annotates the numerical value of the matrix element
     off_diagonal_only: bool, optional
-        if True it also plots the onsite energy
+        if True it also plots the onsite energies
     """
 
     def __init__(self, H, annotate=False, off_diagonal_only=True, **kwargs):
 
+        spin = kwargs.get('spin', 0)
         # Separated colormaps for the diagonal and off-diagonal elements
         cmap = kwargs.get("cmap", plt.cm.jet)
         cmap_t = kwargs.get("cmap_t", cmap)
@@ -91,7 +102,7 @@ class BondHoppings(Plot):
         norm = mp.colors.Normalize(vmin=tmin, vmax=tmax)
         cmap_t = mp.cm.ScalarMappable(norm=norm, cmap=cmap_t)
 
-        tmp = abs(H.H.tocsr(0).diagonal())
+        tmp = H.H.tocsr(spin).diagonal()
         emax = kwargs.get("emax", np.amax(tmp))
         emin = kwargs.get("emin", np.amin(tmp))
         norm = mp.colors.Normalize(vmin=emin, vmax=emax)
@@ -109,11 +120,17 @@ class BondHoppings(Plot):
                     self.axes.annotate('%.2f' % t, (x0 + rij[0] / 2, y0 + rij[1] / 2), fontsize=8)
             # Plot onsite energies?
             if not off_diagonal_only:
-                e = H[ia, ia, 0]
-                self.axes.plot(x0, y0, 'o', color=cmap_e.to_rgba(abs(e)), zorder=100, label='%.3f' % e)
+                e = H[ia, ia, spin]
+                self.axes.plot(x0, y0, 'o', color=cmap_e.to_rgba(e), zorder=100, label='%.3f' % e)
 
         self.axes.axis('off')
         self.axes.set_aspect('equal')
+
+        colorbar = kwargs.get("colorbar", False)
+        cbar_orientation = kwargs.get('cbar_orientation', 'horizontal')
+        cbar_label = kwargs.get('cbar_label', 'Onsite Energies [eV]')
+        if colorbar:
+            self.cbar = self.fig.colorbar(cmap_e, label=cbar_label, orientation=cbar_orientation)
 
 
 class Bonds(Plot):
