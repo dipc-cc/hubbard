@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ncSileHubbard &mdash; hubbard documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sp2" href="hubbard.sp2.html" />
+    <link rel="prev" title="calc_n" href="hubbard.calc_n.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hubbard
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html#related-bibliography">Related bibliography</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Funding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#read-and-write-in-binary-files">Read and write in binary files</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ncSileHubbard</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hubbard</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a> &raquo;</li>
+        
+      <li>ncSileHubbard</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api-generated/hubbard.ncSileHubbard.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="ncsilehubbard">
+<h1>ncSileHubbard<a class="headerlink" href="#ncsilehubbard" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="hubbard.ncSileHubbard">
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">ncSileHubbard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'r'</span></em>, <em class="sig-param"><span class="n">lvl</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">access</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/ncsile.html#ncSileHubbard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.ncSileHubbard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://zerothi.github.io/sisl/api/io/generated/sisl.io.SileCDF.html#sisl.io.SileCDF" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sisl.io.SileCDF</span></code></a></p>
+<p>Read and write <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object in binary files (netCDF4 support)</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://zerothi.github.io/sisl/api/io/generated/sisl.io.SileCDF.html#sisl.io.SileCDF" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sisl.io.SileCDF</span></code></a></dt><dd><p>sisl class</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.base_file" title="hubbard.ncSileHubbard.base_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base_file</span></code></a></p></td>
+<td><p>File of the current <em class="xref py py-obj">Sile</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.file" title="hubbard.ncSileHubbard.file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file</span></code></a></p></td>
+<td><p>File of the current <em class="xref py py-obj">Sile</em></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.ArgumentParser" title="hubbard.ncSileHubbard.ArgumentParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a>([p])</p></td>
+<td><p>Returns the arguments that may be available for this Sile</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.ArgumentParser_out" title="hubbard.ncSileHubbard.ArgumentParser_out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArgumentParser_out</span></code></a>([p])</p></td>
+<td><p>Appends additional arguments based on the output of the file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(filename[, mode, lvl, access])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.close" title="hubbard.ncSileHubbard.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.dir_file" title="hubbard.ncSileHubbard.dir_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dir_file</span></code></a>([filename, filename_base])</p></td>
+<td><p>File of the current <em class="xref py py-obj">Sile</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.isDataset" title="hubbard.ncSileHubbard.isDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isDataset</span></code></a>(obj)</p></td>
+<td><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> type</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.isDimension" title="hubbard.ncSileHubbard.isDimension"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isDimension</span></code></a>(obj)</p></td>
+<td><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dimension</span></code> type</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.isGroup" title="hubbard.ncSileHubbard.isGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isGroup</span></code></a>(obj)</p></td>
+<td><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Group</span></code> type</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.isRoot" title="hubbard.ncSileHubbard.isRoot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isRoot</span></code></a>(obj)</p></td>
+<td><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> type</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.isVariable" title="hubbard.ncSileHubbard.isVariable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isVariable</span></code></a>(obj)</p></td>
+<td><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Variable</span></code> type</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.iter" title="hubbard.ncSileHubbard.iter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter</span></code></a>([group, dimension, variable, levels, root])</p></td>
+<td><p>Iterator on all groups, variables and dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.read" title="hubbard.ncSileHubbard.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Generic read method which should be overloaded in child-classes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.read_U" title="hubbard.ncSileHubbard.read_U"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_U</span></code></a>([group])</p></td>
+<td><p>Read Coulomb repulsion U parameter from netcdf file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.read_density" title="hubbard.ncSileHubbard.read_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_density</span></code></a>([group])</p></td>
+<td><p>Read density from netcdf file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.read_kT" title="hubbard.ncSileHubbard.read_kT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_kT</span></code></a>([group])</p></td>
+<td><p>Read temperature from netcdf file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.write" title="hubbard.ncSileHubbard.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Generic write method which should be overloaded in child-classes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.ncSileHubbard.write_density" title="hubbard.ncSileHubbard.write_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_density</span></code></a>(n, U, kT, units[, group])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.ArgumentParser">
+<code class="sig-name descname">ArgumentParser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.ArgumentParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the arguments that may be available for this Sile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>ArgumentParser</em>) – the argument parser to add the arguments to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.ArgumentParser_out">
+<code class="sig-name descname">ArgumentParser_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.ArgumentParser_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends additional arguments based on the output of the file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>ArgumentParser</em>) – the argument parser to add the arguments to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.base_file">
+<em class="property">property </em><code class="sig-name descname">base_file</code><a class="headerlink" href="#hubbard.ncSileHubbard.base_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>File of the current <em class="xref py py-obj">Sile</em></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.dir_file">
+<code class="sig-name descname">dir_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename_base</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.dir_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>File of the current <em class="xref py py-obj">Sile</em></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.file">
+<em class="property">property </em><code class="sig-name descname">file</code><a class="headerlink" href="#hubbard.ncSileHubbard.file" title="Permalink to this definition">¶</a></dt>
+<dd><p>File of the current <em class="xref py py-obj">Sile</em></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.isDataset">
+<em class="property">classmethod </em><code class="sig-name descname">isDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.isDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> type</p>
+<p>This is just a wrapper for <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">netCDF4.Dataset)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.isDimension">
+<em class="property">classmethod </em><code class="sig-name descname">isDimension</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.isDimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dimension</span></code> type</p>
+<p>This is just a wrapper for <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">netCDF4.Dimension)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.isGroup">
+<em class="property">classmethod </em><code class="sig-name descname">isGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.isGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Group</span></code> type</p>
+<p>This is just a wrapper for <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">netCDF4.Group)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.isRoot">
+<em class="property">classmethod </em><code class="sig-name descname">isRoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.isRoot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> type</p>
+<p>This is just a wrapper for <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">netCDF4.Dataset)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.isVariable">
+<em class="property">classmethod </em><code class="sig-name descname">isVariable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.isVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is an instance of the NetCDF4 <code class="docutils literal notranslate"><span class="pre">Variable</span></code> type</p>
+<p>This is just a wrapper for <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">netCDF4.Variable)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.iter">
+<code class="sig-name descname">iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dimension</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">variable</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">levels</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator on all groups, variables and dimensions.</p>
+<p>This iterator iterates through all groups, variables and dimensions in the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<p>The generator sequence will _always_ be:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Group</p></li>
+<li><p>Dimensions in group</p></li>
+<li><p>Variables in group</p></li>
+</ol>
+</div></blockquote>
+<p>As the dimensions are generated before the variables it is possible to copy
+groups, dimensions, and then variables such that one always ensures correct
+dependencies in the generation of a new <code class="docutils literal notranslate"><span class="pre">SileCDF</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code> (<em class="xref py py-obj">True</em>)) – whether the iterator yields <em class="xref py py-obj">Group</em> instances</p></li>
+<li><p><strong>dimension</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code> (<em class="xref py py-obj">True</em>)) – whether the iterator yields <em class="xref py py-obj">Dimension</em> instances</p></li>
+<li><p><strong>variable</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code> (<em class="xref py py-obj">True</em>)) – whether the iterator yields <em class="xref py py-obj">Variable</em> instances</p></li>
+<li><p><strong>levels</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code> (<em class="xref py py-obj">-1</em>)) – number of levels to traverse, with respect to <code class="docutils literal notranslate"><span class="pre">root</span></code> variable, i.e. number of
+sub-groups this iterator will return.</p></li>
+<li><p><strong>root</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code> (<em class="xref py py-obj">None</em>)) – the base root to start iterating from.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Script for looping and checking each instance.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">gv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isGroup</span><span class="p">(</span><span class="n">gv</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># is group</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">isDimension</span><span class="p">(</span><span class="n">gv</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># is dimension</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">isVariable</span><span class="p">(</span><span class="n">gv</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="c1"># is variable</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic read method which should be overloaded in child-classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – keyword arguments will try and search for the attribute <code class="docutils literal notranslate"><span class="pre">read_&lt;&gt;</span></code>
+and call it with the remaining <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> as arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.read_U">
+<code class="sig-name descname">read_U</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/ncsile.html#ncSileHubbard.read_U"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.ncSileHubbard.read_U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read Coulomb repulsion U parameter from netcdf file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – netcdf group</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Float or list of floats containing the temperature for each netcdf group</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.read_density">
+<code class="sig-name descname">read_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/ncsile.html#ncSileHubbard.read_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.ncSileHubbard.read_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read density from netcdf file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – netcdf group. If there are groups in the file and no group is found then it reads the n variable from all groups found</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)">numpy.ndarray</a> or list of numpy.ndarrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.read_kT">
+<code class="sig-name descname">read_kT</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/ncsile.html#ncSileHubbard.read_kT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.ncSileHubbard.read_kT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read temperature from netcdf file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>group</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – netcdf group</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Float or list of floats containing the temperature times the Boltzmann constant (k) for each netcdf group</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.ncSileHubbard.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic write method which should be overloaded in child-classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – keyword arguments will try and search for the attribute <em class="xref py py-obj">write_</em>
+and call it with the remaining <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> as arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hubbard.ncSileHubbard.write_density">
+<code class="sig-name descname">write_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">U</span></em>, <em class="sig-param"><span class="n">kT</span></em>, <em class="sig-param"><span class="n">units</span></em>, <em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/ncsile.html#ncSileHubbard.write_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.ncSileHubbard.write_density" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hubbard.sp2.html" class="btn btn-neutral float-right" title="sp2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hubbard.calc_n.html" class="btn btn-neutral float-left" title="calc_n" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

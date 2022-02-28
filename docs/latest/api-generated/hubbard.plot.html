@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Charge" href="hubbard.plot.Charge.html" />
-    <link rel="prev" title="sp2" href="hubbard.sp2.html" /> 
+    <link rel="prev" title="real_space_grid" href="hubbard.real_space_grid.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -114,9 +114,9 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#plot-spectra">Plot spectra</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOS.html">DOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOS_distribution.html">DOS_distribution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOSmap.html">LDOSmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOS.html">LDOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOS_from_eigenstate.html">LDOS_from_eigenstate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOSmap.html">DOSmap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Spectrum.html">Spectrum</a></li>
 </ul>
 </li>
@@ -260,14 +260,14 @@ self-consistent solution for the system.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.DOS.html#hubbard.plot.DOS" title="hubbard.plot.DOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS</span></code></a>(HH, egrid[, eta, spin, sites])</p></td>
-<td><p>Plot the total density of states (DOS) as a function of the energy for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.LDOS.html#hubbard.plot.LDOS" title="hubbard.plot.LDOS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LDOS</span></code></a>(HH, E[, sites, spin, ext_geom, …])</p></td>
+<td><p>Plot LDOS for an energy E with a certain distribution function for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.DOS_distribution.html#hubbard.plot.DOS_distribution" title="hubbard.plot.DOS_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOS_distribution</span></code></a>(HH, PDOS[, sites, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.LDOS_from_eigenstate.html#hubbard.plot.LDOS_from_eigenstate" title="hubbard.plot.LDOS_from_eigenstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LDOS_from_eigenstate</span></code></a>(HH, wavefunction[, …])</p></td>
 <td><p>Plot LDOS in the configuration space for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.LDOSmap.html#hubbard.plot.LDOSmap" title="hubbard.plot.LDOSmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LDOSmap</span></code></a>(HubbardHamiltonian[, k, spin, …])</p></td>
-<td><p>Plot LDOS(distance, energy) map resolved in energy and axis-coordinates for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.DOSmap.html#hubbard.plot.DOSmap" title="hubbard.plot.DOSmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOSmap</span></code></a>(HubbardHamiltonian[, k, spin, …])</p></td>
+<td><p>Plot DOS(distance, energy) map resolved in energy and axis-coordinates for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.Spectrum.html#hubbard.plot.Spectrum" title="hubbard.plot.Spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spectrum</span></code></a>(HH[, k, xmax, ymin, ymax, fontsize])</p></td>
 <td><p>Plot the orbital charge overlaps for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p></td>
@@ -297,7 +297,7 @@ self-consistent solution for the system.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.BondOrder.html#hubbard.plot.BondOrder" title="hubbard.plot.BondOrder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondOrder</span></code></a>(HH, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.plot.BondOrder.html#hubbard.plot.BondOrder" title="hubbard.plot.BondOrder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondOrder</span></code></a>(HH[, selection])</p></td>
 <td><p>Plot the Bond order for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="hubbard.plot.BondHoppings.html#hubbard.plot.BondHoppings" title="hubbard.plot.BondHoppings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondHoppings</span></code></a>(H[, annotate, off_diagonal_only])</p></td>
@@ -336,7 +336,7 @@ self-consistent solution for the system.</p>
         <a href="hubbard.plot.Charge.html" class="btn btn-neutral float-right" title="Charge" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hubbard.sp2.html" class="btn btn-neutral float-left" title="sp2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hubbard.real_space_grid.html" class="btn btn-neutral float-left" title="real_space_grid" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -345,7 +345,7 @@ self-consistent solution for the system.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

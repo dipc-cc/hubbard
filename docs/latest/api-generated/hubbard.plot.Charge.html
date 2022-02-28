@@ -227,11 +227,12 @@ by specifying the <em class="xref py py-obj">spin</em> index.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>HH</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>hubbard.HubbardHamiltonian</em></a>) – mean-field Hubbard Hamiltonian</p></li>
-<li><p><strong>ext_geom</strong> (<a class="reference external" href="http://zerothi.github.io/sisl/docs/latest/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl vlatest)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don’t play
+<li><p><strong>ext_geom</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don’t play
 a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system
 otherwise it only uses the geometry associated to the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> (carbon backbone)</p></li>
 <li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional:</em>) – plot charge associated to one specific spin index, or both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
-<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations</p></li>
+<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
+If True either a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.SuperCell.html#sisl.SuperCell" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.SuperCell</span></code></a> (<em class="xref py py-obj">sc</em> kwarg) or the <em class="xref py py-obj">z</em> kwarg to slice the real space grid at the desired z coordinate needs to be passed</p></li>
 </ul>
 </dd>
 </dl>
@@ -311,7 +312,7 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>layer</strong> (<em>matplotlib.cm.ScalarMappable</em>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
 <li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
@@ -499,7 +500,7 @@ otherwise it only uses the geometry associated to the <a class="reference intern
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

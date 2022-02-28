@@ -170,6 +170,7 @@
 <span class="kn">from</span> <span class="nn">hubbard.plot</span> <span class="kn">import</span> <span class="n">GeometryPlot</span>
 <span class="kn">import</span> <span class="nn">sisl</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">hubbard.grid</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Wavefunction&#39;</span><span class="p">]</span>
 
@@ -190,6 +191,7 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    If `realspace` kwarg is passed it plots the wavefunction in a realspace grid</span>
+<span class="sd">    In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed</span>
 <span class="sd">    In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value</span>
 <span class="sd">    of the coefficient of `wf` on the atomic sites</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -212,7 +214,31 @@
 
 <div class="viewcode-block" id="Wavefunction.plot_wf"><a class="viewcode-back" href="../../../api-generated/hubbard.plot.Wavefunction.html#hubbard.plot.Wavefunction.plot_wf">[docs]</a>    <span class="k">def</span> <span class="nf">plot_wf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HH</span><span class="p">,</span> <span class="n">wf</span><span class="p">,</span> <span class="n">cb_label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Phase&#39;</span><span class="p">,</span> <span class="n">realspace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">realspace</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;shape&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;vmin&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;vmin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span>
+
+            <span class="k">if</span> <span class="s1">&#39;sc&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;z&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="n">origin</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="o">-</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either a SC or the z coordinate to slice the real space grid needs to be passed&#39;</span><span class="p">)</span>
+
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">SuperCell</span><span class="p">([</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">-</span><span class="n">ymin</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;axis&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;axis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">real_space_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sc&#39;</span><span class="p">],</span> <span class="n">wf</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wavefunction&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Slice it to obtain a 2D grid</span>
+            <span class="n">slice_grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;axis&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">grid</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">real</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__realspace__</span><span class="p">(</span><span class="n">slice_grid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="c1"># Create custom map to differenciate it from polarization cmap</span>
             <span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
@@ -251,7 +277,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

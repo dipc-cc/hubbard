@@ -1,0 +1,6 @@
+real_space_grid
+=======================
+
+.. currentmodule:: hubbard
+
+.. autofunction:: real_space_grid

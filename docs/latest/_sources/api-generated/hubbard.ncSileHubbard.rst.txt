@@ -1,0 +1,45 @@
+ncSileHubbard
+=====================
+
+.. currentmodule:: hubbard
+
+.. autoclass:: ncSileHubbard
+    :members:
+    :inherited-members:
+
+    
+    
+    .. rubric:: Attributes
+
+    .. autosummary::
+    
+        ~ncSileHubbard.base_file
+        ~ncSileHubbard.file
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~ncSileHubbard.ArgumentParser
+        ~ncSileHubbard.ArgumentParser_out
+        ~ncSileHubbard.__init__
+        ~ncSileHubbard.close
+        ~ncSileHubbard.dir_file
+        ~ncSileHubbard.isDataset
+        ~ncSileHubbard.isDimension
+        ~ncSileHubbard.isGroup
+        ~ncSileHubbard.isRoot
+        ~ncSileHubbard.isVariable
+        ~ncSileHubbard.iter
+        ~ncSileHubbard.read
+        ~ncSileHubbard.read_U
+        ~ncSileHubbard.read_density
+        ~ncSileHubbard.read_kT
+        ~ncSileHubbard.write
+        ~ncSileHubbard.write_density
+    
+    

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>calc_n &mdash; hubbard documentation</title>
+  <title>real_space_grid &mdash; hubbard documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ncSileHubbard" href="hubbard.ncSileHubbard.html" />
-    <link rel="prev" title="NEGF" href="hubbard.NEGF.html" /> 
+    <link rel="next" title="Visualizing electronic properties (hubbard.plot)" href="hubbard.plot.html" />
+    <link rel="prev" title="sp2" href="hubbard.sp2.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -106,15 +106,13 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="hubbard.HubbardHamiltonian.html">HubbardHamiltonian</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.NEGF.html">NEGF</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">calc_n</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.html#read-and-write-in-binary-files">Read and write in binary files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.html#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a></li>
-<li class="toctree-l3"><a class="reference internal" href="hubbard.html#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">real_space_grid</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a></li>
@@ -169,13 +167,13 @@
         
           <li><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a> &raquo;</li>
         
-      <li>calc_n</li>
+      <li>real_space_grid</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api-generated/hubbard.calc_n.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api-generated/hubbard.real_space_grid.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -212,32 +210,28 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="calc-n">
-<h1>calc_n<a class="headerlink" href="#calc-n" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="real-space-grid">
+<h1>real_space_grid<a class="headerlink" href="#real-space-grid" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="hubbard.calc_n">
-<code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">calc_n</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H</span></em>, <em class="sig-param"><span class="n">q</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/density.html#calc_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.calc_n" title="Permalink to this definition">¶</a></dt>
-<dd><p>General method to obtain the spin densities for periodic or finite systems at a given temperature</p>
-<p>It obtains the spin densities from the direct diagonalization of the Hamiltonian (<code class="docutils literal notranslate"><span class="pre">H.H</span></code>) taking into account
-a possible overlap matrix (<code class="docutils literal notranslate"><span class="pre">H.H.S</span></code>):</p>
-<div class="math notranslate nohighlight">
-\[\langle n_{i\sigma} \rangle = \sum_{\alpha}f_{\alpha\sigma}\sum_{j}c^{\alpha}_{i\sigma}c^{*\alpha}_{j\sigma}S_{ij}\]</div>
-<p>Where <span class="math notranslate nohighlight">\(f_{\alpha\sigma}\)</span> is the weight of eigenstate <span class="math notranslate nohighlight">\(\alpha\)</span> for spin <span class="math notranslate nohighlight">\(\sigma\)</span> at temperature <code class="docutils literal notranslate"><span class="pre">kT</span></code> (Fermi-Dirac distribution),
-<span class="math notranslate nohighlight">\(c^{\alpha}_{i\sigma}\)</span> are coefficients for eigenstate <span class="math notranslate nohighlight">\(\alpha\)</span> with spin <span class="math notranslate nohighlight">\(\sigma\)</span> represented in the basis of atomic orbitals</p>
+<dt id="hubbard.real_space_grid">
+<code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">real_space_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span></em>, <em class="sig-param"><span class="n">sc</span></em>, <em class="sig-param"><span class="n">vector</span></em>, <em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'wavefunction'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/grid.html#real_space_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.real_space_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>H</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the system to obtain the spin-densities from</p></li>
-<li><p><strong>q</strong> (<em>array_like</em>) – charge resolved in spin channels (first index for up-electrons and second index for down-electrons)</p></li>
+<li><p><strong>g</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><em>sisl.Geometry</em></a>) – geometry</p></li>
+<li><p><strong>vector</strong> (<em>numpy.array</em>) – vector to expand in the real space grid</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em> or </em><em>(</em><em>3</em><em>,</em><em>) </em><em>of int</em>) – the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
+(see <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a>)</p></li>
+<li><p><strong>sc</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.SuperCell.html#sisl.SuperCell" title="(in sisl v0.1.dev1+gff3f170)"><em>sisl.SuperCell</em></a>) – supercell object of the grid</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – to build the grid from sisl.electron.wavefunction object (<code class="docutils literal notranslate"><span class="pre">mode='wavefunction'</span></code>)
+or from the sisl.physics.DensityMatrix (<code class="docutils literal notranslate"><span class="pre">mode='charge'</span></code>), e.g. for charge-related plots</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron.norm2</span></code></dt><dd><p>sisl routine to obtain the dot product of the eigenstates with the overlap matrix</p>
-</dd>
-</dl>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">sisl.Grid</span></code></p>
 </div>
 </dd></dl>
 
@@ -251,10 +245,10 @@ a possible overlap matrix (<code class="docutils literal notranslate"><span clas
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hubbard.ncSileHubbard.html" class="btn btn-neutral float-right" title="ncSileHubbard" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hubbard.plot.html" class="btn btn-neutral float-right" title="Visualizing electronic properties (hubbard.plot)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hubbard.NEGF.html" class="btn btn-neutral float-left" title="NEGF" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hubbard.sp2.html" class="btn btn-neutral float-left" title="sp2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

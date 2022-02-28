@@ -113,11 +113,15 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#read-and-write-in-binary-files">Read and write in binary files</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.ncSilehubbard.html">ncSilehubbard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.ncSileHubbard.html">ncSileHubbard</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.sp2.html">sp2</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.real_space_grid.html">real_space_grid</a></li>
 </ul>
 </li>
 </ul>
@@ -226,7 +230,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a>(TBHam[, n, U, q, nkpt, kT])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a>(TBHam[, n, U, Uij, q, …])</p></td>
 <td><p>A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEGF</span></code></a>(Hdev, elec_SE, elec_idx[, CC, V])</p></td>
@@ -246,7 +250,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.ncSilehubbard.html#hubbard.ncSilehubbard" title="hubbard.ncSilehubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncSilehubbard</span></code></a>(filename[, mode, lvl, access])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.ncSileHubbard.html#hubbard.ncSileHubbard" title="hubbard.ncSileHubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncSileHubbard</span></code></a>(filename[, mode, lvl, access])</p></td>
 <td><p>Read and write <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object in binary files (netCDF4 support)</p></td>
 </tr>
 </tbody>
@@ -260,8 +264,22 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.sp2.html#hubbard.sp2" title="hubbard.sp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sp2</span></code></a>(ext_geom[, t1, t2, t3, eB, eN, s0, s1, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.sp2.html#hubbard.sp2" title="hubbard.sp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sp2</span></code></a>(ext_geom[, t1, t2, t3, eB, eN, s1, s2, …])</p></td>
 <td><p>Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="create-real-space-grid-for-a-geometry-and-supercell">
+<h2>Create real space grid for a geometry and supercell<a class="headerlink" href="#create-real-space-grid-for-a-geometry-and-supercell" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.real_space_grid.html#hubbard.real_space_grid" title="hubbard.real_space_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real_space_grid</span></code></a>(geometry, sc, vector, shape)</p></td>
+<td><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p></td>
 </tr>
 </tbody>
 </table>
@@ -288,7 +306,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

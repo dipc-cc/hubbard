@@ -1,0 +1,31 @@
+DOSmap
+===================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: DOSmap
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~DOSmap.__init__
+        ~DOSmap.add_colorbar
+        ~DOSmap.close
+        ~DOSmap.legend
+        ~DOSmap.savefig
+        ~DOSmap.set_title
+        ~DOSmap.set_xlabel
+        ~DOSmap.set_xlim
+        ~DOSmap.set_ylabel
+        ~DOSmap.set_ylim
+    
+    

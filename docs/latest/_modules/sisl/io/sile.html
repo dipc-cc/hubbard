@@ -166,8 +166,11 @@
            <div itemprop="articleBody">
             
   <h1>Source code for sisl.io.sile</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">splitext</span><span class="p">,</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">basename</span>
+<span></span><span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public</span>
+<span class="c1"># License, v. 2.0. If a copy of the MPL was not distributed with this</span>
+<span class="c1"># file, You can obtain one at https://mozilla.org/MPL/2.0/.</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">splitext</span><span class="p">,</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">basename</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
@@ -248,7 +251,7 @@
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nl</span><span class="p">:</span>
             <span class="n">nl</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
             <span class="c1"># Remove baseclasses everybody have</span>
-            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">BaseSile</span><span class="p">,</span> <span class="n">Sile</span><span class="p">,</span> <span class="n">SileBin</span><span class="p">,</span> <span class="n">SileCDF</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">BaseSile</span><span class="p">,</span> <span class="n">Sile</span><span class="p">,</span> <span class="n">SileBin</span><span class="p">,</span> <span class="n">SileCDF</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">i</span> <span class="o">=</span> <span class="n">children</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                     <span class="n">children</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -538,11 +541,7 @@
         <span class="sd">&quot;&quot;&quot; File of the current `Sile` &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_directory</span><span class="p">)</span> <span class="o">/</span> <span class="n">filename_base</span> <span class="o">/</span> <span class="n">filename</span>
-
-    <span class="k">def</span> <span class="nf">exist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Query whether the file exists &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directory</span> <span class="o">/</span> <span class="n">filename_base</span> <span class="o">/</span> <span class="n">filename</span>
 
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Generic read method which should be overloaded in child-classes</span>
@@ -619,7 +618,7 @@
 
     <span class="k">def</span> <span class="nf">_base_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Make `f` refer to the file with the appropriate base directory &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_directory</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directory</span> <span class="o">/</span> <span class="n">f</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Override to check the handle &quot;&quot;&quot;</span>
@@ -641,7 +640,7 @@
 <span class="sd">        p : ArgumentParser</span>
 <span class="sd">           the argument parser to add the arguments to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The ArgumentParser of &#39;&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="s2">&quot;&#39; has not been implemented yet.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The ArgumentParser of &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; has not been implemented yet.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ArgumentParser_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Appends additional arguments based on the output of the file</span>
@@ -655,7 +654,14 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return a representation of the `Sile` &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">(</span><span class="si">{1!s}</span><span class="s2">, base=</span><span class="si">{2!s}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directory</span><span class="p">)</span>
+        <span class="c1"># Check if the directory is relative to the current path</span>
+        <span class="c1"># If so, only print the relative path, otherwise print the full path</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directory</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># bypass d.is_relative_to, added in 3.9</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+        <span class="k">except</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_file</span><span class="si">!s}</span><span class="s2">, base=</span><span class="si">{</span><span class="n">d</span><span class="si">!s}</span><span class="s2">)&quot;</span>
 
 
 <span class="k">def</span> <span class="nf">sile_fh_open</span><span class="p">(</span><span class="n">from_closed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -713,7 +719,12 @@
 
     <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.gz&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fh</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+                <span class="c1"># assume the file is a text file and open in text-mode</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fh</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># assume this is opening in binary or write mode</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fh</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_line</span> <span class="o">=</span> <span class="mi">0</span>
@@ -732,8 +743,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_keys</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns true if ``isinstance(keys,(list,np.ndarray))`` &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if ``not isinstance(keys, str)`` &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">key2case</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
@@ -782,26 +793,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_line</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">l</span>
 
-    <span class="k">def</span> <span class="nf">step_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword is found in the input &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">step_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ret_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword(s) is found in the input &quot;&quot;&quot;</span>
         <span class="c1"># If keyword is a list, it just matches one of the inputs</span>
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># The previously read line...</span>
         <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_line</span>
-
-        <span class="c1"># Do checking outside line checks</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_keys</span><span class="p">(</span><span class="n">keywords</span><span class="p">):</span>
-            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># convert to list</span>
+            <span class="n">keywords</span> <span class="o">=</span> <span class="p">[</span><span class="n">keywords</span><span class="p">]</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
             <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                 <span class="k">break</span>
-            <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="p">(</span><span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">line</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">reread</span><span class="p">:</span>
             <span class="c1"># We may be in the case where the user request</span>
@@ -816,42 +823,22 @@
                 <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_keys</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ret_index</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># force return an index</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">i</span>
+            <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">idx</span>
 
         <span class="c1"># sometimes the line contains information, as a</span>
         <span class="c1"># default we return the line found</span>
         <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">l</span>
-
-    <span class="k">def</span> <span class="nf">step_either</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Steps the file-handle until the keyword is found in the input &quot;&quot;&quot;</span>
-        <span class="c1"># If keyword is a list, it just matches one of the inputs</span>
-
-        <span class="c1"># Do checking outside line checks</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_keys</span><span class="p">(</span><span class="n">keywords</span><span class="p">):</span>
-            <span class="n">line_has</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_has_key</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys2case</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">found</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_to</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">l</span>
-
-        <span class="c1"># initialize</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">j</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-        <span class="k">while</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                <span class="k">break</span>
-
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
-                <span class="n">found</span> <span class="o">=</span> <span class="n">line_has</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
-                    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span>
-                    <span class="k">break</span>
-
-        <span class="c1"># sometimes the line contains information, as a</span>
-        <span class="c1"># default we return the line found</span>
-        <span class="k">return</span> <span class="n">found</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span>
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Wrapper to default the write statements &quot;&quot;&quot;</span>
@@ -893,7 +880,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_lvl</span> <span class="o">=</span> <span class="n">lvl</span>
         <span class="c1"># Initialize the _data dictionary for access == 1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exist</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_access</span> <span class="o">=</span> <span class="n">access</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If it has not been created we should not try</span>
@@ -1000,8 +987,8 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_crt_dim</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">n</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">n</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">n</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_crt_var</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1171,7 +1158,7 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="s1">&#39; in &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">!s}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="si">!s}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
 
@@ -1202,7 +1189,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

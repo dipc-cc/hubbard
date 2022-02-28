@@ -1,0 +1,41 @@
+LDOS_from_eigenstate
+=================================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: LDOS_from_eigenstate
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~LDOS_from_eigenstate.__init__
+        ~LDOS_from_eigenstate.add_colorbar
+        ~LDOS_from_eigenstate.annotate
+        ~LDOS_from_eigenstate.close
+        ~LDOS_from_eigenstate.get_colorbar_xticks
+        ~LDOS_from_eigenstate.get_colorbar_yticks
+        ~LDOS_from_eigenstate.legend
+        ~LDOS_from_eigenstate.savefig
+        ~LDOS_from_eigenstate.set_axes
+        ~LDOS_from_eigenstate.set_colorbar_xlabel
+        ~LDOS_from_eigenstate.set_colorbar_xticklabels
+        ~LDOS_from_eigenstate.set_colorbar_xticks
+        ~LDOS_from_eigenstate.set_colorbar_ylabel
+        ~LDOS_from_eigenstate.set_colorbar_yticklabels
+        ~LDOS_from_eigenstate.set_colorbar_yticks
+        ~LDOS_from_eigenstate.set_title
+        ~LDOS_from_eigenstate.set_xlabel
+        ~LDOS_from_eigenstate.set_xlim
+        ~LDOS_from_eigenstate.set_ylabel
+        ~LDOS_from_eigenstate.set_ylim
+    
+    

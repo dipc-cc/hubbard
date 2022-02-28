@@ -173,7 +173,7 @@
 
 
 <div class="viewcode-block" id="sp2"><a class="viewcode-back" href="../../api-generated/hubbard.sp2.html#hubbard.sp2">[docs]</a><span class="k">def</span> <span class="nf">sp2</span><span class="p">(</span><span class="n">ext_geom</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">eB</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">eN</span><span class="o">=-</span><span class="mf">3.</span><span class="p">,</span>
-        <span class="n">s0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Spin</span><span class="p">(</span><span class="s1">&#39;polarized&#39;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot; Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</span>
 
 <span class="sd">    It takes advantage of the `sisl` class for building sparse Hamiltonian matrices,</span>
@@ -188,11 +188,39 @@
 <span class="sd">    The function will also take into account the possible presence of Boron or Nitrogen atoms,</span>
 <span class="sd">    for which one would need to specify the on-site energy for those atoms (``eB`` and ``eN``)</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ext_geom: sisl.Geometry</span>
+<span class="sd">        geometry of the sp2 carbon system</span>
+<span class="sd">    t1: float, optional</span>
+<span class="sd">        1NN hopping defaults to 2.7 eV</span>
+<span class="sd">    t2: float, optional</span>
+<span class="sd">        2NN hopping defaults to 0.2 eV</span>
+<span class="sd">    t3: float, optional</span>
+<span class="sd">        3NN hopping defaults to 0.18 eV</span>
+<span class="sd">    eB: float, optional</span>
+<span class="sd">        on-site energy for Boron atoms</span>
+<span class="sd">    eN: float, optional</span>
+<span class="sd">        on-site energy for Nitrogen atoms</span>
+<span class="sd">    s1: float, optional</span>
+<span class="sd">        overlap between 1NN, default to zero (orthogonal basis)</span>
+<span class="sd">    s2: float, optional</span>
+<span class="sd">        overlap between 2NN, default to zero</span>
+<span class="sd">    s3: float, optional</span>
+<span class="sd">        overlap between 3NN, default to zero</span>
+<span class="sd">    dq: float, optional</span>
+<span class="sd">        additional atomic charge, defaults to zero</span>
+<span class="sd">    spin: str or sisl.physics.Spin, optional</span>
+<span class="sd">        to define a polarized or unpolarized system pass ``spin=polarized`` or ``spin=unpolarized``</span>
+<span class="sd">        or the corresponding `sisl.physics.Spin` object</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    H: sisl.physics.Hamiltonian</span>
-<span class="sd">        tight-binding Hamiltonian for the sp2 structure of ``dim=2`` (for the two spin channels)</span>
+<span class="sd">        tight-binding Hamiltonian for the sp2 structure</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+        <span class="n">spin</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>
 
     <span class="c1"># Determine pz sites</span>
     <span class="n">aux</span> <span class="o">=</span> <span class="p">[]</span>
@@ -226,7 +254,7 @@
         <span class="n">orthogonal</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">orthogonal</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">H</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Hamiltonian</span><span class="p">(</span><span class="n">pi_geom</span><span class="p">,</span> <span class="n">orthogonal</span><span class="o">=</span><span class="n">orthogonal</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Hamiltonian</span><span class="p">(</span><span class="n">pi_geom</span><span class="p">,</span> <span class="n">orthogonal</span><span class="o">=</span><span class="n">orthogonal</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
 
     <span class="c1"># Radii defining 1st, 2nd, and 3rd neighbors</span>
     <span class="n">R</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">]</span>
@@ -246,7 +274,7 @@
         <span class="k">if</span> <span class="n">t3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">H</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">t3</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">H</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">:</span>
-            <span class="n">H</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">ia</span><span class="p">]</span> <span class="o">=</span> <span class="n">s0</span>
+            <span class="n">H</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">ia</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
             <span class="n">H</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s1</span>
             <span class="n">H</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s2</span>
             <span class="n">H</span><span class="o">.</span><span class="n">S</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s3</span>
@@ -264,7 +292,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

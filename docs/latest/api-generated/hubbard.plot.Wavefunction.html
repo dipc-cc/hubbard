@@ -230,6 +230,7 @@ if no ext_geom is passed, it uses the geometry stored in the <a class="reference
 </dl>
 <p class="rubric">Notes</p>
 <p>If <em class="xref py py-obj">realspace</em> kwarg is passed it plots the wavefunction in a realspace grid
+In this case either a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.SuperCell.html#sisl.SuperCell" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.SuperCell</span></code></a> (<em class="xref py py-obj">sc</em> kwarg) or the <em class="xref py py-obj">z</em> kwarg to slice the real space grid at the desired z coordinate needs to be passed
 In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
 of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 <p class="rubric">Methods</p>
@@ -311,7 +312,7 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>layer</strong> (<em>matplotlib.cm.ScalarMappable</em>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
 <li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
@@ -504,7 +505,7 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

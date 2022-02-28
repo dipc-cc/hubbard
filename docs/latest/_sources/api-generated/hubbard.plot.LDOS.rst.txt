@@ -1,0 +1,41 @@
+LDOS
+=================
+
+.. currentmodule:: hubbard.plot
+
+.. autoclass:: LDOS
+    :members:
+    :inherited-members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Methods
+
+    .. autosummary::
+    
+        ~LDOS.__init__
+        ~LDOS.add_colorbar
+        ~LDOS.annotate
+        ~LDOS.close
+        ~LDOS.get_colorbar_xticks
+        ~LDOS.get_colorbar_yticks
+        ~LDOS.legend
+        ~LDOS.savefig
+        ~LDOS.set_axes
+        ~LDOS.set_colorbar_xlabel
+        ~LDOS.set_colorbar_xticklabels
+        ~LDOS.set_colorbar_xticks
+        ~LDOS.set_colorbar_ylabel
+        ~LDOS.set_colorbar_yticklabels
+        ~LDOS.set_colorbar_yticks
+        ~LDOS.set_title
+        ~LDOS.set_xlabel
+        ~LDOS.set_xlim
+        ~LDOS.set_ylabel
+        ~LDOS.set_ylim
+    
+    

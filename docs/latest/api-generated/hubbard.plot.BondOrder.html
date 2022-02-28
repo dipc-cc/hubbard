@@ -217,7 +217,7 @@
 <h1>BondOrder<a class="headerlink" href="#bondorder" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="hubbard.plot.BondOrder">
-<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">BondOrder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HH</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/bonds.html#BondOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.BondOrder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">BondOrder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HH</span></em>, <em class="sig-param"><span class="n">selection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/bonds.html#BondOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.BondOrder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">hubbard.plot.plot.GeometryPlot</span></code></p>
 <p>Plot the Bond order for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a></p>
 <dl class="field-list simple">
@@ -232,7 +232,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HH, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HH[, selection])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.BondOrder.add_colorbar" title="hubbard.plot.BondOrder.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
@@ -301,7 +301,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.4.1)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>layer</strong> (<em>matplotlib.cm.ScalarMappable</em>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
 <li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
@@ -489,7 +489,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

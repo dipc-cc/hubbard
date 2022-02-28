@@ -167,6 +167,8 @@
             
   <h1>Source code for hubbard.plot.plot</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sisl</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span>
 <span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PatchCollection</span>
@@ -174,7 +176,8 @@
 
 
 <span class="c1"># Install font rc params</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">usetex</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">checkdep_usetex</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="n">usetex</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;Dejavu Sans&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
 
@@ -395,57 +398,18 @@
                 <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_colorbar_ylabel</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">__realspace__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">grid_unit</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
-        <span class="k">def</span> <span class="nf">real_space_grid</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">grid_unit</span><span class="p">,</span> <span class="n">density</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">sisl</span>
-
-            <span class="c1"># Create a temporary copy of the geometry</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-            <span class="c1"># Set new sc to create real-space grid</span>
-            <span class="n">sc</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">SuperCell</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ymax</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">origo</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">z</span><span class="p">])</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">set_sc</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
-
-            <span class="c1"># Move geometry within the supercell</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">move</span><span class="p">([</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])])</span>
-            <span class="c1"># Make z~0 -&gt; z = 0</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">xyz</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-3</span><span class="p">),</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="c1"># Create the real-space grid</span>
-            <span class="n">grid</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="n">grid_unit</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">sc</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">density</span><span class="p">:</span>
-                <span class="n">D</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">DensityMatrix</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">))</span>
-                <span class="n">D</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="n">D</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">EigenstateElectron</span><span class="p">):</span>
-                    <span class="c1"># Set parent geometry equal to the temporary one</span>
-                    <span class="n">v</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">g</span>
-                    <span class="n">v</span><span class="o">.</span><span class="n">wavefunction</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># In case v is a vector</span>
-                    <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">wavefunction</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
-            <span class="k">del</span> <span class="n">g</span>
-            <span class="k">return</span> <span class="n">grid</span>
-
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">real_space_grid</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">grid_unit</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
-            <span class="c1"># Smooth grid with gaussian function</span>
-            <span class="k">if</span> <span class="s1">&#39;r_smooth&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">r_smooth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;r_smooth&#39;</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">r_smooth</span> <span class="o">=</span> <span class="mf">0.7</span>
-            <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r_smooth</span><span class="p">)</span>
-
-        <span class="n">slice_grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">grid</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">def</span> <span class="nf">__realspace__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        grid: numpy.ndarray</span>
+<span class="sd">            real space grid to be plotted as a colormap (imshow plot)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="s1">&#39;vmax&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;vmax&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">slice_grid</span><span class="p">))</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="s1">&#39;vmin&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">vmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;vmin&#39;</span><span class="p">]</span>
@@ -454,7 +418,7 @@
 
         <span class="c1"># Plot only the real part of the grid</span>
         <span class="c1"># The image will be created in an imshow layer (stored in self.imshow)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">imshow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">slice_grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imshow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span>
                               <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">)</span>
         <span class="c1"># Colorbars</span>
         <span class="k">if</span> <span class="s1">&#39;colorbar&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -535,7 +499,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

@@ -231,10 +231,10 @@
 
         <span class="n">ev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">spin</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">lk</span><span class="p">),</span> <span class="n">HH</span><span class="o">.</span><span class="n">sites</span><span class="p">])</span>
         <span class="c1"># Set energy reference to the Fermi level</span>
-        <span class="n">Ef</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="n">HH</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spin</span><span class="p">):</span>
             <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">apply</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
-            <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">Ef</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
             <span class="c1"># Add spin-up component to plot (top layer)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lk</span><span class="p">,</span> <span class="n">ev</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
@@ -250,12 +250,12 @@
         <span class="c1"># Fat bands?</span>
         <span class="k">if</span> <span class="n">projection</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">HH</span><span class="o">.</span><span class="n">sites</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">lk</span><span class="p">,</span> <span class="n">ev</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">scale</span><span class="o">*</span><span class="n">pdos</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">lk</span><span class="p">,</span> <span class="n">ev</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">scale</span><span class="o">*</span><span class="n">pdos</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span><span class="p">)</span>
         <span class="c1"># Figure aspects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticks_labels</span><span class="p">)</span>
         <span class="c1"># Adjust borders</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top</span><span class="o">=.</span><span class="mi">95</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">.95</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -268,7 +268,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

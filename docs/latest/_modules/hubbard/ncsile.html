@@ -169,38 +169,143 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sisl</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ncSilehubbard&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ncSileHubbard&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ncSilehubbard"><a class="viewcode-back" href="../../api-generated/hubbard.ncSilehubbard.html#hubbard.ncSilehubbard">[docs]</a><span class="k">class</span> <span class="nc">ncSilehubbard</span><span class="p">(</span><span class="n">sisl</span><span class="o">.</span><span class="n">SileCDF</span><span class="p">):</span>
+<div class="viewcode-block" id="ncSileHubbard"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard">[docs]</a><span class="k">class</span> <span class="nc">ncSileHubbard</span><span class="p">(</span><span class="n">sisl</span><span class="o">.</span><span class="n">SileCDF</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)</span>
 
 <span class="sd">    See Also</span>
-<span class="sd">    ------------</span>
+<span class="sd">    --------</span>
 <span class="sd">    sisl.io.SileCDF : sisl class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ncSileHubbard.read_U"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_U">[docs]</a>    <span class="k">def</span> <span class="nf">read_U</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read Coulomb repulsion U parameter from netcdf file</span>
 
-<div class="viewcode-block" id="ncSilehubbard.read_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSilehubbard.html#hubbard.ncSilehubbard.read_density">[docs]</a>    <span class="k">def</span> <span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group: str, optional</span>
+<span class="sd">            netcdf group</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Float or list of floats containing the temperature for each netcdf group</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Find group</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+                <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s1"> does not exist in file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Try reading U saved without group</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># Read from all groups, append all U</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                    <span class="n">U</span>  <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="c1"># Read U from all groups and append them in a list</span>
+                        <span class="n">_U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:])</span>
+                        <span class="n">U</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_U</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">U</span></div>
 
-        <span class="c1"># Read densities</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:]</span>
+<div class="viewcode-block" id="ncSileHubbard.read_kT"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_kT">[docs]</a>    <span class="k">def</span> <span class="nf">read_kT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read temperature from netcdf file</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group: str, optional</span>
+<span class="sd">            netcdf group</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Float or list of floats containing the temperature times the Boltzmann constant (k) for each netcdf group</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find group</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+                <span class="c1"># Read kT</span>
+                <span class="n">kT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;kT&#39;</span><span class="p">][:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s1"> does not exist in file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Try reading kT saved without group</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">kT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;kT&#39;</span><span class="p">][:])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># Read from all groups, append all kT</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                    <span class="n">kT</span>  <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="c1"># Read kT from all groups and append them in a list</span>
+                        <span class="n">_kT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;kT&#39;</span><span class="p">][:])</span>
+                        <span class="n">kT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_kT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">kT</span></div>
+
+<div class="viewcode-block" id="ncSileHubbard.read_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_density">[docs]</a>    <span class="k">def</span> <span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read density from netcdf file</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group: str, optional</span>
+<span class="sd">           netcdf group. If there are groups in the file and no group is found then it reads the n variable from all groups found</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray or list of numpy.ndarrays</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find group</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s1"> does not exist in file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Try reading densities saved without group</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># Read from all groups, append all densities</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                    <span class="n">n</span>  <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+                        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="c1"># Read densities from all groups and append them in a list</span>
+                        <span class="n">_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:])</span>
+                        <span class="n">n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_n</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n</span></div>
 
-<div class="viewcode-block" id="ncSilehubbard.write_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSilehubbard.html#hubbard.ncSilehubbard.write_density">[docs]</a>    <span class="k">def</span> <span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infolabel</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<div class="viewcode-block" id="ncSileHubbard.write_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.write_density">[docs]</a>    <span class="k">def</span> <span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create group</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_grp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">infolabel</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_grp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="c1"># Create dimensions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_crt_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ncomp&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_crt_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;nspin&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_crt_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;norb&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># Write variable n</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_var</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;ncomp&#39;</span><span class="p">,</span> <span class="s1">&#39;norb&#39;</span><span class="p">))</span>
-        <span class="n">v</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Densities&#39;</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">n</span></div></div>
+        <span class="n">v1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_var</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;nspin&#39;</span><span class="p">,</span> <span class="s1">&#39;norb&#39;</span><span class="p">))</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_var</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;norb&#39;</span><span class="p">,</span> <span class="s1">&#39;norb&#39;</span><span class="p">))</span>
+        <span class="n">v3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_var</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;kT&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)</span>
+        <span class="n">v1</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Spin densities&#39;</span>
+        <span class="n">v2</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Coulomb repulsion parameter in &#39;</span> <span class="o">+</span> <span class="n">units</span>
+        <span class="n">v3</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Temperature of the system in &#39;</span><span class="o">+</span> <span class="n">units</span>
+        <span class="n">v1</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="n">v2</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">U</span>
+        <span class="n">v3</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">kT</span></div></div>
+
+<span class="n">sisl</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">add_sile</span><span class="p">(</span><span class="s2">&quot;HU.nc&quot;</span><span class="p">,</span> <span class="n">ncSileHubbard</span><span class="p">,</span> <span class="n">gzip</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -213,7 +318,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

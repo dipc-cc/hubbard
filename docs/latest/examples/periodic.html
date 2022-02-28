@@ -482,14 +482,14 @@ div.rendered_html tbody tr:hover {
 <img alt="../_images/examples_periodic_2_0.png" src="../_images/examples_periodic_2_0.png" />
 </div>
 </div>
-<p>We firstly build the TB <code class="docutils literal notranslate"><span class="pre">sisl.Hamiltonian</span></code> of <code class="docutils literal notranslate"><span class="pre">dim=2</span></code> (for spin polarized calculations)</p>
+<p>We firstly build the TB <code class="docutils literal notranslate"><span class="pre">sisl.Hamiltonian</span></code> with the flag <code class="docutils literal notranslate"><span class="pre">spin='polarized</span></code> (for spin polarized calculations)</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Build sisl.Hamiltonian object using sisl</span>
-<span class="n">H0</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Hamiltonian</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">H0</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Hamiltonian</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s1">&#39;polarized&#39;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="n">geom</span><span class="p">:</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">2.1</span><span class="p">))</span>
     <span class="n">H0</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -537,9 +537,9 @@ the <code class="docutils literal notranslate"><span class="pre">HubabrdHamilton
 <div class="output_area docutils container">
 <div class="highlight"><pre>
    HubbardHamiltonian: converge towards tol=1.00e-10
-   10 iterations completed: 0.0063626212646060165 -3.3444361241333893
-   20 iterations completed: 0.0001918556205354749 -3.3661778892013343
-   30 iterations completed: 2.7045032879868813e-13 -3.35833095919254
+   10 iterations completed: 0.0063626212646060165 -3.347981808109207
+   20 iterations completed: 0.0001918556205354749 -3.3579954880129295
+   30 iterations completed: 2.7045032879868813e-13 -3.35833095942144
    found solution in 30 iterations
 </pre></div></div>
 </div>
@@ -623,7 +623,7 @@ the <code class="docutils literal notranslate"><span class="pre">HubabrdHamilton
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018-2021, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
+        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
 
     </p>
   </div>

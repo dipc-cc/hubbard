@@ -9,6 +9,12 @@ HubbardHamiltonian
 
     
     
+    .. rubric:: Attributes
+
+    .. autosummary::
+    
+        ~HubbardHamiltonian.shape
+    
     
 
     
@@ -29,6 +35,7 @@ HubbardHamiltonian
         ~HubbardHamiltonian.find_midgap
         ~HubbardHamiltonian.get_Zak_phase
         ~HubbardHamiltonian.get_bond_order
+        ~HubbardHamiltonian.get_hash
         ~HubbardHamiltonian.iterate
         ~HubbardHamiltonian.normalize_charge
         ~HubbardHamiltonian.polarize_sublattices

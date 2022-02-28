@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Spectrum &mdash; hubbard documentation</title>
+  <title>DOSmap &mdash; hubbard documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Wavefunction" href="hubbard.plot.Wavefunction.html" />
-    <link rel="prev" title="DOSmap" href="hubbard.plot.DOSmap.html" /> 
+    <link rel="next" title="Spectrum" href="hubbard.plot.Spectrum.html" />
+    <link rel="prev" title="LDOS_from_eigenstate" href="hubbard.plot.LDOS_from_eigenstate.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -111,8 +111,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="hubbard.plot.html#plot-spectra">Plot spectra</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOS.html">LDOS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.plot.LDOS_from_eigenstate.html">LDOS_from_eigenstate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.DOSmap.html">DOSmap</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Spectrum</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">DOSmap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hubbard.plot.Spectrum.html">Spectrum</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.plot.html#plot-wavefunctions-for-each-spin-channel">Plot wavefunctions for each spin-channel</a></li>
@@ -171,13 +171,13 @@
         
           <li><a href="hubbard.plot.html">Visualizing electronic properties (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard.plot</span></code>)</a> &raquo;</li>
         
-      <li>Spectrum</li>
+      <li>DOSmap</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api-generated/hubbard.plot.Spectrum.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api-generated/hubbard.plot.DOSmap.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -214,22 +214,32 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="spectrum">
-<h1>Spectrum<a class="headerlink" href="#spectrum" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dosmap">
+<h1>DOSmap<a class="headerlink" href="#dosmap" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="hubbard.plot.Spectrum">
-<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">Spectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HH</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">[0, 0, 0]</span></em>, <em class="sig-param"><span class="n">xmax</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/spectrum.html#Spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.Spectrum" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap">
+<em class="property">class </em><code class="sig-prename descclassname">hubbard.plot.</code><code class="sig-name descname">DOSmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">HubbardHamiltonian</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">[0, 0, 0]</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">direction</span><span class="o">=</span><span class="default_value">[1, 0, 0]</span></em>, <em class="sig-param"><span class="n">origin</span><span class="o">=</span><span class="default_value">[0, 0, 0]</span></em>, <em class="sig-param"><span class="n">nx</span><span class="o">=</span><span class="default_value">601</span></em>, <em class="sig-param"><span class="n">gamma_x</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">dx</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">dist_x</span><span class="o">=</span><span class="default_value">'gaussian'</span></em>, <em class="sig-param"><span class="n">ne</span><span class="o">=</span><span class="default_value">501</span></em>, <em class="sig-param"><span class="n">gamma_e</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">emax</span><span class="o">=</span><span class="default_value">10.0</span></em>, <em class="sig-param"><span class="n">dist_e</span><span class="o">=</span><span class="default_value">'lorentzian'</span></em>, <em class="sig-param"><span class="n">vmin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">vmax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">'linear'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/spectrum.html#DOSmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.plot.DOSmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">hubbard.plot.plot.Plot</span></code></p>
-<p>Plot the orbital charge overlaps for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
+<p>Plot DOS(distance, energy) map resolved in energy and axis-coordinates for the <em class="xref py py-obj">HubbardHamiltonian</em> object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>HH</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>hubbard.HubbardHamiltonian</em></a>) – the mean-field Hubbard Hamiltonian from which the LDOS should be computed</p></li>
+<li><p><strong>HubbardHamiltonian</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – the HubbardHamiltonian from which the DOS should be computed</p></li>
 <li><p><strong>k</strong> (<em>array_like</em><em>, </em><em>optional</em>) – k-point in the Brillouin zone to sample</p></li>
-<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the energy range (-xmax, xmax) wrt. midgap to be plotted</p></li>
-<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the y-axis minimum</p></li>
-<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – the y-axis maximum</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – fontsize</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – spin index</p></li>
+<li><p><strong>direction</strong> (<em>3-vector</em><em>, </em><em>optional</em>) – vector defining the direction of the real-space projection</p></li>
+<li><p><strong>origin</strong> (<em>3-vector</em><em>, </em><em>optional</em>) – coordinate on the real-space projection axis</p></li>
+<li><p><strong>nx</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – number of grid points along real-space axis</p></li>
+<li><p><strong>gamma_x</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Lorentzian broadening of orbitals in real space</p></li>
+<li><p><strong>dx</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – extension (in Ang) of the boundary around the system</p></li>
+<li><p><strong>dist_x</strong> (<em>{'gaussian'</em><em>, </em><em>'lorentzian'}</em>) – smearing function along the real-space axis</p></li>
+<li><p><strong>ne</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – number of grid points along the energy axis</p></li>
+<li><p><strong>gamma_e</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – Lorentzian broadening of eigenvalues along the energy axis</p></li>
+<li><p><strong>emax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – specifies the energy range (-emax, emax) to be plotted</p></li>
+<li><p><strong>dist_e</strong> (<em>{'lorentzian'</em><em>, </em><em>'lorentzian'}</em>) – smearing function along the energy axis</p></li>
+<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – colorscale minimum</p></li>
+<li><p><strong>vmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – colorscale maximum</p></li>
+<li><p><strong>scale</strong> (<em>{'linear'</em><em>, </em><em>'log'}</em>) – whether to use linear or logarithmic color scale</p></li>
 </ul>
 </dd>
 </dl>
@@ -240,41 +250,41 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HH[, k, xmax, ymin, ymax, fontsize])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HubbardHamiltonian[, k, spin, …])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.add_colorbar" title="hubbard.plot.Spectrum.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.add_colorbar" title="hubbard.plot.DOSmap.add_colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_colorbar</span></code></a>(layer[, pos, size])</p></td>
 <td><p>Add figure colorbar</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.close" title="hubbard.plot.Spectrum.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.close" title="hubbard.plot.DOSmap.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
 <td><p>Close figure</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.legend" title="hubbard.plot.Spectrum.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.legend" title="hubbard.plot.DOSmap.legend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">legend</span></code></a>(**kwargs)</p></td>
 <td><p>Add legend to figure.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.savefig" title="hubbard.plot.Spectrum.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.savefig" title="hubbard.plot.DOSmap.savefig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savefig</span></code></a>(fn)</p></td>
 <td><p>Save figure to external file</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.set_title" title="hubbard.plot.Spectrum.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.set_title" title="hubbard.plot.DOSmap.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title[, fontsize])</p></td>
 <td><p>Set figure title</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.set_xlabel" title="hubbard.plot.Spectrum.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.set_xlabel" title="hubbard.plot.DOSmap.set_xlabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlabel</span></code></a>(label[, fontsize])</p></td>
 <td><p>Set label for the x-axis</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.set_xlim" title="hubbard.plot.Spectrum.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.set_xlim" title="hubbard.plot.DOSmap.set_xlim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xlim</span></code></a>(xmin, xmax)</p></td>
 <td><p>Set maximum and minimum x-axis values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.set_ylabel" title="hubbard.plot.Spectrum.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.set_ylabel" title="hubbard.plot.DOSmap.set_ylabel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylabel</span></code></a>(label[, fontsize])</p></td>
 <td><p>Set label for the y-axis</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.Spectrum.set_ylim" title="hubbard.plot.Spectrum.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#hubbard.plot.DOSmap.set_ylim" title="hubbard.plot.DOSmap.set_ylim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ylim</span></code></a>(ymin, ymax)</p></td>
 <td><p>Set maximum and minimum y-axis values</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.add_colorbar">
-<code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.add_colorbar" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.add_colorbar">
+<code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">pos</span><span class="o">=</span><span class="default_value">'right'</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">'5%'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.add_colorbar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add figure colorbar</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -288,20 +298,20 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.close" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close figure</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.legend">
-<code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.legend" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.legend">
+<code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.legend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add legend to figure. It takes into account possible repeated labels and show them once</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.savefig">
-<code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.savefig" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.savefig">
+<code class="sig-name descname">savefig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.savefig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save figure to external file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -315,8 +325,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.set_title">
-<code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.set_title" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.set_title">
+<code class="sig-name descname">set_title</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.set_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set figure title</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -329,8 +339,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.set_xlabel">
-<code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.set_xlabel" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.set_xlabel">
+<code class="sig-name descname">set_xlabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.set_xlabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set label for the x-axis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -343,8 +353,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.set_xlim">
-<code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.set_xlim" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.set_xlim">
+<code class="sig-name descname">set_xlim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xmin</span></em>, <em class="sig-param"><span class="n">xmax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.set_xlim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maximum and minimum x-axis values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -357,8 +367,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.set_ylabel">
-<code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.set_ylabel" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.set_ylabel">
+<code class="sig-name descname">set_ylabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">fontsize</span><span class="o">=</span><span class="default_value">16</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.set_ylabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set label for the y-axis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -371,8 +381,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="hubbard.plot.Spectrum.set_ylim">
-<code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Spectrum.set_ylim" title="Permalink to this definition">¶</a></dt>
+<dt id="hubbard.plot.DOSmap.set_ylim">
+<code class="sig-name descname">set_ylim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ymin</span></em>, <em class="sig-param"><span class="n">ymax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.DOSmap.set_ylim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maximum and minimum y-axis values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -396,10 +406,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hubbard.plot.Wavefunction.html" class="btn btn-neutral float-right" title="Wavefunction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hubbard.plot.Spectrum.html" class="btn btn-neutral float-right" title="Spectrum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="hubbard.plot.DOSmap.html" class="btn btn-neutral float-left" title="DOSmap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hubbard.plot.LDOS_from_eigenstate.html" class="btn btn-neutral float-left" title="LDOS_from_eigenstate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
