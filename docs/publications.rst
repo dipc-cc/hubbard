@@ -36,7 +36,7 @@ publications below.
 Citing the hubbard package
 ==========================
 
-If hubbard is used to produce scientific contributions please include citations, in addition to `sisl <https://sisl.readthedocs.io/en/latest/cite.html>`_, to the following Zenodo DOI:
+If hubbard is used to produce scientific contributions please include citations, in addition to `sisl <https://zerothi.github.io/sisl/cite.html>`_, to the following Zenodo DOI:
 
 .. code-block:: bash
 
