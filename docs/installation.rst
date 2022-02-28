@@ -6,14 +6,17 @@ Installation
 Required dependencies
 ---------------------
 
-* Python_ 3.6 or newer
-* NumPy_ 1.13 or newer
-* SciPy_ 0.18 or newer
-* sisl_ 0.11.0 or newer
+   * Python_ 3.6 or newer
+
+   * NumPy_ 1.13 or newer
+
+   * SciPy_ 0.18 or newer
+
+   * sisl_ 0.11.0 or newer
 
 Optional:
 
-* Matplotlib_ 2.0.0 or newer (plotting)
+   * Matplotlib_ 2.0.0 or newer (plotting)
 
 .. _Python: https://www.python.org/
 .. _NumPy: https://docs.scipy.org/doc/numpy/reference/

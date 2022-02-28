@@ -9,18 +9,43 @@ Welcome to hubbard's documentation!
 ===================================
 
 The hubbard_ Python package allows to find the self-consistent solution for the mean-field Hubbard Model
-for a certain tight-binding Hamiltonian and a certain Coulomb repulsion parameter U.
+for a certain tight-binding Hamiltonian and a certain Coulomb repulsion parameter :math:`U`.
 
--  Easy calculation of spin-resolved quantities. It takes advantage of many routines from sisl_ as well as numpy_ and scipy_, 
-   which makes it very efficient when handling with thousands of atoms, given the usage of sparse matrices. 
-   The goal of this package is to include electron correlations in the tight-binding Hamiltonian by solving self-consistently 
-   the mean-field Hubbard model. Given the simplicity of the model one can find quite fast the solution to problems that are typically 
-   adressed with DFT with similar accuracy, specially for sp2 carbon systems. It is also very easy to manipulate 
-   the spin configuration to obtain different magnetic solutions, e.g., obtain the approximated energy difference between the singlet and 
-   the triplet states, etc. This package is fully implemented in Python, which makes it very easy and comfortable to use.
+.. math::
+      H &= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} +
+      \frac{1}{2}\sum_{i\neq j\sigma\sigma^\prime}U_{ij}n_{i\sigma}n_{j\sigma^\prime} \approx\\
+      & -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} +
+      \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} +
+      \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij}
+      + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + E_U
 
--  It provides with nice plotting functions to visualize the different physical quantities that are obtained with the hubbard package, 
-   such as the spin-polarization, wavefunctions for each spin-channel, the density of states maps, etc.
+
+Where it has been sepparated into intra- (:math:`U_{i}`) and inter-atomic (:math:`U_{ij}`) Coulomb repulsion terms,
+:math:`\langle n_{i\sigma}\rangle` is the :math:`\sigma=\uparrow,\downarrow`-spin density on site :math:`i` and :math:`E_U` is a constant term:
+
+.. math::
+         E_U = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle -
+         \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle
+         + \langle n_{j\downarrow}\rangle\right)
+
+which can be directly added to the total electronic energy.
+
+This package allows for_
+
+   * Easy calculations of spin-resolved quantities.
+      It takes advantage of many routines from sisl_ as well as numpy_ and scipy_,
+      which makes it very efficient when handling with thousands of atoms, given the usage of sparse matrices.
+      The goal of this package is to include electron correlations in the tight-binding Hamiltonian by solving self-consistently
+      the mean-field Hubbard model. Given the simplicity of the model one can find the solution in short time to problems that are typically
+      adressed with DFT and obtain similar accuracy, especially for sp2 carbon systems. Here it is also very easy to manipulate
+      the spin configuration to obtain different magnetic solutions, e.g., obtain the approximated energy difference between the singlet and
+      the triplet states, etc. This package is fully implemented in Python, which makes it very easy and comfortable to use.
+
+
+   * It provides with nice plotting functions to visualize the different physical quantities
+      that are obtained with the hubbard package,
+      such as the spin-polarization, wavefunctions for each spin-channel, density of states maps, etc.
+
 
 .. toctree::
    :maxdepth: 2

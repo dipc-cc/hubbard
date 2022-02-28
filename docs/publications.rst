@@ -14,11 +14,22 @@ publications below.
    *Uncovering the Triplet Ground State of Triangular Graphene Nanoflakes Engineered with Atomic Precision on a Metal Surface*,
    `Phys. Rev. Lett. 124, 177201 (2020) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.177201>`_
 
-#. J. Li, S. Sanz, N. Merino-Díez, M. Vilas-Varela, A. Garcia-Lekue, M. Corso, D. G. de Oteyza, T. Frederiksen, D. Peña, and J. I. Pascual
+#. J. Li, S. Sanz, N. Merino-Díez, M. Vilas-Varela, A. Garcia-Lekue, M. Corso, D. G. de Oteyza, T. Frederiksen, D. Peña, and J. I. Pascual,
    *Topological phase transition in chiral graphene nanoribbons: from edge bands to end states*
-   submitted (2021) `[arXiv:2103.15937] <https://arxiv.org/abs/2103.15937>`_
+   `Nature Communications 12, 5538 (2021) <https://www.nature.com/articles/s41467-021-25688-z>`_
 
-#. S. Sanz et al., manuscript in preparation (2021).
+#. J. Hieulle, S. Castro, N. Friedrich, A. Vegliante, F. Romero Lara, S. Sanz, D. Rey, M. Corso, T. Frederiksen, J. Ignacio Pascual, D. Peña,
+   *On-Surface Synthesis and Collective Spin Excitations of a Triangulene-Based Nanostar*
+   `Angewandte Chemie International Edition 60 (48), 25224-25229 (2021) <https://onlinelibrary.wiley.com/doi/full/10.1002/anie.202108301>`_
+
+#. T. Wang, S. Sanz, J. Castro-Esteban, J. Lawrence, A. Berdonces-Layunta, M. S. G. Mohammed, M. Vilas-Varela, M. Corso, D. Peña, T. Frederiksen, and D. G. de Oteyza,
+   *Magnetic Interactions Between Radical Pairs in Chiral Graphene Nanoribbons*
+   `Nano Letters 22, 1, 164-171 (2022) <https://pubs.acs.org/doi/abs/10.1021/acs.nanolett.1c03578>`_
+
+#. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
+   *A spin-polarizing electron beam splitter from crossed graphene nanoribbons*
+   Submitted (2022) `[arXiv:2201.07147] <https://arxiv.org/abs/2201.07147>`_
+
 
 .. _citing:
 
@@ -101,10 +112,14 @@ and/or this
 
 .. code-block:: bash
 
-    @misc{sanz2021,
-      author       = {Sofia Sanz et al.},
-      year         = {2021},
-      howpublished = {In preparation}
+    @misc{Sanz2022,
+      author        = {Sofia Sanz and Nick Papior and Géza Giedke and Daniel Sánchez-Portal and Mads Brandbyge and Thomas Frederiksen},
+      title         = {A spin-polarizing electron beam splitter from crossed graphene nanoribbons},
+      year          = {2022},
+      archiveprefix = {arXiv},
+      eprint        = {2201.07147},
+      primaryclass  = {cond-mat.mes-hall},
+      url           = {https://arxiv.org/abs/2201.07147},
     }
 
 Related bibliography
