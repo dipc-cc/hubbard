@@ -12,7 +12,7 @@ Required dependencies
 
    * SciPy_ 0.18 or newer
 
-   * sisl_ 0.11.0 or newer
+   * sisl_ 0.12.1 or newer
 
 Optional:
 
@@ -21,7 +21,7 @@ Optional:
 .. _Python: https://www.python.org/
 .. _NumPy: https://docs.scipy.org/doc/numpy/reference/
 .. _SciPy: https://docs.scipy.org/doc/scipy/reference/
-.. _sisl : https://sisl.readthedocs.io/en/latest/installation.html
+.. _sisl : https://zerothi.github.io/sisl
 .. _Matplotlib: https://matplotlib.org/
 
 
