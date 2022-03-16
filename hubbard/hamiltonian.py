@@ -472,6 +472,7 @@ class HubbardHamiltonian(object):
             mode = 'w'
         fh = nc.ncSileHubbard(fn, mode=mode)
         fh.write_density(self.n, self.U, self.kT, self.units, group)
+        fh.close()
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block
