@@ -170,7 +170,7 @@ class LDOS_from_eigenstate(GeometryPlot):
         In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
-    def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, collection='sp2', **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -182,7 +182,7 @@ class LDOS_from_eigenstate(GeometryPlot):
             if 'cmap' not in kwargs:
                 kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, collection=collection, **kwargs)
 
         x = HH.geometry[:, 0]
         y = HH.geometry[:, 1]
@@ -262,7 +262,7 @@ class LDOS(GeometryPlot):
     sisl.physics.electron.PDOS: sisl method to obtain PDOS
     """
 
-    def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, distribution='lorentzian', **kwargs):
+    def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, distribution='lorentzian', collection='sp2', **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -274,7 +274,7 @@ class LDOS(GeometryPlot):
             if 'cmap' not in kwargs:
                 kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, collection=collection, **kwargs)
 
         x = HH.geometry[:, 0]
         y = HH.geometry[:, 1]

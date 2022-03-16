@@ -149,9 +149,13 @@ class GeometryPlot(Plot):
         in a pi-tight-binding or mean-feild Hubbard calculation e.g., as Hydrogen atoms
     bdx: int, optional
         added space between geometry and figure axes
+    collection: str or list, optional
+        if ``collection='sp2'`` it uses the inner routines to plot the geometry as an sp2 carbon system (default)
+        if ``collection=None`` it plots all atoms equally with the same cyrcle radius
+        alternatively `collection` can be an externally defined list of matplotlib patches
     """
 
-    def __init__(self, geometry, ext_geom=None, bdx=2, **kwargs):
+    def __init__(self, geometry, ext_geom=None, bdx=2, collection='sp2', **kwargs):
 
         super().__init__(**kwargs)
 
@@ -173,28 +177,39 @@ class GeometryPlot(Plot):
             g = ext_geom
         else:
             g = self.geometry
-        for ia in g:
-            idx = g.close(ia, R=[0.1, 1.6])
-            if g.atoms[ia].Z == 1: # H
-                aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
-            elif g.atoms[ia].Z == 5: # B
-                self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='r', lw=2, fill=False))
-                pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
-            elif g.atoms[ia].Z == 6: # C
-                if len(idx[1]) == 4:
-                    # If the C atom has 4 neighbours (sp3 configuration) it will be represented
-                    # as an aux site
-                    aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
-                    # Add a blue patch at the H positions
-                    Hsp3 = [i for i in idx[1] if g.atoms[i].Z == 1]
-                    self.axes.add_patch(patches.Circle((np.average(g.xyz[Hsp3, 0]), np.average(g.xyz[Hsp3, 1])), radius=1.4, alpha=0.15, fc='c'))
-                else:
+
+        if collection == 'sp2':
+            for ia in g:
+                idx = g.close(ia, R=[0.1, 1.6])
+                if g.atoms[ia].Z == 1: # H
+                    aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.4))
+                elif g.atoms[ia].Z == 5: # B
+                    self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='r', lw=2, fill=False))
                     pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
-            elif g.atoms[ia].Z == 7: # N
-                self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='g', lw=2, fill=False))
+                elif g.atoms[ia].Z == 6: # C
+                    if len(idx[1]) == 4:
+                        # If the C atom has 4 neighbours (sp3 configuration) it will be represented
+                        # as an aux site
+                        aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                        # Add a blue patch at the H positions
+                        Hsp3 = [i for i in idx[1] if g.atoms[i].Z == 1]
+                        self.axes.add_patch(patches.Circle((np.average(g.xyz[Hsp3, 0]), np.average(g.xyz[Hsp3, 1])), radius=1.4, alpha=0.15, fc='c'))
+                    else:
+                        pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                elif g.atoms[ia].Z == 7: # N
+                    self.axes.add_patch(patches.Circle((np.average(g.xyz[ia, 0]), np.average(g.xyz[ia, 1])), radius=0.7, color='g', lw=2, fill=False))
+                    pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
+                elif g.atoms[ia].Z > 10: # Some other atom
+                    aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+
+        elif collection is None:
+            # Create same patches for all atoms
+            for ia in g:
                 pi.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.7))
-            elif g.atoms[ia].Z > 10: # Some other atom
-                aux.append(patches.Circle((g.xyz[ia, 0], g.xyz[ia, 1]), radius=0.2))
+
+        elif all(isinstance(p, int) for p in collection):
+            # In this case collection should be a list of matplotlib.patches
+            pi = collection
 
         # Pi sites
         ppi = PatchCollection(pi, alpha=1., lw=1.2, edgecolor='0.6', **kw)
