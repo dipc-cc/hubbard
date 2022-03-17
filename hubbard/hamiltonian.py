@@ -456,7 +456,7 @@ class HubbardHamiltonian(object):
             fh.close()
             self.update_hamiltonian()
 
-    def write_density(self, fn, mode='a', group=None):
+    def write_density(self, fn, mode='w', group=None):
         """ Write density in a binary file
 
         Parameters
@@ -471,7 +471,7 @@ class HubbardHamiltonian(object):
         if not os.path.isfile(fn):
             mode = 'w'
         fh = nc.ncSileHubbard(fn, mode=mode)
-        fh.write_density(self.n, self.U, self.kT, self.units, group)
+        fh.write_density(self.n, self.U, self.kT, self.units, Uij=self.Uij, group=group)
         fh.close()
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):

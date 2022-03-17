@@ -115,7 +115,7 @@ class ncSileHubbard(sisl.SileCDF):
                         n.append(_n)
         return n
 
-    def write_density(self, n, U, kT, units, group=None):
+    def write_density(self, n, U, kT, units, Uij=None, group=None):
         # Create group
         if group is not None:
             g = self._crt_grp(self, group)
@@ -126,15 +126,30 @@ class ncSileHubbard(sisl.SileCDF):
         self._crt_dim(self, 'nspin', n.shape[0])
         self._crt_dim(self, 'norb', n.shape[1])
 
-        # Write variable n
+        # Write variable
         v1 = self._crt_var(g, 'n', ('f8', 'f8'), ('nspin', 'norb'))
-        v2 = self._crt_var(g, 'U', ('f8', 'f8'), ('norb', 'norb'))
+
+        if isinstance(U, np.ndarray):
+            self._crt_dim(self, 'nU', len(U))
+            v2 = self._crt_var(g, 'U', ('f8'), ('nU'))
+        elif type(U) in (float, int):
+            v2 = self._crt_var(g, 'U', 'f8')
+
         v3 = self._crt_var(g, 'kT', 'f8')
+
         v1.info = 'Spin densities'
         v2.info = 'Coulomb repulsion parameter in ' + units
         v3.info = 'Temperature of the system in '+ units
         v1[:] = n
         v2[:] = U
         v3[:] = kT
+
+        if Uij:
+            self._crt_dim(self, 'Uij0', Uij.shape[0])
+            self._crt_dim(self, 'Uij1', Uij.shape[2])
+
+            v4 = self._crt_var(g, 'Uij', ('f8', 'f8'), ('Uij0', 'Uij1'))
+            v4.info = 'Off diagonal Coulomb repulsion elements in' + units
+            v4[:] = Uij
 
 sisl.io.add_sile("HU.nc", ncSileHubbard, gzip=False)
