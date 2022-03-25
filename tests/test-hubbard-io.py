@@ -8,21 +8,21 @@ molecule.sc.set_nsc([1, 1, 1])
 
 # Build HubbardHamiltonian object
 Hsp2 = sp2(molecule)
-H = HubbardHamiltonian(Hsp2, U=3.5)
+H = HubbardHamiltonian(Hsp2, U=3.5, Uij=np.ones((Hsp2.no, Hsp2.no)))
 # Generate simple density
 H.n = np.ones((2, H.sites))*0.5
 
-print(f'1. Write and read densities under group {H.get_hash()} using the HubbardHamiltonian class\n')
+print(f'1. Write and read densities under group U{H.U:.1f} using the HubbardHamiltonian class\n')
 # Write density in file
-H.write_density('mol-ref/test.HU.nc', group=H.get_hash(), mode='w')
+H.write_density('mol-ref/test.HU.nc', group=f'U{H.U:.1f}', mode='w')
 # Read density using the HubbardHamiltonian class
-H.read_density('mol-ref/test.HU.nc', group=H.get_hash())
+H.read_density('mol-ref/test.HU.nc', group=f'U{H.U:.1f}')
 
 # Write another density in file under another group
-print(f'2. Write another densities under another group\n')
 H.n *= 2
-H.write_density('mol-ref/test.HU.nc', group='group2', mode='a')
-
+H.U *= 2
+print(f'2. Write another densities under group U{H.U:.1f}\n')
+H.write_density('mol-ref/test.HU.nc', group=f'U{H.U:.1f}', mode='a')
 
 print('3. Read density, U and kT using ncsile from all groups')
 fh = sisl.get_sile('mol-ref/test.HU.nc', mode='r')
@@ -34,7 +34,7 @@ for g in fh.groups:
     print('\n')
 
 print('4. Read using HubbardHamiltoninan class')
-# Read density using the HubbardHamiltonian class
+# Read density using the HubbardHamiltonian class with no group specified. It reads from the first one saved
 H.read_density('mol-ref/test.HU.nc', group=None)
 print('H.n:', H.n)
 
