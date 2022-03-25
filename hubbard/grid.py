@@ -49,14 +49,6 @@ def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
         a = np.arange(len(D))
         D.D[a, a] = vector
         D.density(grid)
-    
-    if 'smooth' in kwargs:
-        # Smooth grid with gaussian function
-        if 'r_smooth' in kwargs:
-            r_smooth = kwargs['r_smooth']
-        else:
-            r_smooth = 0.7
-        grid = grid.smooth(method='gaussian', r=r_smooth)
 
     del g
     return grid
