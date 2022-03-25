@@ -156,7 +156,7 @@ class ncSileHubbard(sisl.SileCDF):
         if isinstance(U, np.ndarray):
             self._crt_dim(self, 'nU', len(U))
             v2 = self._crt_var(g, 'U', ('f8'), ('nU'))
-        elif type(U) in (float, int):
+        elif isinstance(U, (float, int)):
             v2 = self._crt_var(g, 'U', 'f8')
 
         v3 = self._crt_var(g, 'kT', 'f8')
@@ -168,9 +168,9 @@ class ncSileHubbard(sisl.SileCDF):
         v2[:] = U
         v3[:] = kT
 
-        if Uij:
+        if Uij is not None:
             self._crt_dim(self, 'Uij0', Uij.shape[0])
-            self._crt_dim(self, 'Uij1', Uij.shape[2])
+            self._crt_dim(self, 'Uij1', Uij.shape[1])
 
             v4 = self._crt_var(g, 'Uij', ('f8', 'f8'), ('Uij0', 'Uij1'))
             v4.info = 'Off diagonal Coulomb repulsion elements in' + units

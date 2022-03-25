@@ -455,7 +455,7 @@ class HubbardHamiltonian(object):
                 self.n = fh.read_density()[0]
             self.update_hamiltonian()
 
-    def write_density(self, fn, mode='w', group=None):
+    def write_density(self, fn, mode='a', group=None):
         """ Write density in a binary file
 
         Parameters
