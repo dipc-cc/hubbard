@@ -329,7 +329,7 @@ class HubbardHamiltonian(object):
 
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
-        E += self.U * (self.n[ispin, :] - self.q0 / self.spin_size)
+        E += self.U * (self.n[ispin, :] - self.q0 / 2)
         # off-diagonal elements
         if self.Uij is not None:
             E += self.Uij @ ((self.n[0]+self.n[-1]) - self.q0) # Same thing adds to both spin components
