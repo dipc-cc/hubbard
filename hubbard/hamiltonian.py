@@ -453,7 +453,6 @@ class HubbardHamiltonian(object):
                 warnings.warn(f'Groups found in {fn}, using the density from the first one')
                 # Read only the first element from the list
                 self.n = fh.read_density()[0]
-            fh.close()
             self.update_hamiltonian()
 
     def write_density(self, fn, mode='a', group=None):
@@ -471,8 +470,7 @@ class HubbardHamiltonian(object):
         if not os.path.isfile(fn):
             mode = 'w'
         fh = nc.ncSileHubbard(fn, mode=mode)
-        fh.write_density(self.n, self.U, self.kT, self.units, group)
-        fh.close()
+        fh.write_density(self.n, self.U, self.kT, self.units, Uij=self.Uij, group=group)
 
     def write_initspin(self, fn, ext_geom=None, spinfix=True, mode='a', eps=0.1):
         """ Write spin polarization to SIESTA fdf-block

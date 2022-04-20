@@ -61,6 +61,9 @@ HH = HubbardHamiltonian(TBham, U=None, nkpt=[100,1,1])
 HH.set_polarization([0], dn=[g.a2o(13)])
 HH.converge(density.calc_n, print_info=True, tol=1e-10, steps=3)
 
+print('\n Write densities in multi-orbital-density.nc')
+HH.write_density('multi-orbital-density.nc')
+
 # Print spin-densities difference compared to sing-orbital case
 print('\n   ** Difference between spin densities for single and multi-orbital cases **')
 print(HH.n[:,idx]-n_single)
