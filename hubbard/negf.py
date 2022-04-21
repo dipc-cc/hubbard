@@ -354,14 +354,14 @@ class NEGF:
 
         if self.NEQ:
             # Calculate the free energy for the NEQ calculation
-            # We remove the interaction term from the total energy of the EQ situation
+            # We remove the interaction term from the total energy of the EQ situation as it is in the NEQ calculation
             # TODO: Fix this expression (need the total number of particles for each electrode left and right)
             Etot = self.H_eq.Etot - (self.mu[0] + self.mu[1]) + self.H_eq.U*np.multiply.reduce(self.H_eq.n, axis=0).sum()
             # Add potential in each site depending on how much the neq charges deviate from the eq situation. This term comes from the extended Huckel model
             # a should be positive: if q_neq > q_eq then the potential should rise (less favrourable for electrons to occupy that site)
             # TODO: improve how we set the a parameter so it does not go crazy if the charge difference is too large (especially important in the first iterations)
             q_neq = ni.sum(axis=0)
-            q_eq = ni.sum(axis=0)
+            q_eq = self.H_eq.n.sum(axis=0)
             self.H.TBHam[np.arange(self.H.sites), np.arange(self.H.sites)] = self.H.e0 + a * (q_neq - q_eq)
         # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
         # multiply Etot by 2 for spin degeneracy
