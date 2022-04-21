@@ -323,9 +323,11 @@ class HubbardHamiltonian(object):
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
         E = np.empty((self.spin_size, self.sites), dtype=self.H.dtype)
+        self.e0 = np.empty_like(E)
         for spin in range(self.spin_size):
             # Extract diagonal elements of TB Hamiltonian
-            E[spin] = self.TBHam.tocsr(spin).diagonal()
+            self.e0[spin] = self.TBHam.tocsr(spin).diagonal()
+            E[spin] = self.e0[spin]
 
         ispin = np.arange(self.spin_size)[::-1]
         # diagonal elements
