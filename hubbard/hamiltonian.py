@@ -529,7 +529,7 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             total charge separated in spin-channels, q=[q_up, q_dn]
         mixer: Mixer, optional
-            `sisl.mixing.Mixer` instance for the SCF loop, defaults to `sisl.mixing.DIISMixer`
+            `sisl.mixing.Mixer` instance for the SCF loop, defaults to linear mixing with weight 0.7
 
         See Also
         ------------
@@ -559,7 +559,7 @@ class HubbardHamiltonian(object):
 
         # Update occupations on sites with mixing algorithm
         if mixer is None:
-            mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
+            mixer = sisl.mixing.LinearMixer(weight=0.7)
         self.n = mixer(self.n.ravel(), ddm.ravel()).reshape(self.n.shape)
 
         # Update spin hamiltonian
@@ -584,8 +584,8 @@ class HubbardHamiltonian(object):
             it *must* return the corresponding spin-densities (``n``) and the total energy (``Etot``)
         tol: float, optional
             tolerance criterion
-        mixer: Mixer
-            `sisl.mixing.Mixer` instance, defaults to `sisl.mixing.DIISMixer`
+        mixer: Mixer, optional
+            `sisl.mixing.Mixer` instance, defaults to ``sisl.mixing.DIISMixer(0.7, history=7)``
         steps: int, optional
             the code will print some relevant information (if `print_info` is set to ``True``) about the convergence
             process when the number of completed iterations reaches a multiple of the specified `steps`.
