@@ -166,7 +166,7 @@ class NEGF:
             self.eta = 1.
 
         # spin, electrode
-        self._ef_SE = _nested_list(2, len(self.elec_SE))
+        self._ef_SE = _nested_list(Hdev.spin_size, len(self.elec_SE))
         # spin, EQ-contour, energy, electrode
         self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
         # spin, energy, electrode
