@@ -356,6 +356,7 @@ class NEGF:
             # Calculate the free energy for the NEQ calculation
             # We remove the interaction term from the total energy of the EQ situation as it is in the NEQ calculation
             # TODO: Fix this expression (need the total number of particles for each electrode left and right)
+            # Reference: https://www.tandfonline.com/doi/abs/10.1080/13642819808206398
             Etot = self.H_eq.Etot - (self.mu[0] + self.mu[1]) + self.H_eq.U*np.multiply.reduce(self.H_eq.n, axis=0).sum()
             # Add potential in each site depending on how much the neq charges deviate from the eq situation. This term comes from the extended Huckel model
             # a should be positive: if q_neq > q_eq then the potential should rise (less favrourable for electrons to occupy that site)
