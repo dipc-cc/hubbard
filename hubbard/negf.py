@@ -290,7 +290,7 @@ class NEGF:
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, spin=spin)
+                    Delta, w = self.Delta(HC, Ef, spin=spin)
                     # Store only diagonal
                     w = np.diag(w)
                     # Transfer Delta to D
