@@ -4,6 +4,9 @@ import sisl
 import os
 import math
 from scipy.interpolate import interp1d
+import scipy.sparse as sp
+from block_linalg import block_td, Blocksparse2Numpy, sparse_find_faster, Build_BTD_vectorised
+from block_linalg import slices_to_npslices, test_partition_2d_sparse_matrix
 
 _pi = math.pi
 
@@ -24,7 +27,7 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
     SE : list of numpy.ndarray
        self-energies for the electrodes
     mode: str, optional
-        return the full Green's function (``mode='DOS'``) or only the diagonal (``mode='DOS'``)
+        return the full Green's function (``mode='Full'``) or only the diagonal (``mode='DOS'``)
     """
     no = len(HC)
     if mode == 'DOS':
@@ -45,8 +48,8 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
 
 # Proposed new _G
 def CZ(s,dt = np.complex128): return np.zeros(s, dtype = dt)
-def _Gnew(e, HC, elec_idx, SE, tbt = None, Ov = None,
-       dtype = np.complex128, mode = 'Full', alloced_G = None):
+def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
+       dtype=np.complex128, mode='DOS', alloced_G=None):
     """ Calculate Green function
     Parameters
     ----------
@@ -58,17 +61,22 @@ def _Gnew(e, HC, elec_idx, SE, tbt = None, Ov = None,
        indices for the electrode orbitals
     SE : list of numpy.ndarray
        self-energies for the electrodes
-    # Defaults to None should give _G:
-    tbt: sisl sile with a tbtrans calculation to get the pivotting scheme
-    Ov: Overlap matrix, May just be an allocated identity matrix in sparse format
-    dtype: datatype of BTD matrix
-    mode: DOS or full
-    alloced_G: the arrays in the BTD class can be preallocated, may or may not be notable
+    tbt: sisl.Sile, optional
+        sisl.Sile with a tbtrans calculation to get the pivotting scheme. Defaults to None
+        If `tbt=None` should give _G:
+    Ov: scipy.sparse.csr (check), optional
+        Overlap matrix, May just be an allocated identity matrix in sparse format
+    dtype: np.dtype, optional
+        datatype of BTD matrix
+    mode: str, optional
+        "DOS", "SpectralColumn", or "Full". Defaults to "DOS"
+    alloced_G:  block_td instance, optional
+        the arrays in the BTD class can be preallocated, may or may not be notable. Defaults to None
     """
 
     no = HC.shape[0]
     if tbt is None:
-        piv = None; ipiv = None
+        piv = np.arange(no); ipiv = piv.copy()
         if mode == 'SpectralColumns': mode = 'Full'
     else:
         piv  = tbt.pivot(); ipiv = tbt.ipivot()
@@ -80,9 +88,14 @@ def _Gnew(e, HC, elec_idx, SE, tbt = None, Ov = None,
             inv_GF[ie] = e_i * np.identity(no) - HC
             for idx, se in zip(elec_idx, SE[ie]):
                 inv_GF[ie, idx, idx.T] -= se
-        if piv is not None: inv_GF = inv_GF[:,piv,:][:,:,piv]
-        if mode == 'DOS' : return np.linalg.inv(inv_GF)[:,ipiv,ipiv]
-        if mode == 'Full': return np.linalg.inv(inv_GF)[:,ipiv,:][:,:,ipiv]
+        if piv is not None:
+            inv_GF = inv_GF[:,piv,:][:,:,piv]
+
+        if mode == 'DOS' :
+            return np.linalg.inv(inv_GF)[:,ipiv,ipiv]
+        elif mode == 'Full':
+            return np.linalg.inv(inv_GF)[:,ipiv,:][:,:,ipiv]
+
     elif tbt is not None:
         hk  =  HC
         if Ov is None: sk = sp.identity(no)
