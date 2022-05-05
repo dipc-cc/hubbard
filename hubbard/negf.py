@@ -43,6 +43,137 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
             GF[ie] = np.linalg.inv(inv_GF)
     return GF
 
+# Proposed new _G
+def CZ(s,dt = np.complex128): return np.zeros(s, dtype = dt)
+def _Gnew(e, HC, elec_idx, SE, tbt = None, Ov = None,
+       dtype = np.complex128, mode = 'Full', alloced_G = None):
+    """ Calculate Green function
+    Parameters
+    ----------
+    e : complex
+       energy at which the Green function is calculated
+    HC : numpy.ndarray
+       the Hamiltonian
+    elec_idx : list of indices
+       indices for the electrode orbitals
+    SE : list of numpy.ndarray
+       self-energies for the electrodes
+    # Defaults to None should give _G:
+    tbt: sisl sile with a tbtrans calculation to get the pivotting scheme
+    Ov: Overlap matrix, May just be an allocated identity matrix in sparse format
+    dtype: datatype of BTD matrix
+    mode: DOS or full
+    alloced_G: the arrays in the BTD class can be preallocated, may or may not be notable
+    """
+
+    no = HC.shape[0]
+    if tbt is None:
+        piv = None; ipiv = None
+        if mode == 'SpectralColumns': mode = 'Full'
+    else:
+        piv  = tbt.pivot(); ipiv = tbt.ipivot()
+        btd  = tbt.btd()
+
+    if isinstance(HC, np.ndarray):
+        inv_GF = np.zeros([len(e), no, no], dtype=np.complex128)
+        for ie, e_i in enumerate(e):
+            inv_GF[ie] = e_i * np.identity(no) - HC
+            for idx, se in zip(elec_idx, SE[ie]):
+                inv_GF[ie, idx, idx.T] -= se
+        if piv is not None: inv_GF = inv_GF[:,piv,:][:,:,piv]
+        if mode == 'DOS' : return np.linalg.inv(inv_GF)[:,ipiv,ipiv]
+        if mode == 'Full': return np.linalg.inv(inv_GF)[:,ipiv,:][:,:,ipiv]
+    elif tbt is not None:
+        hk  =  HC
+        if Ov is None: sk = sp.identity(no)
+        else:          sk = Ov
+        Part = [0]
+        for b in btd: Part+= [Part[-1] + b]
+        npiv = len(piv)
+        # We could put in the Hamiltonian/overlap here to really check if we
+        # are throwing away matrix elements
+        f, S = test_partition_2d_sparse_matrix(sp.csr_matrix((npiv, npiv)),Part)
+        nS   = slices_to_npslices(S)
+        n_diags = len(Part)-1
+        ne = len(e)
+        if alloced_G is None:
+            Al    =  [CZ((ne,Part[i+1]-Part[i  ],Part[i+1]-Part[i  ]), dt = dtype) for i in range(n_diags  )]
+            Bl    =  [CZ((ne,Part[i+2]-Part[i+1],Part[i+1]-Part[i  ]), dt = dtype) for i in range(n_diags-1)]
+            Cl    =  [CZ((ne,Part[i+1]-Part[i  ],Part[i+2]-Part[i+1]), dt = dtype) for i in range(n_diags-1)]
+            Ia    =  [i for i in range(n_diags  )]
+            Ib    =  [i for i in range(n_diags-1)]
+            Ic    =  [i for i in range(n_diags-1)]
+            iGreens = block_td(Al,Bl,Cl,Ia,Ib,Ic,diagonal_zeros=False, E_grid = e)
+        else:
+            iGreens = alloced_G
+
+        ELEC_IDX = []
+        for e_idx in elec_idx:
+            iidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
+            jidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
+            it = 0
+            for i in e_idx[:,0]:
+                for j in e_idx[:,0]:
+                    iidx[it] = i
+                    jidx[it] = j
+                    it += 1
+            ELEC_IDX+=[(iidx,jidx)]
+
+        i1, j1, d1 = [],[],[]
+
+        for j, z in enumerate(e):
+            se_list = []
+            for IDX, se in zip(ELEC_IDX, SE[j]):
+                se_sparse = sp.csr_matrix((se.ravel(), IDX), shape = (no,no),dtype = complex)
+                se_list  += [se_sparse]
+
+            iG = sk * z - hk - sum(se_list)
+            iG = iG[piv, :][:, piv]
+            di, dj, dv = sparse_find_faster(iG) # sp.find(iG) but faster
+            i1.append(di); j1.append(dj); d1.append(dv)
+
+        Av, Bv, Cv = Build_BTD_vectorised(np.vstack(i1), np.vstack(j1), np.vstack(d1), nS)
+
+        for b in range(n_diags):
+            iGreens.Al[b][ :, :, :] = Av[b]
+            if b<n_diags-1:
+                iGreens.Bl[b][ :, :, :] = Bv[b]
+                iGreens.Cl[b][ :, :, :] = Cv[b]
+
+        if mode == 'DOS':
+            nb  = iGreens.Block_shape[0]
+            msk = np.diag(np.ones(nb).astype(int))
+            G   = iGreens.Invert(msk)
+            return np.hstack([np.diagonal(G.Block(i,i), axis1 = 1,axis2 = 2)
+                                              for i in range(nb)])[:,ipiv]
+
+        elif mode == 'SpectralColumn':
+            cols = []
+            for eidx in elec_idx:
+                eidx = np.array([np.where(piv == eidx[i])[0][0] for i in range(len(eidx))])
+                emin, emax = eidx.min(), eidx.max()
+                begin = False
+                for i in range(n_diags):
+                    s = iGreens.all_slices[i][i][0]
+                    start,stop = s.start,s.stop
+                    if start <= emin < stop: begin = True
+                    if start>emax:           begin = False
+                    if begin:                cols+=[i]
+
+            cols = np.array(cols)
+            cols = np.unique(cols)
+            mask = np.diag(np.ones(n_diags)).astype(np.int32)
+            mask[:,cols] = 1
+            return Blocksparse2Numpy(iGreens.Invert(mask), iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
+
+        elif mode == 'Full' or mode == 'nonsymmetric':
+            if mode == 'Full':           BW = 'Upper'
+            elif mode == 'nonsymmetric': BW = 'all'
+            G = iGreens.Invert(BW = BW)
+            if mode == 'Full':
+                G.Symmetric = 'Set this to whatever, the code checks if the G object has this attribute, not its value'
+            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
+
 
 def _nested_list(*args):
     if len(args) == 0:
