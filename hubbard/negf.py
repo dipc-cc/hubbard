@@ -152,6 +152,18 @@ class NEGF:
         self.elec_SE = list(map(convert2SelfEnergy, elec_SE, self.mu))
         self.elec_idx = [np.array(idx).reshape(-1, 1) for idx in elec_idx]
 
+        self.a_dev = []
+        elec_idx = []
+        for ia in np.ravel(self.elec_idx):
+            if ia < 0:
+                elec_idx.append(range(Hdev.sites)[ia])
+            else:
+                elec_idx.append(ia)
+
+        for ia in range(Hdev.sites):
+            if ia not in elec_idx:
+                self.a_dev.append(ia)
+
         # Ensure commensurate shapes
         for SE, idx in zip(self.elec_SE, self.elec_idx):
             assert len(SE) == len(idx)
@@ -364,9 +376,9 @@ class NEGF:
             # TODO: improve how we set the a parameter so it does not go crazy if the charge difference is too large (especially important in the first iterations)
             q_neq = ni.sum(axis=0)
             q_eq = self.H_eq.n.sum(axis=0)
-            dq = q_neq - q_eq
-            E = self.H.TBHam.tocsr(spin).diagonal()
-            self.H.TBHam[np.arange(self.H.sites), np.arange(self.H.sites)] = E + a * dq
+            dq = (q_neq - q_eq)[self.a_dev]
+            E = self.H.TBHam.tocsr(spin).diagonal()[self.a_dev]
+            self.H.TBHam[self.a_dev, self.a_dev] = E + a * dq
         # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
