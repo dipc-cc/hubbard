@@ -327,7 +327,7 @@ class HubbardHamiltonian(object):
         + \langle n_{j\downarrow}\rangle\right)`
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-        E = np.empty_like(self.e0)
+        E = np.empty_like(self._e0)
         for spin in range(self.spin_size):
             # Extract diagonal elements of TB Hamiltonian.
             # We don't use here self._e0 since in the NEQ case the TB Hamiltonian may change each iteration with the applied voltage.

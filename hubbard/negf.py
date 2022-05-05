@@ -88,6 +88,7 @@ class NEGF:
         self.Ef = 0.
         self.kT = Hdev.kT
         self.eta = 0.1
+        self.H = Hdev
 
         # Immediately retrieve the distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
@@ -359,11 +360,13 @@ class NEGF:
             # Reference: https://www.tandfonline.com/doi/abs/10.1080/13642819808206398
             Etot = self.H_eq.Etot - (self.mu[0] + self.mu[1]) + self.H_eq.U*np.multiply.reduce(self.H_eq.n, axis=0).sum()
             # Add potential in each site depending on how much the neq charges deviate from the eq situation. This term comes from the extended Huckel model
-            # a should be positive: if q_neq > q_eq then the potential should rise (less favrourable for electrons to occupy that site)
+            # a should be positive: if q_neq > q_eq then the potential should rise (less favourable for electrons to occupy that site)
             # TODO: improve how we set the a parameter so it does not go crazy if the charge difference is too large (especially important in the first iterations)
             q_neq = ni.sum(axis=0)
             q_eq = self.H_eq.n.sum(axis=0)
-            self.H.TBHam[np.arange(self.H.sites), np.arange(self.H.sites)] = self.H.e0 + a * (q_neq - q_eq)
+            dq = q_neq - q_eq
+            E = self.H.TBHam.tocsr(spin).diagonal()
+            self.H.TBHam[np.arange(self.H.sites), np.arange(self.H.sites)] = E + a * dq
         # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
