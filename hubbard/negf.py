@@ -7,6 +7,7 @@ from scipy.interpolate import interp1d
 import scipy.sparse as sp
 from hubbard.block_linalg import block_td, Blocksparse2Numpy, sparse_find_faster, Build_BTD_vectorised
 from hubbard.block_linalg import slices_to_npslices, test_partition_2d_sparse_matrix
+from time import time
 
 _pi = math.pi
 
@@ -133,7 +134,7 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
             ELEC_IDX+=[(iidx,jidx)]
 
         i1, j1, d1 = [],[],[]
-        if len(SE[0].shape)==2:
+        if not isinstance(SE[0], list):
             SE = [se[np.newaxis, :,:] for se in SE]
 
         for j, z in enumerate(e):
@@ -495,7 +496,8 @@ class NEGF:
                 for cc_eq_i, CC in enumerate(self.CC_eq):
                     cc = CC + Ef
                     self_energy = cc_eq_SE[spin][cc_eq_i]
-                    GF = _G(cc, HC, self.elec_idx, self_energy, mode='DOS')
+                    GF = _G(cc, HC, self.elec_idx, self_energy, mode='DOS',
+                            tbt=self.tbt, Ov=self.Ov, alloced_G=self.Alloced_G)
 
                     # Greens function evaluated at each point of the CC multiplied by the weight
                     # Each row is the diagonal of Gf(e) multiplied by the weight
