@@ -5,15 +5,15 @@ import os
 import math
 from scipy.interpolate import interp1d
 import scipy.sparse as sp
-from block_linalg import block_td, Blocksparse2Numpy, sparse_find_faster, Build_BTD_vectorised
-from block_linalg import slices_to_npslices, test_partition_2d_sparse_matrix
+from hubbard.block_linalg import block_td, Blocksparse2Numpy, sparse_find_faster, Build_BTD_vectorised
+from hubbard.block_linalg import slices_to_npslices, test_partition_2d_sparse_matrix
 
 _pi = math.pi
 
 __all__ = ['NEGF']
 
 
-def _G(e, HC, elec_idx, SE, mode='DOS'):
+def _G_dens(e, HC, elec_idx, SE, mode='DOS'):
     """ Calculate Green's function and return the diagonal
 
     Parameters
@@ -34,7 +34,6 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
         GF = np.zeros([len(e), no], dtype=np.complex128)
     elif mode == 'Full':
         GF = np.zeros([len(e), no, no], dtype=np.complex128)
-
     # This if statement overcomes cases where there are no electrodes
     for ie, e_i in enumerate(e):
         inv_GF = e_i * np.identity(no) - HC
@@ -46,11 +45,15 @@ def _G(e, HC, elec_idx, SE, mode='DOS'):
             GF[ie] = np.linalg.inv(inv_GF)
     return GF
 
+# shorthand
+def CZ(s, dt=np.complex128):
+    return np.zeros(s, dtype = dt)
+
 # Proposed new _G
-def CZ(s,dt = np.complex128): return np.zeros(s, dtype = dt)
 def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
        dtype=np.complex128, mode='DOS', alloced_G=None):
-    """ Calculate Green function
+    """ Calculate Green function using BTD procedure
+
     Parameters
     ----------
     e : complex
@@ -75,37 +78,31 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
     """
 
     no = HC.shape[0]
-    if tbt is None:
-        piv = np.arange(no); ipiv = piv.copy()
-        if mode == 'SpectralColumns': mode = 'Full'
+    if isinstance(HC, np.ndarray):
+        return _G_dens(e, HC, elec_idx, SE, mode=mode)
+
     else:
+        if tbt is None:
+            return _G_dens(e, HC.toarray(), elec_idx, SE, mode=mode)
+        print(mode)
         piv  = tbt.pivot(); ipiv = tbt.ipivot()
         btd  = tbt.btd()
-
-    if isinstance(HC, np.ndarray):
-        inv_GF = np.zeros([len(e), no, no], dtype=np.complex128)
-        for ie, e_i in enumerate(e):
-            inv_GF[ie] = e_i * np.identity(no) - HC
-            for idx, se in zip(elec_idx, SE[ie]):
-                inv_GF[ie, idx, idx.T] -= se
-        if piv is not None:
-            inv_GF = inv_GF[:,piv,:][:,:,piv]
-
-        if mode == 'DOS' :
-            return np.linalg.inv(inv_GF)[:,ipiv,ipiv]
-        elif mode == 'Full':
-            return np.linalg.inv(inv_GF)[:,ipiv,:][:,:,ipiv]
-
-    elif tbt is not None:
         hk  =  HC
-        if Ov is None: sk = sp.identity(no)
-        else:          sk = Ov
+        if Ov is None:
+            sk = sp.identity(no)
+
+        else:
+            sk = Ov
+
         Part = [0]
-        for b in btd: Part+= [Part[-1] + b]
+        for b in btd:
+            Part+= [Part[-1] + b]
+
         npiv = len(piv)
         # We could put in the Hamiltonian/overlap here to really check if we
         # are throwing away matrix elements
         f, S = test_partition_2d_sparse_matrix(sp.csr_matrix((npiv, npiv)),Part)
+
         nS   = slices_to_npslices(S)
         n_diags = len(Part)-1
         ne = len(e)
@@ -125,18 +122,25 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
             iidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
             jidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
             it = 0
+            _help_idx = np.arange(no)
             for i in e_idx[:,0]:
                 for j in e_idx[:,0]:
+                    i, j = _help_idx[i], _help_idx[j]
                     iidx[it] = i
                     jidx[it] = j
                     it += 1
+
             ELEC_IDX+=[(iidx,jidx)]
 
         i1, j1, d1 = [],[],[]
+        if len(SE[0].shape)==2:
+            SE = [se[np.newaxis, :,:] for se in SE]
 
         for j, z in enumerate(e):
             se_list = []
-            for IDX, se in zip(ELEC_IDX, SE[j]):
+            for ielec in range(len(SE)):
+                IDX = ELEC_IDX[ielec]
+                se  = SE[ielec][j]
                 se_sparse = sp.csr_matrix((se.ravel(), IDX), shape = (no,no),dtype = complex)
                 se_list  += [se_sparse]
 
@@ -157,8 +161,8 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
             nb  = iGreens.Block_shape[0]
             msk = np.diag(np.ones(nb).astype(int))
             G   = iGreens.Invert(msk)
-            return np.hstack([np.diagonal(G.Block(i,i), axis1 = 1,axis2 = 2)
-                                              for i in range(nb)])[:,ipiv]
+            return np.hstack([np.diagonal(G.Block(i,i), axis1=1, axis2=2)
+                              for i in range(nb)])[:,ipiv]
 
         elif mode == 'SpectralColumn':
             cols = []
@@ -179,14 +183,14 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
             mask[:,cols] = 1
             return Blocksparse2Numpy(iGreens.Invert(mask), iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
 
-        elif mode == 'Full' or mode == 'nonsymmetric':
-            if mode == 'Full':           BW = 'Upper'
-            elif mode == 'nonsymmetric': BW = 'all'
-            G = iGreens.Invert(BW = BW)
-            if mode == 'Full':
-                G.Symmetric = 'Set this to whatever, the code checks if the G object has this attribute, not its value'
-            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
 
+        elif mode == 'Full':
+            G = iGreens.Invert(BW='Upper')
+            G.Symmetric = 'Set this to whatever, the code checks if the G object has this attribute, not its value'
+            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
+        elif mode == 'nonsymmetric':
+            G = iGreens.Invert(BW='all')
+            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
 
 def _nested_list(*args):
     if len(args) == 0:
@@ -196,6 +200,16 @@ def _nested_list(*args):
         l.append(_nested_list(*args[1:]))
     return l
 
+
+"""def _choose_G(*args, **kwargs):
+    if "tbt" not in kwargs:
+        _G = _G_dens(*args)
+    else:
+        tbt = kwargs["tbt"]
+        Ov  = kwargs["Ov"] if "Ov" in kwargs else None
+        Alloced_G  = kwargs["Alloced_G"] if "Alloced_G" in kwargs else None
+        def _G(*args):
+            return _G_btd(*args, tbt=tbt, Ov=Ov, Alloced_G=Alloced_G)"""
 
 class NEGF:
     r""" This class creates the open quantum system object for a N-terminal device
@@ -232,7 +246,6 @@ class NEGF:
     -----
     This class has to be generalized to non-orthogonal basis
     """
-
     def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
 
@@ -240,6 +253,19 @@ class NEGF:
         self.Ef = 0.
         self.kT = Hdev.kT
         self.eta = 0.1
+
+        if "tbt" in kwargs:
+            self.tbt = kwargs["tbt"]
+        else:
+            self.tbt = None
+        if "Ov" in kwargs:
+            self.Ov  = kwargs["Ov"]
+        else:
+            self.Ov = None
+        if "Alloced_G" in kwargs:
+            self.Alloced_G  = kwargs["Alloced_G"]
+        else:
+            self.Alloced_G = None
 
         # Immediately retrieve the distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
@@ -344,6 +370,7 @@ class NEGF:
                         # And for each point in the Neq CC
                         self._cc_neq_SE[spin][i][ic] = se.self_energy(cc, **kw)
 
+
     def calc_n_open(self, H, q, qtol=1e-5, Nblocks=5):
         """
         Method to compute the spin densities from the non-equilibrium Green's function
@@ -367,8 +394,11 @@ class NEGF:
         Etot: float
             total energy
         """
+        form   = 'csr' if self.tbt is not None else 'array'
+
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
+
         q = np.asarray(q).sum()
 
         # Create short-hands
@@ -417,10 +447,12 @@ class NEGF:
                     f = 0.
                     for spin in range(H.spin_size):
                         if H.spin_size == 2:
-                            HC = H.H.Hk(spin=spin, format='array')
+                            HC = H.H.Hk(spin=spin, format=form)
                         else:
-                            HC = H.H.Hk(format='array')
-                        GF = _G([Ef + 1j * self.eta], HC, self.elec_idx, ef_SE[spin])
+                            HC = H.H.Hk(format=form)
+
+                        GF = _G([Ef + 1j * self.eta], HC, self.elec_idx, ef_SE[spin],
+                                tbt=self.tbt, Ov=self.Ov, alloced_G=self.Alloced_G)
 
                         # Now we need to calculate the new Fermi level based on the
                         # difference in charge and by estimating the current Fermi level
@@ -442,9 +474,9 @@ class NEGF:
             Etot = 0.
             for spin in range(H.spin_size):
                 if H.spin_size==2:
-                    HC = H.H.Hk(spin=spin, format='array')
+                    HC = H.H.Hk(spin=spin, format=form)
                 else:
-                    HC = H.H.Hk(format='array')
+                    HC = H.H.Hk(format=form)
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
