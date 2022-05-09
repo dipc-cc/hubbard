@@ -129,11 +129,6 @@ class HubbardHamiltonian(object):
         # Ensure normalized charge
         self.normalize_charge()
 
-        self._e0 = np.empty((self.spin_size, self.sites), dtype=self.H.dtype)
-        for spin in range(self.spin_size):
-            # Extract diagonal elements of original TB Hamiltonian
-            self._e0[spin] = self.TBHam.tocsr(spin).diagonal()
-
     @property
     def shape(self):
         """ The shape of the Hamiltonian matrix """
@@ -327,7 +322,7 @@ class HubbardHamiltonian(object):
         + \langle n_{j\downarrow}\rangle\right)`
         will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated
         """
-        E = np.empty_like(self._e0)
+        E = np.empty((self.spin_size, self.sites))
         for spin in range(self.spin_size):
             # Extract diagonal elements of TB Hamiltonian.
             # We don't use here self._e0 since in the NEQ case the TB Hamiltonian may change each iteration with the applied voltage.
