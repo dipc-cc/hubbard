@@ -85,7 +85,6 @@ def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
     else:
         if tbt is None:
             return _G_dens(e, HC.toarray(), elec_idx, SE, mode=mode)
-        print(mode)
         piv  = tbt.pivot(); ipiv = tbt.ipivot()
         btd  = tbt.btd()
         hk  =  HC
