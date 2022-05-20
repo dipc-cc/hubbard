@@ -50,10 +50,10 @@ Ntile = 20
 HC = H_elec.tile(Ntile, axis=0)
 HC.set_nsc([1, 1, 1])
 
-no = HC.geometry.no
+no  = HC.geometry.no
 piv = np.arange(no)
 btd = np.array([8] * (Ntile//2))
-tbt  =dummy_class(piv, btd)
+tbt = dummy_class(piv, btd)
 Ov  = sp.identity(no)
 
 # Map electrodes in the device region
