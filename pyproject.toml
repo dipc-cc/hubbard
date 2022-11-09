@@ -42,14 +42,6 @@ authors = [
 ]
 maintainers = [{name="hubbard developers"}]
 
-# instead one could do [project.urls] homepage = ... ; documentation = ...
-urls = [
-   {homepage = "https://dipc-cc.github.io/hubbard/"},
-   {releases = "https://github.com/dipc-cc/hubbard/releases"},
-   {documentation = "https://dipc-cc.github.io/hubbard/"},
-   {repository = "https://github.com/dipc-cc/hubbard"}
-]
-
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -70,6 +62,13 @@ classifiers = [
 
 # We purposefully get the version dynamically
 dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://dipc-cc.github.io/hubbard/"
+Releases = "https://github.com/dipc-cc/hubbard/releases"
+Documentation = "https://dipc-cc.github.io/hubbard/"
+Repository = "https://github.com/dipc-cc/hubbard"
+
 
 [tool.pytest.ini_options]
 testpaths = [
