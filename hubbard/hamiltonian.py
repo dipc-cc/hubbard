@@ -287,9 +287,14 @@ class HubbardHamiltonian(object):
             Two values specifying up, down electron occupations for the subset of atoms
         """
         nsub = self.n[:, atoms]
-        U = self.U[atoms]
+        if isinstance(self.U, float):
+            U = self.U
+        else:
+            U = self.U[atoms]
         if self.Uij is not None:
             Uij = self.Uij[np.ix_(atoms, atoms)]
+        else:
+            Uij = self.Uij
         return self.__class__(self.H.sub(atoms), n=nsub, U=U, Uij=Uij,
                     q=q, nkpt=self.mp, kT=self.kT)
 
