@@ -151,7 +151,7 @@ class HubbardHamiltonian(object):
 
     def __str__(self):
         """ Representation of the model """
-        s = self.__class__.__name__ + f'{{q: {self.q}, U: {self.U} {self.units}, kT: {self.kT} {self.units}\n'
+        s = self.__class__.__name__ + f'{{q: {self.q}, U: {self.U} {self.units}, kT: {self.kT} {self.units}, Uij: {self.Uij} {self.units}\n'
         s += str(self.H).replace('\n', '\n ')
         return s + '\n}'
 
