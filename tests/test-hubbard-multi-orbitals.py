@@ -37,8 +37,7 @@ g = geom.zgnr(W, atoms=C)
 
 # Add another atom to have heterogeneous number of orbitals per atoms
 C2 = sisl.Atom(6, orbitals=[pz])
-G_C2 = sisl.Geometry(g.xyz[0], atoms=C2)
-g = g.replace(0,G_C2)
+g = g.replace(0, sisl.Geometry(g.xyz[0], atoms=C2))
 
 # Identify index for atoms
 idx = g.a2o(range(len(g)))
@@ -55,6 +54,8 @@ for ia in g:
     for iib in ib[1]:
         io_b = g.a2o(iib, all=True)
         TBham[io_a[0], io_b[0]] = -2.7
+    if len(io_a) > 1:
+        TBham[io_a[1], io_a[1]] = 1
 
 # HubbardHamiltonian object and converge
 HH = HubbardHamiltonian(TBham, U=None, nkpt=[100,1,1])
@@ -67,6 +68,8 @@ HH.write_density('multi-orbital-density.nc')
 # Print spin-densities difference compared to sing-orbital case
 print('\n   ** Difference between spin densities for single and multi-orbital cases **')
 print(HH.n[:,idx]-n_single)
+
+HH.shift(-HH.find_midgap())
 
 # Add second set of bands for the multi orbital case
 p.add_bands(HH, c='--r')
