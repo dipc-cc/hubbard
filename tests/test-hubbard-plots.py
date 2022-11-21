@@ -53,7 +53,7 @@ p.savefig('pdos.pdf')
 # Test real-space plots?
 if True:
 
-    p = plot.LDOS_from_eigenstate(H, evec[:, 10], z=5, vmax=2e-15, realspace=True, ext_geom=molecule, colorbar=True)
+    p = plot.LDOS_from_eigenstate(H, evec[:, 10], z=5, vmax=2e-15, realspace=True, ext_geom=molecule, colorbar=True, smooth={'r':0.6})
     p.savefig('ldos_rs.pdf')
 
     p = plot.Charge(H, realspace=True, ext_geom=molecule, z=5, vmax=5e-14, vmin=0, colorbar=True)

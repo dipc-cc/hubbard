@@ -55,7 +55,7 @@ class Charge(GeometryPlot):
         # Sum over all orbitals
         chg = np.zeros((HH.geometry.na))
         for ia, io in HH.geometry.iter_orbitals(local=False):
-            chg[ia] += HH.n[0, io] + HH.n[1, io]
+            chg[ia] += HH.n[0, io] + HH.n[-1, io]
 
         if realspace:
             if 'shape' not in kwargs:
@@ -130,7 +130,7 @@ class ChargeDifference(GeometryPlot):
         q = np.zeros_like(chg)
         for ia, io in HH.geometry.iter_orbitals(local=False):
             q[ia] = HH.geometry.atoms[ia].Z-5
-            chg[ia] += HH.n[0,io] + HH.n[1,io]
+            chg[ia] += HH.n[0,io] + HH.n[-1,io]
 
         chg -= q
 
@@ -207,7 +207,7 @@ class SpinPolarization(GeometryPlot):
         # Sum over all orbitals
         chg = np.zeros((HH.geometry.na))
         for ia, io in HH.geometry.iter_orbitals(local=False):
-            chg[ia] += (HH.n[0, io] - HH.n[1, io])
+            chg[ia] += (HH.n[0, io] - HH.n[-1, io])
 
         if realspace:
             if 'shape' not in kwargs:

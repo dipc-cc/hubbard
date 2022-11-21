@@ -166,25 +166,30 @@ class NEGF:
             self.eta = 1.
 
         # spin, electrode
-        self._ef_SE = _nested_list(2, len(self.elec_SE))
+        self._ef_SE = _nested_list(Hdev.spin_size, len(self.elec_SE))
         # spin, EQ-contour, energy, electrode
         self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
         # spin, energy, electrode
         self._cc_neq_SE = _nested_list(Hdev.spin_size, self.CC_neq.shape[0], len(self.elec_SE))
 
+        kw = {}
         for i, se in enumerate(self.elec_SE):
             for spin in range(Hdev.spin_size):
                 # Map self-energy at the Fermi-level of each electrode into the device region
-                self._ef_SE[spin][i] = se.self_energy(1j * self.eta, spin=spin)
+                if Hdev.spin_size > 1:
+                    kw = {'spin':spin}
+
+                self._ef_SE[spin][i] = se.self_energy(1j * self.eta, **kw)
 
                 for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                     for ic, cc in enumerate(CC_eq):
                         # Do it also for each point in the CC, for all EQ CC
-                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, spin=spin)
+                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, **kw)
+
                 if self.NEQ:
                     for ic, cc in enumerate(self.CC_neq):
                         # And for each point in the Neq CC
-                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, spin=spin)
+                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, **kw)
 
     def calc_n_open(self, H, q, qtol=1e-5):
         """
@@ -290,7 +295,7 @@ class NEGF:
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, spin=spin)
+                    Delta, w = self.Delta(HC, Ef, spin=spin)
                     # Store only diagonal
                     w = np.diag(w)
                     # Transfer Delta to D

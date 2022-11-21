@@ -24,7 +24,6 @@ mixer = sisl.mixing.PulayMixer(0.7, history=7)
 for m in [density.calc_n_insulator, density.calc_n]:
     # Reset density and iterate
     H.random_density()
-    mixer.clear()
     dn = H.converge(m, tol=1e-10, steps=10, mixer=mixer, print_info=True)
     ev1, evec1 = H.eigh(eigvals_only=False, spin=0)
 
@@ -53,7 +52,6 @@ if True:
     # at kT=0.025 (temperature of the CC)
     H.kT = 0.025
     H.random_density()
-    mixer.clear()
     dn = H.converge(density.calc_n, tol=1e-10, steps=10, mixer=mixer)
     Etot0 = H.Etot
     n = 1 * H.n
@@ -71,7 +69,6 @@ if True:
     # This is to use a better guess for the device potential
     negf.Ef =  H.find_midgap()
     negf.eta = 1e-2
-    mixer.clear()
     dn = H.converge(negf.calc_n_open, mixer=mixer, tol=1e-10, func_args={'qtol': 1e-4}, steps=1, print_info=True)
     print('Total energy difference: %.4e eV' % (Etot0 - H.Etot))
     print('Density difference (up, dn): (%.4e, %.4e)' % (max(abs(H.n[0] - n[0])), max(abs(H.n[1] - n[1]))))
