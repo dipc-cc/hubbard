@@ -19,8 +19,6 @@ AGNR = sisl.geom.agnr(9)
 # and 3NN TB Hamiltonian
 H_elec = sp2(AGNR, t1=2.7, t2=0.2, t3=0.18)
 
-mixer = sisl.mixing.PulayMixer(0.3, history=7)
-
 # Hubbard Hamiltonian of elecs
 MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1],  kT=0.025)
 # Initial densities
@@ -30,7 +28,7 @@ if not success:
     MFH_elec.random_density()
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(density.calc_n, mixer=mixer)
+dn = MFH_elec.converge(density.calc_n, mixer=sisl.mixing.PulayMixer(0.3, history=7))
 
 # Write also densities for future calculations
 MFH_elec.write_density('elec_density.nc')
@@ -58,14 +56,12 @@ MFH_HC = HubbardHamiltonian(HC.H, U=U, kT=kT)
 success = MFH_HC.read_density('HC_density.nc')
 if not success:
     # Converge without OBC to have initial density
-    mixer.clear()
-    MFH_HC.converge(density.calc_n, tol=1e-5, mixer=mixer)
+    MFH_HC.converge(density.calc_n, tol=1e-5, mixer=sisl.mixing.PulayMixer(0.3, history=7))
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 # Converge using Green's function method to obtain the densities
-mixer.clear()
-dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-5, mixer=mixer, print_info=True)
+dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-5, mixer=sisl.mixing.PulayMixer(0.3, history=7), print_info=True)
 
 MFH_HC.H.write('MFH_HC.nc', Ef=negf.Ef)
 print('Nup, Ndn: ', MFH_HC.n.sum(axis=1))
