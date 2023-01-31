@@ -22,10 +22,8 @@ for u in np.linspace(0.0, 4.0, 5):
     H.U = 4.0-u
 
     # AFM case first
-    success = H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
-    if not success:
-        H.random_density()
-        H.set_polarization([1, 6, 15]) # polarize lower zigzag edge
+    H.read_density(mol_file+'.nc') # Try reading, if we already have density on file
+    H.set_polarization([1, 6, 15]) # polarize lower zigzag edge
 
     dn = H.converge(density.calc_n_insulator, mixer=sisl.mixing.PulayMixer(0.7, history=7))
     eAFM = H.Etot
