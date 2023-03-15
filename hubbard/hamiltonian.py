@@ -578,7 +578,7 @@ class HubbardHamiltonian(object):
             self.Etot -= 0.5*self.Uij @ (ni[0]+ni[-1]) @ (ni[0]+ni[-1])
         return dn
 
-    def converge(self, calc_n_method, tol=1e-6, mixer=None, steps=100, fn=None, print_info=False, func_args=dict()):
+    def converge(self, calc_n_method, tol=1e-6, mixer=None, steps=100, max_iter=None, fn=None, print_info=False, func_args=dict()):
         """ Iterate Hamiltonian towards a specified tolerance criterion
 
         This method calls `iterate` as many times as it needs until it reaches the specified tolerance
@@ -596,6 +596,8 @@ class HubbardHamiltonian(object):
             the code will print some relevant information (if `print_info` is set to ``True``) about the convergence
             process when the number of completed iterations reaches a multiple of the specified `steps`.
             It also will store the densities in a binary file if `fn` is passed
+        max_iter: int, optional
+            maximum number of iterations before stopping
         fn: str, optional
             optionally, one can save the spin-densities during the calculation (when the number of completed iterations reaches
             the specified `steps`), by giving the name of the full name of the *binary file*
@@ -619,6 +621,8 @@ class HubbardHamiltonian(object):
             print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
+        if max_iter is None:
+            max_iter = -1
         dn = 1.0
         i = 0
         while dn > tol:
@@ -630,6 +634,8 @@ class HubbardHamiltonian(object):
                     print('   %i iterations completed:' % i, dn, self.Etot)
                 if fn:
                     self.write_density(fn, 'a')
+            if i == max_iter:
+                return dn
         if print_info:
             print('   found solution in %i iterations' % i)
         return dn
