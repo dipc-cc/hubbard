@@ -3,7 +3,7 @@ import sisl
 
 # Build sisl Geometry object
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-molecule.sc.set_nsc([1, 1, 1])
+molecule.set_nsc([1, 1, 1])
 
 print('1. Run one iteration with calc_n_insulator')
 Hsp2 = sp2(molecule)
