@@ -621,6 +621,8 @@ class HubbardHamiltonian(object):
             print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
         if mixer is None:
             mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
+        if max_iter is None:
+            max_iter = -1
         dn = 1.0
         i = 0
         while dn > tol:
@@ -632,9 +634,8 @@ class HubbardHamiltonian(object):
                     print('   %i iterations completed:' % i, dn, self.Etot)
                 if fn:
                     self.write_density(fn, 'a')
-            if max_iter is not None:
-                if i == max_iter:
-                    return dn
+            if i == max_iter:
+                return dn
         if print_info:
             print('   found solution in %i iterations' % i)
         return dn
