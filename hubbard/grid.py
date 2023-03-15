@@ -2,7 +2,7 @@ import numpy as np
 import sisl
 
 
-def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
+def real_space_grid(geometry, lattice, vector, shape, mode='wavefunction', **kwargs):
     """ Create real space `sisl.Grid` object for a `sisl.Geometry` and a `sisl.Supercell`
 
     Parameters
@@ -14,8 +14,8 @@ def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
     shape: float or (3,) of int
         the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
         (see `sisl.Grid`)
-    sc : sisl.SuperCell
-        supercell object of the grid
+    lattice : sisl.Lattice
+        lattice object of the grid
     mode: str, optional
         to build the grid from sisl.electron.wavefunction object (``mode='wavefunction'``)
         or from the sisl.physics.DensityMatrix (``mode='charge'``), e.g. for charge-related plots
@@ -28,11 +28,11 @@ def real_space_grid(geometry, sc, vector, shape, mode='wavefunction', **kwargs):
     # Create a temporary copy of the geometry
     g = geometry.copy()
 
-    # Set new sc to create real-space grid
-    g.set_sc(sc)
+    # Set new lattice to create real-space grid
+    g.set_sc(lattice)
 
     # Create the real-space grid
-    grid = sisl.Grid(shape, sc=sc, geometry=g)
+    grid = sisl.Grid(shape, lattice=lattice, geometry=g)
 
     if mode in ['wavefunction']:
         if isinstance(vector, sisl.physics.electron.EigenstateElectron):
