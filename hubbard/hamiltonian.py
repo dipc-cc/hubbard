@@ -633,7 +633,7 @@ class HubbardHamiltonian(object):
                 if fn:
                     self.write_density(fn, 'a')
             if max_iter is not None:
-                if i > max_iter:
+                if i == max_iter:
                     return dn
         if print_info:
             print('   found solution in %i iterations' % i)
