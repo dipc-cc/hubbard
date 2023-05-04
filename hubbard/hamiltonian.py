@@ -454,10 +454,12 @@ class HubbardHamiltonian(object):
         if os.path.isfile(fn):
             fh = nc.ncSileHubbard(fn, mode=mode)
             self.n = fh.read_density(group=group)
+            self.q = self.n.sum(axis=1) # Update charge with read density
             if isinstance(self.n, list):
                 warnings.warn(f'Groups found in {fn}, using the density from the first one')
                 # Read only the first element from the list
                 self.n = fh.read_density()[0]
+                self.q = self.n.sum(axis=1) # Update charge with read density
             fh.close()
             self.update_hamiltonian()
 
