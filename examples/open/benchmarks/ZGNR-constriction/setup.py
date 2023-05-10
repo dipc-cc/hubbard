@@ -19,8 +19,6 @@ ZGNR = sisl.geom.zgnr(5)
 # and 3NN TB Hamiltonian
 H_elec = sp2(ZGNR, t1=2.7, t2=0.2, t3=0.18)
 
-mixer = sisl.mixing.PulayMixer(0.6, history=7)
-
 # Hubbard Hamiltonian of elecs
 MFH_elec = HubbardHamiltonian(H_elec, U=U, nkpt=[102, 1, 1], kT=kT)
 # Initial densities
@@ -31,7 +29,7 @@ if not success:
     MFH_elec.set_polarization([0], dn=[9])
 
 # Converge Electrode Hamiltonians
-dn = MFH_elec.converge(density.calc_n, mixer=mixer)
+dn = MFH_elec.converge(density.calc_n, mixer=sisl.mixing.PulayMixer(0.6, history=7))
 # Write also densities for future calculations
 MFH_elec.write_density('elec_density.nc')
 # Plot spin polarization of electrodes
@@ -66,8 +64,7 @@ if not success:
 
 # First create NEGF object
 negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx, V=0.1)
-mixer.clear()
-dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-5, mixer=mixer, func_args={'qtol': 1e-4}, print_info=True)
+dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-5, mixer=sisl.mixing.PulayMixer(0.6, history=7), func_args={'qtol': 1e-4}, print_info=True)
 
 print('Nup, Ndn: ', MFH_HC.n.sum(axis=1))
 # Write also densities for future calculations

@@ -159,18 +159,15 @@ class Bonds(Plot):
 
         if isinstance(R, (tuple, list)):
             minR, maxR = min(R), max(R)
-        else:
+        elif isinstance(R, (float, int)):
             minR, maxR = 0., R
+        elif not R:
+            minR, maxR = min(G.distance(R=100)), max(G.distance(R=100))
 
         if not isinstance(G, sisl.Geometry):
             G = G.geometry
         G = G.copy()
         G.set_nsc([1, 1, 1])
-
-        if not maxR:
-            maxR = max(G.distance())
-        if not minR:
-            minR = min(G.distance())
 
         # Create colormap
         norm = mp.colors.Normalize(vmin=minR, vmax=maxR)

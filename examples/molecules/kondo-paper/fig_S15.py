@@ -15,7 +15,6 @@ H = HubbardHamiltonian(Hsp2)
 # FM and AFM solutions
 f = open('FM-AFM.dat', 'w')
 
-mixer = sisl.mixing.PulayMixer(0.7, history=7)
 H.set_polarization([77], dn=[23])
 for u in np.linspace(0.0, 1.4, 15):
     # We approach the solutions from above, starting at U=4eV
@@ -23,8 +22,7 @@ for u in np.linspace(0.0, 1.4, 15):
     # AFM case first
     success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
-    mixer.clear()
-    dn = H.converge(density.calc_n_insulator, mixer=mixer, tol=1e-6)
+    dn = H.converge(density.calc_n_insulator, mixer=sisl.mixing.PulayMixer(0.7, history=7), tol=1e-6)
     eAFM = H.Etot
     H.write_density('fig_S15.nc')
 
@@ -33,8 +31,7 @@ for u in np.linspace(0.0, 1.4, 15):
     H.q[1] -= 1
     success = H.read_density('fig_S15.nc') # Try reading, if we already have density on file
 
-    mixer.clear()
-    dn = H.converge(density.calc_n_insulator, mixer=mixer, tol=1e-6)
+    dn = H.converge(density.calc_n_insulator, mixer=sisl.mixing.PulayMixer(0.7, history=7), tol=1e-6)
     eFM = H.Etot
     H.write_density('fig_S15.nc')
 

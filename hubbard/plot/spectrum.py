@@ -375,15 +375,14 @@ class PDOS(Plot):
     sisl.physics.electron.PDOS: sisl method to obtain PDOS
     """
 
-    def __init__(self, HH, egrid, eta=1e-3, spin=[0, 1], sites=[], **kwargs):
+    def __init__(self, HH, egrid, eta=1e-3, spin=[0, 1], sites=[], offset=0., **kwargs):
 
         super().__init__(**kwargs)
 
         if np.any(sites):
             DOS = HH.PDOS(egrid, eta=eta, spin=spin)
-            offset = 0. * np.average(DOS[sites[0]])
             for i, s in enumerate(sites):
-                self.axes.plot(egrid, DOS[s] + offset * i, label='site %i' % i)
+                self.axes.plot(egrid, DOS[0, s] + offset * i, label='site %i' % i)
             self.legend()
         else:
             DOS = HH.DOS(egrid, eta=eta, spin=spin)
