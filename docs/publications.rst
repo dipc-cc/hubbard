@@ -28,8 +28,15 @@ publications below.
 
 #. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
    *A spin-polarizing electron beam splitter from crossed graphene nanoribbons*
-   Submitted (2022) `[arXiv:2201.07147] <https://arxiv.org/abs/2201.07147>`_
+   `Phys. Rev. Lett. 129, 037701 (2022) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.129.037701>`_
 
+#. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
+   *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
+   Submitted (2023) `[arXiv:2302.04821] <https://arxiv.org/abs/2302.04821>`_
+
+#. J. Brede, N. Merino-Díez, A. Berdonces, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate
+   *Detecting the spin-polarization of edge states in graphene nanoribbons*
+   Submitted (2023) `[arXiv:2301.11370] <https://arxiv.org/abs/2301.11370>`_
 
 .. _citing:
 
@@ -112,15 +119,21 @@ and/or this
 
 .. code-block:: bash
 
-    @misc{Sanz2022,
-      author        = {Sofia Sanz and Nick Papior and Géza Giedke and Daniel Sánchez-Portal and Mads Brandbyge and Thomas Frederiksen},
-      title         = {A spin-polarizing electron beam splitter from crossed graphene nanoribbons},
-      year          = {2022},
-      archiveprefix = {arXiv},
-      eprint        = {2201.07147},
-      primaryclass  = {cond-mat.mes-hall},
-      url           = {https://arxiv.org/abs/2201.07147},
+    @article{PhysRevLett.129.037701,
+      title = {Spin-Polarizing Electron Beam Splitter from Crossed Graphene 				Nanoribbons},
+      author = {Sanz, Sofia and Papior, Nick and Giedke, G\'eza and S\'anchez-Portal, Daniel and Brandbyge, Mads and Frederiksen, Thomas},
+      journal = {Phys. Rev. Lett.},
+      volume = {129},
+      issue = {3},
+      pages = {037701},
+      numpages = {7},
+      year = {2022},
+      month = {Jul},
+      publisher = {American Physical Society},
+      doi = {10.1103/PhysRevLett.129.037701},
+      url = {https://link.aps.org/doi/10.1103/PhysRevLett.129.037701}
     }
+
 
 Related bibliography
 ====================

@@ -30,7 +30,7 @@ Where it has been sepparated into intra- (:math:`U_{i}`) and inter-atomic (:math
 
 which can be directly added to the total electronic energy.
 
-This package allows for_
+This package allows for:
 
    * Easy calculations of spin-resolved quantities.
       It takes advantage of many routines from sisl_ as well as numpy_ and scipy_,
