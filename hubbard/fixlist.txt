@@ -1,0 +1,10 @@
+List of things that could be improved:
+1. Get rid of excess memory allocation by also parsing the function the arrays
+   it needs to put the values in. Requires slight rewrites of the "Build_BTD_purenp"
+   and "_Build_BTD_vectorised". 
+2. Memory allocation in the Blocksparse2Numpy code, also an array to put the values
+   could easily be allocated once and parsed to the code. Slight rewrite.
+3. There is a garbage collection call in Gen_Inv_Diag in block_linalg that might make
+   things slower, not tested.
+
+   

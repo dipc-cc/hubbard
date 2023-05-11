@@ -4,15 +4,18 @@ import sisl
 import os
 import math
 from scipy.interpolate import interp1d
-from scipy.linalg import inv
+import scipy.sparse as sp
+from hubbard.block_linalg import block_td, Blocksparse2Numpy, sparse_find_faster, Build_BTD_vectorised
+from hubbard.block_linalg import slices_to_npslices, test_partition_2d_sparse_matrix
+from time import time
 
 _pi = math.pi
 
 __all__ = ['NEGF']
 
 
-def _G(e, HC, elec_idx, SE):
-    """ Calculate Green function
+def _G_dens(e, HC, elec_idx, SE, mode='DOS'):
+    """ Calculate Green's function and return the diagonal
 
     Parameters
     ----------
@@ -24,15 +27,170 @@ def _G(e, HC, elec_idx, SE):
        indices for the electrode orbitals
     SE : list of numpy.ndarray
        self-energies for the electrodes
+    mode: str, optional
+        return the full Green's function (``mode='Full'``) or only the diagonal (``mode='DOS'``)
     """
     no = len(HC)
-    inv_GF = np.zeros([no, no], dtype=np.complex128)
-    np.fill_diagonal(inv_GF, e)
-    inv_GF[:, :] -= HC[:, :]
-    for idx, se in zip(elec_idx, SE):
-        inv_GF[idx, idx.T] -= se
-    return inv(inv_GF)
+    if mode == 'DOS':
+        GF = np.zeros([len(e), no], dtype=np.complex128)
+    elif mode == 'Full':
+        GF = np.zeros([len(e), no, no], dtype=np.complex128)
+    # This if statement overcomes cases where there are no electrodes
+    for ie, e_i in enumerate(e):
+        inv_GF = e_i * np.identity(no) - HC
+        for idx, se in zip(elec_idx, SE):
+            inv_GF[idx, idx.T] -= se[ie]
+        if mode == 'DOS':
+            GF[ie] = np.linalg.inv(inv_GF)[np.arange(no), np.arange(no)]
+        elif mode == 'Full':
+            GF[ie] = np.linalg.inv(inv_GF)
+    return GF
 
+# shorthand
+def CZ(s, dt=np.complex128):
+    return np.zeros(s, dtype = dt)
+
+# Proposed new _G
+def _G(e, HC, elec_idx, SE, tbt=None, Ov=None,
+       dtype=np.complex128, mode='DOS', alloced_G=None):
+    """ Calculate Green function using BTD procedure
+
+    Parameters
+    ----------
+    e : complex
+       energy at which the Green function is calculated
+    HC : numpy.ndarray
+       the Hamiltonian
+    elec_idx : list of indices
+       indices for the electrode orbitals
+    SE : list of numpy.ndarray
+       self-energies for the electrodes
+    tbt: sisl.Sile, optional
+        sisl.Sile with a tbtrans calculation to get the pivotting scheme. Defaults to None
+        If `tbt=None` should give _G:
+    Ov: scipy.sparse.csr (check), optional
+        Overlap matrix, May just be an allocated identity matrix in sparse format
+    dtype: np.dtype, optional
+        datatype of BTD matrix
+    mode: str, optional
+        "DOS", "SpectralColumn", or "Full". Defaults to "DOS"
+    alloced_G:  block_td instance, optional
+        the arrays in the BTD class can be preallocated, may or may not be notable. Defaults to None
+    """
+
+    no = HC.shape[0]
+    if isinstance(HC, np.ndarray):
+        return _G_dens(e, HC, elec_idx, SE, mode=mode)
+
+    else:
+        if tbt is None:
+            return _G_dens(e, HC.toarray(), elec_idx, SE, mode=mode)
+        piv  = tbt.pivot(); ipiv = tbt.ipivot()
+        btd  = tbt.btd()
+        hk  =  HC
+        if Ov is None:
+            sk = sp.identity(no)
+
+        else:
+            sk = Ov
+
+        Part = [0]
+        for b in btd:
+            Part+= [Part[-1] + b]
+
+        npiv = len(piv)
+        # We could put in the Hamiltonian/overlap here to really check if we
+        # are throwing away matrix elements
+        f, S = test_partition_2d_sparse_matrix(sp.csr_matrix((npiv, npiv)),Part)
+
+        nS   = slices_to_npslices(S)
+        n_diags = len(Part)-1
+        ne = len(e)
+        if alloced_G is None:
+            Al    =  [CZ((ne,Part[i+1]-Part[i  ],Part[i+1]-Part[i  ]), dt = dtype) for i in range(n_diags  )]
+            Bl    =  [CZ((ne,Part[i+2]-Part[i+1],Part[i+1]-Part[i  ]), dt = dtype) for i in range(n_diags-1)]
+            Cl    =  [CZ((ne,Part[i+1]-Part[i  ],Part[i+2]-Part[i+1]), dt = dtype) for i in range(n_diags-1)]
+            Ia    =  [i for i in range(n_diags  )]
+            Ib    =  [i for i in range(n_diags-1)]
+            Ic    =  [i for i in range(n_diags-1)]
+            iGreens = block_td(Al,Bl,Cl,Ia,Ib,Ic,diagonal_zeros=False, E_grid = e)
+        else:
+            iGreens = alloced_G
+
+        ELEC_IDX = []
+        for e_idx in elec_idx:
+            iidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
+            jidx = np.zeros(len(e_idx[:,0])**2, dtype = np.int32)
+            it = 0
+            _help_idx = np.arange(no)
+            for i in e_idx[:,0]:
+                for j in e_idx[:,0]:
+                    i, j = _help_idx[i], _help_idx[j]
+                    iidx[it] = i
+                    jidx[it] = j
+                    it += 1
+
+            ELEC_IDX+=[(iidx,jidx)]
+
+        i1, j1, d1 = [],[],[]
+        if not isinstance(SE[0], list):
+            SE = [se[np.newaxis, :,:] for se in SE]
+
+        for j, z in enumerate(e):
+            se_list = []
+            for ielec in range(len(SE)):
+                IDX = ELEC_IDX[ielec]
+                se  = SE[ielec][j]
+                se_sparse = sp.csr_matrix((se.ravel(), IDX), shape = (no,no),dtype = complex)
+                se_list  += [se_sparse]
+
+            iG = sk * z - hk - sum(se_list)
+            iG = iG[piv, :][:, piv]
+            di, dj, dv = sparse_find_faster(iG) # sp.find(iG) but faster
+            i1.append(di); j1.append(dj); d1.append(dv)
+
+        Av, Bv, Cv = Build_BTD_vectorised(np.vstack(i1), np.vstack(j1), np.vstack(d1), nS)
+
+        for b in range(n_diags):
+            iGreens.Al[b][ :, :, :] = Av[b]
+            if b<n_diags-1:
+                iGreens.Bl[b][ :, :, :] = Bv[b]
+                iGreens.Cl[b][ :, :, :] = Cv[b]
+
+        if mode == 'DOS':
+            nb  = iGreens.Block_shape[0]
+            msk = np.diag(np.ones(nb).astype(int))
+            G   = iGreens.Invert(msk)
+            return np.hstack([np.diagonal(G.Block(i,i), axis1=1, axis2=2)
+                              for i in range(nb)])[:,ipiv]
+
+        elif mode == 'SpectralColumn':
+            cols = []
+            for eidx in elec_idx:
+                eidx = np.array([np.where(piv == eidx[i])[0][0] for i in range(len(eidx))])
+                emin, emax = eidx.min(), eidx.max()
+                begin = False
+                for i in range(n_diags):
+                    s = iGreens.all_slices[i][i][0]
+                    start,stop = s.start,s.stop
+                    if start <= emin < stop: begin = True
+                    if start>emax:           begin = False
+                    if begin:                cols+=[i]
+
+            cols = np.array(cols)
+            cols = np.unique(cols)
+            mask = np.diag(np.ones(n_diags)).astype(np.int32)
+            mask[:,cols] = 1
+            return Blocksparse2Numpy(iGreens.Invert(mask), iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
+
+
+        elif mode == 'Full':
+            G = iGreens.Invert(BW='Upper')
+            G.Symmetric = 'Set this to whatever, the code checks if the G object has this attribute, not its value'
+            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
+        elif mode == 'nonsymmetric':
+            G = iGreens.Invert(BW='all')
+            return Blocksparse2Numpy(G, iGreens.all_slices)[:,ipiv, :][:,:,ipiv]
 
 def _nested_list(*args):
     if len(args) == 0:
@@ -42,6 +200,16 @@ def _nested_list(*args):
         l.append(_nested_list(*args[1:]))
     return l
 
+
+"""def _choose_G(*args, **kwargs):
+    if "tbt" not in kwargs:
+        _G = _G_dens(*args)
+    else:
+        tbt = kwargs["tbt"]
+        Ov  = kwargs["Ov"] if "Ov" in kwargs else None
+        Alloced_G  = kwargs["Alloced_G"] if "Alloced_G" in kwargs else None
+        def _G(*args):
+            return _G_btd(*args, tbt=tbt, Ov=Ov, Alloced_G=Alloced_G)"""
 
 class NEGF:
     r""" This class creates the open quantum system object for a N-terminal device
@@ -78,7 +246,6 @@ class NEGF:
     -----
     This class has to be generalized to non-orthogonal basis
     """
-
     def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
 
@@ -86,6 +253,19 @@ class NEGF:
         self.Ef = 0.
         self.kT = Hdev.kT
         self.eta = 0.1
+
+        if "tbt" in kwargs:
+            self.tbt = kwargs["tbt"]
+        else:
+            self.tbt = None
+        if "Ov" in kwargs:
+            self.Ov  = kwargs["Ov"]
+        else:
+            self.Ov = None
+        if "Alloced_G" in kwargs:
+            self.Alloced_G  = kwargs["Alloced_G"]
+        else:
+            self.Alloced_G = None
 
         # Immediately retrieve the distribution
         dist = sisl.get_distribution('fermi_dirac', smearing=self.kT)
@@ -167,10 +347,10 @@ class NEGF:
 
         # spin, electrode
         self._ef_SE = _nested_list(Hdev.spin_size, len(self.elec_SE))
-        # spin, EQ-contour, energy, electrode
-        self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
-        # spin, energy, electrode
-        self._cc_neq_SE = _nested_list(Hdev.spin_size, self.CC_neq.shape[0], len(self.elec_SE))
+        # spin, EQ-contour, electrode, energy
+        self._cc_eq_SE = _nested_list(Hdev.spin_size, self.CC_eq.shape[0], len(self.elec_SE), self.CC_eq.shape[1])
+        # spin, electrode, energy
+        self._cc_neq_SE = _nested_list(Hdev.spin_size, len(self.elec_SE), self.CC_neq.shape[0])
 
         kw = {}
         for i, se in enumerate(self.elec_SE):
@@ -184,14 +364,14 @@ class NEGF:
                 for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                     for ic, cc in enumerate(CC_eq):
                         # Do it also for each point in the CC, for all EQ CC
-                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, **kw)
-
+                        self._cc_eq_SE[spin][cc_eq_i][i][ic] = se.self_energy(cc, **kw)
                 if self.NEQ:
                     for ic, cc in enumerate(self.CC_neq):
                         # And for each point in the Neq CC
-                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, **kw)
+                        self._cc_neq_SE[spin][i][ic] = se.self_energy(cc, **kw)
 
-    def calc_n_open(self, H, q, qtol=1e-5):
+
+    def calc_n_open(self, H, q, qtol=1e-5, Nblocks=5):
         """
         Method to compute the spin densities from the non-equilibrium Green's function
 
@@ -204,6 +384,8 @@ class NEGF:
         qtol: float, optional
             tolerance to which the charge is going to be converged in the internal loop
             that finds the potential of the device (i.e. that makes the device neutrally charged)
+        Nblocks: int, optional
+            number of blocks in which the energy contour will be split to obtain the Green's matrix  (to obtain the NEQ integrals)
 
         Returns
         -------
@@ -212,8 +394,11 @@ class NEGF:
         Etot: float
             total energy
         """
+        form   = 'csr' if self.tbt is not None else 'array'
+
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
+
         q = np.asarray(q).sum()
 
         # Create short-hands
@@ -262,12 +447,12 @@ class NEGF:
                     f = 0.
                     for spin in range(H.spin_size):
                         if H.spin_size == 2:
-                            HC = H.H.Hk(spin=spin, format='array')
+                            HC = H.H.Hk(spin=spin, format=form)
                         else:
-                            HC = H.H.Hk(format='array')
-                        cc = Ef + 1j * self.eta
+                            HC = H.H.Hk(format=form)
 
-                        GF = _G(cc, HC, self.elec_idx, ef_SE[spin])
+                        GF = _G([Ef + 1j * self.eta], HC, self.elec_idx, ef_SE[spin],
+                                tbt=self.tbt, Ov=self.Ov, alloced_G=self.Alloced_G)
 
                         # Now we need to calculate the new Fermi level based on the
                         # difference in charge and by estimating the current Fermi level
@@ -276,7 +461,7 @@ class NEGF:
                         #   F(x) - F(0) = arctan(x) / pi = dq
                         # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
                         # and consider this a pre-factor
-                        f -= np.trace(GF).imag / _pi
+                        f -= GF.sum(axis=1).imag / _pi
 
                         # calculate fractional change
                         f = dq / f
@@ -289,18 +474,16 @@ class NEGF:
             Etot = 0.
             for spin in range(H.spin_size):
                 if H.spin_size==2:
-                    HC = H.H.Hk(spin=spin, format='array')
+                    HC = H.H.Hk(spin=spin, format=form)
                 else:
-                    HC = H.H.Hk(format='array')
+                    HC = H.H.Hk(format=form)
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
                 if self.NEQ:
                     # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, Ef, spin=spin)
-                    # Store only diagonal
-                    w = np.diag(w)
+                    Delta, w = self.Delta(HC, Ef, spin=spin, Nblocks=Nblocks)
                     # Transfer Delta to D
-                    D[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
-                    D[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
+                    D[0, :] = Delta[1] # Correction to left: Delta_R
+                    D[1, :] = Delta[0] # Correction to right: Delta_L
                     # TODO We need to also calculate the total energy for NEQ
                     #      this should probably be done in the Delta method
                     del Delta
@@ -310,20 +493,23 @@ class NEGF:
 
                 # Loop over all eq. Contours
                 for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
+                    cc = CC + Ef
+                    self_energy = cc_eq_SE[spin][cc_eq_i]
+                    GF = _G(cc, HC, self.elec_idx, self_energy, mode='DOS',
+                            tbt=self.tbt, Ov=self.Ov, alloced_G=self.Alloced_G)
 
-                        GF = _G(cc, HC, self.elec_idx, cc_eq_SE[spin][cc_eq_i][ic])
+                    # Greens function evaluated at each point of the CC multiplied by the weight
+                    # Each row is the diagonal of Gf(e) multiplied by the weight
+                    Gf_wi = - GF * self.w_eq.reshape(-1,1)
+                    D[cc_eq_i] = Gf_wi.imag.sum(axis=0) # sum elements of each row to evaluate integral over energy
 
-                        # Greens function evaluated at each point of the CC multiplied by the weight
-                        Gf_wi = - np.diag(GF) * wi
-                        D[cc_eq_i] += Gf_wi.imag
-
-                        # Integrate density of states to obtain the total energy
-                        # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
-                        if cc_eq_i == 0:
-                            Etot += ((w * Gf_wi).sum() * cc).imag
-                        else:
-                            Etot += (((1 - w) * Gf_wi).sum() * cc).imag
+                    # Integrate density of states to obtain the total energy
+                    # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
+                    if cc_eq_i == 0:
+                        # Sum over spin components
+                        Etot += ((w * Gf_wi).sum(axis=1) * cc).sum().imag
+                    else:
+                        Etot += (((1 - w) * Gf_wi).sum(axis=1) * cc).sum().imag
 
                 if self.NEQ:
                     D = w * D[0] + (1 - w) * D[1]
@@ -342,7 +528,7 @@ class NEGF:
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
 
-    def Delta(self, HC, Ef, spin=0):
+    def Delta(self, HC, Ef, spin=0, Nblocks=3):
         """
         Finds the non-equilibrium integrals to correct the left and right equilibrium integrals
 
@@ -354,6 +540,9 @@ class NEGF:
             Potential of the device
         spin: int
             spin index (0=up, 1=dn)
+        Nblocks: int, optional
+            number of blocks in which the energy contour will be split to obtain the Green's matrix, this number should be larger
+            for a relative large number of orbitals
 
         Returns
         -------
@@ -361,23 +550,23 @@ class NEGF:
         weight
         """
         def spectral(G, self_energy):
-            # Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)
-            Gamma = 1j * (self_energy - np.conjugate(self_energy.T))
-            # Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)
-            return np.dot(G, np.dot(Gamma, np.conjugate(G.T)))
+            # Use self-energy of elec, now the matrix will have dimension (E, Nelec, Nelec)
+            Gamma = 1j * (self_energy - np.conjugate(np.transpose(self_energy, axes=[0,2,1])))
+            # Product of (E, Ndev, Nelec) x (E, Nelec, Nelec) x (E, Nelec, Ndev) -> (E, Ndev, Ndev)
+            return einsum('ijk, ikm, imj ->  ij', G, Gamma, np.conjugate(np.transpose(G, axes=[0,2,1])))
 
         no = len(HC)
-        Delta = np.zeros([2, no, no], dtype=np.complex128)
+        Delta = np.zeros([2, no], dtype=np.complex128)
         cc_neq_SE = self._cc_neq_SE[spin]
 
-        for ic, cc in enumerate(self.CC_neq + Ef):
-
-            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ic])
-
-            # Elec (0, 1) are (left, right)
-            # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[ic][:2]):
-                Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
+        # Elec (0, 1) are (left, right)
+        # only do for the first two!
+        for i in range(2):
+            for ic, CC in enumerate(np.array_split((self.CC_neq + Ef), Nblocks)):
+                GF = _G(CC, HC, self.elec_idx, cc_neq_SE, mode='Full')
+                A = spectral(GF[:, :, self.elec_idx[i].ravel()], np.array_split(np.array(cc_neq_SE)[:, i], Nblocks)[ic])
+                # Build Delta for each electrode
+                Delta[i] += einsum('i, ij -> j', np.array_split(self.w_neq[i], Nblocks)[ic], A)
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
@@ -419,9 +608,9 @@ class NEGF:
 
                 # Append all the self-energies for the electrodes at each energy point
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
+                GF = _G([e + 1j * eta], HC, self.elec_idx, SE)
 
-                dos[i] -= np.trace(GF).imag
+                dos[i] -= GF.sum().imag
 
         return dos / np.pi
 
@@ -459,7 +648,7 @@ class NEGF:
             HC = H.H.Hk(spin=ispin, format='array')
             for i, e in enumerate(E):
                 SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
-                GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
-                ldos[i] -= GF.diagonal().imag
+                GF = _G([e + 1j * eta], HC, self.elec_idx, SE)
+                ldos[i] -= GF.imag
 
         return ldos / np.pi
