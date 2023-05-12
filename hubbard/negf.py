@@ -165,31 +165,32 @@ class NEGF:
             # since the electrodes more govern the DOS.
             self.eta = 1.
 
-        # spin, electrode
-        self._ef_SE = _nested_list(Hdev.spin_size, len(self.elec_SE))
-        # spin, EQ-contour, energy, electrode
-        self._cc_eq_SE = _nested_list(Hdev.spin_size, *self.CC_eq.shape, len(self.elec_SE))
-        # spin, energy, electrode
-        self._cc_neq_SE = _nested_list(Hdev.spin_size, self.CC_neq.shape[0], len(self.elec_SE))
+        # spin, k-sampling, electrode
+        self._ef_SE = _nested_list(Hdev.spin_size, len(Hdev.mp.k), len(self.elec_SE))
+        # spin, k-sampling, EQ-contour, energy, electrode
+        self._cc_eq_SE = _nested_list(Hdev.spin_size, len(Hdev.mp.k), *self.CC_eq.shape, len(self.elec_SE))
+        # spin, k-sampling, energy, electrode
+        self._cc_neq_SE = _nested_list(Hdev.spin_size, len(Hdev.mp.k), self.CC_neq.shape[0], len(self.elec_SE))
 
         kw = {}
         for i, se in enumerate(self.elec_SE):
-            for spin in range(Hdev.spin_size):
-                # Map self-energy at the Fermi-level of each electrode into the device region
-                if Hdev.spin_size > 1:
-                    kw = {'spin':spin}
+            for ik, k in enumerate(Hdev.mp.k):
+                for spin in range(Hdev.spin_size):
+                    # Map self-energy at the Fermi-level of each electrode into the device region
+                    if Hdev.spin_size > 1:
+                        kw = {'spin':spin}
 
-                self._ef_SE[spin][i] = se.self_energy(1j * self.eta, **kw)
+                    self._ef_SE[spin][ik][i] = se.self_energy(1j * self.eta, k=k, **kw)
 
-                for cc_eq_i, CC_eq in enumerate(self.CC_eq):
-                    for ic, cc in enumerate(CC_eq):
-                        # Do it also for each point in the CC, for all EQ CC
-                        self._cc_eq_SE[spin][cc_eq_i][ic][i] = se.self_energy(cc, **kw)
+                    for cc_eq_i, CC_eq in enumerate(self.CC_eq):
+                        for ic, cc in enumerate(CC_eq):
+                            # Do it also for each point in the CC, for all EQ CC
+                            self._cc_eq_SE[spin][ik][cc_eq_i][ic][i] = se.self_energy(cc, k=k, **kw)
 
-                if self.NEQ:
-                    for ic, cc in enumerate(self.CC_neq):
-                        # And for each point in the Neq CC
-                        self._cc_neq_SE[spin][ic][i] = se.self_energy(cc, **kw)
+                    if self.NEQ:
+                        for ic, cc in enumerate(self.CC_neq):
+                            # And for each point in the Neq CC
+                            self._cc_neq_SE[spin][ik][ic][i] = se.self_energy(cc, k=k, **kw)
 
     def calc_n_open(self, H, q, qtol=1e-5):
         """
@@ -261,22 +262,23 @@ class NEGF:
                     # Calculate charge at the Fermi-level
                     f = 0.
                     for spin in range(H.spin_size):
-                        if H.spin_size == 2:
-                            HC = H.H.Hk(spin=spin, format='array')
-                        else:
-                            HC = H.H.Hk(format='array')
-                        cc = Ef + 1j * self.eta
+                        for ik, k in enumerate(H.mp.k):
+                            if H.spin_size == 2:
+                                HC = H.H.Hk(spin=spin, k=k, format='array')
+                            else:
+                                HC = H.H.Hk(k=k, format='array')
+                            cc = Ef + 1j * self.eta
 
-                        GF = _G(cc, HC, self.elec_idx, ef_SE[spin])
+                            GF = _G(cc, HC, self.elec_idx, ef_SE[spin][ik])
 
-                        # Now we need to calculate the new Fermi level based on the
-                        # difference in charge and by estimating the current Fermi level
-                        # as the peak position of a Lorentzian.
-                        # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
-                        #   F(x) - F(0) = arctan(x) / pi = dq
-                        # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
-                        # and consider this a pre-factor
-                        f -= np.trace(GF).imag / _pi
+                            # Now we need to calculate the new Fermi level based on the
+                            # difference in charge and by estimating the current Fermi level
+                            # as the peak position of a Lorentzian.
+                            # I.e. F(x) = \int_-\infty^x L(x) dx = arctan(x) / pi + 0.5
+                            #   F(x) - F(0) = arctan(x) / pi = dq
+                            # In our case we *know* that 0.5 = - Im[Tr(Gf)] / \pi
+                            # and consider this a pre-factor
+                            f -= np.trace(GF).imag * wk / _pi # Integrate over k-space with weight wk
 
                         # calculate fractional change
                         f = dq / f
@@ -288,49 +290,54 @@ class NEGF:
 
             Etot = 0.
             for spin in range(H.spin_size):
-                if H.spin_size==2:
-                    HC = H.H.Hk(spin=spin, format='array')
-                else:
-                    HC = H.H.Hk(format='array')
+                # Loop k-points and weights
                 D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
-                if self.NEQ:
-                    # Correct Density matrix with Non-equilibrium integrals
-                    Delta, w = self.Delta(HC, Ef, spin=spin)
-                    # Store only diagonal
-                    w = np.diag(w)
-                    # Transfer Delta to D
-                    D[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
-                    D[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
-                    # TODO We need to also calculate the total energy for NEQ
-                    #      this should probably be done in the Delta method
-                    del Delta
-                else:
-                    # This ensures we can calculate energy for EQ only calculations
-                    w = 1.
+                for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
+                    Dk = np.zeros_like(D) # Density matrix per k point
+                    if H.spin_size==2:
+                        HC = H.H.Hk(spin=spin, k=k, format='array')
+                    else:
+                        HC = H.H.Hk(k=k, format='array')
+                    if self.NEQ:
+                        # Correct Density matrix with Non-equilibrium integrals
+                        Delta, w = self.Delta(HC, Ef, ik, spin=spin)
+                        # Store only diagonal
+                        w = np.diag(w)
+                        # Transfer Delta to D
+                        Dk[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
+                        Dk[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
+                        # TODO We need to also calculate the total energy for NEQ
+                        #      this should probably be done in the Delta method
+                        del Delta
+                    else:
+                        # This ensures we can calculate energy for EQ only calculations
+                        w = 1.
 
-                # Loop over all eq. Contours
-                for cc_eq_i, CC in enumerate(self.CC_eq):
-                    for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
+                    # Loop over all eq. Contours
+                    for cc_eq_i, CC in enumerate(self.CC_eq):
+                        for ic, [cc, wi] in enumerate(zip(CC + Ef, self.w_eq)):
 
-                        GF = _G(cc, HC, self.elec_idx, cc_eq_SE[spin][cc_eq_i][ic])
+                            GF = _G(cc, HC, self.elec_idx, cc_eq_SE[spin][ik][cc_eq_i][ic])
 
-                        # Greens function evaluated at each point of the CC multiplied by the weight
-                        Gf_wi = - np.diag(GF) * wi
-                        D[cc_eq_i] += Gf_wi.imag
+                            # Greens function evaluated at each point of the CC multiplied by the weight
+                            Gf_wi = - np.diag(GF) * wi
+                            Dk[cc_eq_i] += Gf_wi.imag
 
-                        # Integrate density of states to obtain the total energy
-                        # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
-                        if cc_eq_i == 0:
-                            Etot += ((w * Gf_wi).sum() * cc).imag
-                        else:
-                            Etot += (((1 - w) * Gf_wi).sum() * cc).imag
+                            # Integrate density of states to obtain the total energy
+                            # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
+                            if cc_eq_i == 0:
+                                Etot += ((w * Gf_wi).sum() * cc).imag * wk # Integrate over k-space with weight wk
+                            else:
+                                Etot += (((1 - w) * Gf_wi).sum() * cc).imag * wk # Integrate over k-space with weight wk
 
-                if self.NEQ:
-                    D = w * D[0] + (1 - w) * D[1]
-                else:
-                    D = D[0]
+                    if self.NEQ:
+                        Dk = w * Dk[0] + (1 - w) * Dk[1]
+                    else:
+                        Dk = Dk[0]
 
-                ni[spin, :] = D.real
+                    # Integrate over k-space with weight wk
+                    D += Dk * wk
+                    ni[spin, :] = D.real
 
             # Calculate new charge
             ntot = ni.sum()
@@ -342,7 +349,7 @@ class NEGF:
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
 
-    def Delta(self, HC, Ef, spin=0):
+    def Delta(self, HC, Ef, ik, spin=0):
         """
         Finds the non-equilibrium integrals to correct the left and right equilibrium integrals
 
@@ -352,6 +359,8 @@ class NEGF:
             Hamiltonian of the central region in its matrix form
         Ef: float
             Potential of the device
+        ik: int
+            k-point index
         spin: int
             spin index (0=up, 1=dn)
 
@@ -368,15 +377,15 @@ class NEGF:
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
-        cc_neq_SE = self._cc_neq_SE[spin]
+        cc_neq_SE = self._cc_neq_SE[spin][ik]
 
         for ic, cc in enumerate(self.CC_neq + Ef):
 
-            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ic])
+            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ik][ic])
 
             # Elec (0, 1) are (left, right)
             # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[ic][:2]):
+            for i, SE in enumerate(cc_neq_SE[ik][ic][:2]):
                 Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
