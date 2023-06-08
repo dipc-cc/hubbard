@@ -53,18 +53,18 @@ p.savefig('pdos.pdf')
 # Test real-space plots?
 if True:
 
-    p = plot.LDOS_from_eigenstate(H, evec[:, 10], z=5, vmax=2e-15, realspace=True, ext_geom=molecule, colorbar=True, smooth={'r':0.6})
+    p = plot.LDOS_from_eigenstate(H, evec[:, 10], z=5, vmax=9e-12, realspace=True, ext_geom=molecule, colorbar=True, smooth={'r':0.6})
     p.savefig('ldos_rs.pdf')
 
-    p = plot.Charge(H, realspace=True, ext_geom=molecule, z=5, vmax=5e-14, vmin=0, colorbar=True)
+    p = plot.Charge(H, realspace=True, ext_geom=molecule, z=5, vmax=5e-10, vmin=0, colorbar=True)
     p.imshow.set_cmap('Reds')
     p.savefig('chg_rs.pdf')
 
-    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True, z=5, vmax=3e-14, vmin=-3e-14, colorbar=True)
+    p = plot.ChargeDifference(H, ext_geom=molecule, realspace=True, z=5, vmax=7e-11, vmin=-7e-11, colorbar=True)
     p.savefig('chgdiff_rs.pdf')
 
-    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True, z=5, vmax=7e-15, vmin=-7e-15, colorbar=True)
+    p = plot.SpinPolarization(H, ext_geom=molecule, realspace=True, z=5, vmax=7e-11, vmin=-7e-11, colorbar=True)
     p.savefig('pol_rs.pdf')
 
-    p = plot.Wavefunction(H, evec[:, 10], ext_geom=molecule, realspace=True, z=5, vmax=5e-8, vmin=-5e-8, colorbar=True, bdx=3)
+    p = plot.Wavefunction(H, evec[:, 10], ext_geom=molecule, realspace=True, z=5, vmax=5e-6, vmin=-5e-6, colorbar=True, bdx=3)
     p.savefig('wf_rs.pdf')
