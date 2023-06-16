@@ -15,6 +15,8 @@ HH.set_polarization([0], dn=[-1])
 HH.converge(density.calc_n, print_info=True, tol=1e-10, steps=3)
 n_single = HH.n*1
 
+HH.shift(-HH.find_midgap())
+
 # Start bands-plot, the single-orbital case will be plotted in black
 p = plot.Bandstructure(HH, c='k')
 
