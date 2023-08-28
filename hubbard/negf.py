@@ -411,6 +411,7 @@ class NEGF:
 
         no = len(HC)
         Delta = np.zeros([2, no, no], dtype=np.complex128)
+        DeltaE = np.zeros([2], dtype=np.complex128)
         cc_neq_SE = self._cc_neq_SE[spin][ik]
 
         for ic, cc in enumerate(self.CC_neq + Ef):
@@ -421,6 +422,7 @@ class NEGF:
             # only do for the first two!
             for i, SE in enumerate(cc_neq_SE[ic][:2]):
                 Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
+                DeltaE[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic] * cc
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
