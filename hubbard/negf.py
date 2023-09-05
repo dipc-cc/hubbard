@@ -313,24 +313,23 @@ class NEGF:
                 D = 0.
                 for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
                     Dk = np.zeros([len(self.CC_eq), no], dtype=np.complex128) # Density matrix per k point
+                    Etotk = np.zeros(len(self.CC_eq), dtype=np.complex128)
                     if H.spin_size==2:
                         HC = H.H.Hk(spin=spin, k=k, format='array')
                     else:
                         HC = H.H.Hk(k=k, format='array')
                     if self.NEQ:
-                        # Correct Density matrix with Non-equilibrium integrals
-                        Delta, w = self.Delta(HC, Ef, ik, spin=spin)
+                        # Correct Density matrix and total energy with Non-equilibrium integrals
+                        Delta, w, DeltaE, wE = self.Delta(HC, Ef, ik, spin=spin)
                         # Store only diagonal
                         w = np.diag(w)
                         # Transfer Delta to D
                         Dk[0, :] = np.diag(Delta[1]) # Correction to left: Delta_R
                         Dk[1, :] = np.diag(Delta[0]) # Correction to right: Delta_L
-                        # TODO We need to also calculate the total energy for NEQ
-                        #      this should probably be done in the Delta method
+                        # Same for the total energy
+                        Etotk[0] = DeltaE[1]
+                        Etotk[1] = DeltaE[0]
                         del Delta
-                    else:
-                        # This ensures we can calculate energy for EQ only calculations
-                        w = 1.
 
                     # Loop over all eq. Contours
                     for cc_eq_i, CC in enumerate(self.CC_eq):
@@ -343,20 +342,19 @@ class NEGF:
                             Dk[cc_eq_i] += Gf_wi.imag
 
                             # Integrate density of states to obtain the total energy
-                            # For the non equilibrium energy maybe we could obtain it as in PRL 70, 14 (1993)
-                            if cc_eq_i == 0:
-                                Etot += ((w * Gf_wi).sum() * cc).imag * wk # Integrate over k-space with weight wk
-                            else:
-                                Etot += (((1 - w) * Gf_wi).sum() * cc).imag * wk # Integrate over k-space with weight wk
+                            Etotk[cc_eq_i] += (Gf_wi.sum() * cc).imag
 
                     if self.NEQ:
                         Dk = w * Dk[0] + (1 - w) * Dk[1]
+                        Etotk = wE * Etotk[0] + (1 - wE) * Etotk[1]
                     else:
                         Dk = Dk[0]
+                        Etotk = Etotk[0]
 
                     # Integrate over k-space with weight wk
                     D += Dk * wk
                     ni[spin, :] = D.real
+                    Etot += Etotk * wk
 
             # Calculate new charge
             ntot = ni.sum()
@@ -366,11 +364,6 @@ class NEGF:
 
 
         if self.NEQ:
-            # Calculate the free energy for the NEQ calculation
-            # We remove the interaction term from the total energy of the EQ situation as it is in the NEQ calculation
-            # TODO: Fix this expression (need the total number of particles for each electrode left and right)
-            # Reference: https://www.tandfonline.com/doi/abs/10.1080/13642819808206398
-            Etot = self.H_eq.Etot - (self.mu[0] + self.mu[1]) + self.H_eq.U*np.multiply.reduce(self.H_eq.n, axis=0).sum()
             # Add potential in each site depending on how much the neq charges deviate from the eq situation. This term comes from the extended Huckel model
             # a should be positive: if q_neq > q_eq then the potential should rise (less favourable for electrons to occupy that site)
             # TODO: improve how we set the a parameter so it does not go crazy if the charge difference is too large (especially important in the first iterations)
@@ -420,15 +413,17 @@ class NEGF:
 
             # Elec (0, 1) are (left, right)
             # only do for the first two!
+            # w_new already include the 1/pi factor
             for i, SE in enumerate(cc_neq_SE[ic][:2]):
                 Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
-                DeltaE[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic] * cc
+                DeltaE[i] += np.trace(spectral(GF[:, self.elec_idx[i].ravel()], SE)) * self.w_neq[i, ic] * cc
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
         # then we can think of implementing it for N terminals as in Com. Phys. Comm. 212 8-24 (2017)
         weight = Delta[0] ** 2 / (Delta ** 2).sum(axis=0)
+        weightE = DeltaE[0] ** 2 / (DeltaE ** 2).sum()
 
-        return Delta, weight
+        return Delta, weight, DeltaE, weightE
 
     def DOS(self, H, E, spin=[0, 1], eta=0.01):
         r"""
