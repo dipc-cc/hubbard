@@ -310,9 +310,9 @@ class NEGF:
             Etot = 0.
             for spin in range(H.spin_size):
                 # Loop k-points and weights
-                D = np.zeros([len(self.CC_eq), no], dtype=np.complex128)
+                D = 0.
                 for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
-                    Dk = np.zeros_like(D) # Density matrix per k point
+                    Dk = np.zeros([len(self.CC_eq), no], dtype=np.complex128) # Density matrix per k point
                     if H.spin_size==2:
                         HC = H.H.Hk(spin=spin, k=k, format='array')
                     else:
@@ -415,11 +415,11 @@ class NEGF:
 
         for ic, cc in enumerate(self.CC_neq + Ef):
 
-            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ik][ic])
+            GF = _G(cc, HC, self.elec_idx, cc_neq_SE[ic])
 
             # Elec (0, 1) are (left, right)
             # only do for the first two!
-            for i, SE in enumerate(cc_neq_SE[ik][ic][:2]):
+            for i, SE in enumerate(cc_neq_SE[ic][:2]):
                 Delta[i] += spectral(GF[:, self.elec_idx[i].ravel()], SE) * self.w_neq[i, ic]
 
         # Firstly implement it for two terminals following PRB 65 165401 (2002)
