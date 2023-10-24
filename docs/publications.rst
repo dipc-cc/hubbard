@@ -32,11 +32,11 @@ publications below.
 
 #. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
    *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
-   Submitted (2023) `[arXiv:2302.04821] <https://arxiv.org/abs/2302.04821>`_
+   Submitted (2023) `J. Phys.: Condens. Matter 35 374001 (2023) <https://iopscience.iop.org/article/10.1088/1361-648X/acd832/meta>`_
 
 #. J. Brede, N. Merino-Díez, A. Berdonces, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate
    *Detecting the spin-polarization of edge states in graphene nanoribbons*
-   Submitted (2023) `[arXiv:2301.11370] <https://arxiv.org/abs/2301.11370>`_
+   Submitted (2023) `Nature Communications 14, 6677 (2023) <https://www.nature.com/articles/s41467-023-42436-7>`_
 
 .. _citing:
 
@@ -53,7 +53,7 @@ If hubbard is used to produce scientific contributions please include citations,
                       Brandbyge, Mads and
                       Frederiksen, Thomas},
       title        = {hubbard: v<fill-version>},
-      year         = {2021},
+      year         = {2023},
       doi          = {10.5281/zenodo.4748765},
       url          = {https://doi.org/10.5281/zenodo.4748765}
     }
