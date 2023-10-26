@@ -1,3 +1,4 @@
+﻿
 .. automodule:: hubbard.plot
    :no-members:
    :no-undoc-members:

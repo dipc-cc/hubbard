@@ -1,108 +1,65 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>sp2 &mdash; hubbard documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="real_space_grid" href="hubbard.real_space_grid.html" />
     <link rel="prev" title="ncSileHubbard" href="hubbard.ncSileHubbard.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> hubbard
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            hubbard
           </a>
-
-          
-            
-            
               <div class="version">
-                0.2.0
+                latest
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">User Guide</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Publications</span></p>
+<p class="caption" role="heading"><span class="caption-text">Publications</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications using the hubbard package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#citing-the-hubbard-package">Citing the hubbard package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html#related-bibliography">Related bibliography</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Funding</span></p>
+<p class="caption" role="heading"><span class="caption-text">Funding</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
@@ -120,132 +77,73 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">hubbard</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../api.html">API documentation</a> &raquo;</li>
-        
-          <li><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a> &raquo;</li>
-        
-      <li>sp2</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API documentation</a></li>
+          <li class="breadcrumb-item"><a href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a></li>
+      <li class="breadcrumb-item active">sp2</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/api-generated/hubbard.sp2.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<div class="section" id="sp2">
-<h1>sp2<a class="headerlink" href="#sp2" title="Permalink to this headline">¶</a></h1>
+             
+  <div class="section" id="sp2">
+<h1>sp2<a class="headerlink" href="#sp2" title="Permalink to this headline"></a></h1>
 <dl class="py function">
-<dt id="hubbard.sp2">
-<code class="sig-prename descclassname">hubbard.</code><code class="sig-name descname">sp2</code><span class="sig-paren">(</span><em class="sig-param">ext_geom</em>, <em class="sig-param">t1=2.7</em>, <em class="sig-param">t2=0.2</em>, <em class="sig-param">t3=0.18</em>, <em class="sig-param">eB=3.0</em>, <em class="sig-param">eN=-3.0</em>, <em class="sig-param">s1=0</em>, <em class="sig-param">s2=0</em>, <em class="sig-param">s3=0</em>, <em class="sig-param">dq=0</em>, <em class="sig-param">spin=&lt;sisl.physics.Spin object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/sp2.html#sp2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hubbard.sp2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="hubbard.sp2">
+<span class="sig-prename descclassname"><span class="pre">hubbard.</span></span><span class="sig-name descname"><span class="pre">sp2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ext_geom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1=2.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2=0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t3=0.18</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eB=3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eN=-3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dq=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin=&lt;sisl.physics.Spin</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/sp2.html#sp2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.sp2" title="Permalink to this definition"></a></dt>
 <dd><p>Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</p>
-<p>It takes advantage of the <a class="reference external" href="https://zerothi.github.io/sisl/api/index.html#module-sisl" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl</span></code></a> class for building sparse Hamiltonian matrices,
-<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian</span></code></a></p>
-<p>It obtains the Hamiltonian for <code class="docutils literal notranslate"><span class="pre">ext_geom</span></code> (which must be a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> instance)
+<p>It takes advantage of the <a class="reference external" href="https://zerothi.github.io/sisl/api/index.html#module-sisl" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl</span></code></a> class for building sparse Hamiltonian matrices,
+<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.Hamiltonian</span></code></a></p>
+<p>It obtains the Hamiltonian for <code class="docutils literal notranslate"><span class="pre">ext_geom</span></code> (which must be a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> instance)
 with the parameters for first, second and third nearest neighbors (<code class="docutils literal notranslate"><span class="pre">t1</span></code>, <code class="docutils literal notranslate"><span class="pre">t2</span></code>, <code class="docutils literal notranslate"><span class="pre">t3</span></code>).</p>
 <p>One can also use a non-orthogonal basis of atomic orbitals by passing the parameters for the
 overlap matrix between first, second and third nearest neighbors (<code class="docutils literal notranslate"><span class="pre">s1</span></code>, <code class="docutils literal notranslate"><span class="pre">s2</span></code>, <code class="docutils literal notranslate"><span class="pre">s3</span></code>).</p>
 <p>The function will also take into account the possible presence of Boron or Nitrogen atoms,
 for which one would need to specify the on-site energy for those atoms (<code class="docutils literal notranslate"><span class="pre">eB</span></code> and <code class="docutils literal notranslate"><span class="pre">eN</span></code>)</p>
+<p>If no atoms are passed it will assign to each sp2 atom a <em class="xref py py-obj">pz</em> hydrogen-like orbital
+(i.e., <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.HydrogenicOrbital.html#sisl.HydrogenicOrbital" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.HydrogenicOrbital</span></code></a> with effective nuclear charge <em class="xref py py-obj">Zeff=3.2</em>).
+This can be modified by the user with the argument <code class="docutils literal notranslate"><span class="pre">atoms</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ext_geom</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1.dev1+gff3f170)"><em>sisl.Geometry</em></a>) – geometry of the sp2 carbon system</p></li>
-<li><p><strong>t1</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – 1NN hopping defaults to 2.7 eV</p></li>
-<li><p><strong>t2</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – 2NN hopping defaults to 0.2 eV</p></li>
-<li><p><strong>t3</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – 3NN hopping defaults to 0.18 eV</p></li>
-<li><p><strong>eB</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – on-site energy for Boron atoms</p></li>
-<li><p><strong>eN</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – on-site energy for Nitrogen atoms</p></li>
-<li><p><strong>s1</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 1NN, default to zero (orthogonal basis)</p></li>
-<li><p><strong>s2</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 2NN, default to zero</p></li>
-<li><p><strong>s3</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 3NN, default to zero</p></li>
-<li><p><strong>dq</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – additional atomic charge, defaults to zero</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Spin.html#sisl.physics.Spin" title="(in sisl v0.1.dev1+gff3f170)"><em>sisl.physics.Spin</em></a><em>, </em><em>optional</em>) – to define a polarized or unpolarized system pass <code class="docutils literal notranslate"><span class="pre">spin=polarized</span></code> or <code class="docutils literal notranslate"><span class="pre">spin=unpolarized</span></code>
-or the corresponding <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Spin.html#sisl.physics.Spin" title="(in sisl v0.1.dev1+gff3f170)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.Spin</span></code></a> object</p></li>
+<li><p><strong>ext_geom</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1-fb8a39f)"><em>sisl.Geometry</em></a>) – geometry of the sp2 carbon system</p></li>
+<li><p><strong>t1</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – 1NN hopping defaults to 2.7 eV</p></li>
+<li><p><strong>t2</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – 2NN hopping defaults to 0.2 eV</p></li>
+<li><p><strong>t3</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – 3NN hopping defaults to 0.18 eV</p></li>
+<li><p><strong>eB</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – on-site energy for Boron atoms</p></li>
+<li><p><strong>eN</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – on-site energy for Nitrogen atoms</p></li>
+<li><p><strong>s1</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 1NN, default to zero (orthogonal basis)</p></li>
+<li><p><strong>s2</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 2NN, default to zero</p></li>
+<li><p><strong>s3</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – overlap between 3NN, default to zero</p></li>
+<li><p><strong>dq</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – additional atomic charge, defaults to zero</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Spin.html#sisl.physics.Spin" title="(in sisl v0.1-fb8a39f)"><em>sisl.physics.Spin</em></a><em>, </em><em>optional</em>) – to define a polarized or unpolarized system pass <code class="docutils literal notranslate"><span class="pre">spin=polarized</span></code> or <code class="docutils literal notranslate"><span class="pre">spin=unpolarized</span></code>
+or the corresponding <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Spin.html#sisl.physics.Spin" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.Spin</span></code></a> object</p></li>
+<li><p><strong>atoms</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Atom.html#sisl.Atom" title="(in sisl v0.1-fb8a39f)"><em>sisl.Atom</em></a><em> or </em><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Atoms.html#sisl.Atoms" title="(in sisl v0.1-fb8a39f)"><em>sisl.Atoms</em></a><em>, </em><em>optional</em>) – Atoms for the geometry containing orbital information. It can be a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Atoms.html#sisl.Atoms" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Atoms</span></code></a> instance containing different <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Atom.html#sisl.Atom" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Atom</span></code></a> objects.
+In this case it should contain all atoms of the sp2 geometry (i.e. <em class="xref py py-obj">Z in [5,6,7]</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>H</strong> – tight-binding Hamiltonian for the sp2 structure</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl v0.1.dev1+gff3f170)">sisl.physics.Hamiltonian</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.Hamiltonian.html#sisl.physics.Hamiltonian" title="(in sisl v0.1-fb8a39f)">sisl.physics.Hamiltonian</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -254,51 +152,33 @@ or the corresponding <a class="reference external" href="https://zerothi.github.
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="hubbard.real_space_grid.html" class="btn btn-neutral float-right" title="real_space_grid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="hubbard.ncSileHubbard.html" class="btn btn-neutral float-left" title="ncSileHubbard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hubbard.ncSileHubbard.html" class="btn btn-neutral float-left" title="ncSileHubbard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hubbard.real_space_grid.html" class="btn btn-neutral float-right" title="real_space_grid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2018-2022, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen
-
-    </p>
+    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,3 +1,4 @@
+﻿
 .. automodule:: hubbard
    :no-members:
    :no-undoc-members:
