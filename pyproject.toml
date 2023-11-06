@@ -8,7 +8,7 @@
 # TODO update this together with setup.py
 requires = [
     "wheel",
-    "setuptools>=46.0",
+    "setuptools>=46",
     "setuptools_scm>=6.2",
 ]
 build-backend = "setuptools.build_meta"
@@ -49,12 +49,7 @@ classifiers = [
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3", # it is allowed on all Python 3 versions
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Utilities"
@@ -67,7 +62,8 @@ dynamic = ["version"]
 Homepage = "https://dipc-cc.github.io/hubbard/"
 Releases = "https://github.com/dipc-cc/hubbard/releases"
 Documentation = "https://dipc-cc.github.io/hubbard/"
-Repository = "https://github.com/dipc-cc/hubbard"
+Tracker = "https://github.com/dipc-cc/hubbard/issues"
+Source = "https://github.com/dipc-cc/hubbard"
 
 
 [tool.pytest.ini_options]
@@ -77,6 +73,10 @@ testpaths = [
 addopts = "-rXs --durations=20"
 
 
+[tool.setuptools.packages.find]
+include = ["hubbard*"]
+namespaces = false
+
 [tool.setuptools_scm]
 write_to = "hubbard/_version.py"
-fallback_version = "0.0.0.dev+$Format:%H$"
+fallback_version = "0.0.0.dev"
