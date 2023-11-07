@@ -29,7 +29,7 @@ def real_space_grid(geometry, lattice, vector, shape, mode='wavefunction', **kwa
     g = geometry.copy()
 
     # Set new lattice to create real-space grid
-    g.set_sc(lattice)
+    g.set_lattice(lattice)
 
     # Create the real-space grid
     grid = sisl.Grid(shape, lattice=lattice, geometry=g)
