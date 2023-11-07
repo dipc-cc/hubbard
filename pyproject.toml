@@ -9,7 +9,7 @@
 requires = [
     "wheel",
     "setuptools>=46",
-    "setuptools_scm>=6.2",
+    "setuptools_scm[toml]>=6.2",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -81,5 +81,5 @@ namespaces = false
 hubbard = ["EQCONTOUR"]
 
 [tool.setuptools_scm]
-write_to = "hubbard/_version.py"
+version_file = "hubbard/_version.py"
 fallback_version = "0.0.0.dev"
