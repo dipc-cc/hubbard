@@ -17,16 +17,16 @@ class BondOrder(GeometryPlot):
         Mean-field Hubbard Hamiltonian
     """
 
-    def __init__(self, HH, selection=None, **kwargs):
+    def __init__(self, HH, selection=None, collection='sp2', **kwargs):
 
         if 'cmap' not in kwargs:
             kwargs['cmap'] = plt.cm.bwr
 
         if selection is None:
-            super().__init__(HH.geometry, **kwargs)
+            super().__init__(HH.geometry, collection=collection, **kwargs)
         else:
             print("doing sub")
-            super().__init__(HH.geometry.sub(selection), **kwargs)
+            super().__init__(HH.geometry.sub(selection), collection=collection, **kwargs)
 
         bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)
 

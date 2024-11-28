@@ -31,7 +31,7 @@ class Charge(GeometryPlot):
 
     """
 
-    def __init__(self, HH, ext_geom=None, spin=[0, 1], realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, collection='sp2', bdx=2, spin=[0, 1], realspace=False, **kwargs):
         # Set default kwargs
         if realspace:
             if 'facecolor' not in kwargs:
@@ -46,7 +46,7 @@ class Charge(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow+Q_\downarrow$ ($e$)'
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, collection=collection, bdx=bdx, **kwargs)
 
         # Compute total charge on each site
         if not isinstance(spin, list):
@@ -107,7 +107,7 @@ class ChargeDifference(GeometryPlot):
         If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
-    def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, collection='sp2', bdx=2, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -123,7 +123,7 @@ class ChargeDifference(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow+Q_\downarrow-Q_\mathrm{NA}$ ($e$)'
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, collection=collection, bdx=bdx, **kwargs)
 
         # Compute total charge on each site, subtract neutral atom charge
         chg = np.zeros((HH.geometry.na))
@@ -186,7 +186,7 @@ class SpinPolarization(GeometryPlot):
         If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
-    def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
+    def __init__(self, HH, ext_geom=None, collection='sp2', bdx=2, realspace=False, **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -202,7 +202,7 @@ class SpinPolarization(GeometryPlot):
             if 'label' not in kwargs:
                 kwargs['label']=r'$Q_\uparrow-Q_\downarrow$ ($e$)'
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom,  collection=collection, bdx=bdx, **kwargs)
 
         # Sum over all orbitals
         chg = np.zeros((HH.geometry.na))
