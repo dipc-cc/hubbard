@@ -40,12 +40,12 @@ def calc_n(H, q):
 
     # Solve eigenvalue problems
     def calc_occ(k, weight, spin):
-        n = np.empty_like(ni)
+        n = np.empty_like(ni[spin])
         es = H.eigenstate(k, spin=spin)
 
         # Reduce to occupied stuff
         occ = es.occupation(dist[spin]) * weight
-        n = einsum('i,ij->j', occ, es.norm2(False).real)
+        n = einsum('i,ij->j', occ, es.norm2(projection="atoms").real)
 
         Etot = es.eig.dot(occ)
 
