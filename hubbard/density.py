@@ -44,7 +44,7 @@ def calc_n(H, q):
 
         # Reduce to occupied stuff
         occ = es.occupation(dist[spin]) * weight
-        n = einsum('i,ij->j', occ, es.norm2(False).real)
+        n = einsum('i,ij->j', occ, es.norm2(projection='orbitals').real)
 
         Etot = es.eig.dot(occ)
 
