@@ -40,7 +40,6 @@ def calc_n(H, q):
 
     # Solve eigenvalue problems
     def calc_occ(k, weight, spin):
-        n = np.empty_like(ni)
         es = H.eigenstate(k, spin=spin)
 
         # Reduce to occupied stuff
@@ -73,7 +72,6 @@ def calc_n_insulator(H, q):
 
     # Solve eigenvalue problems
     def calc_occ(k, weight, spin):
-        n = np.empty_like(ni)
         es = H.eigenstate(k, spin=spin)
 
         n = einsum('ij,ij->j', conj(es.state[idx[spin]]), es.state[idx[spin]]).real * weight
