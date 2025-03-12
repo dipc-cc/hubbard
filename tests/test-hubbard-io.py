@@ -4,7 +4,7 @@ import numpy as np
 
 # Build sisl Geometry object only for a subset of atoms
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry().sub([2,3,5])
-molecule.sc.set_nsc([1, 1, 1])
+molecule.set_nsc([1, 1, 1])
 
 # Build HubbardHamiltonian object
 Hsp2 = sp2(molecule)

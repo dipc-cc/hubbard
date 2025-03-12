@@ -1,5 +1,5 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-[![DOI for citation](https://zenodo.org/badge/DOI/10.5281/zenodo.4748765.svg)](http://dx.doi.org/10.5281/zenodo.4748765)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10058802.svg)](https://doi.org/10.5281/zenodo.10058802)
 
 # hubbard #
 
@@ -14,10 +14,11 @@ Before installation of __hubbard__ the following packages are required
    - python >= 3.6
    - numpy >= 1.13
    - scipy >= 0.18
-   - netCDF4 >= 1.3.1
    - matplotlib >= 2.2.2
    - [sisl][sisl] >= 0.12.1
 
+Optional dependencies:
+   - [netCDF4][netcdf] >= 1.3.1
 
 ## Installation ##
 Manual installation is performed with the command
@@ -50,3 +51,4 @@ Links to external and internal sites.
 [sisl]: https://github.com/zerothi/sisl
 [spring]: https://www.springfetopen.eu/
 [doc]: https://dipc-cc.github.io/hubbard/docs/latest/index.html
+[netcdf]: https://github.com/Unidata/netcdf4-python

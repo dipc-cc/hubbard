@@ -7,7 +7,7 @@ import sisl
 
 # Build sisl Geometry object
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-molecule.sc.set_nsc([1, 1, 1])
+molecule.set_nsc([1, 1, 1])
 molecule = molecule.move(-molecule.center(what='xyz')).rotate(220, [0, 0, 1])
 H_mol = sp2(molecule)
 

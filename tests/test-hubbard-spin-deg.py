@@ -8,7 +8,7 @@ This test obtaines the closed-shell solution for U=2 eV for both a spin-polarize
 
 # Build sisl Geometry object
 molecule = sisl.get_sile('mol-ref/mol-ref.XV').read_geometry()
-molecule.sc.set_nsc([1, 1, 1])
+molecule.set_nsc([1, 1, 1])
 
 Hsp2 = sp2(molecule)
 

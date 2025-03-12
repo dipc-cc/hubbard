@@ -16,3 +16,4 @@ Hubbard/info.py
 *CLOCK
 *.fdb_latexmk
 *.fls
+*ipynb_checkpoints
