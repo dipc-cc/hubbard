@@ -23,7 +23,7 @@ requires-python = ">=3.6"
 # This ensures that hubbard should not worry about
 # dependencies
 dependencies = [
-    "sisl>=0.12.1",
+    "sisl>=0.15.0",
     "matplotlib>=2.2.2"
 ]
 
