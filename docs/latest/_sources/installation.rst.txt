@@ -12,17 +12,20 @@ Required dependencies
 
    * SciPy_ 0.18 or newer
 
-   * sisl_ 0.12.1 or newer
+   * sisl_ 0.15.0 or newer
+
+   * Matplotlib_ 2.2.2 or newer (plotting)	
 
 Optional:
 
-   * Matplotlib_ 2.0.0 or newer (plotting)
+   * netCDF4_ 1.3.1 or newer
 
 .. _Python: https://www.python.org/
 .. _NumPy: https://docs.scipy.org/doc/numpy/reference/
 .. _SciPy: https://docs.scipy.org/doc/scipy/reference/
 .. _sisl : https://zerothi.github.io/sisl
 .. _Matplotlib: https://matplotlib.org/
+.. _netCDF4: https://github.com/Unidata/netcdf4-python
 
 
 Installation from source

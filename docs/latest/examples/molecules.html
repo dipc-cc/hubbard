@@ -1,23 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Isolated structures (molecules) &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,9 +38,6 @@
           <a href="../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -106,27 +105,27 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sisl</span>
-<span class="kn">from</span> <span class="nn">hubbard</span> <span class="kn">import</span> <span class="n">HubbardHamiltonian</span><span class="p">,</span> <span class="n">sp2</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">plot</span>
-<span class="o">%</span><span class="k">matplotlib</span> inline
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sisl
+from hubbard import HubbardHamiltonian, sp2, density, plot
+%matplotlib inline
 </pre></div>
 </div>
 </div>
-<div class="section" id="Isolated-structures-(molecules)">
-<h1>Isolated structures (molecules)<a class="headerlink" href="#Isolated-structures-(molecules)" title="Permalink to this headline"></a></h1>
+<section id="Isolated-structures-(molecules)">
+<h1>Isolated structures (molecules)<a class="headerlink" href="#Isolated-structures-(molecules)" title="Link to this heading"></a></h1>
 <p>In this example we study the effect of on-site Coulomb interactions for electrons in a carbon-based molecular geometry by solving the mean-field Hubbard equation</p>
 <p>We will start by building the geometry and the TB Hamiltonian for an sp2 carbon-based structure using <code class="docutils literal notranslate"><span class="pre">sisl</span></code>. The geometry will be read with <code class="docutils literal notranslate"><span class="pre">sisl</span></code> from this <a class="reference external" href="https://github.com/dipc-cc/hubbard/blob/master/examples/molecules/clar-goblet/clar-goblet.xyz">file</a>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build sisl.Geometry object</span>
-<span class="n">geom</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_sile</span><span class="p">(</span><span class="s1">&#39;../../examples/molecules/clar-goblet/clar-goblet.xyz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_geometry</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Build sisl.Geometry object
+geom = sisl.get_sile(&#39;../../examples/molecules/clar-goblet/clar-goblet.xyz&#39;).read_geometry()
 
-<span class="c1"># Plot geometry: Carbon atoms in gray, Hydrogen atoms in white</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">GeometryPlot</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">)</span>
-<span class="c1"># This is just to plot Hydrogen atoms in white</span>
-<span class="n">p</span><span class="o">.</span><span class="n">paux</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+# Plot geometry: Carbon atoms in gray, Hydrogen atoms in white
+p = plot.GeometryPlot(geom, cmap=&#39;Greys&#39;)
+# This is just to plot Hydrogen atoms in white
+p.paux.set_clim(0, 0)
 </pre></div>
 </div>
 </div>
@@ -142,8 +141,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build sisl.Hamiltonian object using the sp2 function</span>
-<span class="n">H0</span> <span class="o">=</span> <span class="n">sp2</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="s1">&#39;polarized&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Build sisl.Hamiltonian object using the sp2 function
+H0 = sp2(geom, t1=2.7, t2=0., t3=0., spin=&#39;polarized&#39;)
 </pre></div>
 </div>
 </div>
@@ -152,21 +151,21 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the HubbardHamiltonian object with U=3.5.</span>
-<span class="c1"># One can set the total number of up/down spin electrons by passing q=(q_up, q_dn). In this case, since there</span>
-<span class="c1"># is an even total number of electrons we can start with q=(ntot/2, ntot/2).</span>
-<span class="n">HH</span> <span class="o">=</span> <span class="n">HubbardHamiltonian</span><span class="p">(</span><span class="n">H0</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H0</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">H0</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">U</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Build the HubbardHamiltonian object with U=3.5.
+# One can set the total number of up/down spin electrons by passing q=(q_up, q_dn). In this case, since there
+# is an even total number of electrons we can start with q=(ntot/2, ntot/2).
+HH = HubbardHamiltonian(H0, q=(len(H0)/2, len(H0)/2), U=3.5, kT=0.025)
 </pre></div>
 </div>
 </div>
-<div class="section" id="Important-note-before-starting-the-convergence-process">
-<h2>Important note before starting the convergence process<a class="headerlink" href="#Important-note-before-starting-the-convergence-process" title="Permalink to this headline"></a></h2>
+<section id="Important-note-before-starting-the-convergence-process">
+<h2>Important note before starting the convergence process<a class="headerlink" href="#Important-note-before-starting-the-convergence-process" title="Link to this heading"></a></h2>
 <p>It is important to give an initial spin-density that breaks the symmetry between the up- and down- spin channels to start the convergence of the <code class="docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code> object. Otherwise the code <em>will not be able to find a solution</em>. Furthermore, the closer the initial spin-densities are to the self-consistent solution, the faster the code will find it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HH</span><span class="o">.</span><span class="n">set_polarization</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="n">dn</span><span class="o">=</span><span class="p">[</span><span class="mi">24</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">32</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>HH.set_polarization([2,6,10], dn=[24,28,32])
 </pre></div>
 </div>
 </div>
@@ -176,8 +175,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Converge until a tolerance of tol=1e-10</span>
-<span class="n">dn</span> <span class="o">=</span> <span class="n">HH</span><span class="o">.</span><span class="n">converge</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">calc_n</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Converge until a tolerance of tol=1e-10
+dn = HH.converge(density.calc_n, tol=1e-10, print_info=True, steps=1)
 </pre></div>
 </div>
 </div>
@@ -206,19 +205,19 @@
    found solution in 16 iterations
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Understanding-the-final-results">
-<h2>Understanding the final results<a class="headerlink" href="#Understanding-the-final-results" title="Permalink to this headline"></a></h2>
+</section>
+<section id="Understanding-the-final-results">
+<h2>Understanding the final results<a class="headerlink" href="#Understanding-the-final-results" title="Link to this heading"></a></h2>
 <p>Now one can visualize some meaningful physical quantities and properties of the solution, e.g. such as the spin polarization. Other interesting electronic properties can be visualized using the <code class="docutils literal notranslate"><span class="pre">hubbard.plot</span></code> module.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let&#39;s visualize some relevant physical quantities of the final result (this process may take a few seconds)</span>
-<span class="c1"># By passing the argument ext_geom one can plot the spin polarization using the full geometry for the sp2 system</span>
-<span class="c1"># e.g. including Hydrogen atoms. Otherwise it only displays the pi-network structure</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">SpinPolarization</span><span class="p">(</span><span class="n">HH</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">geom</span><span class="p">)</span>
-<span class="n">p</span><span class="o">.</span><span class="n">annotate</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Let&#39;s visualize some relevant physical quantities of the final result (this process may take a few seconds)
+# By passing the argument ext_geom one can plot the spin polarization using the full geometry for the sp2 system
+# e.g. including Hydrogen atoms. Otherwise it only displays the pi-network structure
+p = plot.SpinPolarization(HH, colorbar=True, vmax=0.4, vmin=-0.4, ext_geom=geom)
+p.annotate()
 </pre></div>
 </div>
 </div>
@@ -233,8 +232,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print total energy</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total energy = </span><span class="si">{</span><span class="n">HH</span><span class="o">.</span><span class="n">Etot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Print total energy
+print(f&quot;Total energy = {HH.Etot}&quot;)
 </pre></div>
 </div>
 </div>
@@ -246,24 +245,24 @@
 Total energy = -246.59819622643164
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Using-output-of-the-mean-field-Hubbard-model-to-start-SIESTA-calculation">
-<h2>Using output of the mean-field Hubbard model to start SIESTA calculation<a class="headerlink" href="#Using-output-of-the-mean-field-Hubbard-model-to-start-SIESTA-calculation" title="Permalink to this headline"></a></h2>
+</section>
+<section id="Using-output-of-the-mean-field-Hubbard-model-to-start-SIESTA-calculation">
+<h2>Using output of the mean-field Hubbard model to start SIESTA calculation<a class="headerlink" href="#Using-output-of-the-mean-field-Hubbard-model-to-start-SIESTA-calculation" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">hubbard</span></code> package can be used to give a starting spin-density distribution for a more accurate spin polarized SIESTA calculation, by writing the spin densities to a <code class="docutils literal notranslate"><span class="pre">fdf-block</span></code>:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write the self-consistent solution of the mean-field Hubbard calculation</span>
-<span class="c1"># to an input file for a SIESTA calculation.</span>
-<span class="c1"># ext_geom is the full sp2 geometry,  e.g. that includes the Hydrogen atoms.</span>
-<span class="c1"># Otherwise it uses only the pi-network backbone structure stored in the H0 Hamiltonian</span>
-<span class="n">HH</span><span class="o">.</span><span class="n">write_initspin</span><span class="p">(</span><span class="s1">&#39;init-spin.fdf&#39;</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="n">geom</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Write the self-consistent solution of the mean-field Hubbard calculation
+# to an input file for a SIESTA calculation.
+# ext_geom is the full sp2 geometry,  e.g. that includes the Hydrogen atoms.
+# Otherwise it uses only the pi-network backbone structure stored in the H0 Hamiltonian
+HH.write_initspin(&#39;init-spin.fdf&#39;, ext_geom=geom)
 </pre></div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -276,7 +275,7 @@ Total energy = -246.59819622643164
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

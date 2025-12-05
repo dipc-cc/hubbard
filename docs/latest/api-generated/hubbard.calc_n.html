@@ -1,22 +1,24 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>calc_n &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,9 +37,6 @@
           <a href="../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -107,11 +106,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="calc-n">
-<h1>calc_n<a class="headerlink" href="#calc-n" title="Permalink to this headline"></a></h1>
+  <section id="calc-n">
+<h1>calc_n<a class="headerlink" href="#calc-n" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="hubbard.calc_n">
-<span class="sig-prename descclassname"><span class="pre">hubbard.</span></span><span class="sig-name descname"><span class="pre">calc_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/density.html#calc_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.calc_n" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">hubbard.</span></span><span class="sig-name descname"><span class="pre">calc_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/density.html#calc_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.calc_n" title="Link to this definition"></a></dt>
 <dd><p>General method to obtain the spin densities for periodic or finite systems at a given temperature</p>
 <p>It obtains the spin densities from the direct diagonalization of the Hamiltonian (<code class="docutils literal notranslate"><span class="pre">H.H</span></code>) taking into account
 a possible overlap matrix (<code class="docutils literal notranslate"><span class="pre">H.H.S</span></code>):</p>
@@ -120,7 +119,7 @@ a possible overlap matrix (<code class="docutils literal notranslate"><span clas
 <p>Where <span class="math notranslate nohighlight">\(f_{\alpha\sigma}\)</span> is the weight of eigenstate <span class="math notranslate nohighlight">\(\alpha\)</span> for spin <span class="math notranslate nohighlight">\(\sigma\)</span> at temperature <code class="docutils literal notranslate"><span class="pre">kT</span></code> (Fermi-Dirac distribution),
 <span class="math notranslate nohighlight">\(c^{\alpha}_{i\sigma}\)</span> are coefficients for eigenstate <span class="math notranslate nohighlight">\(\alpha\)</span> with spin <span class="math notranslate nohighlight">\(\sigma\)</span> represented in the basis of atomic orbitals</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>HubbardHamiltonian</em></a>) – <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object of the system to obtain the spin-densities from</p></li>
 <li><p><strong>q</strong> (<em>array_like</em>) – charge resolved in spin channels (first index for up-electrons and second index for down-electrons)</p></li>
@@ -130,13 +129,13 @@ a possible overlap matrix (<code class="docutils literal notranslate"><span clas
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.electron.EigenstateElectron.html#sisl.physics.electron.EigenstateElectron.norm2" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron.norm2</span></code></a></dt><dd><p>sisl routine to obtain the dot product of the eigenstates with the overlap matrix</p>
+<dt><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.physics.electron.EigenstateElectron.html#sisl.physics.electron.EigenstateElectron.norm2" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.physics.electron.EigenstateElectron.norm2</span></code></a></dt><dd><p>sisl routine to obtain the dot product of the eigenstates with the overlap matrix</p>
 </dd>
 </dl>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
@@ -149,7 +148,7 @@ a possible overlap matrix (<code class="docutils literal notranslate"><span clas
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

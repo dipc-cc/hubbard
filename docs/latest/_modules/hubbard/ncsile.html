@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.ncsile &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -87,20 +85,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for hubbard.ncsile</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sisl</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ncSileHubbard&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ncSileHubbard"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard">[docs]</a><span class="k">class</span> <span class="nc">ncSileHubbard</span><span class="p">(</span><span class="n">sisl</span><span class="o">.</span><span class="n">SileCDF</span><span class="p">):</span>
+<div class="viewcode-block" id="ncSileHubbard">
+<a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ncSileHubbard</span><span class="p">(</span><span class="n">sisl</span><span class="o">.</span><span class="n">SileCDF</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Read and write `hubbard.HubbardHamiltonian` object in binary files (netCDF4 support)</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    sisl.io.SileCDF : sisl class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="ncSileHubbard.read_U"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_U">[docs]</a>    <span class="k">def</span> <span class="nf">read_U</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="ncSileHubbard.read_U">
+<a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_U">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_U</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Read Coulomb repulsion U parameter from netcdf file</span>
 
 <span class="sd">        Parameters</span>
@@ -142,7 +144,10 @@
                         <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:])</span>
         <span class="k">return</span> <span class="n">U</span></div>
 
-<div class="viewcode-block" id="ncSileHubbard.read_kT"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_kT">[docs]</a>    <span class="k">def</span> <span class="nf">read_kT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ncSileHubbard.read_kT">
+<a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_kT">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_kT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Read temperature from netcdf file</span>
 
 <span class="sd">        Parameters</span>
@@ -185,7 +190,10 @@
                         <span class="n">kT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;kT&#39;</span><span class="p">][:])</span>
         <span class="k">return</span> <span class="n">kT</span></div>
 
-<div class="viewcode-block" id="ncSileHubbard.read_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_density">[docs]</a>    <span class="k">def</span> <span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ncSileHubbard.read_density">
+<a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.read_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Read density from netcdf file</span>
 
 <span class="sd">        Parameters</span>
@@ -228,7 +236,10 @@
                         <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">][:])</span>
         <span class="k">return</span> <span class="n">n</span></div>
 
-<div class="viewcode-block" id="ncSileHubbard.write_density"><a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.write_density">[docs]</a>    <span class="k">def</span> <span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ncSileHubbard.write_density">
+<a class="viewcode-back" href="../../api-generated/hubbard.ncSileHubbard.html#hubbard.ncSileHubbard.write_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">kT</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create group</span>
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_grp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
@@ -260,7 +271,9 @@
 
             <span class="n">v4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crt_var</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;Uij&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;norb&#39;</span><span class="p">,</span> <span class="s1">&#39;norb&#39;</span><span class="p">))</span>
             <span class="n">v4</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;Off diagonal Coulomb repulsion elements in&#39;</span> <span class="o">+</span> <span class="n">units</span>
-            <span class="n">v4</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">Uij</span></div></div>
+            <span class="n">v4</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">Uij</span></div>
+</div>
+
 
 <span class="n">sisl</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">add_sile</span><span class="p">(</span><span class="s2">&quot;HU.nc&quot;</span><span class="p">,</span> <span class="n">ncSileHubbard</span><span class="p">,</span> <span class="n">gzip</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -272,7 +285,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

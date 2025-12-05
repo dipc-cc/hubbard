@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.grid &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -87,11 +85,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for hubbard.grid</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sisl</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
 
 
-<div class="viewcode-block" id="real_space_grid"><a class="viewcode-back" href="../../api-generated/hubbard.real_space_grid.html#hubbard.real_space_grid">[docs]</a><span class="k">def</span> <span class="nf">real_space_grid</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wavefunction&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="real_space_grid">
+<a class="viewcode-back" href="../../api-generated/hubbard.real_space_grid.html#hubbard.real_space_grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">real_space_grid</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">lattice</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wavefunction&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Create real space `sisl.Grid` object for a `sisl.Geometry` and a `sisl.Supercell`</span>
 
 <span class="sd">    Parameters</span>
@@ -103,8 +103,8 @@
 <span class="sd">    shape: float or (3,) of int</span>
 <span class="sd">        the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size</span>
 <span class="sd">        (see `sisl.Grid`)</span>
-<span class="sd">    sc : sisl.SuperCell</span>
-<span class="sd">        supercell object of the grid</span>
+<span class="sd">    lattice : sisl.Lattice</span>
+<span class="sd">        lattice object of the grid</span>
 <span class="sd">    mode: str, optional</span>
 <span class="sd">        to build the grid from sisl.electron.wavefunction object (``mode=&#39;wavefunction&#39;``)</span>
 <span class="sd">        or from the sisl.physics.DensityMatrix (``mode=&#39;charge&#39;``), e.g. for charge-related plots</span>
@@ -117,11 +117,11 @@
     <span class="c1"># Create a temporary copy of the geometry</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="c1"># Set new sc to create real-space grid</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">set_sc</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+    <span class="c1"># Set new lattice to create real-space grid</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">set_lattice</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
 
     <span class="c1"># Create the real-space grid</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">sc</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;wavefunction&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">EigenstateElectron</span><span class="p">):</span>
@@ -141,6 +141,7 @@
 
     <span class="k">del</span> <span class="n">g</span>
     <span class="k">return</span> <span class="n">grid</span></div>
+
 </pre></div>
 
            </div>
@@ -150,7 +151,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

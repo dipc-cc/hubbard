@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.hamiltonian &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -87,19 +85,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for hubbard.hamiltonian</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sisl</span>
-<span class="kn">import</span> <span class="nn">hubbard.ncsile</span> <span class="k">as</span> <span class="nn">nc</span>
-<span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hubbard.ncsile</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="n">_pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HubbardHamiltonian&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="HubbardHamiltonian"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian">[docs]</a><span class="k">class</span> <span class="nc">HubbardHamiltonian</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HubbardHamiltonian">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HubbardHamiltonian</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</span>
 
 <span class="sd">    The `hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian</span>
@@ -136,7 +136,7 @@
 <span class="sd">    The implementation to solve the extended Hubbard model (with inter-atomic interactions) has not been tested</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TBHam</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TBHam</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize HubbardHamiltonian &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span> <span class="c1"># Label to know the used units</span>
@@ -219,11 +219,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; The shape of the Hamiltonian matrix &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span>
 
-<div class="viewcode-block" id="HubbardHamiltonian.set_kmesh"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_kmesh">[docs]</a>    <span class="k">def</span> <span class="nf">set_kmesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
+<div class="viewcode-block" id="HubbardHamiltonian.set_kmesh">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_kmesh">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_kmesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Set the k-mesh for the HubbardHamiltonian</span>
 
 <span class="sd">        Parameters</span>
@@ -238,13 +240,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;.set_kmesh(...) requires an array_like input&#39;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Representation of the model &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">q: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s1">, U: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, kT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, Uij: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> &#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">}&#39;</span>
 
-<div class="viewcode-block" id="HubbardHamiltonian.eigh"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigh">[docs]</a>    <span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="HubbardHamiltonian.eigh">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigh">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Diagonalize Hamiltonian using the ``eigh`` routine</span>
 
 <span class="sd">        Parameters</span>
@@ -267,7 +272,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="n">eigvals_only</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.eigenstate"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigenstate">[docs]</a>    <span class="k">def</span> <span class="nf">eigenstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.eigenstate">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigenstate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Solve the eigenvalue problem at `k` and return it as a `sisl.physics.electron.EigenstateElectron` object containing all eigenstates</span>
 
 <span class="sd">        Parameters</span>
@@ -283,7 +291,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.tile"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.tile">[docs]</a>    <span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.tile">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.tile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Tile the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
 
 <span class="sd">        Parameters</span>
@@ -311,7 +322,10 @@
         <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Htile</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">ntile</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.repeat"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.repeat">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.repeat">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
 
 <span class="sd">        Parameters</span>
@@ -339,7 +353,10 @@
         <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hrep</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nrep</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.remove"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.remove">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.remove">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`</span>
 
 <span class="sd">        Parameters</span>
@@ -355,7 +372,7 @@
 <span class="sd">        sisl.Geometry.remove</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">sc2uc</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">sisl._array</span> <span class="k">as</span> <span class="nn">_a</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sisl._array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_a</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">_a</span><span class="o">.</span><span class="n">arangei</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">),</span> <span class="n">atoms</span><span class="p">)</span>
         <span class="n">Hsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
         <span class="n">nsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span><span class="n">atoms</span><span class="p">]</span>
@@ -365,7 +382,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hsub</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="n">Uij</span><span class="p">,</span>
                     <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.sub"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.sub">[docs]</a>    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.sub">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.sub">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a new `HubbardHamiltonian` object of a subset of selected atoms</span>
 
 <span class="sd">        Parameters</span>
@@ -387,12 +407,18 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="n">n</span><span class="o">=</span><span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="n">Uij</span><span class="p">,</span>
                     <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.copy"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.copy">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a copy of the `HubbardHamiltonian` object &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span>
                     <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.update_hamiltonian"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.update_hamiltonian">[docs]</a>    <span class="k">def</span> <span class="nf">update_hamiltonian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.update_hamiltonian">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.update_hamiltonian">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hamiltonian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Update spin Hamiltonian according to the extended Hubbard model,</span>
 <span class="sd">        see for instance `PRL 106, 236805 (2011) &lt;https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805&gt;`_</span>
 <span class="sd">        It updates the diagonal elements for each spin Hamiltonian following the mean field approximation:</span>
@@ -425,16 +451,25 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)]</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">T</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.random_density"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.random_density">[docs]</a>    <span class="k">def</span> <span class="nf">random_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.random_density">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.random_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize spin polarization  with random density &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.normalize_charge"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.normalize_charge">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.normalize_charge">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.normalize_charge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Ensure the total up/down charge in pi-network equals Nup/Ndn &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.set_polarization"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_polarization">[docs]</a>    <span class="k">def</span> <span class="nf">set_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">up</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="nb">tuple</span><span class="p">()):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.set_polarization">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_polarization">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">up</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="nb">tuple</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Maximize spin polarization on specific atomic sites</span>
 <span class="sd">        Optionally, sites with down-polarization can be specified</span>
 
@@ -450,7 +485,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">dn</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.polarize_sublattices"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.polarize_sublattices">[docs]</a>    <span class="k">def</span> <span class="nf">polarize_sublattices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.polarize_sublattices">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.polarize_sublattices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">polarize_sublattices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Quick way to polarize the lattices</span>
 <span class="sd">        without checking that consequtive atoms actually belong to</span>
 <span class="sd">        different sublattices &quot;&quot;&quot;</span>
@@ -459,7 +497,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.find_midgap"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.find_midgap">[docs]</a>    <span class="k">def</span> <span class="nf">find_midgap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.find_midgap">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.find_midgap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_midgap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Find the midgap for the system</span>
 <span class="sd">        taking into account the up and dn different spectrums</span>
 
@@ -480,7 +521,10 @@
         <span class="n">midgap</span> <span class="o">=</span> <span class="p">(</span><span class="n">HOMO</span> <span class="o">+</span> <span class="n">LUMO</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
         <span class="k">return</span> <span class="n">midgap</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.fermi_level"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.fermi_level">[docs]</a>    <span class="k">def</span> <span class="nf">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.fermi_level">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.fermi_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Find the fermi level for a certain charge `q` at a certain `kT`</span>
 
 <span class="sd">        Parameters</span>
@@ -511,7 +555,10 @@
         <span class="n">Ef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">Q</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Ef</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.shift"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.shift">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.shift">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Shift the electronic structure by a constant energy (in-place operation)</span>
 
 <span class="sd">        Parameters</span>
@@ -525,10 +572,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">E</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.get_hash"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_hash">[docs]</a>    <span class="k">def</span> <span class="nf">get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.get_hash">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_hash">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">])</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">])</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash_base</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">7</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.read_density"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.read_density">[docs]</a>    <span class="k">def</span> <span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.read_density">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.read_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Read density from binary file</span>
 
 <span class="sd">        Parameters</span>
@@ -552,7 +605,10 @@
             <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_hamiltonian</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.write_density"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_density">[docs]</a>    <span class="k">def</span> <span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.write_density">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Write density in a binary file</span>
 
 <span class="sd">        Parameters</span>
@@ -569,7 +625,10 @@
         <span class="n">fh</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">ncSileHubbard</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">write_density</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.write_initspin"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_initspin">[docs]</a>    <span class="k">def</span> <span class="nf">write_initspin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spinfix</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.write_initspin">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_initspin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_initspin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spinfix</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Write spin polarization to SIESTA fdf-block</span>
 <span class="sd">        This function only makes sense for spin-polarized calculations</span>
 
@@ -612,7 +671,10 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%e</span><span class="s1">ndblock DM.InitSpin</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.iterate"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.iterate">[docs]</a>    <span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.iterate">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.iterate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation</span>
 
 <span class="sd">        The only thing that may change is the way in which the spin-densities (``n``) and total energy (``Etot``) are obtained</span>
@@ -669,7 +731,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">Etot</span> <span class="o">-=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span> <span class="o">@</span> <span class="p">(</span><span class="n">ni</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ni</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="p">(</span><span class="n">ni</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">ni</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">dn</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.converge"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.converge">[docs]</a>    <span class="k">def</span> <span class="nf">converge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">func_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.converge">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.converge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">converge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">func_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Iterate Hamiltonian towards a specified tolerance criterion</span>
 
 <span class="sd">        This method calls `iterate` as many times as it needs until it reaches the specified tolerance</span>
@@ -731,7 +796,10 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;   found solution in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dn</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.calc_orbital_charge_overlaps"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps">[docs]</a>    <span class="k">def</span> <span class="nf">calc_orbital_charge_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.calc_orbital_charge_overlaps">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_orbital_charge_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Obtain orbital (eigenstate) charge overlaps as :math:`\int dr |\psi_{\sigma\alpha}|^{4}`</span>
 
 <span class="sd">        Where :math:`\sigma` is the spin index and :math:`\alpha` is the eigenstate index</span>
@@ -755,7 +823,10 @@
         <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ia,ia,ib,ib-&gt;ab&#39;</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
         <span class="k">return</span> <span class="n">ev</span><span class="p">,</span> <span class="n">L</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.get_Zak_phase"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_Zak_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_Zak_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">nk</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.get_Zak_phase">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_Zak_phase">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Zak_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">nk</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the intercell Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`</span>
 
 <span class="sd">        Parameters</span>
@@ -783,7 +854,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span><span class="p">:</span>
             <span class="c1"># Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)</span>
-            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
                 <span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
                 <span class="n">f</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">N</span>
                 <span class="k">return</span> <span class="n">f</span>
@@ -793,7 +864,10 @@
             <span class="n">sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="k">return</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">berry_phase</span><span class="p">(</span><span class="n">bz</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="n">eigvals</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.get_bond_order"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_bond_order">[docs]</a>    <span class="k">def</span> <span class="nf">get_bond_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">,</span> <span class="n">midgap</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.get_bond_order">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_bond_order">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bond_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">,</span> <span class="n">midgap</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute Huckel bond order</span>
 
 <span class="sd">        Parameters</span>
@@ -838,7 +912,10 @@
             <span class="n">BO</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="mf">1.</span>
         <span class="k">return</span> <span class="n">BO</span><span class="o">.</span><span class="n">Hk</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span> <span class="c1"># Fold to Gamma</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.spin_contamination"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.spin_contamination">[docs]</a>    <span class="k">def</span> <span class="nf">spin_contamination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.spin_contamination">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.spin_contamination">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spin_contamination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Obtains the spin contamination for the MFH Hamiltonian following</span>
 <span class="sd">        `Ref. Chemical Physics Letters. 183 (5): 423–431 &lt;https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub&gt;`_.</span>
 
@@ -897,7 +974,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">S_MFH</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.DOS"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.DOS">[docs]</a>    <span class="k">def</span> <span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.DOS">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.DOS">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Obtains the density of states (DOS) of the system with a distribution function</span>
 
 <span class="sd">        Parameters</span>
@@ -942,7 +1022,10 @@
             <span class="n">dos</span> <span class="o">+=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">DOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">eig</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dos</span></div>
 
-<div class="viewcode-block" id="HubbardHamiltonian.PDOS"><a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.PDOS">[docs]</a>    <span class="k">def</span> <span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HubbardHamiltonian.PDOS">
+<a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.PDOS">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Obtains the projected density of states (PDOS) of the system with a distribution function</span>
 
 <span class="sd">        Parameters</span>
@@ -986,7 +1069,9 @@
             <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
             <span class="n">pdos</span> <span class="o">+=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">PDOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">pdos</span></div></div>
+        <span class="k">return</span> <span class="n">pdos</span></div>
+</div>
+
 </pre></div>
 
            </div>
@@ -996,7 +1081,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

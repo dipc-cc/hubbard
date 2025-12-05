@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.negf &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,9 +32,6 @@
           <a href="../../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -87,20 +85,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for hubbard.negf</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">einsum</span><span class="p">,</span> <span class="n">conj</span>
-<span class="kn">import</span> <span class="nn">sisl</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">inv</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">einsum</span><span class="p">,</span> <span class="n">conj</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">inv</span>
 
 <span class="n">_pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NEGF&#39;</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_G</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_G</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate Green function</span>
 
 <span class="sd">    Parameters</span>
@@ -123,7 +121,7 @@
     <span class="k">return</span> <span class="n">inv</span><span class="p">(</span><span class="n">inv_GF</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_nested_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_nested_list</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
@@ -132,7 +130,9 @@
     <span class="k">return</span> <span class="n">l</span>
 
 
-<div class="viewcode-block" id="NEGF"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF">[docs]</a><span class="k">class</span> <span class="nc">NEGF</span><span class="p">:</span>
+<div class="viewcode-block" id="NEGF">
+<a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NEGF</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; This class creates the open quantum system object for a N-terminal device</span>
 
 <span class="sd">    For the Non-equilibrium case :math:`V\neq 0` the current implementation</span>
@@ -168,7 +168,7 @@
 <span class="sd">    This class has to be generalized to non-orthogonal basis</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Hdev</span><span class="p">,</span> <span class="n">elec_SE</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">CC</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Hdev</span><span class="p">,</span> <span class="n">elec_SE</span><span class="p">,</span> <span class="n">elec_idx</span><span class="p">,</span> <span class="n">CC</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize NEGF class &quot;&quot;&quot;</span>
 
         <span class="c1"># Global charge neutral reference energy (conveniently named fermi)</span>
@@ -206,7 +206,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">CC_neq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
 
-        <span class="k">def</span> <span class="nf">convert2SelfEnergy</span><span class="p">(</span><span class="n">elec_SE</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">convert2SelfEnergy</span><span class="p">(</span><span class="n">elec_SE</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elec_SE</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
                 <span class="c1"># here HH *must* be a HubbardHamiltonian (otherwise it will probably crash)</span>
                 <span class="n">HH</span><span class="p">,</span> <span class="n">semi_inf</span> <span class="o">=</span> <span class="n">elec_SE</span>
@@ -281,7 +281,9 @@
                             <span class="c1"># And for each point in the Neq CC</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_cc_neq_SE</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">ik</span><span class="p">][</span><span class="n">ic</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">self_energy</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NEGF.calc_n_open"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.calc_n_open">[docs]</a>    <span class="k">def</span> <span class="nf">calc_n_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">qtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+<div class="viewcode-block" id="NEGF.calc_n_open">
+<a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.calc_n_open">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_n_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">qtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to compute the spin densities from the non-equilibrium Green&#39;s function</span>
 
@@ -438,7 +440,10 @@
         <span class="c1"># multiply Etot by 2 for spin degeneracy</span>
         <span class="k">return</span> <span class="n">ni</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.</span><span class="o">/</span><span class="n">H</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)</span><span class="o">*</span><span class="n">Etot</span></div>
 
-<div class="viewcode-block" id="NEGF.Delta"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.Delta">[docs]</a>    <span class="k">def</span> <span class="nf">Delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">Ef</span><span class="p">,</span> <span class="n">ik</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NEGF.Delta">
+<a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.Delta">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">Delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="n">Ef</span><span class="p">,</span> <span class="n">ik</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the non-equilibrium integrals to correct the left and right equilibrium integrals</span>
 
@@ -458,7 +463,7 @@
 <span class="sd">        Delta</span>
 <span class="sd">        weight</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">spectral</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">self_energy</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">spectral</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">self_energy</span><span class="p">):</span>
             <span class="c1"># Use self-energy of elec, now the matrix will have dimension (Nelec, Nelec)</span>
             <span class="n">Gamma</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">self_energy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">self_energy</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
             <span class="c1"># Product of (Ndev, Nelec) x (Nelec, Nelec) x (Nelec, Ndev)</span>
@@ -483,7 +488,10 @@
 
         <span class="k">return</span> <span class="n">Delta</span><span class="p">,</span> <span class="n">weight</span></div>
 
-<div class="viewcode-block" id="NEGF.DOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.DOS">[docs]</a>    <span class="k">def</span> <span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NEGF.DOS">
+<a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.DOS">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtains the density of states (DOS) from the Green&#39;s function of the device</span>
 
@@ -523,7 +531,10 @@
 
         <span class="k">return</span> <span class="n">dos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
 
-<div class="viewcode-block" id="NEGF.PDOS"><a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.PDOS">[docs]</a>    <span class="k">def</span> <span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NEGF.PDOS">
+<a class="viewcode-back" href="../../api-generated/hubbard.NEGF.html#hubbard.NEGF.PDOS">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtains the projected density of states (PDOS) onto the atomic sites from the Green&#39;s function of the device</span>
 
@@ -560,7 +571,9 @@
                 <span class="n">GF</span> <span class="o">=</span> <span class="n">_G</span><span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">eta</span><span class="p">,</span> <span class="n">HC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elec_idx</span><span class="p">,</span> <span class="n">SE</span><span class="p">)</span>
                 <span class="n">ldos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">GF</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">imag</span>
 
-        <span class="k">return</span> <span class="n">ldos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div></div>
+        <span class="k">return</span> <span class="n">ldos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
+</div>
+
 </pre></div>
 
            </div>
@@ -570,7 +583,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

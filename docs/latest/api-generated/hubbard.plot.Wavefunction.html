@@ -1,20 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wavefunction &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,9 +35,6 @@
           <a href="../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -104,15 +103,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="wavefunction">
-<h1>Wavefunction<a class="headerlink" href="#wavefunction" title="Permalink to this headline"></a></h1>
+  <section id="wavefunction">
+<h1>Wavefunction<a class="headerlink" href="#wavefunction" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hubbard.plot.</span></span><span class="sig-name descname"><span class="pre">Wavefunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/wavefunction.html#Wavefunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Wavefunction" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">hubbard.plot.plot.GeometryPlot</span></code></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hubbard.plot.</span></span><span class="sig-name descname"><span class="pre">Wavefunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/wavefunction.html#Wavefunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Wavefunction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeometryPlot</span></code></p>
 <p>Plot the wavefunction with its complex phase for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>HubbardHamiltonian</strong> (<em>hubbard.hamiltonian.HubbardHamiltonian instance</em>) – hubbard.hamiltonian object of a system</p></li>
 <li><p><strong>wf</strong> (<em>array_like</em>) – vector that contains the eigenstate to plot</p></li>
@@ -127,11 +126,7 @@ In this case either a <code class="xref py py-obj docutils literal notranslate">
 In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
 of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(HH, wf[, ext_geom, cb_label, realspace])</p></td>
 <td><p></p></td>
@@ -200,14 +195,14 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.add_colorbar">
-<span class="sig-name descname"><span class="pre">add_colorbar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'5%'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.add_colorbar" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_colorbar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'5%'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.add_colorbar" title="Link to this definition"></a></dt>
 <dd><p>Add figure colorbar</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.8.0)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
-<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
+<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.10.7)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
 </dd>
 </dl>
@@ -215,13 +210,13 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.annotate">
-<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.annotate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.annotate" title="Link to this definition"></a></dt>
 <dd><p>Annotate the site indices in the pi-network</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sites</strong> (<em>array_like</em><em>, </em><em>optional</em>) – specify sites to be annotated in figure</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – font size for the annotation</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – font size for the annotation</p></li>
 </ul>
 </dd>
 </dl>
@@ -229,90 +224,90 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.close" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.close" title="Link to this definition"></a></dt>
 <dd><p>Close figure</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.get_colorbar_xticks">
-<span class="sig-name descname"><span class="pre">get_colorbar_xticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.get_colorbar_xticks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_colorbar_xticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.get_colorbar_xticks" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.get_colorbar_yticks">
-<span class="sig-name descname"><span class="pre">get_colorbar_yticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.get_colorbar_yticks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_colorbar_yticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.get_colorbar_yticks" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.legend">
-<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.legend" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.legend" title="Link to this definition"></a></dt>
 <dd><p>Add legend to figure. It takes into account possible repeated labels and show them once</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.plot_wf">
-<span class="sig-name descname"><span class="pre">plot_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/wavefunction.html#Wavefunction.plot_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Wavefunction.plot_wf" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_wf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Phase'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/wavefunction.html#Wavefunction.plot_wf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Wavefunction.plot_wf" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.savefig">
-<span class="sig-name descname"><span class="pre">savefig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.savefig" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">savefig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.savefig" title="Link to this definition"></a></dt>
 <dd><p>Save figure to external file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – external file name to save plot</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – external file name to save plot</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.8.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code></a></p>
+<p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.10.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code></a></p>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_axes">
-<span class="sig-name descname"><span class="pre">set_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bdx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_axes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bdx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_axes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_xlabel">
-<span class="sig-name descname"><span class="pre">set_colorbar_xlabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xlabel" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_xlabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xlabel" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_xticklabels">
-<span class="sig-name descname"><span class="pre">set_colorbar_xticklabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xticklabels" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_xticklabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xticklabels" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_xticks">
-<span class="sig-name descname"><span class="pre">set_colorbar_xticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xticks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_xticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_xticks" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_ylabel">
-<span class="sig-name descname"><span class="pre">set_colorbar_ylabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_ylabel" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_ylabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_ylabel" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_yticklabels">
-<span class="sig-name descname"><span class="pre">set_colorbar_yticklabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_yticklabels" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_yticklabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_yticklabels" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_colorbar_yticks">
-<span class="sig-name descname"><span class="pre">set_colorbar_yticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_yticks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_colorbar_yticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ticks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_colorbar_yticks" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_title">
-<span class="sig-name descname"><span class="pre">set_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_title" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_title" title="Link to this definition"></a></dt>
 <dd><p>Set figure title</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – figure title</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – figure title</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
 </ul>
 </dd>
 </dl>
@@ -320,13 +315,13 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_xlabel">
-<span class="sig-name descname"><span class="pre">set_xlabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_xlabel" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_xlabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_xlabel" title="Link to this definition"></a></dt>
 <dd><p>Set label for the x-axis</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – label for the x-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – label for the x-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -334,13 +329,13 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_xlim">
-<span class="sig-name descname"><span class="pre">set_xlim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_xlim" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_xlim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_xlim" title="Link to this definition"></a></dt>
 <dd><p>Set maximum and minimum x-axis values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
-<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
 </ul>
 </dd>
 </dl>
@@ -348,13 +343,13 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_ylabel">
-<span class="sig-name descname"><span class="pre">set_ylabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_ylabel" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_ylabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_ylabel" title="Link to this definition"></a></dt>
 <dd><p>Set label for the y-axis</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – label for the y-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – label for the y-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -362,13 +357,13 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="hubbard.plot.Wavefunction.set_ylim">
-<span class="sig-name descname"><span class="pre">set_ylim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_ylim" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_ylim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hubbard.plot.Wavefunction.set_ylim" title="Link to this definition"></a></dt>
 <dd><p>Set maximum and minimum y-axis values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
-<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
 </ul>
 </dd>
 </dl>
@@ -376,7 +371,7 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
@@ -389,7 +384,7 @@ of the coefficient of <em class="xref py py-obj">wf</em> on the atomic sites</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

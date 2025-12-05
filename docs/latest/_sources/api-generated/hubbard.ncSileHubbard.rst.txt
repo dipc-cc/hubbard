@@ -27,6 +27,7 @@ ncSileHubbard
         ~ncSileHubbard.ArgumentParser
         ~ncSileHubbard.ArgumentParser_out
         ~ncSileHubbard.__init__
+        ~ncSileHubbard.base_directory
         ~ncSileHubbard.close
         ~ncSileHubbard.dir_file
         ~ncSileHubbard.isDataset

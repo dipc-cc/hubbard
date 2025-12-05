@@ -1,20 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mean-field Hubbard model (hubbard) &mdash; hubbard documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,9 +35,6 @@
           <a href="../index.html" class="icon icon-home">
             hubbard
           </a>
-              <div class="version">
-                latest
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -113,16 +112,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="module-hubbard"></span><div class="section" id="mean-field-hubbard-model-hubbard">
-<h1>Mean-field Hubbard model (<a class="reference internal" href="#module-hubbard" title="hubbard"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code></a>)<a class="headerlink" href="#mean-field-hubbard-model-hubbard" title="Permalink to this headline"></a></h1>
+  <section id="mean-field-hubbard-model-hubbard">
+<span id="module-hubbard"></span><h1>Mean-field Hubbard model (<a class="reference internal" href="#module-hubbard" title="hubbard"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code></a>)<a class="headerlink" href="#mean-field-hubbard-model-hubbard" title="Link to this heading"></a></h1>
 <p>Package for mean-field Hubbard approximation</p>
-<div class="section" id="self-consistent-field-class">
-<h2>Self Consistent field class<a class="headerlink" href="#self-consistent-field-class" title="Permalink to this headline"></a></h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<section id="self-consistent-field-class">
+<h2>Self Consistent field class<a class="headerlink" href="#self-consistent-field-class" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HubbardHamiltonian</span></code></a>(TBHam[, n, U, Uij, q, ...])</p></td>
 <td><p>A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</p></td>
@@ -135,50 +130,38 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="read-and-write-in-binary-files">
-<h2>Read and write in binary files<a class="headerlink" href="#read-and-write-in-binary-files" title="Permalink to this headline"></a></h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+</section>
+<section id="read-and-write-in-binary-files">
+<h2>Read and write in binary files<a class="headerlink" href="#read-and-write-in-binary-files" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.ncSileHubbard.html#hubbard.ncSileHubbard" title="hubbard.ncSileHubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncSileHubbard</span></code></a>(filename[, mode, lvl, access])</p></td>
 <td><p>Read and write <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object in binary files (netCDF4 support)</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="build-the-specific-tb-hamiltonian-for-a-sp2-system">
-<h2>Build the specific TB Hamiltonian for a sp2 system<a class="headerlink" href="#build-the-specific-tb-hamiltonian-for-a-sp2-system" title="Permalink to this headline"></a></h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+</section>
+<section id="build-the-specific-tb-hamiltonian-for-a-sp2-system">
+<h2>Build the specific TB Hamiltonian for a sp2 system<a class="headerlink" href="#build-the-specific-tb-hamiltonian-for-a-sp2-system" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.sp2.html#hubbard.sp2" title="hubbard.sp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sp2</span></code></a>(ext_geom[, t1, t2, t3, eB, eN, s1, s2, ...])</p></td>
 <td><p>Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="create-real-space-grid-for-a-geometry-and-supercell">
-<h2>Create real space grid for a geometry and supercell<a class="headerlink" href="#create-real-space-grid-for-a-geometry-and-supercell" title="Permalink to this headline"></a></h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+</section>
+<section id="create-real-space-grid-for-a-geometry-and-supercell">
+<h2>Create real space grid for a geometry and supercell<a class="headerlink" href="#create-real-space-grid-for-a-geometry-and-supercell" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.real_space_grid.html#hubbard.real_space_grid" title="hubbard.real_space_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real_space_grid</span></code></a>(geometry, sc, vector, shape)</p></td>
-<td><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.1-fb8a39f)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.real_space_grid.html#hubbard.real_space_grid" title="hubbard.real_space_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real_space_grid</span></code></a>(geometry, lattice, vector, shape)</p></td>
+<td><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p></td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -191,7 +174,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2023, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
