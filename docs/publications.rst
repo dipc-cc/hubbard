@@ -24,19 +24,47 @@ publications below.
 
 #. T. Wang, S. Sanz, J. Castro-Esteban, J. Lawrence, A. Berdonces-Layunta, M. S. G. Mohammed, M. Vilas-Varela, M. Corso, D. Peña, T. Frederiksen, and D. G. de Oteyza,
    *Magnetic Interactions Between Radical Pairs in Chiral Graphene Nanoribbons*
-   `Nano Letters 22, 1, 164-171 (2022) <https://pubs.acs.org/doi/abs/10.1021/acs.nanolett.1c03578>`_
+   `Nano Letters 22, 1, 164-171 (2022) <https://pubs.acs.org/doi/full/10.1021/acs.nanolett.1c03578>`_
 
 #. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
    *A spin-polarizing electron beam splitter from crossed graphene nanoribbons*
    `Phys. Rev. Lett. 129, 037701 (2022) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.129.037701>`_
 
+#. T. Frederiksen, D. G. de Oteyza,
+   *Carbon-based nanostructures as a versatile platform for tunable π-magnetism*
+   `J. Phys.: Condens. Matter 34 443001 (2022) <https://iopscience.iop.org/article/10.1088/1361-648X/ac8a7f/meta>`_
+
+#. S. Sengupta, T. Frederiksen, and G. Giedke,
+   *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
+   `Phys. Rev. B 107, 224433 (2023) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.107.224433>`_
+
 #. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
    *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
-   Submitted (2023) `J. Phys.: Condens. Matter 35 374001 (2023) <https://iopscience.iop.org/article/10.1088/1361-648X/acd832/meta>`_
+   `J. Phys.: Condens. Matter 35 374001 (2023) <https://iopscience.iop.org/article/10.1088/1361-648X/acd832/meta>`_
 
-#. J. Brede, N. Merino-Díez, A. Berdonces, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate
+#. J. Brede, N. Merino-Díez, A. Berdonces, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate,
    *Detecting the spin-polarization of edge states in graphene nanoribbons*
-   Submitted (2023) `Nature Communications 14, 6677 (2023) <https://www.nature.com/articles/s41467-023-42436-7>`_
+   `Nature Communications 14, 6677 (2023) <https://www.nature.com/articles/s41467-023-42436-7>`_
+
+#. A. Vegliante, S. Fernández, R. Ortiz, M. Vilas-Varela, T. Y. Baum, N. Friedrich, F. Romero-Lara, A. Aguirre, K. Vaxevani, D. Wang, C. Garcia Fernandez, H. S. J. van der Zant, T. Frederiksen, Diego Peña, J. I. Pascual,
+   *Tuning the Spin Interaction in Nonplanar Organic Diradicals through Mechanical Manipulation*
+   `ACS Nano, 18, 26514–26521 (2024) <https://pubs.acs.org/doi/full/10.1021/acsnano.4c01963>`_
+
+#. S. Sanz, Géza Giedke, Daniel Sánchez-Portal, T. Frederiksen,
+   *Electron beam-splitting effect with crossed zigzag graphene nanoribbons in high-spin metallic states*
+   `APL Quantum 1, 046122 (2024) <https://pubs.aip.org/aip/apq/article/1/4/046122/3324450>`_
+
+#. A. Domínguez-Celorrio, Leonard Edens, S. Sanz, M. Vilas-Varela, Jose Martinez-Castro, D. Peña, V. Langlais, T. Frederiksen, J. I. Pascual, D. Serrate,
+   *Systematic modulation of charge and spin in graphene nanoribbons on MgO*
+   `Nature Communications 16, 5632 (2025)  <https://www.nature.com/articles/s41467-025-60767-5>`_
+
+#. L. Edens, F. Romero-Lara, T. Sai, K. Biswas, M. Vilas-Varela, T. Frederiksen, D. Peña, F. Schulz, J. I. Pascual,
+   *Spin and Charge Control of Topological End States in Chiral Graphene Nanoribbons on a 2D Ferromagnet*
+   `Advanced Materials, e10753 (2025)  <https://advanced.onlinelibrary.wiley.com/doi/full/10.1002/adma.202510753>`_
+
+#. S. Sanz, D. Sánchez-Portal,
+   *Predicting interface and spin states in armchair graphene nanoribbon junctions*
+   Submitted (2025) `arXiv:2507.14065 [cond-mat.mes-hall]  <https://doi.org/10.48550/arXiv.2507.14065>`_
 
 .. _citing:
 
