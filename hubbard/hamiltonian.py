@@ -65,9 +65,9 @@ class HubbardHamiltonian(object):
         H0 = self.TBHam.copy()
         H0.shift(np.pi) # Apply a shift to incorporate effect of S
         if self.spin_size > 1:
-            s = H0.H.tocsr(0).data.tostring() + H0.H.tocsr(1).data.tostring()
+            s = H0.H.tocsr(0).data.tobytes() + H0.H.tocsr(1).data.tobytes()
         else:
-            s = H0.H.tocsr(0).data.tostring()
+            s = H0.H.tocsr(0).data.tobytes()
         self._hash_base = s
         del H0
 
@@ -437,7 +437,7 @@ class HubbardHamiltonian(object):
         self.H.shift(E)
 
     def get_hash(self):
-        return hashlib.md5((self.q.tostring()+np.array([self.U]).tostring()+np.array([self.kT]).tostring()+self._hash_base)).hexdigest()[:7]
+        return hashlib.md5((self.q.tobytes()+np.array([self.U]).tobytes()+np.array([self.kT]).tobytes()+self._hash_base)).hexdigest()[:7]
 
     def read_density(self, fn, mode='r', group=None):
         """ Read density from binary file
