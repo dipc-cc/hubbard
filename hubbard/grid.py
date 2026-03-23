@@ -3,7 +3,7 @@ import sisl
 
 
 def real_space_grid(geometry, lattice, vector, shape, mode='wavefunction', **kwargs):
-    """ Create real space `sisl.Grid` object for a `sisl.Geometry` and a `sisl.Supercell`
+    """ Create real space `sisl.Grid` object for a `sisl.Geometry` and a `sisl.Lattice`
 
     Parameters
     ----------

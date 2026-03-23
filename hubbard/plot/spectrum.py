@@ -167,7 +167,7 @@ class LDOS_from_eigenstate(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
-        In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        In this case either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, wavefunction, sites=[], ext_geom=None, realspace=False, **kwargs):
@@ -206,7 +206,7 @@ class LDOS_from_eigenstate(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
 
             if 'axis' not in kwargs:
@@ -262,7 +262,7 @@ class LDOS(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with varying size depending on the PDOS numerical value
-        In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        In this case either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
     ------------
@@ -303,7 +303,7 @@ class LDOS(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
             if 'axis' not in kwargs:
                 kwargs['axis'] = 2

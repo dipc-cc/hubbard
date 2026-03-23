@@ -34,8 +34,8 @@ Build the specific TB Hamiltonian for a sp2 system
 
    sp2
 
-Create real space grid for a geometry and supercell
-===================================================
+Create real space grid for a geometry and lattice
+=================================================
 
 .. autosummary::
    :toctree:
