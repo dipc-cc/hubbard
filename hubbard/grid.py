@@ -48,7 +48,7 @@ def real_space_grid(geometry, lattice, vector, shape, mode='wavefunction', **kwa
         D = sisl.physics.DensityMatrix(g)
         a = np.arange(len(D))
         D.D[a, a] = vector
-        D.density(grid)
+        D.density(grid, method="direct")
 
     del g
     return grid
