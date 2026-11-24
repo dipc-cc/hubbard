@@ -319,6 +319,29 @@ def test_sub_remove_zero_charge_channel_stays_empty(method):
 
 
 @pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_nan_q_raises(method):
+    H = _polarized_molecule()
+    with pytest.raises(ValueError, match="non-negative q"):
+        if method == 'sub':
+            H.sub([0, 1, 2], q=(np.nan, 1))
+        else:
+            H.remove([3, 4, 5], q=(np.nan, 1))
+
+
+def test_set_polarization_unchanged():
+    # Pins existing behaviour, it does not validate it: the uniform fill of an
+    # empty channel belongs to sub/remove only. Maximizing spin up on every
+    # site of a q = [4, 4] object leaves no down density to scale to q = 4,
+    # which gives NaN, as before this change.
+    g = sisl.geom.zgnr(2).tile(2, 0)
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3., q=(4, 4))
+    with np.errstate(divide='ignore', invalid='ignore'):
+        H.set_polarization(up=range(8))
+    np.testing.assert_array_equal(H.n, [[0.5] * 8, [np.nan] * 8])
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
 def test_sub_remove_negative_q_raises(method):
     g = sisl.geom.agnr(5).sub(range(6))
     g.set_nsc([1, 1, 1])

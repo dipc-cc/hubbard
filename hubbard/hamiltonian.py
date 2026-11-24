@@ -200,27 +200,28 @@ class HubbardHamiltonian(object):
         `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,
         so that the first `update_hamiltonian` of the new object adds the mean-field terms once.
         The new object gets its own copies of `U`, `Uij` and this object's k-mesh.
-        With `exact`, the new object takes `q` and `n` as given; otherwise the constructor
-        reads them, and treats a non-positive ``q[0]`` as not given
+        The new object takes `n` as given, set after construction. With `exact` it also takes `q`
+        as given; otherwise the constructor reads `q`, and treats a non-positive ``q[0]`` as not given
         """
         if isinstance(U, np.ndarray) or np.ndim(U) > 0:
             U = np.array(U, copy=True)
         if Uij is not None:
             Uij = np.array(Uij, copy=True)
-        new = self.__class__(TBHam, n=0 if exact else n, U=U, Uij=Uij, q=q,
+        # Set n (and q) after construction, so the constructor neither renormalizes an empty
+        # spin channel nor reads q = 0 for spin up as "not given"
+        new = self.__class__(TBHam, n=0, U=U, Uij=Uij, q=q,
                              nkpt=self.mp, kT=self.kT, units=self.units)
         if exact:
-            # Set after construction, so an empty spin channel (q = 0) is kept as such
             new.q = np.array(q, dtype=np.float64)[:new.spin_size]
-            new.n = np.array(n, dtype=np.float64)
+        new.n = np.array(n, dtype=np.float64)
         new.H = H
         new.H.finalize()
         new.mp = self.mp.copy(new.H)
         return new
 
     def _check_q(self, method, q):
-        """ Raise if the electron count `q` passed to `method` has a negative entry """
-        if np.any(np.asarray(q) < 0):
+        """ Raise if the electron count `q` passed to `method` has an entry that is not >= 0, NaN included """
+        if not np.all(np.asarray(q, dtype=np.float64) >= 0):
             raise ValueError(f"{self.__class__.__name__}.{method} requires a non-negative q, got {q}")
 
     def _check_Uij(self, method, nonzero=False):
@@ -345,7 +346,7 @@ class HubbardHamiltonian(object):
         Raises
         ------
         ValueError
-            if an entry of `q` is negative
+            if an entry of `q` is negative or NaN
         NotImplementedError
             if this object has `Uij` and an atom with more than one orbital
         """
@@ -388,7 +389,7 @@ class HubbardHamiltonian(object):
         Raises
         ------
         ValueError
-            if an entry of `q` is negative
+            if an entry of `q` is negative or NaN
         NotImplementedError
             if this object has `Uij` and an atom with more than one orbital
         """
@@ -405,8 +406,11 @@ class HubbardHamiltonian(object):
         # The default q is read by the constructor; any other q is used as given
         exact = bool(np.any(np.asarray(q) != 0))
         new = self._derive(self.TBHam.sub(atoms), self.H.sub(atoms), nsub, U, Uij, q, exact=exact)
-        if exact:
-            new.normalize_charge()
+        # A spin channel without density on the kept atoms but with charge cannot be scaled
+        # (0/0 = NaN): it starts uniform at q/no, as an object without a density does
+        fill = (new.n.sum(1) == 0) & (new.q > 0)
+        new.n[fill] = (new.q[fill] / new.sites).reshape(-1, 1)
+        new.normalize_charge()
         return new
 
     def copy(self):
@@ -462,11 +466,9 @@ class HubbardHamiltonian(object):
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         nsum = self.n.sum(1)
-        # A spin channel without density cannot be scaled (0/0 = NaN): it starts uniform at
-        # q/no, as an object without a density does, and so stays empty when q = 0
-        empty = nsum == 0
-        self.n[empty] = (self.q[empty] / self.sites).reshape(-1, 1)
-        self.n[~empty] *= (self.q[~empty] / nsum[~empty]).reshape(-1, 1)
+        # A spin channel with no charge and no density stays empty, instead of 0/0 = NaN
+        scale = ~((nsum == 0) & (self.q == 0))
+        self.n[scale] *= (self.q[scale] / nsum[scale]).reshape(-1, 1)
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites
