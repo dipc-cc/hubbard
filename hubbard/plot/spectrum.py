@@ -261,9 +261,9 @@ class LDOS(GeometryPlot):
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
-        with one marker per atom, whose area in points^2 is the PDOS at `E` in 1/eV summed over that atom's orbitals.
-        For a non-orthogonal basis this is a Mulliken PDOS, which can be slightly negative; matplotlib
-        then draws no marker for that atom and warns about an invalid value in ``sqrt``.
+        with one blue marker per atom, whose area in points^2 is the absolute value of the PDOS at `E` in 1/eV
+        summed over that atom's orbitals. For a non-orthogonal basis this is a Mulliken PDOS, which can be
+        negative: a filled marker is a PDOS >= 0, a hollow marker (blue edge, no face) a negative PDOS.
         With ``realspace=True`` either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
@@ -351,10 +351,17 @@ class LDOS(GeometryPlot):
         else:
             # HH.PDOS returns shape (1, no, nE); take the single energy E per orbital
             pdos = HH.PDOS([E], eta=eta, spin=spin, distribution=distribution)[0, :, 0]
-            # Sum the orbitals onto their atoms: one marker per atom, area (points^2) its PDOS
+            # Sum the orbitals onto their atoms: one marker per atom, area (points^2) its |PDOS|
             g = HH.geometry
             pdos = np.bincount(g.o2a(np.arange(g.no)), weights=pdos, minlength=g.na)
-            self.axes.scatter(x, y, s=pdos, c='b')
+            negative = pdos < 0
+            if np.any(negative):
+                # A Mulliken PDOS (non-orthogonal basis) can be negative: hollow marker
+                face = np.tile(colors.to_rgba('b'), (g.na, 1))
+                face[negative] = 0
+                self.axes.scatter(x, y, s=np.abs(pdos), facecolors=face, edgecolors='b')
+            else:
+                self.axes.scatter(x, y, s=pdos, c='b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')

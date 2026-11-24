@@ -1,8 +1,12 @@
 import matplotlib
 matplotlib.use("Agg")
+import warnings
+
 import numpy as np
+import scipy.linalg
 import sisl
 from matplotlib.collections import PathCollection
+from matplotlib.colors import to_rgba
 
 from hubbard import HubbardHamiltonian, sp2, density, plot
 
@@ -115,3 +119,47 @@ def test_ldos_realspace_accepts_spin_int():
     assert images[0].shape == (12, 12)
     assert np.any(images[0] > 0)
     assert np.array_equal(images[0], images[1])
+
+
+def test_ldos_scatter_shows_negative_mulliken_pdos_hollow():
+    # Non-orthogonal dimer (one orbital per atom), U=0: at the upper level the
+    # Mulliken PDOS of atom 1 is negative. Reference from the generalized
+    # eigenproblem H c = e S c, with weight Re[conj(c_i) (S c)_i] per orbital,
+    # Lorentzian-broadened and summed over the two identical spins.
+    e1, e2, t, s = 0., -5., -1., 0.5
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atoms=sisl.Atom(6, R=1.6),
+                      lattice=sisl.Lattice([10, 10, 10], nsc=[1, 1, 1]))
+    TB = sisl.Hamiltonian(g, spin=sisl.Spin("p"), orthogonal=False)
+    TB[0, 0] = (e1, e1, 1.)
+    TB[1, 1] = (e2, e2, 1.)
+    TB[0, 1] = (t, t, s)
+    TB[1, 0] = (t, t, s)
+    H = HubbardHamiltonian(TB, U=0.0)
+
+    Hm = np.array([[e1, t], [t, e2]])
+    Sm = np.array([[1., s], [s, 1.]])
+    levels, c = scipy.linalg.eigh(Hm, Sm)
+    w = np.real(np.conj(c) * (Sm @ c))
+    eta, E = 0.05, levels[1]
+    ref = 2 * w @ ((eta / np.pi) / ((E - levels) ** 2 + eta ** 2))
+    assert ref[0] > 0 > ref[1]
+
+    p = plot.LDOS(H, E, eta=eta)
+    try:
+        scat = [col for col in p.axes.collections if isinstance(col, PathCollection)]
+        assert len(scat) == 1
+        assert np.allclose(scat[0].get_sizes(), np.abs(ref), rtol=1e-10, atol=0)
+        face = scat[0].get_facecolors()
+        edge = scat[0].get_edgecolors()
+        blue = to_rgba("b")
+        assert np.allclose(face[0], blue)
+        assert face[1][3] == 0
+        assert np.allclose(edge, [blue, blue])
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            # matplotlib 3.9 with pyparsing 3.3 emits pyparsing deprecations
+            # while parsing mathtext labels; they are unrelated to the markers
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            p.fig.canvas.draw()
+    finally:
+        p.close()
