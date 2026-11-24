@@ -18,6 +18,427 @@ def test_quick():
     H.write_initspin('test.fdf')
 
 
+# The methods that derive a new HubbardHamiltonian from an existing one.
+# Each must build the new reference Hamiltonian (TBHam) from the original's
+# TBHam, never from its mean-field H, or update_hamiltonian counts U*n twice.
+
+def _flake(U=3.5, spin='polarized'):
+    # Finite zigzag flake: its zigzag edges polarize, so the converged mean-field
+    # diagonal differs from the tight-binding one
+    g = sisl.geom.zgnr(3).tile(4, 0)
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g, spin=spin), U=U)
+    if H.spin_size == 2:
+        H.set_polarization([0], dn=[g.na - 1])
+    H.converge(density.calc_n_insulator, tol=1e-12, print_info=False)
+    return H
+
+
+def _ribbon(U=3., spin='polarized', nk=20):
+    # Periodic 3-ZGNR: polarized with antiferromagnetic edges, or unpolarized
+    # and doped away from half filling. At half filling an unpolarized
+    # bipartite ribbon has n = 1/2 on every site, which would make the
+    # mean-field diagonal equal to the reference one.
+    if spin == 'unpolarized-doped':
+        h = sp2(sisl.geom.zgnr(3), spin='unpolarized')
+        q, kT = (h.no / 2 - 0.7,), 0.02
+    else:
+        h = sp2(sisl.geom.zgnr(3), spin=spin)
+        q, kT = (0., 0.), 1e-5
+    if U == 'array':
+        U = np.full(h.no, 3.)
+    H = hh.HubbardHamiltonian(h, U=U, q=q, nkpt=[nk, 1, 1], kT=kT)
+    if H.spin_size == 2:
+        H.set_polarization([0], dn=[h.no - 1])
+    H.converge(density.calc_n, tol=1e-10, print_info=False)
+    return H
+
+
+def _chain(spin='polarized'):
+    # Two inequivalent atoms per cell, each with two orbitals (onsite energies
+    # eps), so the order of orbitals within an atom matters
+    atom = sisl.Atom(6, R=[1.6, 1.6])
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atom, lattice=[2.84, 10, 10])
+    g.set_nsc([3, 1, 1])
+    h = sisl.Hamiltonian(g, spin=spin)
+    eps = [[0., 1.5], [0.8, 1.2]]
+    t = [[-2.7, -0.4], [-0.4, -1.0]]
+    for ia in g:
+        o = g.a2o(ia)
+        for a in range(2):
+            h[o + a, o + a] = eps[ia][a]
+        for ja in g.close(ia, R=[0.1, 1.6])[1]:
+            p = g.a2o(ja)
+            for a in range(2):
+                for b in range(2):
+                    h[o + a, p + b] = t[a][b]
+    return h
+
+
+def _diag(H, spin):
+    return H.tocsr(spin).diagonal()
+
+
+@pytest.mark.parametrize("system", ['flake', 'unpolarized-doped'])
+def test_copy_converged_stays_converged(system):
+    if system == 'flake':
+        H, calc_n = _flake(), density.calc_n_insulator
+    else:
+        H, calc_n = _ribbon(spin=system), density.calc_n
+    # Precondition: the converged mean-field diagonal differs from the reference
+    assert np.abs(_diag(H.H, 0) - _diag(H.TBHam, 0)).max() > 0.1
+
+    Hc = H.copy()
+    # Immediately after copy the state is the original's
+    for s in range(H.spin_size):
+        assert np.array_equal(H.TBHam.tocsr(s).toarray(), Hc.TBHam.tocsr(s).toarray())
+        assert np.array_equal(H.H.tocsr(s).toarray(), Hc.H.tocsr(s).toarray())
+    assert np.array_equal(H.n, Hc.n)
+    assert np.array_equal(H.q, Hc.q)
+    assert Hc.Etot == H.Etot
+
+    # Reference: the converged original itself. The first iterate solves the
+    # copied H; the second solves the H that update_hamiltonian rebuilt from
+    # TBHam, so it catches a double-counted U*n.
+    for _ in range(2):
+        dn = Hc.iterate(calc_n)
+        assert dn < 1e-8
+        assert abs(Hc.Etot - H.Etot) < 1e-8
+    # The same converge call on both, so the comparison does not depend on how
+    # tightly the original was converged
+    Hc.converge(calc_n, tol=1e-12, max_iter=300, print_info=False)
+    H.converge(calc_n, tol=1e-12, max_iter=300, print_info=False)
+    assert abs(Hc.Etot - H.Etot) < 1e-10
+    assert np.abs(Hc.n - H.n).max() < 1e-10
+
+
+@pytest.mark.parametrize("U", ['array', '0-d'])
+@pytest.mark.parametrize("spin", ['polarized', 'unpolarized'])
+def test_copy_is_independent(spin, U):
+    h = sp2(sisl.geom.zgnr(3), spin=spin)
+    U = np.full(h.no, 3.) if U == 'array' else np.array(3.)
+    H = hh.HubbardHamiltonian(h, U=U, Uij=np.zeros((h.no, h.no)),
+                              nkpt=[4, 1, 1], kT=0.01, units='eV-test')
+    H.random_density()
+    H.iterate(density.calc_n)
+    Hc = H.copy()
+
+    assert Hc.spin_size == H.spin_size
+    assert Hc.kT == H.kT and Hc.units == H.units
+    assert np.array_equal(Hc.mp.k, H.mp.k) and np.array_equal(Hc.mp.weight, H.mp.weight)
+    for a in ('n', 'q', 'U', 'Uij'):
+        assert np.array_equal(getattr(Hc, a), getattr(H, a))
+        assert not np.shares_memory(getattr(Hc, a), getattr(H, a))
+    assert Hc.mp is not H.mp
+
+    # Changing or iterating the copy leaves the original untouched
+    n, Hd, Td = H.n.copy(), _diag(H.H, 0), _diag(H.TBHam, 0)
+    Hc.TBHam[0, 0, 0] = 99.
+    Hc.iterate(density.calc_n)
+    Hc.H[1, 1, 0] = 99.
+    assert np.array_equal(H.n, n)
+    assert np.array_equal(_diag(H.H, 0), Hd)
+    assert np.array_equal(_diag(H.TBHam, 0), Td)
+
+
+@pytest.mark.parametrize("method", ['tile', 'repeat'])
+@pytest.mark.parametrize("U", [3., 'array'])
+@pytest.mark.parametrize("spin", ['polarized', 'unpolarized-doped'])
+def test_tile_repeat_converged_stays_converged(method, U, spin):
+    nk = 20
+    H = _ribbon(U=U, spin=spin, nk=nk)
+    # Precondition: the converged mean-field diagonal differs from the reference
+    assert np.abs(_diag(H.H, 0) - _diag(H.TBHam, 0)).max() > 0.1
+
+    H2 = getattr(H, method)(2, 0)
+    # Both tile and repeat double the lattice vector a1. A Gamma-centred
+    # Monkhorst-Pack grid of nk points along a1 folds, under k -> 2k mod 1,
+    # onto the Gamma-centred grid of nk/2 points of the doubled cell, each
+    # point twice. So nk/2 points on the doubled cell sample the same
+    # Brillouin-zone points as nk points on the original one.
+    H2.set_kmesh([nk // 2, 1, 1])
+    k = sisl.MonkhorstPack(H.geometry, [nk, 1, 1], trs=False).k[:, 0]
+    k2 = sisl.MonkhorstPack(H2.geometry, [nk // 2, 1, 1], trs=False).k[:, 0]
+    fold = np.sort(np.round(2 * k, 12) % 1)
+    assert np.allclose(fold, np.sort(np.repeat(np.round(k2, 12) % 1, 2)))
+
+    # Reference: sisl's tiling of the original reference Hamiltonian
+    Tref = getattr(H.TBHam, method)(2, 0)
+    for s in range(H.spin_size):
+        assert np.array_equal(H2.TBHam.tocsr(s).toarray(), Tref.tocsr(s).toarray())
+
+    # Reference: the converged original, two unit cells of it. The first
+    # iterate solves the carried-over H; the second solves the H that
+    # update_hamiltonian rebuilt from TBHam, so it catches a double-counted U*n.
+    for _ in range(2):
+        dn = H2.iterate(density.calc_n)
+        assert dn < 1e-8
+        assert abs(H2.Etot / 2 - H.Etot) < 1e-8
+        assert np.allclose(H2.n.sum(1), 2 * H.q)
+
+
+@pytest.mark.parametrize("method", ['tile', 'repeat'])
+@pytest.mark.parametrize("spin", ['polarized', 'unpolarized'])
+def test_tile_repeat_multi_orbital(method, spin):
+    # sisl tiles cell by cell and repeats atom by atom, keeping the orbitals
+    # of each atom together; n and U must follow the same orbital order
+    U_of_eps = {0.: 3., 1.5: 1., 0.8: 2., 1.2: 0.5}
+    h = _chain(spin)
+    H = hh.HubbardHamiltonian(h, U=np.array([U_of_eps[e] for e in _diag(h, 0)]),
+                              nkpt=[12, 1, 1], kT=0.01)
+    H.converge(density.calc_n, tol=1e-10, max_iter=500, print_info=False)
+    assert np.abs(_diag(H.H, 0) - _diag(H.TBHam, 0)).max() > 0.1
+
+    H2 = getattr(H, method)(2, 0)
+    # Reference: U follows the onsite energy of each orbital in sisl's
+    # tiled or repeated reference Hamiltonian
+    assert np.array_equal(H2.U, [U_of_eps[e] for e in _diag(H2.TBHam, 0)])
+
+    # Reference: the converged original, two unit cells of it (k-mesh as in
+    # test_tile_repeat_converged_stays_converged)
+    H2.set_kmesh([6, 1, 1])
+    for _ in range(2):
+        dn = H2.iterate(density.calc_n)
+        assert dn < 1e-8
+        assert abs(H2.Etot / 2 - H.Etot) < 1e-8
+
+
+@pytest.mark.parametrize("method", ['tile', 'repeat'])
+def test_tile_repeat_Uij_raises(method):
+    # Uij is not tiled yet: a nonzero Uij raises, an all-zero one is dropped
+    h = sp2(sisl.geom.zgnr(2))
+    Uij = np.full((h.no, h.no), 0.1)
+    H = hh.HubbardHamiltonian(h, U=3., Uij=Uij)
+    with pytest.raises(NotImplementedError, match="nonzero Uij"):
+        getattr(H, method)(2, 0)
+    H = hh.HubbardHamiltonian(h, U=3., Uij=np.zeros((h.no, h.no)))
+    assert getattr(H, method)(2, 0).Uij is None
+
+
+def _two_orbital_molecule(**kwargs):
+    # Two atoms with two orbitals each; orbitals 0, 1 on atom 0 and 2, 3 on atom 1
+    atom = sisl.Atom(6, R=[1.6, 1.6])
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atom, lattice=[10, 10, 10])
+    h = sisl.Hamiltonian(g, spin='polarized')
+    h[0, 2] = -2.7
+    h[1, 3] = -1.
+    return hh.HubbardHamiltonian(h, **kwargs)
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+def test_derived_Uij_multi_orbital(method):
+    # Uij is indexed by orbital, these methods by atom: with more than one
+    # orbital per atom only copy carries Uij over
+    Uij = np.zeros((4, 4))
+    H = _two_orbital_molecule(U=3., Uij=Uij)
+    args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([1],), 'remove': ([0],)}[method]
+    if method == 'copy':
+        assert np.array_equal(H.copy().Uij, Uij)
+    else:
+        # The message names the method called, also for remove, which uses sub
+        with pytest.raises(NotImplementedError, match=rf"\.{method} cannot handle Uij"):
+            getattr(H, method)(*args)
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+@pytest.mark.parametrize("U", [3., 'array'])
+def test_sub_remove_multi_orbital(method, U):
+    # Reference: the values on the orbitals of the kept atom 1, written out.
+    # q is their charge per spin, so renormalization leaves them unchanged.
+    n = [[0.1, 0.2, 0.3, 0.4], [0.1, 0.1, 0.2, 0.1]]
+    U = np.array([3., 1., 2., 0.5]) if U == 'array' else U
+    H = _two_orbital_molecule(U=U, n=n, q=(1., 0.5))
+    Hs = H.sub([1], q=(0.7, 0.3)) if method == 'sub' else H.remove([0], q=(0.7, 0.3))
+    assert np.allclose(Hs.n, [[0.3, 0.4], [0.2, 0.1]])
+    assert np.array_equal(Hs.U, [2., 0.5] if np.ndim(U) else 3.)
+    assert np.array_equal(_diag(Hs.TBHam, 0), _diag(H.TBHam, 0)[2:])
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+@pytest.mark.parametrize("empty", [1, 0])
+def test_derived_empty_spin_channel(method, empty):
+    # Fully polarized: one channel has no charge and no density, and must
+    # stay empty rather than become 0/0 = NaN or be given a charge
+    h = sp2(sisl.geom.zgnr(2))
+    H = hh.HubbardHamiltonian(h, U=3., q=(2., 0.))
+    if empty == 0:
+        # Spin up empty: the constructor would read q[0] = 0 as "not given"
+        H.n = H.n[::-1].copy()
+        H.q = H.q[::-1].copy()
+    full = 1 - empty
+    assert np.array_equal(H.n[empty], np.zeros(h.no))
+    kept = [0, 1, 2]
+    if method in ('sub', 'remove'):
+        q = [0., 0.]
+        q[full] = H.n[full, kept].sum()
+        H2 = H.sub(kept, q=q) if method == 'sub' else H.remove([3], q=q)
+        n_ref = H.n[:, kept]
+    else:
+        args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0)}[method]
+        H2 = getattr(H, method)(*args)
+        n_ref = {'copy': H.n, 'tile': np.tile(H.n, 2), 'repeat': np.repeat(H.n, 2, axis=1)}[method]
+    assert np.all(np.isfinite(H2.n))
+    assert np.allclose(H2.n, n_ref)
+    assert H2.q[empty] == 0.
+    assert np.allclose(H2.q, n_ref.sum(1))
+
+
+def _polarized_molecule():
+    # Six-carbon closed molecule, fully polarized: 2 up electrons, no down density
+    g = sisl.geom.agnr(5).sub(range(6))
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3., q=(2, 0))
+    assert np.array_equal(H.n[1], np.zeros(6))
+    return H
+
+
+@pytest.mark.parametrize("case", ['sub-q', 'sub-default', 'remove-default'])
+def test_sub_remove_fill_empty_channel(case):
+    # The down channel has no density on the kept atoms 0, 1, 2 but is asked
+    # for charge: it starts uniform at q/no instead of 0/0 = NaN
+    H = _polarized_molecule()
+    if case == 'sub-q':
+        Hs, q = H.sub([0, 1, 2], q=(1, 1)), (1., 1.)
+    else:
+        Hs = H.sub([0, 1, 2]) if case == 'sub-default' else H.remove([3, 4, 5])
+        # Default: the three carbon pz electrons of the kept atoms, with the
+        # constructor's split q_dn = 3 // 2, q_up = 3 - q_dn
+        q = (2., 1.)
+    assert np.all(np.isfinite(Hs.n))
+    assert np.allclose(Hs.q, q)
+    assert np.allclose(Hs.n.sum(1), q)
+    assert np.allclose(Hs.n[1], np.full(3, q[1] / 3))
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_zero_charge_channel_stays_empty(method):
+    H = _polarized_molecule()
+    Hs = H.sub([0, 1, 2], q=(2, 0)) if method == 'sub' else H.remove([3, 4, 5], q=(2, 0))
+    assert np.array_equal(Hs.n[1], np.zeros(3))
+    assert np.allclose(Hs.n[0], H.n[0, :3] * 2 / H.n[0, :3].sum())
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_nan_q_raises(method):
+    H = _polarized_molecule()
+    with pytest.raises(ValueError, match="non-negative q"):
+        if method == 'sub':
+            H.sub([0, 1, 2], q=(np.nan, 1))
+        else:
+            H.remove([3, 4, 5], q=(np.nan, 1))
+
+
+def test_set_polarization_unchanged():
+    # Pins existing behaviour, it does not validate it: the uniform fill of an
+    # empty channel belongs to sub/remove only. Maximizing spin up on every
+    # site of a q = [4, 4] object leaves no down density to scale to q = 4,
+    # which gives NaN, as before this change.
+    g = sisl.geom.zgnr(2).tile(2, 0)
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3., q=(4, 4))
+    with np.errstate(divide='ignore', invalid='ignore'):
+        H.set_polarization(up=range(8))
+    np.testing.assert_array_equal(H.n, [[0.5] * 8, [np.nan] * 8])
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_negative_q_raises(method):
+    g = sisl.geom.agnr(5).sub(range(6))
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3.)
+    with pytest.raises(ValueError, match="non-negative q"):
+        if method == 'sub':
+            H.sub([0, 1, 2], q=(-1, 1))
+        else:
+            H.remove([3, 4, 5], q=(-1, 1))
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+@pytest.mark.parametrize("U", ['0-d', 'list'])
+def test_derived_owns_U(method, U):
+    # A 0-d ndarray or list U is mutable; the derived object must not share it
+    h = sp2(sisl.geom.zgnr(2))
+    U = np.array(3.) if U == '0-d' else [3.] * h.no
+    H = hh.HubbardHamiltonian(h, U=U)
+    args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([0, 1, 2],), 'remove': ([0],)}[method]
+    H2 = getattr(H, method)(*args)
+    assert H2.U is not H.U
+    if np.ndim(H2.U):
+        H2.U[0] = 7.
+    else:
+        H2.U[...] = 7.
+    assert np.all(np.asarray(H.U) == 3.)
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_from_reference(method):
+    H = _flake()
+    na = H.geometry.na
+    removed = [0, 5, 13]
+    kept = np.delete(np.arange(na), removed)
+    # Precondition: the converged mean-field diagonal differs from the reference
+    assert np.abs(_diag(H.H, 0)[kept] - _diag(H.TBHam, 0)[kept]).max() > 0.1
+
+    if method == 'sub':
+        Hs = H.sub(kept)
+    else:
+        Hs = H.remove(removed)
+
+    # Reference: the original TBHam, and sisl's own sub of it
+    Tref = H.TBHam.sub(kept)
+    for s in range(2):
+        assert np.array_equal(_diag(Hs.TBHam, s), _diag(H.TBHam, s)[kept])
+        assert np.array_equal(Hs.TBHam.tocsr(s).toarray(), Tref.tocsr(s).toarray())
+    assert np.array_equal(Hs.geometry.xyz, H.geometry.xyz[kept])
+    # The densities are carried over, renormalized to the charge of the kept atoms
+    assert np.allclose(Hs.n.sum(1), Hs.q)
+
+    # The reduced object iterates on its own reference
+    Hs.converge(density.calc_n_insulator, tol=1e-10, print_info=False)
+    assert np.allclose(Hs.n.sum(1), Hs.q)
+    for s in range(2):
+        assert np.array_equal(_diag(Hs.TBHam, s), _diag(H.TBHam, s)[kept])
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_U_Uij(method):
+    h = sp2(sisl.geom.zgnr(3))
+    removed = [0, 4]
+    kept = np.delete(np.arange(h.no), removed)
+    U = np.arange(h.no) + 1.
+    Uij = np.arange(h.no**2, dtype=float).reshape(h.no, h.no)
+    for U_, Uij_, U_ref, Uij_ref in [(3., None, 3., None),
+                                     (U, None, U[kept], None),
+                                     (3., Uij, 3., Uij[np.ix_(kept, kept)])]:
+        H = hh.HubbardHamiltonian(h, U=U_, Uij=Uij_)
+        Hs = H.sub(kept) if method == 'sub' else H.remove(removed)
+        assert np.array_equal(Hs.U, U_ref)
+        if Uij_ref is None:
+            assert Hs.Uij is None
+        else:
+            assert np.array_equal(Hs.Uij, Uij_ref)
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+@pytest.mark.parametrize("U", [3., 'array'])
+@pytest.mark.parametrize("spin", ['polarized', 'unpolarized'])
+def test_derived_scalar_U_unpolarized(method, U, spin):
+    h = sp2(sisl.geom.zgnr(2), spin=spin)
+    if U == 'array':
+        U = np.full(h.no, 3.)
+    H = hh.HubbardHamiltonian(h, U=U, nkpt=[4, 1, 1])
+    args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([0, 1, 2],), 'remove': ([0],)}
+    H2 = getattr(H, method)(*args[method])
+    no = {'copy': h.no, 'tile': 2 * h.no, 'repeat': 2 * h.no, 'sub': 3, 'remove': h.no - 1}[method]
+    S = 1 if spin == 'unpolarized' else 2
+    assert H2.spin_size == S
+    assert H2.n.shape == (S, no)
+    assert H2.q.shape == (S,)
+    assert np.ndim(H2.U) == np.ndim(U)
+    H2.iterate(density.calc_n)
+    assert np.allclose(H2.n.sum(1), H2.q)
+
+
 # DOS and PDOS average over the k-mesh the object holds
 
 
