@@ -256,7 +256,7 @@ class LDOS(GeometryPlot):
         smearing parameter. Defaults to 1e-3 eV
     distribution: str, optional
         distribution function. Defaults to Lorentzian distribution
-    spin: array_like, optional
+    spin: int or array_like, optional
         To plot the LDOS corresponding to the specified spin index. Default to ``spin=[0,1]``
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
@@ -272,6 +272,9 @@ class LDOS(GeometryPlot):
     """
 
     def __init__(self, HH, E, sites=[], spin=[0,1], ext_geom=None, realspace=False, eta=1e-3, distribution='lorentzian', **kwargs):
+
+        # Accept an int, a list, a tuple or an array of spin indices
+        spin = np.atleast_1d(spin).ravel().tolist()
 
         # Set default kwargs
         if realspace:

@@ -11,6 +11,8 @@ def _molecule():
     # Small zigzag flake (12 sites) in its triplet state, so the spins differ
     g = sisl.geom.zgnr(2).tile(3, 0)
     g.set_nsc([1, 1, 1])
+    # Flat at z=0, so the realspace LDOS slice at z=1.1 is 1.1 Ang from the plane
+    g = g.translate([0, 0, -g.xyz[0, 2]])
     H = HubbardHamiltonian(sp2(g), U=3.5, q=(7, 5))
     H.set_polarization([0], dn=[len(g) - 1])
     H.converge(density.calc_n_insulator, tol=1e-8)
@@ -78,3 +80,38 @@ def test_ldos_scatter_sums_orbitals_onto_atoms():
         assert np.allclose(sizes, [ref], rtol=1e-10, atol=0)
     finally:
         p.close()
+
+
+def test_ldos_scatter_accepts_spin_tuple_and_int():
+    H = _molecule()
+    eta = 0.05
+    E = np.linalg.eigvalsh(H.H.Hk(spin=0, format="array"))[6] + 0.02
+
+    sizes = {}
+    for key, spin in [("tuple", (0, 1)), ("list", [0, 1]), ("up", 0), ("down", 1)]:
+        p = plot.LDOS(H, E, eta=eta, spin=spin)
+        try:
+            sizes[key] = _scatter_sizes(p).copy()
+        finally:
+            p.close()
+    # The spin channels differ, so a dropped or doubled channel would show
+    assert not np.allclose(sizes["up"], sizes["down"])
+    assert np.allclose(sizes["tuple"], sizes["list"], rtol=1e-12, atol=0)
+    assert np.allclose(sizes["list"], sizes["up"] + sizes["down"], rtol=1e-10, atol=0)
+
+
+def test_ldos_realspace_accepts_spin_int():
+    H = _molecule()
+    # A small grid and an energy window of a few states keep this fast
+    kw = dict(eta=0.05, realspace=True, z=1.1, shape=[12, 12, 1], energy_window=0.2)
+    E = np.linalg.eigvalsh(H.H.Hk(spin=0, format="array"))[6]
+    images = []
+    for spin in (0, [0]):
+        p = plot.LDOS(H, E, spin=spin, **kw)
+        try:
+            images.append(np.asarray(p.imshow.get_array()).copy())
+        finally:
+            p.close()
+    assert images[0].shape == (12, 12)
+    assert np.any(images[0] > 0)
+    assert np.array_equal(images[0], images[1])
