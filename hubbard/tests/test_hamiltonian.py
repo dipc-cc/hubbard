@@ -104,7 +104,10 @@ def test_copy_converged_stays_converged(system):
         dn = Hc.iterate(calc_n)
         assert dn < 1e-8
         assert abs(Hc.Etot - H.Etot) < 1e-8
-    Hc.converge(calc_n, tol=1e-12, print_info=False)
+    # The same converge call on both, so the comparison does not depend on how
+    # tightly the original was converged
+    Hc.converge(calc_n, tol=1e-12, max_iter=300, print_info=False)
+    H.converge(calc_n, tol=1e-12, max_iter=300, print_info=False)
     assert abs(Hc.Etot - H.Etot) < 1e-10
     assert np.abs(Hc.n - H.n).max() < 1e-10
 
