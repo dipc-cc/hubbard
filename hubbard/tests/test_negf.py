@@ -3,8 +3,7 @@ import pytest
 import sisl
 
 import hubbard.density as density
-from hubbard import HubbardHamiltonian, sp2
-from hubbard.negf import NEGF
+from hubbard import HubbardHamiltonian, sp2, NEGF
 
 # The default equilibrium contour (hubbard/EQCONTOUR) is a 300 K contour:
 # its Matsubara poles are spaced 2*pi*kT = 0.1624267490396 eV apart.
@@ -91,3 +90,18 @@ def test_wideband_coupling(make, coupling):
 
     assert np.allclose(negf.DOS(H, E, spin=0, eta=eta_dos), lorentz.sum(1), rtol=1e-10, atol=0)
     assert np.allclose(negf.PDOS(H, E, spin=0, eta=eta_dos), pdos_ref, rtol=1e-10, atol=1e-14)
+
+
+def test_negf_bias_not_implemented():
+    # Finite bias is not supported and must fail before any set-up
+    He = sp2(sisl.geom.zgnr(2))
+    E = HubbardHamiltonian(He, U=3., kT=0.025)
+    HC = He.tile(3, axis=0)
+    HC.set_nsc([1, 1, 1])
+    idx = [range(len(He)), range(len(HC.H) - len(He), len(HC.H))]
+    D = HubbardHamiltonian(HC.H, n=np.tile(E.n, 3), U=3., kT=0.025)
+    He_k = E.H.Hk().toarray()
+    with pytest.raises(NotImplementedError, match="bias"):
+        NEGF(D, [(E, '-A'), (E, '+A')], idx, V=0.1)
+    # The electrodes were not shifted to their chemical potentials
+    assert np.array_equal(E.H.Hk().toarray(), He_k)

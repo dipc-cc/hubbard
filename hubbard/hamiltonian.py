@@ -811,6 +811,10 @@ class HubbardHamiltonian(object):
     def DOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
+        The DOS is averaged over the k-points of the Brillouin-zone sampling of the object,
+        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.
+        For a molecule (``nkpt=[1, 1, 1]``) this is the DOS at the Gamma point.
+
         Parameters
         ----------
         egrid: array_like
@@ -831,7 +835,10 @@ class HubbardHamiltonian(object):
         Returns
         -------
         DOS: numpy.ndarray
-            density of states at the given energies for the selected spin
+            density of states at the given energies for the selected spin, in states per eV
+            per unit cell. Integrated over energy, each spin channel gives the number of
+            orbitals in the unit cell, for k-point weights that sum to one (as those of
+            ``nkpt``, a `sisl.MonkhorstPack`, do).
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
@@ -846,15 +853,20 @@ class HubbardHamiltonian(object):
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
-        # Obtain eigenvalues
+        # Average over the k-points with their weights
         dos = 0
         for ispin in spin:
-            eig = self.eigh(spin=ispin)
-            dos += sisl.electron.DOS(egrid, eig, distribution=distribution)
+            for w, k in zip(self.mp.weight, self.mp.k):
+                eig = self.eigh(k=k, spin=ispin)
+                dos += w * sisl.electron.DOS(egrid, eig, distribution=distribution)
         return dos
 
     def PDOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
+
+        The PDOS is averaged over the k-points of the Brillouin-zone sampling of the object,
+        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.
+        For a molecule (``nkpt=[1, 1, 1]``) this is the PDOS at the Gamma point.
 
         Parameters
         ----------
@@ -876,7 +888,9 @@ class HubbardHamiltonian(object):
         Returns
         -------
         PDOS: numpy.ndarray
-            projected density of states at the given energies for the selected spin
+            projected density of states at the given energies for the selected spin, in states
+            per eV per unit cell, of shape ``(1, no, len(egrid))`` with the orbital index on the
+            second axis. For an orthogonal basis, its sum over orbitals is the DOS.
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
@@ -891,10 +905,11 @@ class HubbardHamiltonian(object):
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
-        # Obtain PDOS
+        # Average over the k-points with their weights
         pdos = 0
         for ispin in spin:
-            ev, evec = self.eigh(eigvals_only=False, spin=ispin)
-            pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
+            for w, k in zip(self.mp.weight, self.mp.k):
+                ev, evec = self.eigh(k=k, eigvals_only=False, spin=ispin)
+                pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
 
         return pdos
