@@ -5,26 +5,23 @@
 
 # First we define the build-system which we will probably alter the most
 [build-system]
-# TODO update this together with setup.py
 requires = [
     "wheel",
-    "setuptools>=46",
-    "setuptools_scm[toml]>=6.2",
+    "setuptools>=61",
+    "setuptools_scm[toml]>=8",
 ]
 build-backend = "setuptools.build_meta"
 
 # Top most items are probably changed the most
 [project]
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 
-# Dependencies are forced from sisl
-# So we do not need to specify numpy, netcdf etc.
-# Only the ones that sisl does not specify
-# This ensures that hubbard should not worry about
-# dependencies
+# netCDF4 (optional, for HU.nc files) comes through sisl
 dependencies = [
-    "sisl>=0.15.0",
-    "matplotlib>=2.2.2"
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "sisl>=0.15",
+    "matplotlib>=3.9",
 ]
 
 
@@ -49,7 +46,11 @@ classifiers = [
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3", # it is allowed on all Python 3 versions
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Utilities"
