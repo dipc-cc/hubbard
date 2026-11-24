@@ -205,10 +205,84 @@ def test_tile_repeat_multi_orbital(method, spin):
 
 @pytest.mark.parametrize("method", ['tile', 'repeat'])
 def test_tile_repeat_Uij_raises(method):
+    # Uij is not tiled yet: a nonzero Uij raises, an all-zero one is dropped
     h = sp2(sisl.geom.zgnr(2))
-    H = hh.HubbardHamiltonian(h, U=3., Uij=np.zeros((h.no, h.no)))
-    with pytest.raises(NotImplementedError, match="Uij"):
+    Uij = np.full((h.no, h.no), 0.1)
+    H = hh.HubbardHamiltonian(h, U=3., Uij=Uij)
+    with pytest.raises(NotImplementedError, match="nonzero Uij"):
         getattr(H, method)(2, 0)
+    H = hh.HubbardHamiltonian(h, U=3., Uij=np.zeros((h.no, h.no)))
+    assert getattr(H, method)(2, 0).Uij is None
+
+
+def _two_orbital_molecule(**kwargs):
+    # Two atoms with two orbitals each; orbitals 0, 1 on atom 0 and 2, 3 on atom 1
+    atom = sisl.Atom(6, R=[1.6, 1.6])
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atom, lattice=[10, 10, 10])
+    h = sisl.Hamiltonian(g, spin='polarized')
+    h[0, 2] = -2.7
+    h[1, 3] = -1.
+    return hh.HubbardHamiltonian(h, **kwargs)
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+def test_derived_Uij_multi_orbital(method):
+    # Uij is indexed by orbital, these methods by atom: with more than one
+    # orbital per atom only copy carries Uij over
+    Uij = np.zeros((4, 4))
+    H = _two_orbital_molecule(U=3., Uij=Uij)
+    args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([1],), 'remove': ([0],)}[method]
+    if method == 'copy':
+        assert np.array_equal(H.copy().Uij, Uij)
+    else:
+        with pytest.raises(NotImplementedError, match="more than one orbital"):
+            getattr(H, method)(*args)
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+@pytest.mark.parametrize("U", [3., 'array'])
+def test_sub_remove_multi_orbital(method, U):
+    # Reference: the values on the orbitals of the kept atom 1, written out.
+    # q is their charge per spin, so renormalization leaves them unchanged.
+    n = [[0.1, 0.2, 0.3, 0.4], [0.1, 0.1, 0.2, 0.1]]
+    U = np.array([3., 1., 2., 0.5]) if U == 'array' else U
+    H = _two_orbital_molecule(U=U, n=n, q=(1., 0.5))
+    Hs = H.sub([1], q=(0.7, 0.3)) if method == 'sub' else H.remove([0], q=(0.7, 0.3))
+    assert np.allclose(Hs.n, [[0.3, 0.4], [0.2, 0.1]])
+    assert np.array_equal(Hs.U, [2., 0.5] if np.ndim(U) else 3.)
+    assert np.array_equal(_diag(Hs.TBHam, 0), _diag(H.TBHam, 0)[2:])
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+def test_derived_empty_spin_channel(method):
+    # Fully polarized: the down channel has no charge and no density, and
+    # must stay empty rather than become 0/0 = NaN
+    h = sp2(sisl.geom.zgnr(2))
+    H = hh.HubbardHamiltonian(h, U=3., q=(2., 0.))
+    assert np.array_equal(H.n[1], np.zeros(h.no))
+    kept = [0, 1, 2]
+    if method in ('sub', 'remove'):
+        q = (H.n[0, kept].sum(), 0.)
+        H2 = H.sub(kept, q=q) if method == 'sub' else H.remove([3], q=q)
+        n_ref = H.n[:, kept]
+    else:
+        args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0)}[method]
+        H2 = getattr(H, method)(*args)
+        n_ref = {'copy': H.n, 'tile': np.tile(H.n, 2), 'repeat': np.repeat(H.n, 2, axis=1)}[method]
+    assert np.all(np.isfinite(H2.n))
+    assert np.allclose(H2.n, n_ref)
+    assert H2.q[1] == 0.
+
+
+@pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
+def test_derived_owns_U(method):
+    # A 0-d ndarray U is mutable; the derived object must not share it
+    h = sp2(sisl.geom.zgnr(2))
+    H = hh.HubbardHamiltonian(h, U=np.array(3.))
+    args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([0, 1, 2],), 'remove': ([0],)}[method]
+    H2 = getattr(H, method)(*args)
+    H2.U[...] = 7.
+    assert H.U == 3.
 
 
 @pytest.mark.parametrize("method", ['sub', 'remove'])

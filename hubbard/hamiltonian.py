@@ -199,13 +199,31 @@ class HubbardHamiltonian(object):
 
         `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,
         so that the first `update_hamiltonian` of the new object adds the mean-field terms once.
-        The new object gets its own copy of this object's k-mesh
+        The new object gets its own copies of `U`, `Uij` and this object's k-mesh
         """
+        if isinstance(U, np.ndarray):
+            U = U.copy()
+        if Uij is not None:
+            Uij = np.array(Uij, copy=True)
         new = self.__class__(TBHam, n=n, U=U, Uij=Uij, q=q, nkpt=self.mp, kT=self.kT, units=self.units)
         new.H = H
         new.H.finalize()
         new.mp = self.mp.copy(new.H)
         return new
+
+    def _check_Uij(self, method, nonzero=False):
+        """ Raise if `method` cannot carry ``self.Uij`` over to a derived object
+
+        Atom-indexed operations cannot map an orbital-indexed `Uij` when an atom has more than
+        one orbital; with `nonzero`, the operation cannot carry over any nonzero `Uij` at all
+        """
+        if self.Uij is None:
+            return
+        if self.geometry.no > self.geometry.na:
+            raise NotImplementedError(f"{self.__class__.__name__}.{method} cannot handle Uij "
+                                      "with more than one orbital per atom")
+        if nonzero and np.any(self.Uij):
+            raise NotImplementedError(f"{self.__class__.__name__}.{method} cannot handle a nonzero Uij")
 
     def tile(self, reps, axis):
         """ Tile the HubbardHamiltonian object along a specified axis to obtain a larger one
@@ -234,10 +252,10 @@ class HubbardHamiltonian(object):
         Raises
         ------
         NotImplementedError
-            if this object has inter-orbital interactions `Uij`, which are not tiled yet
+            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.
+            `Uij` is not tiled yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``
         """
-        if self.Uij is not None:
-            raise NotImplementedError(f"{self.__class__.__name__}.tile cannot handle Uij yet")
+        self._check_Uij('tile', nonzero=True)
         # sisl tiles cell by cell, so the orbitals keep their order within each copy
         ntile = np.tile(self.n, reps)
         U = self.U if np.ndim(self.U) == 0 else np.tile(self.U, reps)
@@ -271,10 +289,10 @@ class HubbardHamiltonian(object):
         Raises
         ------
         NotImplementedError
-            if this object has inter-orbital interactions `Uij`, which are not repeated yet
+            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.
+            `Uij` is not repeated yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``
         """
-        if self.Uij is not None:
-            raise NotImplementedError(f"{self.__class__.__name__}.repeat cannot handle Uij yet")
+        self._check_Uij('repeat', nonzero=True)
         # sisl repeats atom by atom, keeping the orbitals of each atom together
         g = self.geometry
         idx = np.concatenate([np.tile(g.a2o(ia, all=True), reps) for ia in range(g.na)])
@@ -287,9 +305,10 @@ class HubbardHamiltonian(object):
         """ Return a new `HubbardHamiltonian` object without the atoms in `atoms`
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
-        `U` and `Uij` are restricted to the remaining atoms, and the densities are renormalized to `q`.
-        The first `iterate` solves this restricted ``H``, and then rebuilds its mean-field terms
-        from the reference Hamiltonian and the new densities
+        `U` and `Uij` are restricted to the remaining atoms (and their orbitals), and the densities are
+        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its
+        mean-field terms from the reference Hamiltonian and the new densities.
+        `Uij` is passed through, not validated, and only with one orbital per atom
 
         Parameters
         ----------
@@ -308,6 +327,11 @@ class HubbardHamiltonian(object):
         Returns
         -------
         A new smaller `hubbard.HubbardHamiltonian` object
+
+        Raises
+        ------
+        NotImplementedError
+            if this object has `Uij` and an atom with more than one orbital
         """
         atoms = self.geometry.sc2uc(atoms)
         import sisl._array as _a
@@ -318,9 +342,10 @@ class HubbardHamiltonian(object):
         """ Return a new `HubbardHamiltonian` object of a subset of selected atoms
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
-        `U` and `Uij` are restricted to the kept atoms, and the densities are renormalized to `q`.
-        The first `iterate` solves this restricted ``H``, and then rebuilds its mean-field terms
-        from the reference Hamiltonian and the new densities
+        `U` and `Uij` are restricted to the kept atoms (and their orbitals), and the densities are
+        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its
+        mean-field terms from the reference Hamiltonian and the new densities.
+        `Uij` is passed through, not validated, and only with one orbital per atom
 
         Parameters
         ----------
@@ -339,9 +364,17 @@ class HubbardHamiltonian(object):
         Returns
         -------
         A new smaller `hubbard.HubbardHamiltonian` object
+
+        Raises
+        ------
+        NotImplementedError
+            if this object has `Uij` and an atom with more than one orbital
         """
-        nsub = self.n[:, atoms]
-        U = self.U if np.ndim(self.U) == 0 else self.U[atoms]
+        self._check_Uij('sub')
+        # n and U are indexed by orbital, atoms by atom
+        orbs = self.geometry.a2o(np.arange(self.geometry.na)[atoms], all=True)
+        nsub = self.n[:, orbs]
+        U = self.U if np.ndim(self.U) == 0 else np.asarray(self.U)[orbs]
         if self.Uij is None:
             Uij = None
         else:
@@ -352,11 +385,10 @@ class HubbardHamiltonian(object):
         """ Return an independent copy of the `HubbardHamiltonian` object
 
         The copy holds the same reference and mean-field Hamiltonians, spin densities, charge, `U`, `Uij`,
-        `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object
+        `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object.
+        `Uij` is passed through, not validated
         """
-        U = np.array(self.U, copy=True) if isinstance(self.U, np.ndarray) else self.U
-        Uij = None if self.Uij is None else np.array(self.Uij, copy=True)
-        new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, U, Uij, self.q)
+        new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, self.U, self.Uij, self.q)
         # Restore the exact state, which the constructor may renormalize
         new.n = self.n.copy()
         new.q = self.q.copy()
@@ -404,7 +436,10 @@ class HubbardHamiltonian(object):
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
-        self.n *= (self.q / self.n.sum(1)).reshape(-1, 1)
+        nsum = self.n.sum(1)
+        # A spin channel with no charge and no density stays empty, instead of 0/0 = NaN
+        scale = ~((nsum == 0) & (self.q == 0))
+        self.n[scale] *= (self.q[scale] / nsum[scale]).reshape(-1, 1)
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites
