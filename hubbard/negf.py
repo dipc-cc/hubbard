@@ -268,7 +268,9 @@ class NEGF:
         RuntimeError
             if no device Fermi level brackets the charge `q` within 50 steps of at
             most 1 eV each from the starting `self.Ef`, for instance when it starts
-            far outside the bands
+            far outside the bands; or if the bracket around the Fermi level shrinks
+            to floating-point resolution before the charge is within `qtol`, for
+            instance when `qtol` is below the precision of the contour integration
         """
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -300,20 +302,24 @@ class NEGF:
         #    halves the dq of an end retained twice in a row, which restores
         #    superlinear convergence. A step outside the bracket, a non-finite
         #    one, or a fourth update in a row on the same side bisects instead,
-        #    so the bracket always shrinks.
+        #    so the bracket always shrinks, until no float lies inside it and the
+        #    search fails.
         lo = hi = None # [Ef, dq] of the bracket ends
         side = 0 # side of the last update: -1 (lo) or 1 (hi)
         nside = 0 # number of consecutive updates on that side
         step = 0. # the last step taken without a bracket
         dq_step = 0. # dq before that step
         nopen = 0 # number of steps taken without a bracket
+        first = True # the first pass only computes the charge at the starting Ef
+        dq_min = math.inf # smallest |dq| reached
         while abs(ntot - q) > qtol:
             # for debug purposes
             #print(ntot, q, qtol, Ef)
 
-            if ntot > 0.:
+            if not first:
                 # correct fermi-level
                 dq = ni.sum() - q
+                dq_min = min(dq_min, abs(dq))
 
                 s = -1 if dq < 0 else 1
                 nside = nside + 1 if s == side else 1
@@ -334,6 +340,11 @@ class NEGF:
                     a, b = min(lo[0], hi[0]), max(lo[0], hi[0])
                     if nside > 3 or not np.isfinite(Ef) or not a < Ef < b:
                         Ef = 0.5 * (a + b)
+                    if not a < Ef < b:
+                        # No float lies strictly inside the bracket: it cannot shrink
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open cannot shrink the bracket "
+                                           f"[{a}, {b}] of the Fermi level any further: |dq| = {dq_min} "
+                                           f"reached, qtol = {qtol}")
 
                 else:
 
@@ -455,6 +466,7 @@ class NEGF:
 
             # Calculate new charge
             ntot = ni.sum()
+            first = False
 
         # Save Fermi-level of the device
         self.Ef = Ef

@@ -324,3 +324,47 @@ def test_fermi_search_far_outside_bands(fermi_path):
     path = fermi_path(negf, H)
     assert len(path) == 51
     assert np.allclose(np.diff(path), 1., rtol=0, atol=1e-9)
+
+
+class _TooManyPasses(Exception):
+    pass
+
+
+def _limit_passes(monkeypatch, negf, H, limit):
+    # Make a search that does not end fail after `limit` density passes
+    _G = negf_module._G
+    c0 = negf.CC_eq[0, 0]
+    calls = [0]
+
+    def counter(e, *args):
+        if e.imag == c0.imag:
+            calls[0] += 1
+            if calls[0] > limit * H.spin_size * len(H.mp.k):
+                raise _TooManyPasses
+        return _G(e, *args)
+    monkeypatch.setattr(negf_module, '_G', counter)
+
+
+def test_fermi_search_counts_nonpositive_charge(monkeypatch):
+    # So far below the bands the contour gives a charge of about -1e-11.
+    # That is an ordinary point with dq < 0, so the search steps up and
+    # fails after its 50 steps without a bracket
+    H, _, negf, _ = _open_system(_polarized_density(), 'polarized')
+    q = H.q + np.array([0.2, 0.1])
+    _limit_passes(monkeypatch, negf, H, 100)
+    negf.Ef = -1e6
+    with pytest.raises(RuntimeError, match="brackets the charge"):
+        negf.calc_n_open(H, q, qtol=1e-6)
+
+
+def test_fermi_search_bracket_at_resolution(monkeypatch):
+    # A qtol below the precision of the charge: the bracket shrinks to
+    # adjacent floats and the search fails instead of repeating Ef
+    geom = sisl.Geometry([0., 0., 0.], sisl.Atom(1, R=1.), lattice=[10., 10., 10.])
+    geom.set_nsc([1, 1, 1])
+    TB = sisl.Hamiltonian(geom)
+    H = HubbardHamiltonian(TB, U=0., kT=0.025)
+    negf = NEGF(H, [sisl.WideBandSE(1, 0.1)], [[0]])
+    _limit_passes(monkeypatch, negf, H, 500)
+    with pytest.raises(RuntimeError, match="cannot shrink the bracket"):
+        negf.calc_n_open(H, 0.123456789123, qtol=1e-20)
