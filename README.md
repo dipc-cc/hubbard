@@ -11,14 +11,14 @@ Recommended [online documentation][doc].
 
 ## Dependencies ##
 Before installation of __hubbard__ the following packages are required
-   - python >= 3.6
-   - numpy >= 1.13
-   - scipy >= 0.18
-   - matplotlib >= 2.2.2
-   - [sisl][sisl] >= 0.15.0
+   - python >= 3.10
+   - numpy >= 2.0
+   - scipy >= 1.14
+   - matplotlib >= 3.9
+   - [sisl][sisl] >= 0.15
 
 Optional dependencies:
-   - [netCDF4][netcdf] >= 1.3.1
+   - [netCDF4][netcdf] >= 1.7
 
 ## Installation ##
 Manual installation is performed with the command

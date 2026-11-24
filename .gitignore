@@ -1,6 +1,7 @@
 build
 *.pyc
 Hubbard/info.py
+hubbard/_version.py
 *.pdf
 *.nc
 !Tests/mol-ref/mol-ref.nc
