@@ -40,25 +40,38 @@ class _WideBandNoOverride(sisl.WideBandSE):
     pass
 
 
+class _WideBandNoOverrideChild(_WideBandNoOverride):
+    pass
+
+
 class _WideBandOverride(sisl.WideBandSE):
     # A user's wide-band electrode with its own, energy-independent coupling
     def self_energy(self, *args, **kwargs):
         return np.diag(np.repeat(-0.4j, len(self)))
 
 
-@pytest.mark.parametrize("cls, coupling", [
+def _instance_override(no, eta):
+    # A user's wide-band electrode whose method is replaced on the instance
+    se = sisl.WideBandSE(no, eta)
+    se.self_energy = lambda *args, **kwargs: np.diag(np.repeat(-0.9j, no))
+    return se
+
+
+@pytest.mark.parametrize("make, coupling", [
     (sisl.WideBandSE, 0.1),
     (_WideBandNoOverride, 0.1),
+    (_WideBandNoOverrideChild, 0.1),
     (_WideBandOverride, 0.4),
-], ids=["WideBandSE", "subclass", "subclass-override"])
-def test_wideband_coupling(cls, coupling):
+    (_instance_override, 0.9),
+], ids=["WideBandSE", "subclass", "subsubclass", "subclass-override", "instance-override"])
+def test_wideband_coupling(make, coupling):
     # A WideBandSE(n, eta) couples its orbitals with -i*eta*I at every energy,
-    # whatever the installed sisl version; a subclass that overrides
-    # self_energy couples with what its own method returns
+    # whatever the installed sisl version; an override of self_energy, in a
+    # subclass or on the instance, couples with what it returns
     eta = 0.1
     H = _molecule(kT_contour)
     no = len(H.H)
-    negf = NEGF(H, [cls(no, eta)], [np.arange(no)])
+    negf = NEGF(H, [make(no, eta)], [np.arange(no)])
 
     se_ref = -1j * coupling * np.eye(no)
     for spin in range(H.spin_size):
