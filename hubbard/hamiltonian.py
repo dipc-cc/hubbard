@@ -218,6 +218,11 @@ class HubbardHamiltonian(object):
         new.mp = self.mp.copy(new.H)
         return new
 
+    def _check_q(self, method, q):
+        """ Raise if the electron count `q` passed to `method` has a negative entry """
+        if np.any(np.asarray(q) < 0):
+            raise ValueError(f"{self.__class__.__name__}.{method} requires a non-negative q, got {q}")
+
     def _check_Uij(self, method, nonzero=False):
         """ Raise if `method` cannot carry ``self.Uij`` over to a derived object
 
@@ -324,8 +329,9 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             electron count per spin channel (one value if unpolarized, up and down if polarized)
             for the remaining atoms. The default takes it from the charge of the remaining atoms,
-            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given,
-            so a zero entry keeps that spin channel empty
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.
+            A spin channel with no density on the remaining atoms stays empty if its charge is zero,
+            and otherwise starts uniform, at its charge over the number of orbitals
 
         See Also
         ------------
@@ -338,9 +344,12 @@ class HubbardHamiltonian(object):
 
         Raises
         ------
+        ValueError
+            if an entry of `q` is negative
         NotImplementedError
             if this object has `Uij` and an atom with more than one orbital
         """
+        self._check_q('remove', q)
         self._check_Uij('remove')
         atoms = self.geometry.sc2uc(atoms)
         import sisl._array as _a
@@ -363,8 +372,9 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             electron count per spin channel (one value if unpolarized, up and down if polarized)
             for the kept atoms. The default takes it from the charge of the kept atoms,
-            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given,
-            so a zero entry keeps that spin channel empty
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.
+            A spin channel with no density on the kept atoms stays empty if its charge is zero,
+            and otherwise starts uniform, at its charge over the number of orbitals
 
         See Also
         ------------
@@ -377,9 +387,12 @@ class HubbardHamiltonian(object):
 
         Raises
         ------
+        ValueError
+            if an entry of `q` is negative
         NotImplementedError
             if this object has `Uij` and an atom with more than one orbital
         """
+        self._check_q('sub', q)
         self._check_Uij('sub')
         # n and U are indexed by orbital, atoms by atom
         orbs = self.geometry.a2o(np.arange(self.geometry.na)[atoms], all=True)
@@ -449,9 +462,11 @@ class HubbardHamiltonian(object):
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
         nsum = self.n.sum(1)
-        # A spin channel with no charge and no density stays empty, instead of 0/0 = NaN
-        scale = ~((nsum == 0) & (self.q == 0))
-        self.n[scale] *= (self.q[scale] / nsum[scale]).reshape(-1, 1)
+        # A spin channel without density cannot be scaled (0/0 = NaN): it starts uniform at
+        # q/no, as an object without a density does, and so stays empty when q = 0
+        empty = nsum == 0
+        self.n[empty] = (self.q[empty] / self.sites).reshape(-1, 1)
+        self.n[~empty] *= (self.q[~empty] / nsum[~empty]).reshape(-1, 1)
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites

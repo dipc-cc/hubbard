@@ -283,6 +283,53 @@ def test_derived_empty_spin_channel(method, empty):
     assert np.allclose(H2.q, n_ref.sum(1))
 
 
+def _polarized_molecule():
+    # Six-carbon closed molecule, fully polarized: 2 up electrons, no down density
+    g = sisl.geom.agnr(5).sub(range(6))
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3., q=(2, 0))
+    assert np.array_equal(H.n[1], np.zeros(6))
+    return H
+
+
+@pytest.mark.parametrize("case", ['sub-q', 'sub-default', 'remove-default'])
+def test_sub_remove_fill_empty_channel(case):
+    # The down channel has no density on the kept atoms 0, 1, 2 but is asked
+    # for charge: it starts uniform at q/no instead of 0/0 = NaN
+    H = _polarized_molecule()
+    if case == 'sub-q':
+        Hs, q = H.sub([0, 1, 2], q=(1, 1)), (1., 1.)
+    else:
+        Hs = H.sub([0, 1, 2]) if case == 'sub-default' else H.remove([3, 4, 5])
+        # Default: the three carbon pz electrons of the kept atoms, with the
+        # constructor's split q_dn = 3 // 2, q_up = 3 - q_dn
+        q = (2., 1.)
+    assert np.all(np.isfinite(Hs.n))
+    assert np.allclose(Hs.q, q)
+    assert np.allclose(Hs.n.sum(1), q)
+    assert np.allclose(Hs.n[1], np.full(3, q[1] / 3))
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_zero_charge_channel_stays_empty(method):
+    H = _polarized_molecule()
+    Hs = H.sub([0, 1, 2], q=(2, 0)) if method == 'sub' else H.remove([3, 4, 5], q=(2, 0))
+    assert np.array_equal(Hs.n[1], np.zeros(3))
+    assert np.allclose(Hs.n[0], H.n[0, :3] * 2 / H.n[0, :3].sum())
+
+
+@pytest.mark.parametrize("method", ['sub', 'remove'])
+def test_sub_remove_negative_q_raises(method):
+    g = sisl.geom.agnr(5).sub(range(6))
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g), U=3.)
+    with pytest.raises(ValueError, match="non-negative q"):
+        if method == 'sub':
+            H.sub([0, 1, 2], q=(-1, 1))
+        else:
+            H.remove([3, 4, 5], q=(-1, 1))
+
+
 @pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
 @pytest.mark.parametrize("U", ['0-d', 'list'])
 def test_derived_owns_U(method, U):
