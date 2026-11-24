@@ -194,18 +194,25 @@ class HubbardHamiltonian(object):
         """
         return self.H.eigenstate(k, spin=spin)
 
-    def _derive(self, TBHam, H, n, U, Uij, q):
+    def _derive(self, TBHam, H, n, U, Uij, q, exact=False):
         """ Return a new object with reference Hamiltonian `TBHam` whose mean-field Hamiltonian starts as `H`
 
         `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,
         so that the first `update_hamiltonian` of the new object adds the mean-field terms once.
-        The new object gets its own copies of `U`, `Uij` and this object's k-mesh
+        The new object gets its own copies of `U`, `Uij` and this object's k-mesh.
+        With `exact`, the new object takes `q` and `n` as given; otherwise the constructor
+        reads them, and treats a non-positive ``q[0]`` as not given
         """
-        if isinstance(U, np.ndarray):
-            U = U.copy()
+        if isinstance(U, np.ndarray) or np.ndim(U) > 0:
+            U = np.array(U, copy=True)
         if Uij is not None:
             Uij = np.array(Uij, copy=True)
-        new = self.__class__(TBHam, n=n, U=U, Uij=Uij, q=q, nkpt=self.mp, kT=self.kT, units=self.units)
+        new = self.__class__(TBHam, n=0 if exact else n, U=U, Uij=Uij, q=q,
+                             nkpt=self.mp, kT=self.kT, units=self.units)
+        if exact:
+            # Set after construction, so an empty spin channel (q = 0) is kept as such
+            new.q = np.array(q, dtype=np.float64)[:new.spin_size]
+            new.n = np.array(n, dtype=np.float64)
         new.H = H
         new.H.finalize()
         new.mp = self.mp.copy(new.H)
@@ -260,7 +267,7 @@ class HubbardHamiltonian(object):
         ntile = np.tile(self.n, reps)
         U = self.U if np.ndim(self.U) == 0 else np.tile(self.U, reps)
         return self._derive(self.TBHam.tile(reps, axis), self.H.tile(reps, axis),
-                            ntile, U, None, ntile.sum(1))
+                            ntile, U, None, ntile.sum(1), exact=True)
 
     def repeat(self, reps, axis):
         """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
@@ -299,7 +306,7 @@ class HubbardHamiltonian(object):
         nrep = self.n[:, idx]
         U = self.U if np.ndim(self.U) == 0 else np.asarray(self.U)[idx]
         return self._derive(self.TBHam.repeat(reps, axis), self.H.repeat(reps, axis),
-                            nrep, U, None, nrep.sum(1))
+                            nrep, U, None, nrep.sum(1), exact=True)
 
     def remove(self, atoms, q=(0,0)):
         """ Return a new `HubbardHamiltonian` object without the atoms in `atoms`
@@ -317,7 +324,8 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             electron count per spin channel (one value if unpolarized, up and down if polarized)
             for the remaining atoms. The default takes it from the charge of the remaining atoms,
-            as `HubbardHamiltonian` does when `q` is not given
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given,
+            so a zero entry keeps that spin channel empty
 
         See Also
         ------------
@@ -333,6 +341,7 @@ class HubbardHamiltonian(object):
         NotImplementedError
             if this object has `Uij` and an atom with more than one orbital
         """
+        self._check_Uij('remove')
         atoms = self.geometry.sc2uc(atoms)
         import sisl._array as _a
         atoms = np.delete(_a.arangei(self.geometry.na), atoms)
@@ -354,7 +363,8 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             electron count per spin channel (one value if unpolarized, up and down if polarized)
             for the kept atoms. The default takes it from the charge of the kept atoms,
-            as `HubbardHamiltonian` does when `q` is not given
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given,
+            so a zero entry keeps that spin channel empty
 
         See Also
         ------------
@@ -379,7 +389,12 @@ class HubbardHamiltonian(object):
             Uij = None
         else:
             Uij = self.Uij[np.ix_(atoms, atoms)]
-        return self._derive(self.TBHam.sub(atoms), self.H.sub(atoms), nsub, U, Uij, q)
+        # The default q is read by the constructor; any other q is used as given
+        exact = bool(np.any(np.asarray(q) != 0))
+        new = self._derive(self.TBHam.sub(atoms), self.H.sub(atoms), nsub, U, Uij, q, exact=exact)
+        if exact:
+            new.normalize_charge()
+        return new
 
     def copy(self):
         """ Return an independent copy of the `HubbardHamiltonian` object
@@ -388,10 +403,7 @@ class HubbardHamiltonian(object):
         `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object.
         `Uij` is passed through, not validated
         """
-        new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, self.U, self.Uij, self.q)
-        # Restore the exact state, which the constructor may renormalize
-        new.n = self.n.copy()
-        new.q = self.q.copy()
+        new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, self.U, self.Uij, self.q, exact=True)
         if hasattr(self, 'Etot'):
             new.Etot = self.Etot
         return new

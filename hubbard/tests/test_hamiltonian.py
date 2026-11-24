@@ -235,7 +235,8 @@ def test_derived_Uij_multi_orbital(method):
     if method == 'copy':
         assert np.array_equal(H.copy().Uij, Uij)
     else:
-        with pytest.raises(NotImplementedError, match="more than one orbital"):
+        # The message names the method called, also for remove, which uses sub
+        with pytest.raises(NotImplementedError, match=rf"\.{method} cannot handle Uij"):
             getattr(H, method)(*args)
 
 
@@ -254,15 +255,22 @@ def test_sub_remove_multi_orbital(method, U):
 
 
 @pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
-def test_derived_empty_spin_channel(method):
-    # Fully polarized: the down channel has no charge and no density, and
-    # must stay empty rather than become 0/0 = NaN
+@pytest.mark.parametrize("empty", [1, 0])
+def test_derived_empty_spin_channel(method, empty):
+    # Fully polarized: one channel has no charge and no density, and must
+    # stay empty rather than become 0/0 = NaN or be given a charge
     h = sp2(sisl.geom.zgnr(2))
     H = hh.HubbardHamiltonian(h, U=3., q=(2., 0.))
-    assert np.array_equal(H.n[1], np.zeros(h.no))
+    if empty == 0:
+        # Spin up empty: the constructor would read q[0] = 0 as "not given"
+        H.n = H.n[::-1].copy()
+        H.q = H.q[::-1].copy()
+    full = 1 - empty
+    assert np.array_equal(H.n[empty], np.zeros(h.no))
     kept = [0, 1, 2]
     if method in ('sub', 'remove'):
-        q = (H.n[0, kept].sum(), 0.)
+        q = [0., 0.]
+        q[full] = H.n[full, kept].sum()
         H2 = H.sub(kept, q=q) if method == 'sub' else H.remove([3], q=q)
         n_ref = H.n[:, kept]
     else:
@@ -271,18 +279,25 @@ def test_derived_empty_spin_channel(method):
         n_ref = {'copy': H.n, 'tile': np.tile(H.n, 2), 'repeat': np.repeat(H.n, 2, axis=1)}[method]
     assert np.all(np.isfinite(H2.n))
     assert np.allclose(H2.n, n_ref)
-    assert H2.q[1] == 0.
+    assert H2.q[empty] == 0.
+    assert np.allclose(H2.q, n_ref.sum(1))
 
 
 @pytest.mark.parametrize("method", ['copy', 'tile', 'repeat', 'sub', 'remove'])
-def test_derived_owns_U(method):
-    # A 0-d ndarray U is mutable; the derived object must not share it
+@pytest.mark.parametrize("U", ['0-d', 'list'])
+def test_derived_owns_U(method, U):
+    # A 0-d ndarray or list U is mutable; the derived object must not share it
     h = sp2(sisl.geom.zgnr(2))
-    H = hh.HubbardHamiltonian(h, U=np.array(3.))
+    U = np.array(3.) if U == '0-d' else [3.] * h.no
+    H = hh.HubbardHamiltonian(h, U=U)
     args = {'copy': (), 'tile': (2, 0), 'repeat': (2, 0), 'sub': ([0, 1, 2],), 'remove': ([0],)}[method]
     H2 = getattr(H, method)(*args)
-    H2.U[...] = 7.
-    assert H.U == 3.
+    assert H2.U is not H.U
+    if np.ndim(H2.U):
+        H2.U[0] = 7.
+    else:
+        H2.U[...] = 7.
+    assert np.all(np.asarray(H.U) == 3.)
 
 
 @pytest.mark.parametrize("method", ['sub', 'remove'])
