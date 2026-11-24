@@ -355,7 +355,16 @@ class HubbardHamiltonian(object):
             atomic sites where the spin-up density is going to be maximized
         dn: array_like, optional
             atomic sites where the spin-down density is going to be maximized
+
+        Raises
+        ------
+        ValueError
+            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin
+            polarization needs a polarized Hamiltonian
         """
+        if self.spin_size != 2:
+            raise ValueError(self.__class__.__name__ + '.set_polarization(...) requires a spin-polarized Hamiltonian '
+                             f'(spin_size == 2), got spin_size == {self.spin_size}')
         self.n[:, up] = np.array([1., 0.]).reshape(2, 1)
         if len(dn) > 0:
             self.n[:, dn] = np.array([0., 1.]).reshape(2, 1)
@@ -364,7 +373,17 @@ class HubbardHamiltonian(object):
     def polarize_sublattices(self):
         """ Quick way to polarize the lattices
         without checking that consequtive atoms actually belong to
-        different sublattices """
+        different sublattices
+
+        Raises
+        ------
+        ValueError
+            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin
+            polarization needs a polarized Hamiltonian
+        """
+        if self.spin_size != 2:
+            raise ValueError(self.__class__.__name__ + '.polarize_sublattices(...) requires a spin-polarized Hamiltonian '
+                             f'(spin_size == 2), got spin_size == {self.spin_size}')
         a = np.arange(len(self.H))
         self.n[0, :] = a % 2
         self.n[1, :] = 1 - self.n[0, :]
