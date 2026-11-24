@@ -79,18 +79,18 @@ def test_converge_no_warning_when_converged():
         H.converge(density.calc_n, tol=tol, max_iter=n_iter - 1)
 
 
-def test_converge_warns_on_nan_density():
-    # A NaN dn ends the loop (NaN > tol is False); it must not pass as converged
+@pytest.mark.parametrize("value", [np.nan, np.inf])
+@pytest.mark.parametrize("max_iter", [None, 5])
+def test_converge_raises_on_non_finite_dn(value, max_iter):
+    # A NaN dn would end the loop as if converged (NaN > tol is False), and
+    # an infinite one would keep it iterating; both must stop at once
     calls = []
 
-    def nan_density(H, q):
+    def bad_density(H, q):
         calls.append(1)
-        return np.full_like(H.n, np.nan), 0.
+        return np.full_like(H.n, value), 0.
 
-    for max_iter in [None, 5]:
-        calls.clear()
-        H = _zgnr_start()
-        with pytest.warns(UserWarning, match="not finite"):
-            dn = H.converge(nan_density, max_iter=max_iter)
-        assert len(calls) == 1
-        assert np.isnan(dn)
+    H = _zgnr_start()
+    with pytest.raises(FloatingPointError, match="not finite"):
+        H.converge(bad_density, max_iter=max_iter)
+    assert len(calls) == 1
