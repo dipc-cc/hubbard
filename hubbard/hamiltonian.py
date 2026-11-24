@@ -508,7 +508,15 @@ class HubbardHamiltonian(object):
         Raises
         ------
         ValueError
-            if `ext_geom` is neither None nor a `sisl.Geometry`
+            if `ext_geom` is neither None nor a `sisl.Geometry`, if no atom of `ext_geom`
+            coincides with an atom of the Hamiltonian's geometry, or if an atom of either
+            geometry lies within `eps` of more than one atom of the other
+
+        Warns
+        -----
+        UserWarning
+            if some atoms of the Hamiltonian's geometry have no coinciding atom in `ext_geom`
+            (only the primary unit cell of `ext_geom` is searched); their polarization is not written
         """
         if not os.path.isfile(fn):
             mode = 'w'
@@ -520,6 +528,20 @@ class HubbardHamiltonian(object):
             # idx[i] (in ext_geom) and idx_internal[i] (in self.geometry) are the same atom
             idx, idx_internal = ext_geom.overlap(self.geometry, atol=eps)
             geom = ext_geom
+            name = self.__class__.__name__ + '.write_initspin(...)'
+            if len(idx) == 0:
+                raise ValueError(f'{name} found no atom of ext_geom within eps={eps} of an atom of the Hamiltonian geometry')
+            # each atom may be paired once, or a SIESTA index or a polarization would be written twice
+            ext_atoms, ext_count = np.unique(idx, return_counts=True)
+            int_atoms, int_count = np.unique(idx_internal, return_counts=True)
+            if np.any(ext_count > 1) or np.any(int_count > 1):
+                raise ValueError(f'{name} pairs atoms ambiguously, an atom lies within eps={eps} of more than one atom '
+                                 f'of the other geometry: ext_geom atoms {ext_atoms[ext_count > 1].tolist()}, '
+                                 f'Hamiltonian geometry atoms {int_atoms[int_count > 1].tolist()}')
+            missing = np.setdiff1d(np.arange(self.geometry.na), int_atoms)
+            if missing.size > 0:
+                warnings.warn(f'{name}: {missing.size} atoms of the Hamiltonian geometry have no match in ext_geom '
+                              f'and are not written (first indices: {missing[:5].tolist()})', UserWarning)
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
         polarization = (self.n[0] - self.n[1])[idx_internal]
