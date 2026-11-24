@@ -868,6 +868,11 @@ class HubbardHamiltonian(object):
         ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.
         For a molecule (``nkpt=[1, 1, 1]``) this is the PDOS at the Gamma point.
 
+        The weight of an eigenstate ``c`` on orbital ``i`` is ``|c_i|**2`` for an orthogonal
+        basis. For a non-orthogonal basis the projection is Mulliken's,
+        ``Re[conj(c_i) (S(k) c)_i]`` with the overlap ``S(k)``, so that the PDOS still sums
+        to the DOS; the PDOS of an orbital can then be negative.
+
         Parameters
         ----------
         egrid: array_like
@@ -890,7 +895,8 @@ class HubbardHamiltonian(object):
         PDOS: numpy.ndarray
             projected density of states at the given energies for the selected spin, in states
             per eV per unit cell, of shape ``(1, no, len(egrid))`` with the orbital index on the
-            second axis. For an orthogonal basis, its sum over orbitals is the DOS.
+            second axis. Its sum over orbitals is the DOS, for an orthogonal and a
+            non-orthogonal basis alike.
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
@@ -910,6 +916,11 @@ class HubbardHamiltonian(object):
         for ispin in spin:
             for w, k in zip(self.mp.weight, self.mp.k):
                 ev, evec = self.eigh(k=k, eigvals_only=False, spin=ispin)
-                pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
+                if self.H.orthogonal:
+                    pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
+                else:
+                    # Mulliken weights Re[c^* (S(k) c)]; Sk and eigh both use sisl's default gauge
+                    Sk = self.H.Sk(k=k, format='csr')
+                    pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, S=Sk, distribution=distribution)
 
         return pdos

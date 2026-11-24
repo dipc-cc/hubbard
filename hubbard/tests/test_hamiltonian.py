@@ -139,3 +139,74 @@ def test_dos_pdos_molecule_gamma():
         pdos = pdos + pdos_s
     assert np.array_equal(H.DOS(egrid, eta=eta), dos)
     assert np.array_equal(H.PDOS(egrid, eta=eta), pdos)
+
+
+# PDOS projects with the overlap (Mulliken) in a non-orthogonal basis
+
+
+def _polarized_zgnr_nonorthogonal():
+    # As _polarized_zgnr, with a first-neighbour overlap s1
+    geom = sisl.geom.zgnr(4)
+    H = hh.HubbardHamiltonian(sp2(geom, s1=0.13), U=3., q=(4.5, 3.5), nkpt=[16, 1, 1])
+    y = geom.xyz[:, 1]
+    H.set_polarization([np.argmin(y), np.argmax(y)])
+    H.converge(density.calc_n, tol=1e-8, print_info=False)
+    return H
+
+
+def test_pdos_mulliken_nonorthogonal():
+    import scipy.linalg as sla
+    H = _polarized_zgnr_nonorthogonal()
+    assert not H.H.orthogonal
+    assert np.abs(H.n[0] - H.n[1]).max() > 0.1
+    assert len(np.unique(np.round(H.mp.weight, 12))) > 1
+    egrid = np.linspace(-4, 4, 161)
+    eta = 0.05
+
+    # Reference on the full, unreduced 16-point mesh with equal weights: the
+    # generalized eigenproblem H(k) c = e S(k) c solved by scipy, the Mulliken
+    # weight Re[conj(c_i) (S(k) c)_i] of each state on each orbital, and a
+    # Lorentzian (eta / pi) / ((E - e)^2 + eta^2) written out here.
+    full = sisl.MonkhorstPack(H.H, [16, 1, 1], trs=False)
+    lorentz = lambda e: (eta / np.pi) / ((egrid[None, :] - e[:, None]) ** 2 + eta ** 2)
+    mulliken = {}
+    naive = {}
+    for s in (0, 1):
+        mulliken[s] = 0
+        naive[s] = 0
+        for w, k in zip(full.weight, full.k):
+            Hk = H.H.Hk(k=k, spin=s, format='array')
+            Sk = H.H.Sk(k=k, format='array')
+            e, c = sla.eigh(Hk, Sk)
+            weight = (np.conj(c) * (Sk @ c)).real  # (orbital, state)
+            mulliken[s] = mulliken[s] + w * weight @ lorentz(e)
+            naive[s] = naive[s] + w * (np.abs(c) ** 2) @ lorentz(e)
+    # The overlap matters: the Mulliken and |c|^2 projections differ
+    assert np.abs(mulliken[0] - naive[0]).max() > 1e-2
+    assert np.abs(mulliken[0] - mulliken[1]).max() > 1e-2
+
+    for spin, expected in ((0, mulliken[0]), (1, mulliken[1]),
+                           ([0, 1], mulliken[0] + mulliken[1])):
+        pdos = H.PDOS(egrid, eta=eta, spin=spin)
+        assert pdos.shape == (1, H.sites, len(egrid))
+        assert np.allclose(pdos[0], expected, rtol=0, atol=1e-10)
+        # Summed over orbitals, the PDOS is the DOS
+        dos = H.DOS(egrid, eta=eta, spin=spin)
+        assert np.allclose(pdos[0].sum(axis=0), dos, rtol=0, atol=1e-10)
+
+
+def test_pdos_orthogonal_unchanged():
+    # An orthogonal basis projects with |c|^2, through sisl's PDOS without an
+    # overlap, exactly as before the overlap was included
+    H = _polarized_zgnr()
+    assert H.H.orthogonal
+    egrid = np.linspace(-4, 4, 161)
+    eta = 0.05
+    dist = sisl.get_distribution('lorentzian', smearing=eta)
+    for spin in (0, 1, [0, 1]):
+        ref = 0
+        for s in ([spin] if isinstance(spin, int) else spin):
+            for w, k in zip(H.mp.weight, H.mp.k):
+                ev, evec = H.H.eigh(k=k, eigvals_only=False, spin=s)
+                ref += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=dist)
+        assert np.array_equal(H.PDOS(egrid, eta=eta, spin=spin), ref)
