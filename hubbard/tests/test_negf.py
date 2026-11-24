@@ -36,26 +36,42 @@ def test_wideband_zero_eta_is_closed_molecule():
     assert Etot == pytest.approx(Etot_ref, abs=1e-4)
 
 
-def test_wideband_self_energy_is_minus_i_eta():
+class _WideBandNoOverride(sisl.WideBandSE):
+    pass
+
+
+class _WideBandOverride(sisl.WideBandSE):
+    # A user's wide-band electrode with its own, energy-independent coupling
+    def self_energy(self, *args, **kwargs):
+        return np.diag(np.repeat(-0.4j, len(self)))
+
+
+@pytest.mark.parametrize("cls, coupling", [
+    (sisl.WideBandSE, 0.1),
+    (_WideBandNoOverride, 0.1),
+    (_WideBandOverride, 0.4),
+], ids=["WideBandSE", "subclass", "subclass-override"])
+def test_wideband_coupling(cls, coupling):
     # A WideBandSE(n, eta) couples its orbitals with -i*eta*I at every energy,
-    # whatever the installed sisl version
+    # whatever the installed sisl version; a subclass that overrides
+    # self_energy couples with what its own method returns
     eta = 0.1
     H = _molecule(kT_contour)
     no = len(H.H)
-    negf = NEGF(H, [sisl.WideBandSE(no, eta)], [np.arange(no)])
+    negf = NEGF(H, [cls(no, eta)], [np.arange(no)])
 
-    se_ref = -1j * eta * np.eye(no)
+    se_ref = -1j * coupling * np.eye(no)
     for spin in range(H.spin_size):
         assert np.array_equal(negf._ef_SE[spin][0][0], se_ref)
         for se_cc in negf._cc_eq_SE[spin][0][0]:
             assert np.array_equal(se_cc[0], se_ref)
 
     # With every orbital coupled, the device Green function is
-    # (E + i*(eta_dos + eta) - H)^-1, so each eigenstate contributes a
-    # Lorentzian of half-width eta_dos + eta to the DOS
+    # (E + i*(eta_dos + coupling) - H)^-1, so each eigenstate contributes a
+    # Lorentzian of half-width eta_dos + coupling to the DOS
     E = np.linspace(-1, 1, 21)
     eta_dos = 0.01
-    gamma = eta_dos + eta
+    gamma = eta_dos + coupling
     eig, vec = np.linalg.eigh(H.H.Hk(spin=0, format='array'))
     lorentz = gamma / np.pi / ((E[:, None] - eig[None, :]) ** 2 + gamma ** 2)
     pdos_ref = lorentz @ (np.abs(vec.T) ** 2)

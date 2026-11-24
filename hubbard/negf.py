@@ -37,12 +37,13 @@ def _G(e, HC, elec_idx, SE):
 def _self_energy(se, E, **kwargs):
     r""" Self-energy of an electrode at energy `E`
 
-    A `sisl.WideBandSE` gives :math:`-i\eta` times the identity, with
-    :math:`\eta` its own ``eta``, at every `E`. sisl < 0.16 returns this
-    itself; sisl >= 0.16 returns :math:`-i\pi\Im(E)` times the identity
-    (or times the overlap matrix, for an electrode built from a
-    non-orthogonal matrix) instead, so it is built here. Any other
-    self-energy comes from sisl.
+    A `sisl.WideBandSE` that uses sisl's own ``self_energy`` method gives
+    :math:`-i\eta` times the identity, with :math:`\eta` its own ``eta``,
+    at every `E`. sisl < 0.16 returns this itself; sisl >= 0.16 returns
+    :math:`-i\pi\Im(E)` times the identity (or times the overlap matrix,
+    for an electrode built from a non-orthogonal matrix) instead, so it is
+    built here. A subclass that overrides ``self_energy``, and any other
+    self-energy, is evaluated by its own method.
 
     Parameters
     ----------
@@ -53,7 +54,8 @@ def _self_energy(se, E, **kwargs):
     **kwargs :
        passed on to ``se.self_energy`` (``k``, ``spin``)
     """
-    if isinstance(se, sisl.WideBandSE):
+    if (isinstance(se, sisl.WideBandSE)
+            and type(se).self_energy is sisl.WideBandSE.self_energy):
         return np.diag(np.full(len(se), -1j * se.eta, dtype=np.complex128))
     return se.self_energy(E, **kwargs)
 
@@ -84,7 +86,9 @@ class NEGF:
         A `sisl.WideBandSE` couples its orbitals with the energy-independent
         self-energy :math:`-i\eta` times the identity, with :math:`\eta` (in eV)
         its own ``eta``, whatever the sisl version. Its ``self_energy`` method,
-        which on sisl >= 0.16 returns :math:`-i\pi\Im(E)` instead, is not called
+        which on sisl >= 0.16 returns :math:`-i\pi\Im(E)` instead, is not called.
+        A subclass of `sisl.WideBandSE` that overrides ``self_energy`` is
+        evaluated by its own method
     elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
     CC: str, optional
