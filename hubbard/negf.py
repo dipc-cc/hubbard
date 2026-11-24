@@ -40,7 +40,9 @@ def _self_energy(se, E, **kwargs):
     A `sisl.WideBandSE` gives :math:`-i\eta` times the identity, with
     :math:`\eta` its own ``eta``, at every `E`. sisl < 0.16 returns this
     itself; sisl >= 0.16 returns :math:`-i\pi\Im(E)` times the identity
-    instead, so it is built here. Any other self-energy comes from sisl.
+    (or times the overlap matrix, for an electrode built from a
+    non-orthogonal matrix) instead, so it is built here. Any other
+    self-energy comes from sisl.
 
     Parameters
     ----------

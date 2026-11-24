@@ -8,6 +8,8 @@ from hubbard.negf import NEGF
 
 # The default equilibrium contour (hubbard/EQCONTOUR) is a 300 K contour:
 # its Matsubara poles are spaced 2*pi*kT = 0.1624267490396 eV apart.
+# The molecule below is used at that kT for consistency; its gap is wide
+# enough that the closed-molecule comparison does not depend on it.
 kT_contour = 0.1624267490396 / (2 * np.pi)
 
 
@@ -20,7 +22,8 @@ def _molecule(kT):
 
 def test_wideband_zero_eta_is_closed_molecule():
     # Electrodes with eta = 0 leave the molecule closed: the NEGF density
-    # and energy must be those of diagonalization at the contour temperature
+    # and energy must be those of diagonalization. Across the 0.76 eV gap
+    # thermal occupation is negligible, so this does not probe kT
     H = _molecule(kT_contour)
     n_ref, Etot_ref = density.calc_n(H, H.q)
 
