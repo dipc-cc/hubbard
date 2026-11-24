@@ -535,7 +535,10 @@ class HubbardHamiltonian(object):
             method to obtain the spin-densities
             it *must* return the corresponding spin-densities (``n``) and the total energy (``Etot``)
         q: array_like, optional
-            total charge separated in spin-channels, q=[q_up, q_dn]
+            electron count per spin channel passed to `calc_n_method`, ``q=[q_up, q_dn]`` for a polarized
+            Hamiltonian and ``q=[q]`` for an unpolarized one (the count of one spin).
+            A ``None`` entry takes ``int(round(self.q[s]))`` for that channel. Defaults to `self.q`.
+            The caller's `q` is not modified; a `ValueError` is raised if it does not have one entry per spin channel.
         mixer: Mixer, optional
             `sisl.mixing.Mixer` instance for the SCF loop, defaults to linear mixing with weight 0.7
 
@@ -555,9 +558,12 @@ class HubbardHamiltonian(object):
         if q is None:
             q = self.q
         else:
-            for s in self.spin_size:
-                if q[s] is None:
-                    q[s] = int(round(self.q[s]))
+            if np.ndim(q) != 1 or len(q) != self.spin_size:
+                raise ValueError(f"{self.__class__.__name__}.iterate: q must have one entry per spin channel "
+                                 f"({self.spin_size}), got {q!r}")
+            # Build a new array so the caller's q is left unchanged
+            q = np.array([int(round(self.q[s])) if q[s] is None else q[s] for s in range(self.spin_size)],
+                         dtype=np.float64)
 
         ni, Etot = calc_n_method(self, q, **kwargs)
 
