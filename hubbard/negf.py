@@ -453,7 +453,10 @@ class NEGF:
         E: array_like
             energy grid to obtan the DOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the DOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.DOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
@@ -467,11 +470,14 @@ class NEGF:
 
         dos = np.zeros([len(E)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
 
                 # Append all the self-energies for the electrodes at each energy point
-                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
@@ -495,7 +501,10 @@ class NEGF:
         E: array_like
             energy grid to obtan the PDOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the PDOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.PDOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
@@ -509,9 +518,12 @@ class NEGF:
 
         ldos = np.zeros([len(E), len(H.H)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
-                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 

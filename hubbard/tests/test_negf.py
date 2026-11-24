@@ -105,3 +105,66 @@ def test_negf_bias_not_implemented():
         NEGF(D, [(E, '-A'), (E, '+A')], idx, V=0.1)
     # The electrodes were not shifted to their chemical potentials
     assert np.array_equal(E.H.Hk().toarray(), He_k)
+
+
+def _molecule_with_leads(spin):
+    # The 28-site 7-AGNR segment of _molecule, at U = 0, with a wide-band
+    # electrode of coupling eta = 0.1 eV on each pair of end sites
+    g = sisl.geom.agnr(7).tile(2, 0)
+    g.set_nsc([1, 1, 1])
+    H = HubbardHamiltonian(sp2(g, spin=spin), U=0., kT=kT_contour)
+    elec_idx = [[0, 1], [26, 27]]
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.1), sisl.WideBandSE(2, 0.1)], elec_idx)
+    return H, negf, elec_idx
+
+
+def test_dos_pdos_unpolarized():
+    # The DOS of the open molecule is -Im Tr[G]/pi with
+    # G = (E + i*eta - H_eff)^-1 and H_eff = H - i*0.1 on the electrode
+    # sites. With lambda the eigenvalues of the non-Hermitian H_eff,
+    # Tr[G] = sum 1/(E + i*eta - lambda); the PDOS is -Im diag(G)/pi
+    H, negf, elec_idx = _molecule_with_leads('unpolarized')
+    assert H.spin_size == 1
+    E = np.linspace(-3, 3, 31)
+    eta = 0.01
+
+    Heff = H.H.Hk(format='array').astype(np.complex128)
+    for idx in elec_idx:
+        Heff[idx, idx] -= 0.1j
+    lam = np.linalg.eigvals(Heff)
+    dos_ref = -(1 / (E[:, None] + 1j * eta - lam[None, :])).sum(1).imag / np.pi
+    pdos_ref = np.array([-np.linalg.inv((e + 1j * eta) * np.eye(len(Heff)) - Heff).diagonal().imag
+                         for e in E]) / np.pi
+
+    dos0 = negf.DOS(H, E, spin=0, eta=eta)
+    assert np.allclose(dos0, dos_ref, rtol=1e-10, atol=1e-12)
+    # Both spin indices are the single channel; the default sums the two
+    assert np.array_equal(negf.DOS(H, E, spin=1, eta=eta), dos0)
+    assert np.allclose(negf.DOS(H, E, eta=eta), 2 * dos0, rtol=1e-14, atol=0)
+
+    pdos0 = negf.PDOS(H, E, spin=0, eta=eta)
+    assert pdos0.shape == (len(E), len(H.H))
+    assert np.allclose(pdos0, pdos_ref, rtol=1e-10, atol=1e-12)
+    assert np.allclose(pdos0.sum(1), dos0, rtol=1e-10, atol=1e-12)
+    assert np.array_equal(negf.PDOS(H, E, spin=1, eta=eta), pdos0)
+    assert np.allclose(negf.PDOS(H, E, eta=eta), 2 * pdos0, rtol=1e-14, atol=0)
+
+
+def test_dos_pdos_unpolarized_equals_polarized_at_zero_polarization():
+    # At U = 0 the polarized molecule has the unpolarized H in both spin
+    # channels, so each channel's DOS and PDOS are the unpolarized ones
+    Hu, negf_u, _ = _molecule_with_leads('unpolarized')
+    Hp, negf_p, _ = _molecule_with_leads('polarized')
+    assert Hp.spin_size == 2
+    Hk = Hu.H.Hk(format='array')
+    for s in range(2):
+        assert np.array_equal(Hp.H.Hk(spin=s, format='array'), Hk)
+    E = np.linspace(-3, 3, 31)
+
+    dos_u = negf_u.DOS(Hu, E, spin=0)
+    pdos_u = negf_u.PDOS(Hu, E, spin=0)
+    for s in range(2):
+        assert np.allclose(negf_p.DOS(Hp, E, spin=s), dos_u, rtol=1e-12, atol=0)
+        assert np.allclose(negf_p.PDOS(Hp, E, spin=s), pdos_u, rtol=1e-12, atol=1e-15)
+    assert np.allclose(negf_p.DOS(Hp, E), negf_u.DOS(Hu, E), rtol=1e-12, atol=0)
+    assert np.allclose(negf_p.PDOS(Hp, E), negf_u.PDOS(Hu, E), rtol=1e-12, atol=1e-15)
