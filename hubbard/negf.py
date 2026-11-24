@@ -34,6 +34,34 @@ def _G(e, HC, elec_idx, SE):
     return inv(inv_GF)
 
 
+def _self_energy(se, E, **kwargs):
+    r""" Self-energy of an electrode at energy `E`
+
+    sisl's own `sisl.WideBandSE.self_energy` is replaced by :math:`-i\eta`
+    times the identity, with :math:`\eta` the electrode's own ``eta``, at
+    every `E`. sisl < 0.16 returns this itself; sisl >= 0.16 returns
+    :math:`-i\pi\Im(E)` times the identity (or times the overlap matrix,
+    for an electrode built from a non-orthogonal matrix) instead. Whether
+    it is replaced is decided by the method bound to `se`: an override, in
+    a subclass or on the instance, is called as is, and so is any other
+    self-energy. An override that itself calls sisl's
+    `sisl.WideBandSE.self_energy` gets sisl's version-dependent value.
+
+    Parameters
+    ----------
+    se : sisl.SelfEnergy
+       the electrode
+    E : complex
+       energy at which the self-energy is calculated
+    **kwargs :
+       passed on to ``se.self_energy`` (``k``, ``spin``)
+    """
+    if (isinstance(se, sisl.WideBandSE)
+            and getattr(se.self_energy, "__func__", None) is sisl.WideBandSE.self_energy):
+        return np.diag(np.full(len(se), -1j * se.eta, dtype=np.complex128))
+    return se.self_energy(E, **kwargs)
+
+
 def _nested_list(*args):
     if len(args) == 0:
         return None
@@ -56,7 +84,15 @@ class NEGF:
     elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)
         list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes
         plus the semi-infinite direction for the respective electrode.
-        Alternatively one may directly pass `sisl.SelfEnergy` instances
+        Alternatively one may directly pass `sisl.SelfEnergy` instances.
+        A `sisl.WideBandSE` that keeps sisl's own ``self_energy`` method couples
+        its orbitals with the energy-independent self-energy :math:`-i\eta` times
+        the identity, with :math:`\eta` (in eV) its own ``eta``, whatever the
+        sisl version: that method, which on sisl >= 0.16 returns
+        :math:`-i\pi\Im(E)` instead, is not called. An override of
+        ``self_energy``, in a subclass or on the instance, is called as is;
+        if it calls sisl's ``WideBandSE.self_energy`` itself, it gets sisl's
+        version-dependent value
     elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
     CC: str, optional
@@ -188,17 +224,17 @@ class NEGF:
                     if Hdev.spin_size > 1:
                         kw = {'spin':spin}
 
-                    self._ef_SE[spin][ik][i] = se.self_energy(1j * self.eta, k=k, **kw)
+                    self._ef_SE[spin][ik][i] = _self_energy(se, 1j * self.eta, k=k, **kw)
 
                     for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                         for ic, cc in enumerate(CC_eq):
                             # Do it also for each point in the CC, for all EQ CC
-                            self._cc_eq_SE[spin][ik][cc_eq_i][ic][i] = se.self_energy(cc, k=k, **kw)
+                            self._cc_eq_SE[spin][ik][cc_eq_i][ic][i] = _self_energy(se, cc, k=k, **kw)
 
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            self._cc_neq_SE[spin][ik][ic][i] = se.self_energy(cc, k=k, **kw)
+                            self._cc_neq_SE[spin][ik][ic][i] = _self_energy(se, cc, k=k, **kw)
 
     def calc_n_open(self, H, q, qtol=1e-5):
         """
@@ -435,7 +471,7 @@ class NEGF:
             for i, e in enumerate(E):
 
                 # Append all the self-energies for the electrodes at each energy point
-                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
@@ -475,7 +511,7 @@ class NEGF:
         for ispin in spin:
             HC = H.H.Hk(spin=ispin, format='array')
             for i, e in enumerate(E):
-                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 
