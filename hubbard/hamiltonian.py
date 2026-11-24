@@ -198,19 +198,21 @@ class HubbardHamiltonian(object):
         """ Return a new object with reference Hamiltonian `TBHam` whose mean-field Hamiltonian starts as `H`
 
         `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,
-        so that the first `update_hamiltonian` of the new object adds the mean-field terms once
+        so that the first `update_hamiltonian` of the new object adds the mean-field terms once.
+        The new object gets its own copy of this object's k-mesh
         """
         new = self.__class__(TBHam, n=n, U=U, Uij=Uij, q=q, nkpt=self.mp, kT=self.kT, units=self.units)
         new.H = H
         new.H.finalize()
+        new.mp = self.mp.copy(new.H)
         return new
 
     def tile(self, reps, axis):
         """ Tile the HubbardHamiltonian object along a specified axis to obtain a larger one
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``
-        and `U` are all tiled, so a converged object tiles into a converged one
-        once its k-mesh samples the same Brillouin-zone points
+        and `U` are all tiled, orbital by orbital as sisl orders them, so a converged object tiles
+        into a converged one once its k-mesh samples the same Brillouin-zone points
 
         Parameters
         ----------
@@ -229,10 +231,14 @@ class HubbardHamiltonian(object):
         densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,
         so use `set_kmesh` to sample the same Brillouin-zone points as this object
 
-        Note
-        ----
-        We need to update this function so Uij also gets tiled like the geometry
+        Raises
+        ------
+        NotImplementedError
+            if this object has inter-orbital interactions `Uij`, which are not tiled yet
         """
+        if self.Uij is not None:
+            raise NotImplementedError(f"{self.__class__.__name__}.tile cannot handle Uij yet")
+        # sisl tiles cell by cell, so the orbitals keep their order within each copy
         ntile = np.tile(self.n, reps)
         U = self.U if np.ndim(self.U) == 0 else np.tile(self.U, reps)
         return self._derive(self.TBHam.tile(reps, axis), self.H.tile(reps, axis),
@@ -242,8 +248,8 @@ class HubbardHamiltonian(object):
         """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``
-        and `U` are all repeated, so a converged object repeats into a converged one
-        once its k-mesh samples the same Brillouin-zone points
+        and `U` are all repeated, orbital by orbital as sisl orders them, so a converged object repeats
+        into a converged one once its k-mesh samples the same Brillouin-zone points
 
         Parameters
         ----------
@@ -262,12 +268,18 @@ class HubbardHamiltonian(object):
         densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,
         so use `set_kmesh` to sample the same Brillouin-zone points as this object
 
-        Note
-        ----
-        We need to update this function so Uij also gets repeated like the geometry
+        Raises
+        ------
+        NotImplementedError
+            if this object has inter-orbital interactions `Uij`, which are not repeated yet
         """
-        nrep = np.repeat(self.n, reps, axis=1)
-        U = self.U if np.ndim(self.U) == 0 else np.repeat(self.U, reps)
+        if self.Uij is not None:
+            raise NotImplementedError(f"{self.__class__.__name__}.repeat cannot handle Uij yet")
+        # sisl repeats atom by atom, keeping the orbitals of each atom together
+        g = self.geometry
+        idx = np.concatenate([np.tile(g.a2o(ia, all=True), reps) for ia in range(g.na)])
+        nrep = self.n[:, idx]
+        U = self.U if np.ndim(self.U) == 0 else np.asarray(self.U)[idx]
         return self._derive(self.TBHam.repeat(reps, axis), self.H.repeat(reps, axis),
                             nrep, U, None, nrep.sum(1))
 
@@ -275,8 +287,9 @@ class HubbardHamiltonian(object):
         """ Return a new `HubbardHamiltonian` object without the atoms in `atoms`
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
-        `U` and `Uij` are restricted to the remaining atoms. The densities are then renormalized to `q`,
-        and the next `iterate` rebuilds the mean-field terms of ``H`` from them
+        `U` and `Uij` are restricted to the remaining atoms, and the densities are renormalized to `q`.
+        The first `iterate` solves this restricted ``H``, and then rebuilds its mean-field terms
+        from the reference Hamiltonian and the new densities
 
         Parameters
         ----------
@@ -305,8 +318,9 @@ class HubbardHamiltonian(object):
         """ Return a new `HubbardHamiltonian` object of a subset of selected atoms
 
         The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
-        `U` and `Uij` are restricted to the kept atoms. The densities are then renormalized to `q`,
-        and the next `iterate` rebuilds the mean-field terms of ``H`` from them
+        `U` and `Uij` are restricted to the kept atoms, and the densities are renormalized to `q`.
+        The first `iterate` solves this restricted ``H``, and then rebuilds its mean-field terms
+        from the reference Hamiltonian and the new densities
 
         Parameters
         ----------
@@ -340,13 +354,12 @@ class HubbardHamiltonian(object):
         The copy holds the same reference and mean-field Hamiltonians, spin densities, charge, `U`, `Uij`,
         `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object
         """
-        U = self.U if np.ndim(self.U) == 0 else np.array(self.U, copy=True)
+        U = np.array(self.U, copy=True) if isinstance(self.U, np.ndarray) else self.U
         Uij = None if self.Uij is None else np.array(self.Uij, copy=True)
         new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, U, Uij, self.q)
         # Restore the exact state, which the constructor may renormalize
         new.n = self.n.copy()
         new.q = self.q.copy()
-        new.mp = self.mp.copy(new.H)
         if hasattr(self, 'Etot'):
             new.Etot = self.Etot
         return new
