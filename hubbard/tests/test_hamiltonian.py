@@ -46,17 +46,22 @@ def test_iterate_explicit_q():
     np.testing.assert_array_equal(Ha.q, [2., 2.])
 
 
-def test_iterate_q_none_entry():
-    # A None entry takes int(round(H.q[s])); the caller's list is left as it was
-    Ha = _iterate_q_ribbon(q=(2.4, 1.6))
-    Hb = _iterate_q_ribbon(q=(2.4, 1.6))
-    Hb.q = np.array([2., 1.])
-    q = [None, 1.]
+@pytest.mark.parametrize("spin, Hq, q, expected", [('polarized', (2.4, 1.6), [None, None], [2.4, 1.6]),
+                                                   ('polarized', (2.4, 1.6), [None, 1.], [2.4, 1.]),
+                                                   ('unpolarized', (1.5,), [None], [1.5])])
+def test_iterate_q_none_entry(spin, Hq, q, expected):
+    # A None entry takes H.q[s] unrounded (fractional and half-integer counts
+    # are kept); the caller's list is left as it was
+    Ha = _iterate_q_ribbon(spin=spin, q=Hq)
+    Hb = _iterate_q_ribbon(spin=spin, q=Hq)
+    Hb.q = np.array(expected)
+    q_in = list(q)
     dna = Ha.iterate(density.calc_n, q=q, mixer=sisl.mixing.LinearMixer(weight=1.))
     dnb = Hb.iterate(density.calc_n, mixer=sisl.mixing.LinearMixer(weight=1.))
     _assert_same_iterate(Ha, dna, Hb, dnb)
-    np.testing.assert_allclose(Ha.n.sum(1), [2., 1.], atol=1e-8)
-    assert q == [None, 1.]
+    np.testing.assert_allclose(Ha.n.sum(1), expected, atol=1e-8)
+    np.testing.assert_array_equal(Ha.q, Hq)
+    assert q == q_in
 
 
 def test_iterate_q_unpolarized():

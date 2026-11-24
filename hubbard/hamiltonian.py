@@ -537,8 +537,9 @@ class HubbardHamiltonian(object):
         q: array_like, optional
             electron count per spin channel passed to `calc_n_method`, ``q=[q_up, q_dn]`` for a polarized
             Hamiltonian and ``q=[q]`` for an unpolarized one (the count of one spin).
-            A ``None`` entry takes ``int(round(self.q[s]))`` for that channel. Defaults to `self.q`.
-            The caller's `q` is not modified; a `ValueError` is raised if it does not have one entry per spin channel.
+            A ``None`` entry takes ``self.q[s]`` for that channel, unrounded. Defaults to `self.q`.
+            The caller's `q` is not modified. `hubbard.NEGF.calc_n_open` uses only the total of `q`,
+            so the per-spin values are not enforced on the open-boundary path.
         mixer: Mixer, optional
             `sisl.mixing.Mixer` instance for the SCF loop, defaults to linear mixing with weight 0.7
 
@@ -554,6 +555,11 @@ class HubbardHamiltonian(object):
         -------
         dn : array_like
             difference between the ith and the (i-1)th iteration densities
+
+        Raises
+        ------
+        ValueError
+            if `q` does not have one entry per spin channel
         """
         if q is None:
             q = self.q
@@ -562,7 +568,7 @@ class HubbardHamiltonian(object):
                 raise ValueError(f"{self.__class__.__name__}.iterate: q must have one entry per spin channel "
                                  f"({self.spin_size}), got {q!r}")
             # Build a new array so the caller's q is left unchanged
-            q = np.array([int(round(self.q[s])) if q[s] is None else q[s] for s in range(self.spin_size)],
+            q = np.array([self.q[s] if q[s] is None else q[s] for s in range(self.spin_size)],
                          dtype=np.float64)
 
         ni, Etot = calc_n_method(self, q, **kwargs)
