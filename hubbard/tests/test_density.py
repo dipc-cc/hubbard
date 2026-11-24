@@ -19,7 +19,9 @@ def _mulliken_reference(H, q):
         Sk = H.H.Sk(k, format='array')
         for s in range(H.spin_size):
             N = int(round(q[s]))
-            e, c = sl.eigh(H.H.Hk(k, spin=s, format='array'), Sk)
+            # sisl takes spin= only for a polarized Hamiltonian
+            spin = {'spin': s} if H.spin_size == 2 else {}
+            e, c = sl.eigh(H.H.Hk(k, format='array', **spin), Sk)
             occ = c[:, :N]
             n[s] += w * (conj(occ) * (Sk @ occ)).real.sum(1)
             Etot += w * e[:N].sum()
@@ -80,6 +82,42 @@ def test_insulator_nonorthogonal_periodic_kmesh():
     n_fd, Etot_fd = density.calc_n(H, H.q)
     assert np.allclose(n, n_fd, rtol=0, atol=1e-8)
     assert np.isclose(Etot, Etot_fd, rtol=0, atol=1e-7)
+
+
+def test_insulator_nonorthogonal_unpolarized():
+    # An unpolarized Hamiltonian, and a polarized one at zero polarization
+    # with the same density in each spin, give the same occupations per spin
+    # and the same Etot (doubled for degeneracy in the unpolarized case)
+    g = sisl.geom.agnr(7).tile(2, 0)
+    g.set_nsc([1, 1, 1])
+    Hu = HubbardHamiltonian(sp2(g, s1=0.13, spin=sisl.physics.Spin('unpolarized')), U=3.5, kT=1e-5)
+    Hp = HubbardHamiltonian(sp2(g, s1=0.13), U=3.5, kT=1e-5)
+    assert not Hu.H.orthogonal
+    assert Hu.spin_size == 1 and Hp.spin_size == 2
+    assert np.allclose(Hu.q, [14]) and np.allclose(Hp.q, [14, 14])
+    np.random.seed(2)
+    n0 = np.random.rand(Hu.sites)
+    n0 *= 14 / n0.sum()
+    Hu.n = n0.reshape(1, -1).copy()
+    Hp.n = np.array([n0, n0])
+    Hu.update_hamiltonian()
+    Hp.update_hamiltonian()
+
+    n_u, Etot_u = density.calc_n_insulator(Hu, Hu.q)
+    n_ref, Etot_ref, gap = _mulliken_reference(Hu, Hu.q)
+    assert gap.min() > 0.1
+
+    assert n_u.shape == (1, Hu.sites)
+    assert np.allclose(n_u.sum(1), [14], rtol=0, atol=1e-10)
+    assert np.allclose(n_u, n_ref, rtol=0, atol=1e-10)
+    assert np.isclose(Etot_u, 2 * Etot_ref, rtol=0, atol=1e-9)
+    n_fd, Etot_fd = density.calc_n(Hu, Hu.q)
+    assert np.allclose(n_u, n_fd, rtol=0, atol=1e-8)
+    assert np.isclose(Etot_u, Etot_fd, rtol=0, atol=1e-7)
+
+    n_p, Etot_p = density.calc_n_insulator(Hp, Hp.q)
+    assert np.allclose(n_p, np.vstack([n_u, n_u]), rtol=0, atol=1e-10)
+    assert np.isclose(Etot_p, Etot_u, rtol=0, atol=1e-9)
 
 
 def test_insulator_orthogonal_unchanged():

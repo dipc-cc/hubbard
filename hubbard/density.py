@@ -74,7 +74,7 @@ def calc_n_insulator(H, q):
     .. math::
         \langle n_{i\sigma} \rangle = \sum_{\mathbf k}w_{\mathbf k}\sum_{\alpha\ \mathrm{occ}}\mathrm{Re}\Big[c^{*\alpha}_{i\sigma\mathbf k}\sum_{j}S_{ij}(\mathbf k)c^{\alpha}_{j\sigma\mathbf k}\Big]
 
-    with :math:`w_{\mathbf k}` the k-point weights of ``H.mp``, so they sum to ``round(q[s])`` per spin (per unit cell for a periodic system).
+    with :math:`w_{\mathbf k}` the k-point weights of ``H.mp``, so the occupations sum to ``round(q[s])`` per spin (per unit cell for a periodic system).
 
     Parameters
     ----------
