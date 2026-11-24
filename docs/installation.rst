@@ -12,9 +12,7 @@ Required dependencies
 
    * SciPy_ 1.14 or newer
 
-   * sisl_ 0.15 or newer; sisl 0.15 needs SciPy older than 1.17, which
-     removed the ``scipy.special.sph_harm`` that sisl 0.15 imports, so
-     SciPy 1.17 or newer needs a newer sisl
+   * sisl_ 0.15 or newer (with SciPy 1.17 or newer, sisl 0.16.4 or newer)
 
    * Matplotlib_ 3.9 or newer (plotting)
 
