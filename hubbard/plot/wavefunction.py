@@ -28,7 +28,7 @@ class Wavefunction(GeometryPlot):
     of the coefficient of `wf` on the atomic sites
     """
 
-    def __init__(self, HH, wf, ext_geom=None, cb_label=r'Phase', realspace=False, **kwargs):
+    def __init__(self, HH, wf, ext_geom=None, cb_label=r'Phase', realspace=False, collection='sp2', **kwargs):
 
         # Set default kwargs
         if realspace:
@@ -40,7 +40,7 @@ class Wavefunction(GeometryPlot):
             if 'cmap' not in kwargs:
                 kwargs['cmap'] = plt.cm.bwr
 
-        super().__init__(HH.geometry, ext_geom=ext_geom, **kwargs)
+        super().__init__(HH.geometry, ext_geom=ext_geom, collection=collection, **kwargs)
 
         self.plot_wf(HH, wf, cb_label=cb_label, realspace=realspace, **kwargs)
 
