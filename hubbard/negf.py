@@ -463,7 +463,15 @@ class NEGF:
         Returns
         -------
         DOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for
         """
+        if H.spin_size != len(self._ef_SE):
+            raise ValueError(f"{self.__class__.__name__}.DOS: H has spin_size={H.spin_size}, "
+                             f"but the electrode self-energies were set up for spin_size={len(self._ef_SE)}")
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
@@ -511,7 +519,15 @@ class NEGF:
         Returns
         -------
         PDOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for
         """
+        if H.spin_size != len(self._ef_SE):
+            raise ValueError(f"{self.__class__.__name__}.PDOS: H has spin_size={H.spin_size}, "
+                             f"but the electrode self-energies were set up for spin_size={len(self._ef_SE)}")
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]

@@ -168,3 +168,60 @@ def test_dos_pdos_unpolarized_equals_polarized_at_zero_polarization():
         assert np.allclose(negf_p.PDOS(Hp, E, spin=s), pdos_u, rtol=1e-12, atol=1e-15)
     assert np.allclose(negf_p.DOS(Hp, E), negf_u.DOS(Hu, E), rtol=1e-12, atol=0)
     assert np.allclose(negf_p.PDOS(Hp, E), negf_u.PDOS(Hu, E), rtol=1e-12, atol=1e-15)
+
+
+def test_dos_pdos_unpolarized_recursive_electrodes():
+    # An unpolarized ZGNR(2) device, three electrode cells long, between two
+    # semi-infinite ZGNR(2) electrodes. NEGF shifts each electrode by its own
+    # Fermi level (non-zero with the t2, t3 hoppings); the reference applies
+    # that shift to an independent copy of the electrode, takes sisl's
+    # RecursiveSI self-energies and inverts the device matrix directly
+    kT = 0.025
+    He = sp2(sisl.geom.zgnr(2), spin='unpolarized')
+    elec = HubbardHamiltonian(He, U=0., nkpt=[30, 1, 1], kT=kT)
+    Ef_elec = elec.fermi_level(q=elec.q, distribution=sisl.get_distribution('fermi_dirac', smearing=kT))
+    assert abs(Ef_elec) > 0.1
+    He_ref = He.copy()
+    He_ref.shift(-Ef_elec)
+    SE_ref = [sisl.RecursiveSI(He_ref, '-A'), sisl.RecursiveSI(He_ref, '+A')]
+
+    HC = He.tile(3, axis=0)
+    HC.set_nsc([1, 1, 1])
+    elec_idx = [np.arange(len(He)), np.arange(len(HC) - len(He), len(HC))]
+    H = HubbardHamiltonian(HC, U=0., kT=kT)
+    assert H.spin_size == 1
+    negf = NEGF(H, [(elec, '-A'), (elec, '+A')], elec_idx)
+
+    E = np.linspace(-1, 1, 11)
+    eta = 0.01
+    HCa = HC.Hk(format='array')
+    pdos_ref = []
+    for e in E:
+        A = (e + 1j * eta) * np.eye(len(HCa)) - HCa
+        for idx, se in zip(elec_idx, SE_ref):
+            A[np.ix_(idx, idx)] -= se.self_energy(e)
+        pdos_ref.append(-np.linalg.inv(A).diagonal().imag / np.pi)
+    pdos_ref = np.array(pdos_ref)
+
+    dos0 = negf.DOS(H, E, spin=0, eta=eta)
+    assert np.allclose(dos0, pdos_ref.sum(1), rtol=1e-8, atol=1e-10)
+    assert np.allclose(negf.DOS(H, E, eta=eta), 2 * dos0, rtol=1e-14, atol=0)
+    pdos0 = negf.PDOS(H, E, spin=0, eta=eta)
+    assert np.allclose(pdos0, pdos_ref, rtol=1e-8, atol=1e-10)
+    assert np.allclose(negf.PDOS(H, E, eta=eta), 2 * pdos0, rtol=1e-14, atol=0)
+
+
+@pytest.mark.parametrize("negf_spin, H_spin", [
+    ('polarized', 'unpolarized'),
+    ('unpolarized', 'polarized'),
+])
+def test_dos_pdos_spin_mismatch(negf_spin, H_spin):
+    # The electrode self-energies are set up per spin channel of the device
+    # NEGF was built for; a Hamiltonian with another spin_size must fail
+    _, negf, _ = _molecule_with_leads(negf_spin)
+    H, _, _ = _molecule_with_leads(H_spin)
+    E = np.array([0.])
+    with pytest.raises(ValueError, match="spin_size"):
+        negf.DOS(H, E, spin=0)
+    with pytest.raises(ValueError, match="spin_size"):
+        negf.PDOS(H, E, spin=0)
