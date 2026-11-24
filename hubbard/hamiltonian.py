@@ -484,44 +484,59 @@ class HubbardHamiltonian(object):
         """ Write spin polarization to SIESTA fdf-block
         This function only makes sense for spin-polarized calculations
 
+        Each line of the ``DM.InitSpin`` block holds a SIESTA atom index (counted from 1)
+        and the polarization ``n[0] - n[1]`` (in electrons) of the corresponding site.
+
         Parameters
         ----------
         fn: str
             name of the fdf-file
         ext_geom: sisl.Geometry, optional
-            an "external" geometry that contains the sp2-sites included in the simulation
+            an "external" geometry that contains the sp2-sites included in the simulation,
+            for instance the full geometry including hydrogen atoms.
+            Only the atoms of `ext_geom` that coincide with an atom of the Hamiltonian's geometry
+            are written, indexed as in `ext_geom` and given the polarization of the coinciding atom.
+            If omitted, every site is written with its index in the Hamiltonian's geometry
         spinfix: bool, optional
-            specifies if the Spin.Fix and Spin.Total lines are written to the fdf
+            specifies if the Spin.Fix and Spin.Total lines are written to the fdf.
+            Spin.Total is the sum of the polarizations written in the block
         mode: str, optional
             mode in which the file is opened
         eps: float, optional
-            atoms within this distance will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)
+            atoms within this distance (in Ang) will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)
+
+        Raises
+        ------
+        ValueError
+            if `ext_geom` is neither None nor a `sisl.Geometry`
         """
         if not os.path.isfile(fn):
             mode = 'w'
         if ext_geom is None:
             idx = np.arange(len(self.H))
+            idx_internal = idx
             geom = self.geometry
         elif isinstance(ext_geom, sisl.Geometry):
-            idx, idx_internal = ext_geom.overlap(self.geometry, eps=eps)
+            # idx[i] (in ext_geom) and idx_internal[i] (in self.geometry) are the same atom
+            idx, idx_internal = ext_geom.overlap(self.geometry, atol=eps)
             geom = ext_geom
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
-        polarization = self.n[0] - self.n[1]
+        polarization = (self.n[0] - self.n[1])[idx_internal]
         dq = np.sum(polarization)
-        f = open(fn, mode=mode)
-        if spinfix:
-            f.write('Spin.Fix True\n')
-            f.write('Spin.Total %.6f\n' % dq)
-        f.write('%block DM.InitSpin\n')
-        for i, ia in enumerate(idx):
-            s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
-            # add documentation string
-            s += ' # %2s' % geom.atoms[ia].symbol
-            for j in range(3):
-                s += ' %9.4f' % geom.xyz[ia, j]
-            f.write(s + '\n')
-        f.write('%endblock DM.InitSpin\n\n')
+        with open(fn, mode=mode) as f:
+            if spinfix:
+                f.write('Spin.Fix True\n')
+                f.write('Spin.Total %.6f\n' % dq)
+            f.write('%block DM.InitSpin\n')
+            for i, ia in enumerate(idx):
+                s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
+                # add documentation string
+                s += ' # %2s' % geom.atoms[ia].symbol
+                for j in range(3):
+                    s += ' %9.4f' % geom.xyz[ia, j]
+                f.write(s + '\n')
+            f.write('%endblock DM.InitSpin\n\n')
 
     def iterate(self, calc_n_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation
