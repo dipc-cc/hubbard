@@ -161,8 +161,9 @@ def test_fermi_search_converges_across_gap(monkeypatch, qtol):
     # A gapped 7-AGNR segment between wide-band electrodes, from starting Ef
     # on both sides of and inside the gap (midgap ~0.43 eV). Interpolating
     # through all earlier points stalled for some starts (thousands of density
-    # passes); the bracketed search needs at most 22 passes here, and the
-    # budget leaves about a factor two of margin.
+    # passes); the bracketed search needs at most 27 passes here with the
+    # minimum dependency versions and 15 with the current ones, and the budget
+    # leaves some margin above that.
     budget = 40
 
     class Budget(Exception):
@@ -190,7 +191,7 @@ def test_fermi_search_converges_across_gap(monkeypatch, qtol):
     monkeypatch.setattr(negf_module, '_G', counter)
 
     stalled = []
-    for Ef0 in [-1., -0.5, 0., 0.2, 0.5, 0.7, 0.8, 1., 1.2, 1.5]:
+    for Ef0 in [-5., -1., -0.5, 0., 0.2, 0.5, 0.7, 0.8, 1., 1.2, 1.5]:
         negf.Ef = Ef0
         passes[0] = 0
         try:
@@ -200,3 +201,25 @@ def test_fermi_search_converges_across_gap(monkeypatch, qtol):
             continue
         assert abs(ni.sum() - H.q.sum()) <= qtol
     assert stalled == []
+
+
+def test_fermi_search_far_outside_bands(fermi_path):
+    # Far below the bands N(Ef) no longer changes, so no step brackets the
+    # charge. The search steps up by at most 1 eV per pass and then fails
+    # clearly instead of running away.
+    H, _, negf, _ = _open_system(_polarized_density(), 'polarized')
+    q = H.q + np.array([0.2, 0.1])
+
+    # 20 eV below the bands is reached within the budget
+    negf.Ef = -20.
+    ni, _ = negf.calc_n_open(H, q, qtol=1e-6)
+    assert abs(ni.sum() - q.sum()) <= 1e-6
+    path = fermi_path(negf, H)
+    assert np.all(np.diff(path[:12]) == pytest.approx(1., abs=1e-12))
+
+    negf.Ef = -200.
+    with pytest.raises(RuntimeError, match="brackets the charge"):
+        negf.calc_n_open(H, q, qtol=1e-6)
+    path = fermi_path(negf, H)
+    assert len(path) == 51
+    assert np.allclose(np.diff(path), 1., rtol=0, atol=1e-9)

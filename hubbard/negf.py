@@ -6,6 +6,13 @@ import math
 from scipy.linalg import inv
 
 _pi = math.pi
+# Largest step of the device Fermi level before the charge root is bracketed (eV)
+# and the number of such steps calc_n_open takes before giving up.
+# The step is below the band width of the models hubbard builds (sp2: t = 2.7 eV),
+# so it cannot jump across a whole spectrum; 50 such steps reach any band
+# from a start up to 50 eV away.
+_EF_STEP_MAX = 1.
+_EF_BRACKET_PASSES = 50
 
 __all__ = ['NEGF']
 
@@ -211,6 +218,13 @@ class NEGF:
             spin densities
         Etot: float
             total energy
+
+        Raises
+        ------
+        RuntimeError
+            if no device Fermi level brackets the charge `q` within 50 steps of at
+            most 1 eV each from the starting `self.Ef`, for instance when it starts
+            far outside the bands
         """
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -227,8 +241,14 @@ class NEGF:
 
         # The device charge grows with Ef, so the root of dq(Ef) = ni.sum() - q
         # is searched in two stages:
-        # 1. until a bracket exists, a Lorentzian step from the DOS at Ef, at
-        #    least doubling the previous step so that the root gets bracketed;
+        # 1. until a bracket exists, a Lorentzian step from the DOS at Ef. A step
+        #    that did not at least halve |dq| did worse than a bisection would,
+        #    so the next one is expanded to the zero of the line through the last
+        #    two points (twice that if |dq| hardly changed), and at least doubled,
+        #    until the root gets bracketed.
+        #    Steps are capped at _EF_STEP_MAX, so that Ef cannot run away where
+        #    N(Ef) no longer changes (outside the bands), and after
+        #    _EF_BRACKET_PASSES steps without a bracket the search fails;
         # 2. once Ef with dq < 0 (lo) and dq > 0 (hi) are known, the Illinois
         #    variant of regula falsi inside [lo, hi], keeping only the latest
         #    point on each side. Plain regula falsi stalls when one end of the
@@ -240,7 +260,9 @@ class NEGF:
         lo = hi = None # [Ef, dq] of the bracket ends
         side = 0 # side of the last update: -1 (lo) or 1 (hi)
         nside = 0 # number of consecutive updates on that side
-        step = 0. # the last Lorentzian step
+        step = 0. # the last step taken without a bracket
+        dq_step = 0. # dq before that step
+        nopen = 0 # number of steps taken without a bracket
         while abs(ntot - q) > qtol:
             # for debug purposes
             #print(ntot, q, qtol, Ef)
@@ -309,14 +331,31 @@ class NEGF:
                     if abs(f) < 0.45:
                         dEf = - self.eta * math.tan(f * _pi) * 0.5
                     else:
-                        dEf = - self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                        # eta * tan(pi/2 - atan(1 / (f * pi))) / 2, written so that
+                        # the sign is kept and an infinite f stays infinite
+                        dEf = - self.eta * _pi * f * 0.5
                     if not np.isfinite(dEf):
                         dEf = - s * self.eta
-                    # Without a bracket every step goes the same way, -sign(dq);
-                    # expand it so that the root is reached
-                    if abs(dEf) < 2 * abs(step):
-                        dEf = 2 * step
+                    # Without a bracket every step goes the same way, -sign(dq)
+                    r = abs(dq / dq_step) if step != 0. else 0.
+                    if r > 0.5:
+                        # The last step did not halve |dq|. Expand it to where the line
+                        # through the last two points meets dq = 0, and at least double it.
+                        # If |dq| changed by less than 10%, that line is the local slope,
+                        # which undershoots on the exponential tail of a band edge (about
+                        # kT per step), so aim twice as far to bracket the root.
+                        m = r / (1 - r) if r < 1 else math.inf
+                        if r > 0.9:
+                            m *= 2
+                        dEf = math.copysign(max(abs(dEf), max(2., m) * abs(step)), step)
+                    dEf = math.copysign(min(abs(dEf), _EF_STEP_MAX), dEf)
+                    nopen += 1
+                    if nopen > _EF_BRACKET_PASSES:
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open found no Fermi level "
+                                           f"that brackets the charge q={q} within {_EF_BRACKET_PASSES} "
+                                           f"steps of at most {_EF_STEP_MAX} eV (Ef={Ef}, dq={dq})")
                     step = dEf
+                    dq_step = dq
                     Ef += dEf
 
             Etot = 0.
