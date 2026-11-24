@@ -88,7 +88,7 @@ class NEGF:
     def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
         if V != 0:
-            raise NotImplementedError(f"{self.__class__.__name__}: finite bias (V={V}) is not supported; use V=0")
+            raise NotImplementedError(f"{self.__class__.__name__}: finite bias (V={V!r}) is not supported; use V=0")
 
         # Global charge neutral reference energy (conveniently named fermi)
         self.Ef = 0.
