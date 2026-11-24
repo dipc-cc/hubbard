@@ -1,5 +1,6 @@
 import pytest
 
+import numpy as np
 import hubbard.hamiltonian as hh
 import hubbard.sp2 as sp2
 import hubbard.density as density
@@ -19,7 +20,27 @@ def test_quick():
 
 # DOS and PDOS average over the k-mesh the object holds
 
-import numpy as np
+
+def test_dos_pdos_chain_analytic():
+    # One-orbital chain with hopping -t: its Lorentzian-broadened DOS per spin
+    # is -Im G(z) / pi with G(z) = 1 / sqrt(z^2 - 4 t^2), z = E + i eta.
+    # Written as 1 / (sqrt(z - 2t) * sqrt(z + 2t)) with principal roots, both
+    # factors lie in the upper half plane for eta > 0, which picks the
+    # retarded branch, Im G < 0, inside and outside the band.
+    t = 2.7
+    eta = 0.1
+    geom = sisl.Geometry([0, 0, 0], sisl.Atom(6, R=1.5),
+                         lattice=sisl.Lattice([1.42, 10, 10], nsc=[3, 1, 1]))
+    tb = sisl.Hamiltonian(geom, spin=sisl.Spin('polarized'))
+    tb.construct([[0.1, 1.5], [0., -t]])
+    H = hh.HubbardHamiltonian(tb, U=0., nkpt=[2000, 1, 1])
+    egrid = np.linspace(-7, 7, 141)
+    z = egrid + 1j * eta
+    ref = -np.imag(1 / (np.sqrt(z - 2 * t) * np.sqrt(z + 2 * t))) / np.pi
+    for s in (0, 1):
+        assert np.allclose(H.DOS(egrid, eta=eta, spin=s), ref, rtol=0, atol=1e-10)
+        assert np.allclose(H.PDOS(egrid, eta=eta, spin=s)[0, 0], ref, rtol=0, atol=1e-10)
+    assert np.allclose(H.DOS(egrid, eta=eta), 2 * ref, rtol=0, atol=1e-10)
 
 
 def _polarized_zgnr():

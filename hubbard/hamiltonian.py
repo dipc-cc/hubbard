@@ -837,7 +837,8 @@ class HubbardHamiltonian(object):
         DOS: numpy.ndarray
             density of states at the given energies for the selected spin, in states per eV
             per unit cell. Integrated over energy, each spin channel gives the number of
-            orbitals in the unit cell.
+            orbitals in the unit cell, for k-point weights that sum to one (as those of
+            ``nkpt``, a `sisl.MonkhorstPack`, do).
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
