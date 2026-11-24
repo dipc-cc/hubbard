@@ -20,7 +20,7 @@ The release cycle should be performed like this:
         git checkout gh-pages
         git merge main
         cd docs
-        sphinx-build -b html . latest
+        sphinx-build -b html -d build/doctrees . latest
         git add latest
         git commit -m "docs: update html"
 

@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 [project]
 requires-python = ">=3.10"
 
-# netCDF4 (optional, for HU.nc files) comes through sisl
+# netCDF4 is optional, for HU.nc files: install netCDF4 (or sisl[analysis])
 dependencies = [
     "numpy>=2.0",
     "scipy>=1.14",
