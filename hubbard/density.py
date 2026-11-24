@@ -64,7 +64,34 @@ def calc_n(H, q):
 
 
 def calc_n_insulator(H, q):
-    """ Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* """
+    r""" Method to obtain the spin densities only for the corner case for *insulators* at *T=0*
+
+    For each spin channel and k-point it occupies the lowest ``round(q[s])`` eigenstates of
+    ``H.H`` and leaves the rest empty, which is correct only when each spin channel has a gap
+    at its Fermi level. For a non-orthogonal basis the occupations are Mulliken populations,
+    as in `calc_n`:
+
+    .. math::
+        \langle n_{i\sigma} \rangle = \sum_{\mathbf k}w_{\mathbf k}\sum_{\alpha\ \mathrm{occ}}\mathrm{Re}\Big[c^{*\alpha}_{i\sigma\mathbf k}\sum_{j}S_{ij}(\mathbf k)c^{\alpha}_{j\sigma\mathbf k}\Big]
+
+    with :math:`w_{\mathbf k}` the k-point weights of ``H.mp``, so they sum to ``round(q[s])`` per spin (per unit cell for a periodic system).
+
+    Parameters
+    ----------
+    H: HubbardHamiltonian
+        `hubbard.HubbardHamiltonian` object of the system to obtain the spin-densities from
+    q: array_like
+        charge resolved in spin channels (first index for up-electrons and second index for down-electrons),
+        rounded to the nearest integer
+
+    Returns
+    -------
+    n: numpy.ndarray
+        occupations per orbital, of shape ``(H.spin_size, H.sites)``
+    Etot: float
+        sum of the occupied eigenvalues in eV, weighted by the k-point weights, and doubled
+        for spin degeneracy if ``H`` is not spin-polarized
+    """
     ni = np.zeros((H.spin_size, H.sites))
     Etot = 0
 
@@ -74,7 +101,13 @@ def calc_n_insulator(H, q):
     def calc_occ(k, weight, spin):
         es = H.eigenstate(k, spin=spin)
 
-        n = einsum('ij,ij->j', conj(es.state[idx[spin]]), es.state[idx[spin]]).real * weight
+        c = es.state[idx[spin]]
+        if H.H.orthogonal:
+            Sc = c
+        else:
+            # Mulliken populations, with S(k) in the gauge of the eigenstates
+            Sc = (es.Sk() @ c.T).T
+        n = einsum('ij,ij->j', conj(c), Sc).real * weight
 
         # Calculate total energy
         Etot = es.eig[idx[spin]].sum() * weight
