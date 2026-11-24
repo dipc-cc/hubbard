@@ -254,14 +254,14 @@ class LDOS(GeometryPlot):
         energy at which the LDOS will be computed
     eta: float, optional
         smearing parameter. Defaults to 1e-3 eV
-    dist: str, optional
+    distribution: str, optional
         distribution function. Defaults to Lorentzian distribution
     spin: array_like, optional
         To plot the LDOS corresponding to the specified spin index. Default to ``spin=[0,1]``
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
-        with varying size depending on the PDOS numerical value
+        with one marker per site, whose area in points^2 is the PDOS at `E` in 1/eV
         In this case either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
@@ -344,8 +344,10 @@ class LDOS(GeometryPlot):
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            pdos = HH.PDOS(E, eta=eta, spin=spin, dist=distribution)
-            self.axes.scatter(x, y, pdos, 'b')
+            # HH.PDOS returns shape (1, no, nE); take the single energy E per site
+            pdos = HH.PDOS([E], eta=eta, spin=spin, distribution=distribution)[0, :, 0]
+            # Marker area (points^2) is the PDOS value at each site
+            self.axes.scatter(x, y, s=pdos, c='b')
 
         for i, s in enumerate(sites):
             self.axes.text(x[s], y[s], '%i' % i, fontsize=15, color='r')
