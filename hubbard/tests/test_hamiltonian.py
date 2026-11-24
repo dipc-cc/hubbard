@@ -1,5 +1,6 @@
 import warnings
 
+import numpy as np
 import pytest
 
 import hubbard.hamiltonian as hh
@@ -28,8 +29,9 @@ def _zgnr_start():
 
 
 def test_converge_warns_at_max_iter():
-    # Independent reference: two explicit iterate calls with the mixer
-    # converge uses by default, from the same starting density
+    # Consistency check against iterate, which converge calls: two explicit
+    # iterate calls with converge's default mixer, from the same start, must
+    # give the dn converge returns
     ref = _zgnr_start()
     mixer = sisl.mixing.DIISMixer(weight=0.7, history=7)
     for _ in range(2):
@@ -75,3 +77,20 @@ def test_converge_no_warning_when_converged():
     H = _zgnr_start()
     with pytest.warns(UserWarning, match="without converging"):
         H.converge(density.calc_n, tol=tol, max_iter=n_iter - 1)
+
+
+def test_converge_warns_on_nan_density():
+    # A NaN dn ends the loop (NaN > tol is False); it must not pass as converged
+    calls = []
+
+    def nan_density(H, q):
+        calls.append(1)
+        return np.full_like(H.n, np.nan), 0.
+
+    for max_iter in [None, 5]:
+        calls.clear()
+        H = _zgnr_start()
+        with pytest.warns(UserWarning, match="not finite"):
+            dn = H.converge(nan_density, max_iter=max_iter)
+        assert len(calls) == 1
+        assert np.isnan(dn)

@@ -622,8 +622,10 @@ class HubbardHamiltonian(object):
         Warns
         -----
         UserWarning
-            if `max_iter` iterations are completed while ``dn > tol``. The returned ``dn``,
-            the densities and the energy are then those of the last, unconverged iteration
+            if `max_iter` iterations are completed while ``dn > tol``, or if ``dn`` is not
+            finite (for instance a NaN density from `calc_n_method`), which also stops the
+            iteration. The returned ``dn``, the densities and the energy are then those of
+            the last, unconverged iteration
         """
         if print_info:
             print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
@@ -643,12 +645,17 @@ class HubbardHamiltonian(object):
                 if fn:
                     self.write_density(fn, 'a')
             if i == max_iter:
-                if dn > tol:
-                    warnings.warn(f"HubbardHamiltonian.converge stopped after max_iter={i} iterations "
-                                  f"without converging: dn={dn:.3e} > tol={tol:.3e}",
-                                  UserWarning, stacklevel=2)
-                return dn
-        if print_info:
+                break
+        # Not converged: dn > tol at max_iter, or a NaN dn, which also ends
+        # the loop because NaN > tol is False
+        if not dn <= tol:
+            if np.isfinite(dn):
+                msg = f"after max_iter={i} iterations without converging: dn={dn:.3e} > tol={tol:.3e}"
+            else:
+                msg = f"after {i} iterations without converging: dn={dn} is not finite"
+            warnings.warn("HubbardHamiltonian.converge stopped " + msg, UserWarning, stacklevel=2)
+            return dn
+        if print_info and i != max_iter:
             print('   found solution in %i iterations' % i)
         return dn
 
