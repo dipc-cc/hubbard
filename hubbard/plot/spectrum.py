@@ -261,8 +261,8 @@ class LDOS(GeometryPlot):
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
-        with one marker per site, whose area in points^2 is the PDOS at `E` in 1/eV
-        In this case either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        with one marker per site, whose area in points^2 is the PDOS at `E` in 1/eV.
+        With ``realspace=True`` either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
     ------------
