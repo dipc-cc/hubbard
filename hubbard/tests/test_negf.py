@@ -263,9 +263,8 @@ def test_fermi_search_converges_across_gap(monkeypatch, qtol):
     # A gapped 7-AGNR segment between wide-band electrodes, from starting Ef
     # on both sides of and inside the gap (midgap ~0.43 eV). Interpolating
     # through all earlier points stalled for some starts (thousands of density
-    # passes); the bracketed search needs at most 27 passes here with the
-    # minimum dependency versions and 15 with the current ones, and the budget
-    # leaves some margin above that.
+    # passes); the bracketed search needs at most 27 passes here, and the
+    # budget leaves about 50% of margin.
     budget = 40
 
     class Budget(Exception):
