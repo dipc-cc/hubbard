@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use("Agg")
 import numpy as np
+import pytest
 import sisl
 
 from hubbard import HubbardHamiltonian, sp2, density, plot
@@ -15,11 +16,14 @@ def _ribbon():
     return H
 
 
-def test_fat_bands_spin1():
+# Fat bands are drawn for the first selected spin; spin=[1, 0] used to pair
+# the spin-1 bands with the spin-0 projection weights
+@pytest.mark.parametrize("spin", [1, [1, 0]])
+def test_fat_bands_spin1(spin):
     R = _ribbon()
     projection = [0]
     scale = 1
-    p = plot.Bandstructure(R, projection=projection, spin=1, scale=scale)
+    p = plot.Bandstructure(R, projection=projection, spin=spin, scale=scale)
     try:
         # Reference: weight of the projected sites in each spin-1 eigenvector,
         # from a direct numpy diagonalization along the default Gamma-X path
