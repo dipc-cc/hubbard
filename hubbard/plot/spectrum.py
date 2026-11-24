@@ -262,6 +262,8 @@ class LDOS(GeometryPlot):
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
         with one marker per atom, whose area in points^2 is the PDOS at `E` in 1/eV summed over that atom's orbitals.
+        For a non-orthogonal basis this is a Mulliken PDOS, which can be slightly negative; matplotlib
+        then draws no marker for that atom and warns about an invalid value in ``sqrt``.
         With ``realspace=True`` either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
