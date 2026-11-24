@@ -46,8 +46,8 @@ def _nested_list(*args):
 class NEGF:
     r""" This class creates the open quantum system object for a N-terminal device
 
-    For the Non-equilibrium case :math:`V\neq 0` the current implementation
-    only can deal with a 2-terminal device
+    Only equilibrium (:math:`V=0`) is supported; finite bias raises
+    `NotImplementedError`.
 
     Parameters
     ----------
@@ -62,7 +62,13 @@ class NEGF:
     CC: str, optional
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
-        applied bias between the two electrodes
+        applied bias between the two electrodes. Only ``V=0`` (the default)
+        is supported.
+
+    Raises
+    ------
+    NotImplementedError
+        if `V` is non-zero: finite bias is not supported.
 
 
     Examples
@@ -81,6 +87,8 @@ class NEGF:
 
     def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
+        if V != 0:
+            raise NotImplementedError(f"{self.__class__.__name__}: finite bias (V={V!r}) is not supported; use V=0")
 
         # Global charge neutral reference energy (conveniently named fermi)
         self.Ef = 0.
