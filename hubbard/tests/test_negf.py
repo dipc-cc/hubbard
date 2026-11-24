@@ -5,7 +5,7 @@ import pytest
 import sisl
 
 import hubbard.negf as negf_module
-from hubbard import HubbardHamiltonian, NEGF
+from hubbard import HubbardHamiltonian, NEGF, sp2
 
 
 def _square_strip(spin):
@@ -154,3 +154,49 @@ def test_fermi_path_unpolarized_polarized(fermi_path):
     assert negfu.Ef == pytest.approx(negfp.Ef, abs=1e-10)
     assert np.allclose(npol, np.vstack([nu, nu]), rtol=0, atol=qtol)
     assert Eu == pytest.approx(Ep, abs=1e-6)
+
+
+@pytest.mark.parametrize("qtol", [1e-5, 1e-8])
+def test_fermi_search_converges_across_gap(monkeypatch, qtol):
+    # A gapped 7-AGNR segment between wide-band electrodes, from starting Ef
+    # on both sides of and inside the gap (midgap ~0.43 eV). Interpolating
+    # through all earlier points stalled for some starts (thousands of density
+    # passes); the bracketed search needs at most 22 passes here, and the
+    # budget leaves about a factor two of margin.
+    budget = 40
+
+    class Budget(Exception):
+        pass
+
+    geom = sisl.geom.agnr(7).tile(2, 0)
+    geom.set_nsc([1, 1, 1])
+    H = HubbardHamiltonian(sp2(geom), U=3., kT=0.025)
+    H.set_polarization([0], dn=[-1])
+    nl = 7
+    elec_idx = [range(nl), range(H.sites - nl, H.sites)]
+    negf = NEGF(H, [sisl.WideBandSE(nl, 0.), sisl.WideBandSE(nl, 0.)], elec_idx)
+    negf.eta = 1e-2
+    c0 = negf.CC_eq[0, 0]
+
+    _G = negf_module._G
+    passes = [0]
+
+    def counter(e, *args):
+        if e.imag == c0.imag:
+            passes[0] += 1
+            if passes[0] > budget * H.spin_size:
+                raise Budget
+        return _G(e, *args)
+    monkeypatch.setattr(negf_module, '_G', counter)
+
+    stalled = []
+    for Ef0 in [-1., -0.5, 0., 0.2, 0.5, 0.7, 0.8, 1., 1.2, 1.5]:
+        negf.Ef = Ef0
+        passes[0] = 0
+        try:
+            ni, _ = negf.calc_n_open(H, H.q, qtol=qtol)
+        except Budget:
+            stalled.append(Ef0)
+            continue
+        assert abs(ni.sum() - H.q.sum()) <= qtol
+    assert stalled == []

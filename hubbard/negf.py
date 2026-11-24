@@ -3,7 +3,6 @@ from numpy import einsum, conj
 import sisl
 import os
 import math
-from scipy.interpolate import interp1d
 from scipy.linalg import inv
 
 _pi = math.pi
@@ -226,7 +225,22 @@ class NEGF:
         ntot = -1.
         Ef = self.Ef
 
-        conv_q = []
+        # The device charge grows with Ef, so the root of dq(Ef) = ni.sum() - q
+        # is searched in two stages:
+        # 1. until a bracket exists, a Lorentzian step from the DOS at Ef, at
+        #    least doubling the previous step so that the root gets bracketed;
+        # 2. once Ef with dq < 0 (lo) and dq > 0 (hi) are known, the Illinois
+        #    variant of regula falsi inside [lo, hi], keeping only the latest
+        #    point on each side. Plain regula falsi stalls when one end of the
+        #    bracket never moves (as it does when Ef must cross a gap); Illinois
+        #    halves the dq of an end retained twice in a row, which restores
+        #    superlinear convergence. A step outside the bracket, a non-finite
+        #    one, or a fourth update in a row on the same side bisects instead,
+        #    so the bracket always shrinks.
+        lo = hi = None # [Ef, dq] of the bracket ends
+        side = 0 # side of the last update: -1 (lo) or 1 (hi)
+        nside = 0 # number of consecutive updates on that side
+        step = 0. # the last Lorentzian step
         while abs(ntot - q) > qtol:
             # for debug purposes
             #print(ntot, q, qtol, Ef)
@@ -235,24 +249,27 @@ class NEGF:
                 # correct fermi-level
                 dq = ni.sum() - q
 
-                conv_q.append([dq, Ef])
-                if len(conv_q) > 1:
-                    # do a bisection of the fermi level
-                    f = np.array(conv_q)
-                    try:
-                        Ef = interp1d(f[:, 0], f[:, 1],
-                                          fill_value="extrapolate")(0.)
-                    except:
-                        Ef = conv_q[-1][1]
-                    # Two equal dq extrapolate to nan or +-inf, depending on the SciPy version
-                    if not np.isfinite(Ef):
-                        Ef = conv_q[-1][1]
+                s = -1 if dq < 0 else 1
+                nside = nside + 1 if s == side else 1
+                side = s
+                if s < 0:
+                    lo = [Ef, dq]
+                else:
+                    hi = [Ef, dq]
 
-                    # check that the fermi-level is not one we already have
-                    if np.any(np.fabs(Ef - f[:, 1]) < 1e-15):
-                        conv_q = [conv_q[-1]]
+                if lo is not None and hi is not None:
+                    if nside > 1:
+                        # Illinois: halve dq of the end that was retained again
+                        if s < 0:
+                            hi[1] *= 0.5
+                        else:
+                            lo[1] *= 0.5
+                    Ef = lo[0] - lo[1] * (hi[0] - lo[0]) / (hi[1] - lo[1])
+                    a, b = min(lo[0], hi[0]), max(lo[0], hi[0])
+                    if nside > 3 or not np.isfinite(Ef) or not a < Ef < b:
+                        Ef = 0.5 * (a + b)
 
-                if len(conv_q) == 1:
+                else:
 
                     # Fermi-level is at 0.
                     # The Lorentzian has ~70% of its integral within
@@ -290,9 +307,17 @@ class NEGF:
                     f = dq / f
                     # Since x above is in units of eta, we have to multiply with eta
                     if abs(f) < 0.45:
-                        Ef -= self.eta * math.tan(f * _pi) * 0.5
+                        dEf = - self.eta * math.tan(f * _pi) * 0.5
                     else:
-                        Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                        dEf = - self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    if not np.isfinite(dEf):
+                        dEf = - s * self.eta
+                    # Without a bracket every step goes the same way, -sign(dq);
+                    # expand it so that the root is reached
+                    if abs(dEf) < 2 * abs(step):
+                        dEf = 2 * step
+                    step = dEf
+                    Ef += dEf
 
             Etot = 0.
             for spin in range(H.spin_size):
