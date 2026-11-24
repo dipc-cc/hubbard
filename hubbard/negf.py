@@ -244,7 +244,8 @@ class NEGF:
                                           fill_value="extrapolate")(0.)
                     except:
                         Ef = conv_q[-1][1]
-                    if np.isnan(Ef):
+                    # Two equal dq extrapolate to nan or +-inf, depending on the SciPy version
+                    if not np.isfinite(Ef):
                         Ef = conv_q[-1][1]
 
                     # check that the fermi-level is not one we already have
@@ -260,14 +261,19 @@ class NEGF:
                     # and expect the Lorentzian peak to be positioned at
                     # the current Fermi-level we will use eta = 100 meV
                     # Calculate charge at the Fermi-level
+                    # The density of states at Ef, broadened by eta, summed over the
+                    # spin channels in ni and over k with the weights wk.
+                    # For an unpolarized H, ni and q both hold one spin channel, so
+                    # dq and this sum are both per spin and their ratio needs no
+                    # degeneracy factor.
                     f = 0.
+                    cc = Ef + 1j * self.eta
                     for spin in range(H.spin_size):
-                        for ik, k in enumerate(H.mp.k):
+                        for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
                             if H.spin_size == 2:
                                 HC = H.H.Hk(spin=spin, k=k, format='array')
                             else:
                                 HC = H.H.Hk(k=k, format='array')
-                            cc = Ef + 1j * self.eta
 
                             GF = _G(cc, HC, self.elec_idx, ef_SE[spin][ik])
 
@@ -280,13 +286,13 @@ class NEGF:
                             # and consider this a pre-factor
                             f -= np.trace(GF).imag * wk / _pi # Integrate over k-space with weight wk
 
-                        # calculate fractional change
-                        f = dq / f
-                        # Since x above is in units of eta, we have to multiply with eta
-                        if abs(f) < 0.45:
-                            Ef -= self.eta * math.tan(f * _pi) * 0.5
-                        else:
-                            Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    # calculate fractional change, and move Ef once for all spins
+                    f = dq / f
+                    # Since x above is in units of eta, we have to multiply with eta
+                    if abs(f) < 0.45:
+                        Ef -= self.eta * math.tan(f * _pi) * 0.5
+                    else:
+                        Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
 
             Etot = 0.
             for spin in range(H.spin_size):
