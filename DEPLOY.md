@@ -20,6 +20,9 @@ The release cycle should be performed like this:
         git checkout gh-pages
         git merge main
         cd docs
-        ./run.sh
+        sphinx-build -b html . latest
         git add latest
         git commit -m "docs: update html"
+
+   The build needs `sphinx`, `nbsphinx` and `pandoc`, and an importable
+   `hubbard`; `conf.py` runs `conf_prepare.sh` itself.
