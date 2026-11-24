@@ -42,3 +42,39 @@ def test_ldos_scatter_is_lorentzian_pdos_per_site():
         assert np.allclose(sizes, H.PDOS([E], eta=eta)[0, :, 0], rtol=1e-10, atol=0)
     finally:
         p.close()
+
+
+def _scatter_sizes(p):
+    scat = [c for c in p.axes.collections if isinstance(c, PathCollection)]
+    assert len(scat) == 1
+    return scat[0].get_sizes()
+
+
+def test_ldos_scatter_sums_orbitals_onto_atoms():
+    # One atom with two orthogonal orbitals, onsite e1 and e2, coupled by t:
+    # two levels per spin, from the 2x2 block. Summed over the atom's orbitals
+    # the PDOS is the DOS, so the marker area is a Lorentzian at each analytic
+    # level, times two identical spins.
+    e1, e2, t = -0.5, 0.7, 0.3
+    atom = sisl.Atom(6, R=[1.0, 1.0])
+    g = sisl.Geometry([[0, 0, 0]], atoms=atom, lattice=sisl.Lattice([10, 10, 10], nsc=[1, 1, 1]))
+    TB = sisl.Hamiltonian(g, spin=sisl.Spin("p"))
+    TB[0, 0] = (e1, e1)
+    TB[1, 1] = (e2, e2)
+    TB[0, 1] = (t, t)
+    TB[1, 0] = (t, t)
+    H = HubbardHamiltonian(TB, U=0.0)
+    assert (H.geometry.na, H.geometry.no) == (1, 2)
+
+    eta, E = 0.05, 0.1
+    mid, half = (e1 + e2) / 2, np.sqrt(((e1 - e2) / 2) ** 2 + t ** 2)
+    levels = np.array([mid - half, mid + half])
+    ref = 2 * np.sum((eta / np.pi) / ((E - levels) ** 2 + eta ** 2))
+
+    p = plot.LDOS(H, E, eta=eta)
+    try:
+        sizes = _scatter_sizes(p)
+        assert sizes.shape == (1,)
+        assert np.allclose(sizes, [ref], rtol=1e-10, atol=0)
+    finally:
+        p.close()

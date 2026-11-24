@@ -261,7 +261,7 @@ class LDOS(GeometryPlot):
         i.e. it sums the LDOS corresponding to both spin components
     realspace:
         If True it will plot the LDOS in a realspace grid otherwise it plots it as a scatter plot (PDOS)
-        with one marker per site, whose area in points^2 is the PDOS at `E` in 1/eV.
+        with one marker per atom, whose area in points^2 is the PDOS at `E` in 1/eV summed over that atom's orbitals.
         With ``realspace=True`` either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     See Also
@@ -344,9 +344,11 @@ class LDOS(GeometryPlot):
             self.imshow.set_cmap(plt.cm.afmhot)
 
         else:
-            # HH.PDOS returns shape (1, no, nE); take the single energy E per site
+            # HH.PDOS returns shape (1, no, nE); take the single energy E per orbital
             pdos = HH.PDOS([E], eta=eta, spin=spin, distribution=distribution)[0, :, 0]
-            # Marker area (points^2) is the PDOS value at each site
+            # Sum the orbitals onto their atoms: one marker per atom, area (points^2) its PDOS
+            g = HH.geometry
+            pdos = np.bincount(g.o2a(np.arange(g.no)), weights=pdos, minlength=g.na)
             self.axes.scatter(x, y, s=pdos, c='b')
 
         for i, s in enumerate(sites):
