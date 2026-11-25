@@ -73,11 +73,11 @@ class Bandstructure(Plot):
         # Loop over k
         if projection != None:
             pdos = np.empty([len(spin), len(lk), HH.sites])
-            for ispin in spin:
+            for i, ispin in enumerate(spin):
                 for ik, k in enumerate(band.k):
                     _, evec = HH.eigh(k, eigvals_only=False, spin=ispin)
                     v = evec[tuple(projection), :]
-                    pdos[ispin, ik] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
+                    pdos[i, ik] = np.diagonal(np.dot(np.conjugate(v).T, v).real)
 
         # Fat bands?
         if projection != None:
