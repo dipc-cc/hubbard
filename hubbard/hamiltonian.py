@@ -684,7 +684,8 @@ class HubbardHamiltonian(object):
         Raises
         ------
         ValueError
-            if `q` does not have one entry per spin channel
+            if `q` does not have one entry per spin channel, or if an entry of an explicit `q`
+            is negative or NaN
         """
         if q is None:
             q = self.q
@@ -695,6 +696,7 @@ class HubbardHamiltonian(object):
             # Build a new array so the caller's q is left unchanged
             q = np.array([self.q[s] if q[s] is None else q[s] for s in range(self.spin_size)],
                          dtype=np.float64)
+            self._check_q('iterate', q)
 
         ni, Etot = calc_n_method(self, q, **kwargs)
 

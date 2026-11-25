@@ -697,3 +697,14 @@ def test_iterate_q_wrong_length(spin, q):
     H = _iterate_q_ribbon(spin=spin)
     with pytest.raises(ValueError, match="one entry per spin channel"):
         H.iterate(density.calc_n, q=q)
+
+
+@pytest.mark.parametrize("q", [[float('nan'), 2.], [-1., 5.]])
+def test_iterate_q_negative_or_nan_raises(q):
+    # Checked before the density solver runs: sisl's fermi_level loops forever on NaN
+    def calc_n_not_reached(H, q):
+        raise AssertionError("calc_n_method was called")
+
+    H = _iterate_q_ribbon()
+    with pytest.raises(ValueError, match="non-negative q"):
+        H.iterate(calc_n_not_reached, q=q)
