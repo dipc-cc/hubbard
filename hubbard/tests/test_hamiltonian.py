@@ -976,3 +976,40 @@ def test_write_initspin_rejects_several_orbitals_per_atom(tmp_path, ext):
     with pytest.raises(ValueError, match='one orbital per atom'):
         H.write_initspin(fn, ext_geom=ext_geom, mode='a')
     assert fn.read_text() == 'SystemLabel test\n'
+
+
+def test_orbital_charge_overlaps_graphene_analytic():
+    # both Bloch states of the graphene pi bands weigh 1/2 on each sublattice
+    # at every k, so sum_i |c_ia|^2 |c_ib|^2 = 1/2 for all a, b
+    H = hh.HubbardHamiltonian(sp2(sisl.geom.graphene()), U=0)
+    for k in ([0.13, 0.21, 0], [0.5, 0., 0], [0.25, -0.4, 0]):
+        _, L = H.calc_orbital_charge_overlaps(k=k)
+        assert np.allclose(L, 0.5, atol=1e-10, rtol=0)
+
+
+def test_orbital_charge_overlaps_complex_eigenstates(monkeypatch):
+    # zigzag ribbon at a non-Gamma k-point: genuinely complex eigenvectors
+    H = hh.HubbardHamiltonian(sp2(sisl.geom.zgnr(4)), U=0)
+    k = [0.21, 0, 0]
+    _, c = H.eigh(k=k, eigvals_only=False)
+    assert np.abs(c.imag).max() > 0.1
+    w = np.abs(c) ** 2
+    expected = w.T @ w
+    _, L = H.calc_orbital_charge_overlaps(k=k)
+    assert np.allclose(L, expected, atol=1e-10, rtol=0)
+    assert np.allclose(np.diag(L), (np.abs(c) ** 4).sum(axis=0), atol=1e-10, rtol=0)
+
+    # a complex phase on any eigenstate leaves the overlaps unchanged
+    rng = np.random.default_rng(42)
+    phase = np.exp(1j * rng.uniform(0, 2 * np.pi, c.shape[1]))
+    ev = H.eigh(k=k)
+    monkeypatch.setattr(H, 'eigh', lambda **kwargs: (ev, c * phase))
+    _, L_phase = H.calc_orbital_charge_overlaps(k=k)
+    assert np.allclose(L_phase, expected, atol=1e-10, rtol=0)
+
+
+@pytest.mark.parametrize('k', [[0, 0, 0], [0.13, 0.21, 0]])
+def test_orbital_charge_overlaps_nonorthogonal_raises(k):
+    H = hh.HubbardHamiltonian(sp2(sisl.geom.graphene(), s1=0.13), U=0)
+    with pytest.raises(NotImplementedError, match='non-orthogonal'):
+        H.calc_orbital_charge_overlaps(k=k)
