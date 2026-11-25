@@ -546,3 +546,26 @@ def test_dos_pdos_electrode_spin_mismatch():
         negf.DOS(H, E, spin=1)
     with pytest.raises(ValueError, match="electrode 0"):
         negf.PDOS(H, E, spin=1)
+
+
+@pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
+def test_calc_n_open_nonorthogonal_not_implemented(monkeypatch, spin):
+    # The device Green's function omits the overlap, so a non-orthogonal
+    # device would silently get the density and energy of another system
+    # (Etot -2.15406 eV for this dimer, against -1.75441 eV from closed
+    # diagonalization); it must fail before any Green's function is evaluated
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atoms=sisl.Atom(6, R=1.5), lattice=[10, 10, 10])
+    g.set_nsc([1, 1, 1])
+    h = sisl.Hamiltonian(g, spin=spin, orthogonal=False)
+    h[0, 0], h[1, 1], h[0, 1], h[1, 0] = 0.4, -0.4, -1, -1
+    h.S[0, 0], h.S[1, 1], h.S[0, 1], h.S[1, 0] = 1, 1, 0.25, 0.25
+    H = HubbardHamiltonian(h, U=0., q=(1, 1), kT=0.025851999)
+    assert not H.H.orthogonal
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]])
+    negf.Ef = H.find_midgap()
+
+    def no_green_function(*args):
+        raise AssertionError("the Green's function was evaluated")
+    monkeypatch.setattr(negf_module, '_G', no_green_function)
+    with pytest.raises(NotImplementedError, match="non-orthogonal device"):
+        negf.calc_n_open(H, H.q)
