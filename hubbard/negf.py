@@ -3,10 +3,16 @@ from numpy import einsum, conj
 import sisl
 import os
 import math
-from scipy.interpolate import interp1d
 from scipy.linalg import inv
 
 _pi = math.pi
+# Largest step of the device Fermi level before the charge root is bracketed (eV)
+# and the number of such steps calc_n_open takes before giving up.
+# The step is below the band width of the models hubbard builds (sp2: t = 2.7 eV),
+# so it cannot jump across a whole spectrum; 50 such steps reach any band
+# from a start up to 50 eV away.
+_EF_STEP_MAX = 1.
+_EF_BRACKET_PASSES = 50
 
 __all__ = ['NEGF']
 
@@ -34,6 +40,34 @@ def _G(e, HC, elec_idx, SE):
     return inv(inv_GF)
 
 
+def _self_energy(se, E, **kwargs):
+    r""" Self-energy of an electrode at energy `E`
+
+    sisl's own `sisl.WideBandSE.self_energy` is replaced by :math:`-i\eta`
+    times the identity, with :math:`\eta` the electrode's own ``eta``, at
+    every `E`. sisl < 0.16 returns this itself; sisl >= 0.16 returns
+    :math:`-i\pi\Im(E)` times the identity (or times the overlap matrix,
+    for an electrode built from a non-orthogonal matrix) instead. Whether
+    it is replaced is decided by the method bound to `se`: an override, in
+    a subclass or on the instance, is called as is, and so is any other
+    self-energy. An override that itself calls sisl's
+    `sisl.WideBandSE.self_energy` gets sisl's version-dependent value.
+
+    Parameters
+    ----------
+    se : sisl.SelfEnergy
+       the electrode
+    E : complex
+       energy at which the self-energy is calculated
+    **kwargs :
+       passed on to ``se.self_energy`` (``k``, ``spin``)
+    """
+    if (isinstance(se, sisl.WideBandSE)
+            and getattr(se.self_energy, "__func__", None) is sisl.WideBandSE.self_energy):
+        return np.diag(np.full(len(se), -1j * se.eta, dtype=np.complex128))
+    return se.self_energy(E, **kwargs)
+
+
 def _nested_list(*args):
     if len(args) == 0:
         return None
@@ -46,8 +80,8 @@ def _nested_list(*args):
 class NEGF:
     r""" This class creates the open quantum system object for a N-terminal device
 
-    For the Non-equilibrium case :math:`V\neq 0` the current implementation
-    only can deal with a 2-terminal device
+    Only equilibrium (:math:`V=0`) is supported; finite bias raises
+    `NotImplementedError`.
 
     Parameters
     ----------
@@ -56,13 +90,27 @@ class NEGF:
     elec_SE: list of sisl.SelfEnergy or tuple of (HubbardHamiltonian, str)
         list of (already converged) `hubbard.HubbardHamiltonian` objects for the electrodes
         plus the semi-infinite direction for the respective electrode.
-        Alternatively one may directly pass `sisl.SelfEnergy` instances
+        Alternatively one may directly pass `sisl.SelfEnergy` instances.
+        A `sisl.WideBandSE` that keeps sisl's own ``self_energy`` method couples
+        its orbitals with the energy-independent self-energy :math:`-i\eta` times
+        the identity, with :math:`\eta` (in eV) its own ``eta``, whatever the
+        sisl version: that method, which on sisl >= 0.16 returns
+        :math:`-i\pi\Im(E)` instead, is not called. An override of
+        ``self_energy``, in a subclass or on the instance, is called as is;
+        if it calls sisl's ``WideBandSE.self_energy`` itself, it gets sisl's
+        version-dependent value
     elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
     CC: str, optional
         name of the file containing the energy contour in the complex plane to integrate the density matrix
     V: float, optional
-        applied bias between the two electrodes
+        applied bias between the two electrodes. Only ``V=0`` (the default)
+        is supported.
+
+    Raises
+    ------
+    NotImplementedError
+        if `V` is non-zero: finite bias is not supported.
 
 
     Examples
@@ -81,6 +129,8 @@ class NEGF:
 
     def __init__(self, Hdev, elec_SE, elec_idx, CC=None, V=0, **kwargs):
         """ Initialize NEGF class """
+        if V != 0:
+            raise NotImplementedError(f"{self.__class__.__name__}: finite bias (V={V!r}) is not supported; use V=0")
 
         # Global charge neutral reference energy (conveniently named fermi)
         self.Ef = 0.
@@ -180,17 +230,17 @@ class NEGF:
                     if Hdev.spin_size > 1:
                         kw = {'spin':spin}
 
-                    self._ef_SE[spin][ik][i] = se.self_energy(1j * self.eta, k=k, **kw)
+                    self._ef_SE[spin][ik][i] = _self_energy(se, 1j * self.eta, k=k, **kw)
 
                     for cc_eq_i, CC_eq in enumerate(self.CC_eq):
                         for ic, cc in enumerate(CC_eq):
                             # Do it also for each point in the CC, for all EQ CC
-                            self._cc_eq_SE[spin][ik][cc_eq_i][ic][i] = se.self_energy(cc, k=k, **kw)
+                            self._cc_eq_SE[spin][ik][cc_eq_i][ic][i] = _self_energy(se, cc, k=k, **kw)
 
                     if self.NEQ:
                         for ic, cc in enumerate(self.CC_neq):
                             # And for each point in the Neq CC
-                            self._cc_neq_SE[spin][ik][ic][i] = se.self_energy(cc, k=k, **kw)
+                            self._cc_neq_SE[spin][ik][ic][i] = _self_energy(se, cc, k=k, **kw)
 
     def calc_n_open(self, H, q, qtol=1e-5):
         """
@@ -212,6 +262,15 @@ class NEGF:
             spin densities
         Etot: float
             total energy
+
+        Raises
+        ------
+        RuntimeError
+            if no device Fermi level brackets the charge `q` within 50 steps of at
+            most 1 eV each from the starting `self.Ef`, for instance when it starts
+            far outside the bands; or if the bracket around the Fermi level shrinks
+            to floating-point resolution before the charge is within `qtol`, for
+            instance when `qtol` is below the precision of the contour integration
         """
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -226,32 +285,68 @@ class NEGF:
         ntot = -1.
         Ef = self.Ef
 
-        conv_q = []
+        # The device charge grows with Ef, so the root of dq(Ef) = ni.sum() - q
+        # is searched in two stages:
+        # 1. until a bracket exists, a Lorentzian step from the DOS at Ef. A step
+        #    that did not at least halve |dq| did worse than a bisection would,
+        #    so the next one is expanded to the zero of the line through the last
+        #    two points (twice that if |dq| hardly changed), and at least doubled,
+        #    until the root gets bracketed.
+        #    Steps are capped at _EF_STEP_MAX, so that Ef cannot run away where
+        #    N(Ef) no longer changes (outside the bands), and after
+        #    _EF_BRACKET_PASSES steps without a bracket the search fails;
+        # 2. once Ef with dq < 0 (lo) and dq > 0 (hi) are known, the Illinois
+        #    variant of regula falsi inside [lo, hi], keeping only the latest
+        #    point on each side. Plain regula falsi stalls when one end of the
+        #    bracket never moves (as it does when Ef must cross a gap); Illinois
+        #    halves the dq of an end retained twice in a row, which restores
+        #    superlinear convergence. A step outside the bracket, a non-finite
+        #    one, or a fourth update in a row on the same side bisects instead,
+        #    so the bracket always shrinks, until no float lies inside it and the
+        #    search fails.
+        lo = hi = None # [Ef, dq] of the bracket ends
+        side = 0 # side of the last update: -1 (lo) or 1 (hi)
+        nside = 0 # number of consecutive updates on that side
+        step = 0. # the last step taken without a bracket
+        dq_step = 0. # dq before that step
+        nopen = 0 # number of steps taken without a bracket
+        first = True # the first pass only computes the charge at the starting Ef
+        dq_min = math.inf # smallest |dq| reached
         while abs(ntot - q) > qtol:
             # for debug purposes
             #print(ntot, q, qtol, Ef)
 
-            if ntot > 0.:
+            if not first:
                 # correct fermi-level
                 dq = ni.sum() - q
+                dq_min = min(dq_min, abs(dq))
 
-                conv_q.append([dq, Ef])
-                if len(conv_q) > 1:
-                    # do a bisection of the fermi level
-                    f = np.array(conv_q)
-                    try:
-                        Ef = interp1d(f[:, 0], f[:, 1],
-                                          fill_value="extrapolate")(0.)
-                    except:
-                        Ef = conv_q[-1][1]
-                    if np.isnan(Ef):
-                        Ef = conv_q[-1][1]
+                s = -1 if dq < 0 else 1
+                nside = nside + 1 if s == side else 1
+                side = s
+                if s < 0:
+                    lo = [Ef, dq]
+                else:
+                    hi = [Ef, dq]
 
-                    # check that the fermi-level is not one we already have
-                    if np.any(np.fabs(Ef - f[:, 1]) < 1e-15):
-                        conv_q = [conv_q[-1]]
+                if lo is not None and hi is not None:
+                    if nside > 1:
+                        # Illinois: halve dq of the end that was retained again
+                        if s < 0:
+                            hi[1] *= 0.5
+                        else:
+                            lo[1] *= 0.5
+                    Ef = lo[0] - lo[1] * (hi[0] - lo[0]) / (hi[1] - lo[1])
+                    a, b = min(lo[0], hi[0]), max(lo[0], hi[0])
+                    if nside > 3 or not np.isfinite(Ef) or not a < Ef < b:
+                        Ef = 0.5 * (a + b)
+                    if not a < Ef < b:
+                        # No float lies strictly inside the bracket: it cannot shrink
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open cannot shrink the bracket "
+                                           f"[{a}, {b}] of the Fermi level any further: |dq| = {dq_min} "
+                                           f"reached, qtol = {qtol}")
 
-                if len(conv_q) == 1:
+                else:
 
                     # Fermi-level is at 0.
                     # The Lorentzian has ~70% of its integral within
@@ -260,14 +355,19 @@ class NEGF:
                     # and expect the Lorentzian peak to be positioned at
                     # the current Fermi-level we will use eta = 100 meV
                     # Calculate charge at the Fermi-level
+                    # The density of states at Ef, broadened by eta, summed over the
+                    # spin channels in ni and over k with the weights wk.
+                    # For an unpolarized H, ni and q both hold one spin channel, so
+                    # dq and this sum are both per spin and their ratio needs no
+                    # degeneracy factor.
                     f = 0.
+                    cc = Ef + 1j * self.eta
                     for spin in range(H.spin_size):
-                        for ik, k in enumerate(H.mp.k):
+                        for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
                             if H.spin_size == 2:
                                 HC = H.H.Hk(spin=spin, k=k, format='array')
                             else:
                                 HC = H.H.Hk(k=k, format='array')
-                            cc = Ef + 1j * self.eta
 
                             GF = _G(cc, HC, self.elec_idx, ef_SE[spin][ik])
 
@@ -280,13 +380,38 @@ class NEGF:
                             # and consider this a pre-factor
                             f -= np.trace(GF).imag * wk / _pi # Integrate over k-space with weight wk
 
-                        # calculate fractional change
-                        f = dq / f
-                        # Since x above is in units of eta, we have to multiply with eta
-                        if abs(f) < 0.45:
-                            Ef -= self.eta * math.tan(f * _pi) * 0.5
-                        else:
-                            Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    # calculate fractional change, and move Ef once for all spins
+                    f = dq / f
+                    # Since x above is in units of eta, we have to multiply with eta
+                    if abs(f) < 0.45:
+                        dEf = - self.eta * math.tan(f * _pi) * 0.5
+                    else:
+                        # eta * tan(pi/2 - atan(1 / (f * pi))) / 2, written so that
+                        # the sign is kept and an infinite f stays infinite
+                        dEf = - self.eta * _pi * f * 0.5
+                    if not np.isfinite(dEf):
+                        dEf = - s * self.eta
+                    # Without a bracket every step goes the same way, -sign(dq)
+                    r = abs(dq / dq_step) if step != 0. else 0.
+                    if r > 0.5:
+                        # The last step did not halve |dq|. Expand it to where the line
+                        # through the last two points meets dq = 0, and at least double it.
+                        # If |dq| changed by less than 10%, that line is the local slope,
+                        # which undershoots on the exponential tail of a band edge (about
+                        # kT per step), so aim twice as far to bracket the root.
+                        m = r / (1 - r) if r < 1 else math.inf
+                        if r > 0.9:
+                            m *= 2
+                        dEf = math.copysign(max(abs(dEf), max(2., m) * abs(step)), step)
+                    dEf = math.copysign(min(abs(dEf), _EF_STEP_MAX), dEf)
+                    nopen += 1
+                    if nopen > _EF_BRACKET_PASSES:
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open found no Fermi level "
+                                           f"that brackets the charge q={q} within {_EF_BRACKET_PASSES} "
+                                           f"steps of at most {_EF_STEP_MAX} eV (Ef={Ef}, dq={dq})")
+                    step = dEf
+                    dq_step = dq
+                    Ef += dEf
 
             Etot = 0.
             for spin in range(H.spin_size):
@@ -341,6 +466,7 @@ class NEGF:
 
             # Calculate new charge
             ntot = ni.sum()
+            first = False
 
         # Save Fermi-level of the device
         self.Ef = Ef
@@ -394,6 +520,31 @@ class NEGF:
 
         return Delta, weight
 
+    def _check_dos_input(self, H, method):
+        """ Refuse an input for which `DOS` and `PDOS` would return a wrong spectrum """
+        name = f"{self.__class__.__name__}.{method}"
+        spin_size = len(self._ef_SE)
+        if H.spin_size != spin_size:
+            raise ValueError(f"{name}: H has spin_size={H.spin_size}, "
+                             f"but the electrode self-energies were set up for spin_size={spin_size}")
+        for i, se in enumerate(self.elec_SE):
+            # The Hamiltonian a semi-infinite (spgeom0) or real-space (parent) electrode
+            # is built from; read from the instance, not through SelfEnergy.__getattr__.
+            # A WideBandSE couples every spin channel alike and is not checked
+            spin = None
+            for attr in ('spgeom0', 'parent'):
+                spin = getattr(getattr(se, '__dict__', {}).get(attr), 'spin', None)
+                if spin is not None:
+                    break
+            if spin is not None and spin.spinor != spin_size:
+                raise ValueError(f"{name}: electrode {i} has spin_size={spin.spinor}, "
+                                 f"but the device has spin_size={spin_size}")
+        if len(H.mp.k) > 1 or np.any(H.mp.k[0] != 0):
+            raise NotImplementedError(f"{name}: H has a k-mesh of {len(H.mp.k)} point(s) other than Gamma "
+                                      "alone, but only the Gamma point is evaluated; k-sampling is #141")
+        if not H.H.orthogonal:
+            raise NotImplementedError(f"{name}: a non-orthogonal H is not supported")
+
     def DOS(self, H, E, spin=[0, 1], eta=0.01):
         r"""
         Obtains the density of states (DOS) from the Green's function of the device
@@ -409,25 +560,42 @@ class NEGF:
         E: array_like
             energy grid to obtan the DOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the DOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.DOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
         Returns
         -------
         DOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for, or
+            if a recursive or real-space electrode was built from a Hamiltonian of another spin
+            size than the device's
+        NotImplementedError
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
+            non-orthogonal
         """
+        self._check_dos_input(H, 'DOS')
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
 
         dos = np.zeros([len(E)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
 
                 # Append all the self-energies for the electrodes at each energy point
-                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
@@ -451,23 +619,40 @@ class NEGF:
         E: array_like
             energy grid to obtan the PDOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the PDOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.PDOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
         Returns
         -------
         PDOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for, or
+            if a recursive or real-space electrode was built from a Hamiltonian of another spin
+            size than the device's
+        NotImplementedError
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
+            non-orthogonal
         """
+        self._check_dos_input(H, 'PDOS')
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
 
         ldos = np.zeros([len(E), len(H.H)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
-                SE = [se.self_energy(e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 

@@ -1,0 +1,165 @@
+import matplotlib
+matplotlib.use("Agg")
+import warnings
+
+import numpy as np
+import scipy.linalg
+import sisl
+from matplotlib.collections import PathCollection
+from matplotlib.colors import to_rgba
+
+from hubbard import HubbardHamiltonian, sp2, density, plot
+
+
+def _molecule():
+    # Small zigzag flake (12 sites) in its triplet state, so the spins differ
+    g = sisl.geom.zgnr(2).tile(3, 0)
+    g.set_nsc([1, 1, 1])
+    # Flat at z=0, so the realspace LDOS slice at z=1.1 is 1.1 Ang from the plane
+    g = g.translate([0, 0, -g.xyz[0, 2]])
+    H = HubbardHamiltonian(sp2(g), U=3.5, q=(7, 5))
+    H.set_polarization([0], dn=[len(g) - 1])
+    H.converge(density.calc_n_insulator, tol=1e-8)
+    return H
+
+
+def test_ldos_scatter_is_lorentzian_pdos_per_site():
+    # Reference: Lorentzian-broadened local DOS per site, summed over spin,
+    # from a direct numpy diagonalization of each spin Hamiltonian
+    H = _molecule()
+    eta = 0.05
+    ev0 = np.linalg.eigvalsh(H.H.Hk(spin=0, format="array"))
+    E = ev0[len(ev0) // 2] + 0.02
+    ref = 0
+    for s in range(2):
+        e, c = np.linalg.eigh(H.H.Hk(spin=s, format="array"))
+        L = (eta / np.pi) / ((E - e) ** 2 + eta ** 2)
+        ref = ref + np.abs(c) ** 2 @ L
+    # Spin channels differ, so a mix-up would show
+    assert not np.allclose(H.H.Hk(spin=0, format="array"), H.H.Hk(spin=1, format="array"))
+
+    p = plot.LDOS(H, E, eta=eta)
+    try:
+        scat = [c for c in p.axes.collections if isinstance(c, PathCollection)]
+        assert len(scat) == 1
+        sizes = scat[0].get_sizes()
+        assert sizes.shape == (H.geometry.no,)
+        assert np.allclose(sizes, ref, rtol=1e-10, atol=0)
+        assert np.allclose(sizes, H.PDOS([E], eta=eta)[0, :, 0], rtol=1e-10, atol=0)
+    finally:
+        p.close()
+
+
+def _scatter_sizes(p):
+    scat = [c for c in p.axes.collections if isinstance(c, PathCollection)]
+    assert len(scat) == 1
+    return scat[0].get_sizes()
+
+
+def test_ldos_scatter_sums_orbitals_onto_atoms():
+    # One atom with two orthogonal orbitals, onsite e1 and e2, coupled by t:
+    # two levels per spin, from the 2x2 block. Summed over the atom's orbitals
+    # the PDOS is the DOS, so the marker area is a Lorentzian at each analytic
+    # level, times two identical spins.
+    e1, e2, t = -0.5, 0.7, 0.3
+    atom = sisl.Atom(6, R=[1.0, 1.0])
+    g = sisl.Geometry([[0, 0, 0]], atoms=atom, lattice=sisl.Lattice([10, 10, 10], nsc=[1, 1, 1]))
+    TB = sisl.Hamiltonian(g, spin=sisl.Spin("p"))
+    TB[0, 0] = (e1, e1)
+    TB[1, 1] = (e2, e2)
+    TB[0, 1] = (t, t)
+    TB[1, 0] = (t, t)
+    H = HubbardHamiltonian(TB, U=0.0)
+    assert (H.geometry.na, H.geometry.no) == (1, 2)
+
+    eta, E = 0.05, 0.1
+    mid, half = (e1 + e2) / 2, np.sqrt(((e1 - e2) / 2) ** 2 + t ** 2)
+    levels = np.array([mid - half, mid + half])
+    ref = 2 * np.sum((eta / np.pi) / ((E - levels) ** 2 + eta ** 2))
+
+    p = plot.LDOS(H, E, eta=eta)
+    try:
+        sizes = _scatter_sizes(p)
+        assert sizes.shape == (1,)
+        assert np.allclose(sizes, [ref], rtol=1e-10, atol=0)
+    finally:
+        p.close()
+
+
+def test_ldos_scatter_accepts_spin_tuple_and_int():
+    H = _molecule()
+    eta = 0.05
+    E = np.linalg.eigvalsh(H.H.Hk(spin=0, format="array"))[6] + 0.02
+
+    sizes = {}
+    for key, spin in [("tuple", (0, 1)), ("list", [0, 1]), ("up", 0), ("down", 1)]:
+        p = plot.LDOS(H, E, eta=eta, spin=spin)
+        try:
+            sizes[key] = _scatter_sizes(p).copy()
+        finally:
+            p.close()
+    # The spin channels differ, so a dropped or doubled channel would show
+    assert not np.allclose(sizes["up"], sizes["down"])
+    assert np.allclose(sizes["tuple"], sizes["list"], rtol=1e-12, atol=0)
+    assert np.allclose(sizes["list"], sizes["up"] + sizes["down"], rtol=1e-10, atol=0)
+
+
+def test_ldos_realspace_accepts_spin_int():
+    H = _molecule()
+    # A small grid and an energy window of a few states keep this fast
+    kw = dict(eta=0.05, realspace=True, z=1.1, shape=[12, 12, 1], energy_window=0.2)
+    E = np.linalg.eigvalsh(H.H.Hk(spin=0, format="array"))[6]
+    images = []
+    for spin in (0, [0]):
+        p = plot.LDOS(H, E, spin=spin, **kw)
+        try:
+            images.append(np.asarray(p.imshow.get_array()).copy())
+        finally:
+            p.close()
+    assert images[0].shape == (12, 12)
+    assert np.any(images[0] > 0)
+    assert np.array_equal(images[0], images[1])
+
+
+def test_ldos_scatter_shows_negative_mulliken_pdos_hollow():
+    # Non-orthogonal dimer (one orbital per atom), U=0: at the upper level the
+    # Mulliken PDOS of atom 1 is negative. Reference from the generalized
+    # eigenproblem H c = e S c, with weight Re[conj(c_i) (S c)_i] per orbital,
+    # Lorentzian-broadened and summed over the two identical spins.
+    e1, e2, t, s = 0., -5., -1., 0.5
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atoms=sisl.Atom(6, R=1.6),
+                      lattice=sisl.Lattice([10, 10, 10], nsc=[1, 1, 1]))
+    TB = sisl.Hamiltonian(g, spin=sisl.Spin("p"), orthogonal=False)
+    TB[0, 0] = (e1, e1, 1.)
+    TB[1, 1] = (e2, e2, 1.)
+    TB[0, 1] = (t, t, s)
+    TB[1, 0] = (t, t, s)
+    H = HubbardHamiltonian(TB, U=0.0)
+
+    Hm = np.array([[e1, t], [t, e2]])
+    Sm = np.array([[1., s], [s, 1.]])
+    levels, c = scipy.linalg.eigh(Hm, Sm)
+    w = np.real(np.conj(c) * (Sm @ c))
+    eta, E = 0.05, levels[1]
+    ref = 2 * w @ ((eta / np.pi) / ((E - levels) ** 2 + eta ** 2))
+    assert ref[0] > 0 > ref[1]
+
+    p = plot.LDOS(H, E, eta=eta)
+    try:
+        scat = [col for col in p.axes.collections if isinstance(col, PathCollection)]
+        assert len(scat) == 1
+        assert np.allclose(scat[0].get_sizes(), np.abs(ref), rtol=1e-10, atol=0)
+        face = scat[0].get_facecolors()
+        edge = scat[0].get_edgecolors()
+        blue = to_rgba("b")
+        assert np.allclose(face[0], blue)
+        assert face[1][3] == 0
+        assert np.allclose(edge, [blue, blue])
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            # matplotlib 3.9 with pyparsing 3.3 emits pyparsing deprecations
+            # while parsing mathtext labels; they are unrelated to the markers
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            p.fig.canvas.draw()
+    finally:
+        p.close()

@@ -194,8 +194,56 @@ class HubbardHamiltonian(object):
         """
         return self.H.eigenstate(k, spin=spin)
 
+    def _derive(self, TBHam, H, n, U, Uij, q, exact=False):
+        """ Return a new object with reference Hamiltonian `TBHam` whose mean-field Hamiltonian starts as `H`
+
+        `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,
+        so that the first `update_hamiltonian` of the new object adds the mean-field terms once.
+        The new object gets its own copies of `U`, `Uij` and this object's k-mesh.
+        The new object takes `n` as given, set after construction. With `exact` it also takes `q`
+        as given; otherwise the constructor reads `q`, and treats a non-positive ``q[0]`` as not given
+        """
+        if isinstance(U, np.ndarray) or np.ndim(U) > 0:
+            U = np.array(U, copy=True)
+        if Uij is not None:
+            Uij = np.array(Uij, copy=True)
+        # Set n (and q) after construction, so the constructor neither renormalizes an empty
+        # spin channel nor reads q = 0 for spin up as "not given"
+        new = self.__class__(TBHam, n=0, U=U, Uij=Uij, q=q,
+                             nkpt=self.mp, kT=self.kT, units=self.units)
+        if exact:
+            new.q = np.array(q, dtype=np.float64)[:new.spin_size]
+        new.n = np.array(n, dtype=np.float64)
+        new.H = H
+        new.H.finalize()
+        new.mp = self.mp.copy(new.H)
+        return new
+
+    def _check_q(self, method, q):
+        """ Raise if the electron count `q` passed to `method` has an entry that is not >= 0, NaN included """
+        if not np.all(np.asarray(q, dtype=np.float64) >= 0):
+            raise ValueError(f"{self.__class__.__name__}.{method} requires a non-negative q, got {q}")
+
+    def _check_Uij(self, method, nonzero=False):
+        """ Raise if `method` cannot carry ``self.Uij`` over to a derived object
+
+        Atom-indexed operations cannot map an orbital-indexed `Uij` when an atom has more than
+        one orbital; with `nonzero`, the operation cannot carry over any nonzero `Uij` at all
+        """
+        if self.Uij is None:
+            return
+        if self.geometry.no > self.geometry.na:
+            raise NotImplementedError(f"{self.__class__.__name__}.{method} cannot handle Uij "
+                                      "with more than one orbital per atom")
+        if nonzero and np.any(self.Uij):
+            raise NotImplementedError(f"{self.__class__.__name__}.{method} cannot handle a nonzero Uij")
+
     def tile(self, reps, axis):
         """ Tile the HubbardHamiltonian object along a specified axis to obtain a larger one
+
+        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``
+        and `U` are all tiled, orbital by orbital as sisl orders them, so a converged object tiles
+        into a converged one once its k-mesh samples the same Brillouin-zone points
 
         Parameters
         ----------
@@ -210,20 +258,29 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger `hubbard.HubbardHamiltonian` object
+        A new larger `hubbard.HubbardHamiltonian` object, with ``q`` the charge per spin channel of the tiled
+        densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,
+        so use `set_kmesh` to sample the same Brillouin-zone points as this object
 
-        Note
-        ----
-        We need to update this function so Uij also gets tiled like the geometry
+        Raises
+        ------
+        NotImplementedError
+            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.
+            `Uij` is not tiled yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``
         """
-        Htile = self.H.tile(reps, axis)
+        self._check_Uij('tile', nonzero=True)
+        # sisl tiles cell by cell, so the orbitals keep their order within each copy
         ntile = np.tile(self.n, reps)
-        q = ntile.sum(1)
-        U = np.tile(self.U, reps)
-        return self.__class__(Htile, n=ntile, U=U, q=q, nkpt=self.mp, kT=self.kT)
+        U = self.U if np.ndim(self.U) == 0 else np.tile(self.U, reps)
+        return self._derive(self.TBHam.tile(reps, axis), self.H.tile(reps, axis),
+                            ntile, U, None, ntile.sum(1), exact=True)
 
     def repeat(self, reps, axis):
         """ Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one
+
+        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``
+        and `U` are all repeated, orbital by orbital as sisl orders them, so a converged object repeats
+        into a converged one once its k-mesh samples the same Brillouin-zone points
 
         Parameters
         ----------
@@ -238,70 +295,135 @@ class HubbardHamiltonian(object):
 
         Returns
         -------
-        A new larger `hubbard.HubbardHamiltonian` object
+        A new larger `hubbard.HubbardHamiltonian` object, with ``q`` the charge per spin channel of the repeated
+        densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,
+        so use `set_kmesh` to sample the same Brillouin-zone points as this object
 
-        Note
-        ----
-        We need to update this function so Uij also gets repeated like the geometry
+        Raises
+        ------
+        NotImplementedError
+            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.
+            `Uij` is not repeated yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``
         """
-        Hrep = self.H.repeat(reps, axis)
-        nrep = np.repeat(self.n, reps, axis=1)
-        q = nrep.sum(1)
-        U = np.repeat(self.U, reps)
-        return self.__class__(Hrep, n=nrep, U=U, q=q, nkpt=self.mp, kT=self.kT)
+        self._check_Uij('repeat', nonzero=True)
+        # sisl repeats atom by atom, keeping the orbitals of each atom together
+        g = self.geometry
+        idx = np.concatenate([np.tile(g.a2o(ia, all=True), reps) for ia in range(g.na)])
+        nrep = self.n[:, idx]
+        U = self.U if np.ndim(self.U) == 0 else np.asarray(self.U)[idx]
+        return self._derive(self.TBHam.repeat(reps, axis), self.H.repeat(reps, axis),
+                            nrep, U, None, nrep.sum(1), exact=True)
 
     def remove(self, atoms, q=(0,0)):
-        """ Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`
+        """ Return a new `HubbardHamiltonian` object without the atoms in `atoms`
+
+        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
+        `U` and `Uij` are restricted to the remaining atoms (and their orbitals), and the densities are
+        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its
+        mean-field terms from the reference Hamiltonian and the new densities.
+        `Uij` is passed through, not validated, and only with one orbital per atom
 
         Parameters
         ----------
         atoms: array_like of int
-            atomic ndices of removed atoms
+            atomic indices of removed atoms
         q: array_like, optional
-            Two values specifying up, down electron occupations for the remaining subset of atoms after removal
+            electron count per spin channel (one value if unpolarized, up and down if polarized)
+            for the remaining atoms. The default takes it from the charge of the remaining atoms,
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.
+            A spin channel with no density on the remaining atoms stays empty if its charge is zero,
+            and otherwise starts uniform, at its charge over the number of orbitals
 
         See Also
         ------------
         sisl.physics.Hamiltonian.remove
         sisl.Geometry.remove
+
+        Returns
+        -------
+        A new smaller `hubbard.HubbardHamiltonian` object
+
+        Raises
+        ------
+        ValueError
+            if an entry of `q` is negative or NaN
+        NotImplementedError
+            if this object has `Uij` and an atom with more than one orbital
         """
+        self._check_q('remove', q)
+        self._check_Uij('remove')
         atoms = self.geometry.sc2uc(atoms)
         import sisl._array as _a
         atoms = np.delete(_a.arangei(self.geometry.na), atoms)
-        Hsub = self.H.sub(atoms)
-        nsub = self.n[:,atoms]
-        U = self.U[atoms]
-        if self.Uij is not None:
-            Uij = self.Uij[np.ix_(atoms, atoms)]
-        return self.__class__(Hsub, n=nsub, U=U, Uij=Uij,
-                    q=q, nkpt=self.mp, kT=self.kT)
+        return self.sub(atoms, q=q)
 
     def sub(self, atoms, q=(0,0)):
         """ Return a new `HubbardHamiltonian` object of a subset of selected atoms
+
+        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,
+        `U` and `Uij` are restricted to the kept atoms (and their orbitals), and the densities are
+        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its
+        mean-field terms from the reference Hamiltonian and the new densities.
+        `Uij` is passed through, not validated, and only with one orbital per atom
 
         Parameters
         ----------
         atoms : int or array_like
             indices/boolean of all atoms to be kept
         q: array_like, optional
-            Two values specifying up, down electron occupations for the subset of atoms
+            electron count per spin channel (one value if unpolarized, up and down if polarized)
+            for the kept atoms. The default takes it from the charge of the kept atoms,
+            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.
+            A spin channel with no density on the kept atoms stays empty if its charge is zero,
+            and otherwise starts uniform, at its charge over the number of orbitals
+
+        See Also
+        ------------
+        sisl.physics.Hamiltonian.sub
+        sisl.Geometry.sub
+
+        Returns
+        -------
+        A new smaller `hubbard.HubbardHamiltonian` object
+
+        Raises
+        ------
+        ValueError
+            if an entry of `q` is negative or NaN
+        NotImplementedError
+            if this object has `Uij` and an atom with more than one orbital
         """
-        nsub = self.n[:, atoms]
-        if isinstance(self.U, float):
-            U = self.U
+        self._check_q('sub', q)
+        self._check_Uij('sub')
+        # n and U are indexed by orbital, atoms by atom
+        orbs = self.geometry.a2o(np.arange(self.geometry.na)[atoms], all=True)
+        nsub = self.n[:, orbs]
+        U = self.U if np.ndim(self.U) == 0 else np.asarray(self.U)[orbs]
+        if self.Uij is None:
+            Uij = None
         else:
-            U = self.U[atoms]
-        if self.Uij is not None:
             Uij = self.Uij[np.ix_(atoms, atoms)]
-        else:
-            Uij = self.Uij
-        return self.__class__(self.H.sub(atoms), n=nsub, U=U, Uij=Uij,
-                    q=q, nkpt=self.mp, kT=self.kT)
+        # The default q is read by the constructor; any other q is used as given
+        exact = bool(np.any(np.asarray(q) != 0))
+        new = self._derive(self.TBHam.sub(atoms), self.H.sub(atoms), nsub, U, Uij, q, exact=exact)
+        # A spin channel without density on the kept atoms but with charge cannot be scaled
+        # (0/0 = NaN): it starts uniform at q/no, as an object without a density does
+        fill = (new.n.sum(1) == 0) & (new.q > 0)
+        new.n[fill] = (new.q[fill] / new.sites).reshape(-1, 1)
+        new.normalize_charge()
+        return new
 
     def copy(self):
-        """ Return a copy of the `HubbardHamiltonian` object """
-        return self.__class__(self.H, n=self.n, U=self.U,
-                    q=(self.q[0], self.q[1]), nkpt=self.mp, kT=self.kT)
+        """ Return an independent copy of the `HubbardHamiltonian` object
+
+        The copy holds the same reference and mean-field Hamiltonians, spin densities, charge, `U`, `Uij`,
+        `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object.
+        `Uij` is passed through, not validated
+        """
+        new = self._derive(self.TBHam.copy(), self.H.copy(), self.n, self.U, self.Uij, self.q, exact=True)
+        if hasattr(self, 'Etot'):
+            new.Etot = self.Etot
+        return new
 
     def update_hamiltonian(self):
         r""" Update spin Hamiltonian according to the extended Hubbard model,
@@ -343,7 +465,10 @@ class HubbardHamiltonian(object):
 
     def normalize_charge(self):
         """ Ensure the total up/down charge in pi-network equals Nup/Ndn """
-        self.n *= (self.q / self.n.sum(1)).reshape(-1, 1)
+        nsum = self.n.sum(1)
+        # A spin channel with no charge and no density stays empty, instead of 0/0 = NaN
+        scale = ~((nsum == 0) & (self.q == 0))
+        self.n[scale] *= (self.q[scale] / nsum[scale]).reshape(-1, 1)
 
     def set_polarization(self, up, dn=tuple()):
         """ Maximize spin polarization on specific atomic sites
@@ -355,7 +480,16 @@ class HubbardHamiltonian(object):
             atomic sites where the spin-up density is going to be maximized
         dn: array_like, optional
             atomic sites where the spin-down density is going to be maximized
+
+        Raises
+        ------
+        ValueError
+            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin
+            polarization needs a polarized Hamiltonian
         """
+        if self.spin_size != 2:
+            raise ValueError(self.__class__.__name__ + '.set_polarization(...) requires a spin-polarized Hamiltonian '
+                             f'(spin_size == 2), got spin_size == {self.spin_size}')
         self.n[:, up] = np.array([1., 0.]).reshape(2, 1)
         if len(dn) > 0:
             self.n[:, dn] = np.array([0., 1.]).reshape(2, 1)
@@ -364,7 +498,17 @@ class HubbardHamiltonian(object):
     def polarize_sublattices(self):
         """ Quick way to polarize the lattices
         without checking that consequtive atoms actually belong to
-        different sublattices """
+        different sublattices
+
+        Raises
+        ------
+        ValueError
+            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin
+            polarization needs a polarized Hamiltonian
+        """
+        if self.spin_size != 2:
+            raise ValueError(self.__class__.__name__ + '.polarize_sublattices(...) requires a spin-polarized Hamiltonian '
+                             f'(spin_size == 2), got spin_size == {self.spin_size}')
         a = np.arange(len(self.H))
         self.n[0, :] = a % 2
         self.n[1, :] = 1 - self.n[0, :]
@@ -572,7 +716,11 @@ class HubbardHamiltonian(object):
             method to obtain the spin-densities
             it *must* return the corresponding spin-densities (``n``) and the total energy (``Etot``)
         q: array_like, optional
-            total charge separated in spin-channels, q=[q_up, q_dn]
+            electron count per spin channel passed to `calc_n_method`, ``q=[q_up, q_dn]`` for a polarized
+            Hamiltonian and ``q=[q]`` for an unpolarized one (the count of one spin).
+            A ``None`` entry takes ``self.q[s]`` for that channel, unrounded. Defaults to `self.q`.
+            The caller's `q` is not modified. `hubbard.NEGF.calc_n_open` uses only the total of `q`,
+            so the per-spin values are not enforced on the open-boundary path.
         mixer: Mixer, optional
             `sisl.mixing.Mixer` instance for the SCF loop, defaults to linear mixing with weight 0.7
 
@@ -588,13 +736,23 @@ class HubbardHamiltonian(object):
         -------
         dn : array_like
             difference between the ith and the (i-1)th iteration densities
+
+        Raises
+        ------
+        ValueError
+            if `q` does not have one entry per spin channel, or if an entry of an explicit `q`
+            is negative or NaN
         """
         if q is None:
             q = self.q
         else:
-            for s in self.spin_size:
-                if q[s] is None:
-                    q[s] = int(round(self.q[s]))
+            if np.ndim(q) != 1 or len(q) != self.spin_size:
+                raise ValueError(f"{self.__class__.__name__}.iterate: q must have one entry per spin channel "
+                                 f"({self.spin_size}), got {q!r}")
+            # Build a new array so the caller's q is left unchanged
+            q = np.array([self.q[s] if q[s] is None else q[s] for s in range(self.spin_size)],
+                         dtype=np.float64)
+            self._check_q('iterate', q)
 
         ni, Etot = calc_n_method(self, q, **kwargs)
 
@@ -655,6 +813,18 @@ class HubbardHamiltonian(object):
         -------
         dn
             difference between the ith and the (i-1)th iteration densities
+
+        Raises
+        ------
+        FloatingPointError
+            if ``dn`` is not finite after an iteration, for instance when `calc_n_method`
+            returns a NaN density
+
+        Warns
+        -----
+        UserWarning
+            if `max_iter` iterations are completed while ``dn > tol``. The returned ``dn``,
+            the densities and the energy are then those of the last, unconverged iteration
         """
         if print_info:
             print('   HubbardHamiltonian: converge towards tol={:.2e}'.format(tol))
@@ -667,6 +837,10 @@ class HubbardHamiltonian(object):
         while dn > tol:
             i += 1
             dn = self.iterate(calc_n_method, mixer=mixer, **func_args)
+            # A NaN dn would end the loop as if converged, since NaN > tol is False
+            if not np.isfinite(dn):
+                raise FloatingPointError(f"HubbardHamiltonian.converge: density change dn={dn} "
+                                         f"at iteration {i} is not finite")
             if i % steps == 0:
                 # Print some info from time to time
                 if print_info:
@@ -674,6 +848,10 @@ class HubbardHamiltonian(object):
                 if fn:
                     self.write_density(fn, 'a')
             if i == max_iter:
+                if dn > tol:
+                    warnings.warn(f"HubbardHamiltonian.converge stopped after max_iter={i} "
+                                  f"iteration{'s' if i != 1 else ''} without converging: "
+                                  f"dn={dn:.3e} > tol={tol:.3e}", UserWarning, stacklevel=2)
                 return dn
         if print_info:
             print('   found solution in %i iterations' % i)
@@ -848,6 +1026,10 @@ class HubbardHamiltonian(object):
     def DOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the density of states (DOS) of the system with a distribution function
 
+        The DOS is averaged over the k-points of the Brillouin-zone sampling of the object,
+        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.
+        For a molecule (``nkpt=[1, 1, 1]``) this is the DOS at the Gamma point.
+
         Parameters
         ----------
         egrid: array_like
@@ -868,7 +1050,10 @@ class HubbardHamiltonian(object):
         Returns
         -------
         DOS: numpy.ndarray
-            density of states at the given energies for the selected spin
+            density of states at the given energies for the selected spin, in states per eV
+            per unit cell. Integrated over energy, each spin channel gives the number of
+            orbitals in the unit cell, for k-point weights that sum to one (as those of
+            ``nkpt``, a `sisl.MonkhorstPack`, do).
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
@@ -883,15 +1068,25 @@ class HubbardHamiltonian(object):
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
-        # Obtain eigenvalues
+        # Average over the k-points with their weights
         dos = 0
         for ispin in spin:
-            eig = self.eigh(spin=ispin)
-            dos += sisl.electron.DOS(egrid, eig, distribution=distribution)
+            for w, k in zip(self.mp.weight, self.mp.k):
+                eig = self.eigh(k=k, spin=ispin)
+                dos += w * sisl.electron.DOS(egrid, eig, distribution=distribution)
         return dos
 
     def PDOS(self, egrid, eta=1e-3, spin=[0, 1], distribution='Lorentzian'):
         """ Obtains the projected density of states (PDOS) of the system with a distribution function
+
+        The PDOS is averaged over the k-points of the Brillouin-zone sampling of the object,
+        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.
+        For a molecule (``nkpt=[1, 1, 1]``) this is the PDOS at the Gamma point.
+
+        The weight of an eigenstate ``c`` on orbital ``i`` is ``|c_i|**2`` for an orthogonal
+        basis. For a non-orthogonal basis the projection is Mulliken's,
+        ``Re[conj(c_i) (S(k) c)_i]`` with the overlap ``S(k)``, so that the PDOS still sums
+        to the DOS; the PDOS of an orbital can then be negative.
 
         Parameters
         ----------
@@ -913,7 +1108,10 @@ class HubbardHamiltonian(object):
         Returns
         -------
         PDOS: numpy.ndarray
-            projected density of states at the given energies for the selected spin
+            projected density of states at the given energies for the selected spin, in states
+            per eV per unit cell, of shape ``(1, no, len(egrid))`` with the orbital index on the
+            second axis. Its sum over orbitals is the DOS, for an orthogonal and a
+            non-orthogonal basis alike.
         """
         # Ensure spin is iterable
         if not isinstance(spin, (list, np.ndarray)):
@@ -928,10 +1126,16 @@ class HubbardHamiltonian(object):
         else:
             warnings.warn("Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value")
 
-        # Obtain PDOS
+        # Average over the k-points with their weights
         pdos = 0
         for ispin in spin:
-            ev, evec = self.eigh(eigvals_only=False, spin=ispin)
-            pdos += sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
+            for w, k in zip(self.mp.weight, self.mp.k):
+                ev, evec = self.eigh(k=k, eigvals_only=False, spin=ispin)
+                if self.H.orthogonal:
+                    pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=distribution)
+                else:
+                    # Mulliken weights Re[c^* (S(k) c)]; Sk and eigh both use sisl's default gauge
+                    Sk = self.H.Sk(k=k, format='csr')
+                    pdos += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, S=Sk, distribution=distribution)
 
         return pdos
