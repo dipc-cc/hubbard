@@ -488,3 +488,54 @@ def test_fermi_search_bracket_at_resolution(monkeypatch):
     _limit_passes(monkeypatch, negf, H, 500)
     with pytest.raises(RuntimeError, match="cannot shrink the bracket"):
         negf.calc_n_open(H, 0.123456789123, qtol=1e-20)
+
+
+@pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
+def test_dos_pdos_kpoints_not_implemented(spin):
+    # DOS and PDOS evaluate the Gamma point only, so a k-sampled H would
+    # silently give the Gamma-point spectrum instead of the k-average
+    g = sisl.geom.agnr(7)
+    H = HubbardHamiltonian(sp2(g, spin=spin), U=0., kT=kT_contour, nkpt=[3, 1, 1])
+    assert len(H.mp.k) > 1
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.1)], [[0, 1]])
+    E = np.array([0.])
+    with pytest.raises(NotImplementedError, match="#141"):
+        negf.DOS(H, E, spin=0)
+    with pytest.raises(NotImplementedError, match="#141"):
+        negf.PDOS(H, E, spin=0)
+
+
+@pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
+def test_dos_pdos_nonorthogonal_not_implemented(spin):
+    # The device Green's function omits the overlap, so a non-orthogonal H
+    # would silently give a wrong spectrum
+    g = sisl.geom.agnr(7).tile(2, 0)
+    g.set_nsc([1, 1, 1])
+    H = HubbardHamiltonian(sp2(g, s1=0.1, spin=spin), U=0., kT=kT_contour)
+    assert not H.H.orthogonal
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.1), sisl.WideBandSE(2, 0.1)], [[0, 1], [26, 27]])
+    E = np.array([0.])
+    with pytest.raises(NotImplementedError, match="orthogonal"):
+        negf.DOS(H, E, spin=0)
+    with pytest.raises(NotImplementedError, match="orthogonal"):
+        negf.PDOS(H, E, spin=0)
+
+
+def test_dos_pdos_electrode_spin_mismatch():
+    # An unpolarized device with a polarized recursive electrode: its
+    # self-energy is taken without a spin keyword, i.e. for spin 0 only,
+    # so spin 1 would silently get the spin-0 coupling
+    kT = 0.025
+    He = sp2(sisl.geom.zgnr(2), spin='polarized')
+    elec = HubbardHamiltonian(He, U=0., nkpt=[30, 1, 1], kT=kT)
+    HC = sp2(sisl.geom.zgnr(2), spin='unpolarized').tile(3, axis=0)
+    HC.set_nsc([1, 1, 1])
+    elec_idx = [np.arange(len(He)), np.arange(len(HC) - len(He), len(HC))]
+    H = HubbardHamiltonian(HC, U=0., kT=kT)
+    assert H.spin_size == 1 and elec.spin_size == 2
+    negf = NEGF(H, [(elec, '-A'), (elec, '+A')], elec_idx)
+    E = np.array([0.])
+    with pytest.raises(ValueError, match="electrode 0"):
+        negf.DOS(H, E, spin=1)
+    with pytest.raises(ValueError, match="electrode 0"):
+        negf.PDOS(H, E, spin=1)
