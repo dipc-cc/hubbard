@@ -539,9 +539,9 @@ class NEGF:
             if spin is not None and spin.spinor != spin_size:
                 raise ValueError(f"{name}: electrode {i} has spin_size={spin.spinor}, "
                                  f"but the device has spin_size={spin_size}")
-        if len(H.mp.k) > 1:
-            raise NotImplementedError(f"{name}: H has {len(H.mp.k)} k-points, but only the Gamma point "
-                                      "is evaluated; k-sampling is #141")
+        if len(H.mp.k) > 1 or np.any(H.mp.k[0] != 0):
+            raise NotImplementedError(f"{name}: H has a k-mesh of {len(H.mp.k)} point(s) other than Gamma "
+                                      "alone, but only the Gamma point is evaluated; k-sampling is #141")
         if not H.H.orthogonal:
             raise NotImplementedError(f"{name}: a non-orthogonal H is not supported")
 
@@ -578,7 +578,7 @@ class NEGF:
             if a recursive or real-space electrode was built from a Hamiltonian of another spin
             size than the device's
         NotImplementedError
-            if `H` has more than one k-point (only the Gamma point is evaluated), or if `H` is
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
             non-orthogonal
         """
         self._check_dos_input(H, 'DOS')
@@ -637,7 +637,7 @@ class NEGF:
             if a recursive or real-space electrode was built from a Hamiltonian of another spin
             size than the device's
         NotImplementedError
-            if `H` has more than one k-point (only the Gamma point is evaluated), or if `H` is
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
             non-orthogonal
         """
         self._check_dos_input(H, 'PDOS')

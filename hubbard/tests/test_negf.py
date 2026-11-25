@@ -490,13 +490,20 @@ def test_fermi_search_bracket_at_resolution(monkeypatch):
         negf.calc_n_open(H, 0.123456789123, qtol=1e-20)
 
 
+@pytest.mark.parametrize("kmesh", ['3k', 'one-non-gamma'])
 @pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
-def test_dos_pdos_kpoints_not_implemented(spin):
-    # DOS and PDOS evaluate the Gamma point only, so a k-sampled H would
-    # silently give the Gamma-point spectrum instead of the k-average
+def test_dos_pdos_kpoints_not_implemented(spin, kmesh):
+    # DOS and PDOS evaluate the Gamma point only, so an H with any other
+    # k-mesh, sampled or a single k != Gamma, would silently give the
+    # Gamma-point spectrum instead of its own
     g = sisl.geom.agnr(7)
-    H = HubbardHamiltonian(sp2(g, spin=spin), U=0., kT=kT_contour, nkpt=[3, 1, 1])
-    assert len(H.mp.k) > 1
+    tb = sp2(g, spin=spin)
+    if kmesh == '3k':
+        nkpt = [3, 1, 1]
+    else:
+        nkpt = sisl.BrillouinZone(tb, k=[[0.25, 0, 0]])
+    H = HubbardHamiltonian(tb, U=0., kT=kT_contour, nkpt=nkpt)
+    assert len(H.mp.k) > 1 or np.any(H.mp.k[0] != 0)
     negf = NEGF(H, [sisl.WideBandSE(2, 0.1)], [[0, 1]])
     E = np.array([0.])
     with pytest.raises(NotImplementedError, match="#141"):
