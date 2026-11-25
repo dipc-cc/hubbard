@@ -49,7 +49,7 @@ for m in [density.calc_n_insulator, density.calc_n]:
 if True:
     # Test also hubbard.negf in the WBL approximation for gamma=0.
     # We will compare with the density and Etot obtained from diagonalization
-    # at kT=0.025 (temperature of the CC)
+    # at kT=0.025 (the CC is a 300 K contour, kT=0.02585)
     H.kT = 0.025
     H.random_density()
     dn = H.converge(density.calc_n, tol=1e-10, steps=10, mixer=mixer)

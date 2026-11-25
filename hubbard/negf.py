@@ -13,6 +13,13 @@ _pi = math.pi
 # from a start up to 50 eV away.
 _EF_STEP_MAX = 1.
 _EF_BRACKET_PASSES = 50
+# Largest relative difference between H.kT and the temperature of the
+# equilibrium contour that calc_n_open accepts. This is far looser than the
+# contour integration itself: in a dimer with a 0.1 eV gap, kT 3 % off moves
+# the closed-system energy by 1.5e-3 eV, while the contour reproduces it to
+# 5e-6 eV. It accepts kT=0.025 eV, which callers use with the shipped
+# 0.02585 eV contour, and still refuses the default kT=1e-5 eV.
+_KT_CONTOUR_RTOL = 0.05
 
 __all__ = ['NEGF']
 
@@ -68,6 +75,43 @@ def _self_energy(se, E, **kwargs):
     return se.self_energy(E, **kwargs)
 
 
+def _contour_kT(z, w):
+    r""" Temperature encoded in the Fermi-function poles of an equilibrium contour
+
+    The poles of the Fermi function :math:`f(z)` at the chemical potential (zero)
+    lie at :math:`z_j = i(2j+1)\pi k_BT`, :math:`j = 0, 1, \dots`. The contour points
+    with :math:`\Re z = 0` and :math:`\Re w = 0` are taken as these poles, and
+    :math:`k_BT` is read from the lowest of them. Nothing else in the contour is
+    checked.
+
+    Parameters
+    ----------
+    z : numpy.ndarray of complex
+       contour points (eV)
+    w : numpy.ndarray of complex
+       contour weights, as stored in the contour file
+
+    Returns
+    -------
+    float
+       :math:`k_BT` in eV
+
+    Raises
+    ------
+    ValueError
+       if the contour has no poles, or they do not give a finite, positive kT
+    """
+    z = np.asarray(z, dtype=np.complex128).ravel()
+    w = np.asarray(w, dtype=np.complex128).ravel()
+    poles = z[np.isclose(z.real, 0) & np.isclose(w.real, 0) & (w.imag != 0)].imag
+    if len(poles) == 0:
+        raise ValueError("it has no Fermi-function poles (points with Re(z) = 0 and Re(w) = 0)")
+    kT = poles.min() / _pi
+    if not (np.isfinite(kT) and kT > 0):
+        raise ValueError(f"its poles give kT = {kT} eV")
+    return kT
+
+
 def _nested_list(*args):
     if len(args) == 0:
         return None
@@ -102,7 +146,14 @@ class NEGF:
     elec_idx: array_like
         list of atomic positions that *each* electrode occupies in the device geometry
     CC: str, optional
-        name of the file containing the energy contour in the complex plane to integrate the density matrix
+        name of the file containing the energy contour in the complex plane to integrate the density matrix.
+        The contour fixes the temperature of the open-system density: it is read from
+        the Fermi-function poles of the contour, :math:`i(2j+1)\pi k_BT` for
+        :math:`j = 0, 1, \dots`, which are the points with :math:`\Re z = \Re w = 0` in the file.
+        The default, the shipped ``EQCONTOUR``, is a 300 K contour, kT = 0.02585 eV.
+        `calc_n_open` refuses a device whose ``H.kT`` differs from it by more than 5 %,
+        or a contour whose poles give no temperature; construction, `DOS` and `PDOS`
+        accept any kT and any contour
     V: float, optional
         applied bias between the two electrodes. Only ``V=0`` (the default)
         is supported.
@@ -147,6 +198,15 @@ class NEGF:
         contour_weight = sisl.io.tableSile(CC).read_data()
         self.CC_eq = np.array([contour_weight[0] + 1j * contour_weight[1]])
         self.w_eq = (contour_weight[2] + 1j * contour_weight[3]) / np.pi
+        # Temperature of the contour, checked against H.kT in calc_n_open only,
+        # since DOS and PDOS do not use the contour
+        self._CC = CC
+        try:
+            self._kT_CC = _contour_kT(self.CC_eq[0], contour_weight[2] + 1j * contour_weight[3])
+            self._kT_CC_error = None
+        except ValueError as e:
+            self._kT_CC = None
+            self._kT_CC_error = str(e)
         self.NEQ = V != 0
 
         self.mu = np.zeros(len(elec_SE))
@@ -274,10 +334,16 @@ class NEGF:
         NotImplementedError
             if the device Hamiltonian ``H.H`` is non-orthogonal: the overlap
             matrix is not supported
+        ValueError
+            if ``H.kT`` differs by more than 5 % from the temperature of the
+            equilibrium contour `CC` (0.02585 eV for the default contour), or if
+            that temperature cannot be read from the poles of `CC`: the density
+            is that of the contour's temperature, whatever ``H.kT`` is
         """
         if not H.H.orthogonal:
             raise NotImplementedError(f"{self.__class__.__name__}.calc_n_open: "
                                       "a non-orthogonal device H is not supported")
+        self._check_kT(H)
 
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -481,6 +547,20 @@ class NEGF:
         # Return spin densities and total energy, if the Hamiltonian is not spin-polarized
         # multiply Etot by 2 for spin degeneracy
         return ni, (2./H.spin_size)*Etot
+
+    def _check_kT(self, H):
+        """ Refuse a device whose kT is not the temperature of the equilibrium contour """
+        name = f"{self.__class__.__name__}.calc_n_open"
+        if self._kT_CC is None:
+            raise ValueError(f"{name}: cannot determine the temperature of the equilibrium contour "
+                             f"{self._CC}: {self._kT_CC_error}; pass a contour (CC) whose "
+                             "Fermi-function poles i(2j+1)*pi*kT are listed with Re(z) = Re(w) = 0")
+        if not abs(H.kT - self._kT_CC) <= _KT_CONTOUR_RTOL * self._kT_CC:
+            raise ValueError(f"{name}: H.kT = {H.kT} eV differs from the temperature of the "
+                             f"equilibrium contour, kT = {self._kT_CC:.8f} eV, by more than "
+                             f"{_KT_CONTOUR_RTOL:.0%}, and the density would be that of the contour; "
+                             f"construct NEGF with H.kT = {self._kT_CC:.8f}, or pass a contour (CC) built for "
+                             f"kT = {H.kT} eV")
 
     def Delta(self, HC, Ef, ik, spin=0):
         """
