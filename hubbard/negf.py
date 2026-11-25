@@ -271,7 +271,14 @@ class NEGF:
             far outside the bands; or if the bracket around the Fermi level shrinks
             to floating-point resolution before the charge is within `qtol`, for
             instance when `qtol` is below the precision of the contour integration
+        NotImplementedError
+            if the device Hamiltonian ``H.H`` is non-orthogonal: the overlap
+            matrix is not supported
         """
+        if not H.H.orthogonal:
+            raise NotImplementedError(f"{self.__class__.__name__}.calc_n_open: "
+                                      "a non-orthogonal device H is not supported")
+
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
         q = np.asarray(q).sum()
