@@ -631,3 +631,80 @@ def test_pdos_orthogonal_unchanged():
                 ev, evec = H.H.eigh(k=k, eigvals_only=False, spin=s)
                 ref += w * sisl.physics.electron.PDOS(egrid, ev, evec.T, distribution=dist)
         assert np.array_equal(H.PDOS(egrid, eta=eta, spin=spin), ref)
+
+
+def _iterate_q_ribbon(spin='polarized', q=(0., 0.)):
+    # Periodic zigzag ribbon (4 sites) from a fixed starting density
+    H = hh.HubbardHamiltonian(sp2(sisl.geom.zgnr(2), spin=spin), U=3., q=q, nkpt=[10, 1, 1])
+    n = np.array([[0.8, 0.5, 0.5, 0.2], [0.2, 0.5, 0.5, 0.8]])
+    H.n = n[:H.spin_size]
+    H.update_hamiltonian()
+    return H
+
+
+def _assert_same_iterate(Ha, dna, Hb, dnb):
+    np.testing.assert_allclose(Ha.n, Hb.n, rtol=0, atol=1e-12)
+    np.testing.assert_allclose(Ha.Etot, Hb.Etot, rtol=0, atol=1e-12)
+    np.testing.assert_allclose(dna, dnb, rtol=0, atol=1e-12)
+
+
+def test_iterate_explicit_q():
+    # An explicit q gives the same step as setting H.q and passing q=None,
+    # and with an unmixed step the density holds that charge per spin.
+    Ha = _iterate_q_ribbon()
+    Hb = _iterate_q_ribbon()
+    Hb.q = np.array([3., 1.])
+    dna = Ha.iterate(density.calc_n, q=[3., 1.], mixer=sisl.mixing.LinearMixer(weight=1.))
+    dnb = Hb.iterate(density.calc_n, mixer=sisl.mixing.LinearMixer(weight=1.))
+    _assert_same_iterate(Ha, dna, Hb, dnb)
+    np.testing.assert_allclose(Ha.n.sum(1), [3., 1.], atol=1e-8)
+    np.testing.assert_array_equal(Ha.q, [2., 2.])
+
+
+@pytest.mark.parametrize("spin, Hq, q, expected", [('polarized', (2.4, 1.6), [None, None], [2.4, 1.6]),
+                                                   ('polarized', (2.4, 1.6), [None, 1.], [2.4, 1.]),
+                                                   ('unpolarized', (1.5,), [None], [1.5])])
+def test_iterate_q_none_entry(spin, Hq, q, expected):
+    # A None entry takes H.q[s] unrounded (fractional and half-integer counts
+    # are kept); the caller's list is left as it was
+    Ha = _iterate_q_ribbon(spin=spin, q=Hq)
+    Hb = _iterate_q_ribbon(spin=spin, q=Hq)
+    Hb.q = np.array(expected)
+    q_in = list(q)
+    dna = Ha.iterate(density.calc_n, q=q, mixer=sisl.mixing.LinearMixer(weight=1.))
+    dnb = Hb.iterate(density.calc_n, mixer=sisl.mixing.LinearMixer(weight=1.))
+    _assert_same_iterate(Ha, dna, Hb, dnb)
+    np.testing.assert_allclose(Ha.n.sum(1), expected, atol=1e-8)
+    np.testing.assert_array_equal(Ha.q, Hq)
+    assert q == q_in
+
+
+def test_iterate_q_unpolarized():
+    Ha = _iterate_q_ribbon(spin='unpolarized')
+    Hb = _iterate_q_ribbon(spin='unpolarized')
+    Hb.q = np.array([3.])
+    dna = Ha.iterate(density.calc_n, q=[3.], mixer=sisl.mixing.LinearMixer(weight=1.))
+    dnb = Hb.iterate(density.calc_n, mixer=sisl.mixing.LinearMixer(weight=1.))
+    _assert_same_iterate(Ha, dna, Hb, dnb)
+    np.testing.assert_allclose(Ha.n.sum(1), [3.], atol=1e-8)
+
+
+@pytest.mark.parametrize("spin, q", [('polarized', [2.]),
+                                     ('polarized', [2., 2., 2.]),
+                                     ('polarized', 4.),
+                                     ('unpolarized', [2., 2.])])
+def test_iterate_q_wrong_length(spin, q):
+    H = _iterate_q_ribbon(spin=spin)
+    with pytest.raises(ValueError, match="one entry per spin channel"):
+        H.iterate(density.calc_n, q=q)
+
+
+@pytest.mark.parametrize("q", [[float('nan'), 2.], [-1., 5.]])
+def test_iterate_q_negative_or_nan_raises(q):
+    # Checked before the density solver runs: sisl's fermi_level loops forever on NaN
+    def calc_n_not_reached(H, q):
+        raise AssertionError("calc_n_method was called")
+
+    H = _iterate_q_ribbon()
+    with pytest.raises(ValueError, match="non-negative q"):
+        H.iterate(calc_n_not_reached, q=q)
