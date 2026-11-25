@@ -30,19 +30,19 @@ publications below.
    *A spin-polarizing electron beam splitter from crossed graphene nanoribbons*
    `Phys. Rev. Lett. 129, 037701 (2022) <https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.129.037701>`_
 
-#. T. Frederiksen, D. G. de Oteyza,
+#. D. G. de Oteyza, T. Frederiksen,
    *Carbon-based nanostructures as a versatile platform for tunable π-magnetism*
    `J. Phys.: Condens. Matter 34 443001 (2022) <https://iopscience.iop.org/article/10.1088/1361-648X/ac8a7f/meta>`_
 
 #. S. Sengupta, T. Frederiksen, and G. Giedke,
-   *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
+   *Hyperfine interactions in open-shell planar sp²-carbon nanostructures*
    `Phys. Rev. B 107, 224433 (2023) <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.107.224433>`_
 
 #. S. Sanz, N. Papior, G. Giedke, D. Sánchez-Portal, M. Brandbyge, T. Frederiksen,
    *Mach--Zehnder-like interferometry with graphene nanoribbon networks*
    `J. Phys.: Condens. Matter 35 374001 (2023) <https://iopscience.iop.org/article/10.1088/1361-648X/acd832/meta>`_
 
-#. J. Brede, N. Merino-Díez, A. Berdonces, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate,
+#. J. Brede, N. Merino-Díez, A. Berdonces-Layunta, S. Sanz, A. Domínguez-Celorrio, J. Lobo-Checa, M. Vilas-Varela, D. Peña, T. Frederiksen, J. I. Pascual, D. G. de Oteyza, D. Serrate,
    *Detecting the spin-polarization of edge states in graphene nanoribbons*
    `Nature Communications 14, 6677 (2023) <https://www.nature.com/articles/s41467-023-42436-7>`_
 
@@ -60,11 +60,11 @@ publications below.
 
 #. L. Edens, F. Romero-Lara, T. Sai, K. Biswas, M. Vilas-Varela, T. Frederiksen, D. Peña, F. Schulz, J. I. Pascual,
    *Spin and Charge Control of Topological End States in Chiral Graphene Nanoribbons on a 2D Ferromagnet*
-   `Advanced Materials, e10753 (2025)  <https://advanced.onlinelibrary.wiley.com/doi/full/10.1002/adma.202510753>`_
+   `Advanced Materials 38, e10753 (2026)  <https://advanced.onlinelibrary.wiley.com/doi/full/10.1002/adma.202510753>`_
 
 #. S. Sanz, D. Sánchez-Portal,
    *Predicting interface and spin states in armchair graphene nanoribbon junctions*
-   Submitted (2025) `arXiv:2507.14065 [cond-mat.mes-hall]  <https://doi.org/10.48550/arXiv.2507.14065>`_
+   `Phys. Rev. B 113, 235434 (2026) <https://journals.aps.org/prb/abstract/10.1103/t8kl-r211>`_
 
 .. _citing:
 
