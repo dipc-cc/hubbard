@@ -1,4 +1,5 @@
 import math
+import os
 
 import numpy as np
 import pytest
@@ -568,4 +569,127 @@ def test_calc_n_open_nonorthogonal_not_implemented(monkeypatch, spin):
         raise AssertionError("the Green's function was evaluated")
     monkeypatch.setattr(negf_module, '_G', no_green_function)
     with pytest.raises(NotImplementedError, match="non-orthogonal device"):
+        negf.calc_n_open(H, H.q)
+
+
+def _small_gap_dimer(spin, kT):
+    # Two sites, onsite +-0.02 eV and hopping -0.05 eV: a gap of 0.108 eV,
+    # so the occupations and the energy depend on kT at room temperature
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atoms=sisl.Atom(6, R=1.5), lattice=[10, 10, 10])
+    g.set_nsc([1, 1, 1])
+    h = sisl.Hamiltonian(g, spin=spin)
+    h[0, 0], h[1, 1], h[0, 1], h[1, 0] = 0.02, -0.02, -0.05, -0.05
+    return HubbardHamiltonian(h, U=0., q=(1, 1), kT=kT)
+
+
+def _write_contour(path, z, w):
+    # A contour file in the format of hubbard/EQCONTOUR
+    np.savetxt(path, np.column_stack([z.real, z.imag, w.real, w.imag]), fmt='%.13E',
+               header="Re(c) [eV] Im(c) [eV] Re(w) Im(w)")
+    return str(path)
+
+
+def _shipped_contour():
+    path = os.path.join(os.path.dirname(negf_module.__file__), 'EQCONTOUR')
+    c = sisl.io.tableSile(path).read_data()
+    z, w = c[0] + 1j * c[1], c[2] + 1j * c[3]
+    poles = (z.real == 0) & (w.real == 0)
+    return z, w, poles
+
+
+def test_contour_kT_shipped():
+    # The shipped contour is a 300 K contour (k_B = 8.617333262e-5 eV/K,
+    # CODATA 2018); TranSiesta wrote it with an older k_B, 4e-5 apart
+    z, w, poles = _shipped_contour()
+    assert poles.sum() == 16
+    kT = negf_module._contour_kT(z, w)
+    assert kT == pytest.approx(300 * 8.617333262e-5, rel=1e-4)
+    H = _small_gap_dimer('polarized', kT)
+    assert NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]])._kT_CC == kT
+
+
+@pytest.mark.parametrize("kT", [1e-5, 0.0245, 0.0272, 0.05])
+@pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
+def test_calc_n_open_kT_mismatch(monkeypatch, spin, kT):
+    # The contour integral gives the density at the contour's 0.02585 eV
+    # whatever H.kT is: at the default kT=1e-5 the dimer energy is off by
+    # 2.4e-2 eV. A kT more than 5 % away must fail before any Green's
+    # function is evaluated; construction and the DOS keep working
+    H = _small_gap_dimer(spin, kT)
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]])
+    negf.Ef = H.find_midgap()
+    assert np.all(np.isfinite(negf.DOS(H, np.array([0.]))))
+
+    def no_green_function(*args):
+        raise AssertionError("the Green's function was evaluated")
+    monkeypatch.setattr(negf_module, '_G', no_green_function)
+    with pytest.raises(ValueError, match="temperature of the equilibrium contour"):
+        negf.calc_n_open(H, H.q)
+
+
+@pytest.mark.parametrize("kT", [0.025, 0.95 * kT_contour * 1.001, 1.05 * kT_contour * 0.999])
+def test_calc_n_open_kT_within_tolerance(kT):
+    # kT within 5 % of the contour's is accepted, kT=0.025 included
+    H = _small_gap_dimer('polarized', kT)
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]])
+    negf.Ef = H.find_midgap()
+    n, _ = negf.calc_n_open(H, H.q, qtol=1e-9)
+    assert n.sum() == pytest.approx(H.q.sum(), abs=1e-9)
+
+
+@pytest.mark.parametrize("spin", ['unpolarized', 'polarized'])
+def test_calc_n_open_contour_kT_closed_dimer(spin):
+    # With zero coupling the open dimer is the closed one: at the contour's
+    # kT its occupations and energy are those of diagonalization, within the
+    # accuracy of the contour integration (5e-6 eV for this dimer; a 3 %
+    # change of kT moves the energy by 1.5e-3 eV)
+    z, w, _ = _shipped_contour()
+    H = _small_gap_dimer(spin, negf_module._contour_kT(z, w))
+    n_ref, Etot_ref = density.calc_n(H, H.q)
+    assert abs(n_ref[0, 0] - 0.5) > 0.1
+
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]])
+    negf.Ef = H.find_midgap()
+    n, Etot = negf.calc_n_open(H, H.q, qtol=1e-9)
+    assert n.shape == n_ref.shape
+    assert np.allclose(n, n_ref, rtol=0, atol=1e-6)
+    assert Etot == pytest.approx(Etot_ref, abs=2e-5)
+
+
+def test_calc_n_open_contour_no_poles(monkeypatch, tmp_path):
+    # A custom contour without poles gives no temperature to check H.kT
+    # against: construction and the DOS keep working, calc_n_open fails
+    # before any Green's function is evaluated
+    z, w, poles = _shipped_contour()
+    z, w = z[~poles], w[~poles]
+    CC = _write_contour(tmp_path / "CONTOUR", z, w)
+    H = _small_gap_dimer('polarized', kT_contour)
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]], CC=CC)
+    assert np.all(np.isfinite(negf.DOS(H, np.array([0.]))))
+
+    def no_green_function(*args):
+        raise AssertionError("the Green's function was evaluated")
+    monkeypatch.setattr(negf_module, '_G', no_green_function)
+    with pytest.raises(ValueError, match="cannot determine the temperature"):
+        negf.calc_n_open(H, H.q)
+
+
+def test_calc_n_open_custom_contour_kT(monkeypatch, tmp_path):
+    # A custom contour's temperature is read from its own poles: here the
+    # shipped contour with its poles moved to i(2j+1)*pi*0.05, so its poles
+    # give kT = 0.05 eV (the rest of the contour is not checked)
+    z, w, poles = _shipped_contour()
+    z, w = z.copy(), w.copy()
+    j = np.arange(poles.sum())
+    z[poles] = 1j * (2 * j + 1) * np.pi * 0.05
+    w[poles] = -2j * np.pi * 0.05
+    CC = _write_contour(tmp_path / "CONTOUR", z, w)
+    H = _small_gap_dimer('polarized', kT_contour)
+    negf = NEGF(H, [sisl.WideBandSE(2, 0.)], [[0, 1]], CC=CC)
+    assert negf._kT_CC == pytest.approx(0.05, rel=1e-12)
+
+    def no_green_function(*args):
+        raise AssertionError("the Green's function was evaluated")
+    monkeypatch.setattr(negf_module, '_G', no_green_function)
+    with pytest.raises(ValueError, match="temperature of the equilibrium contour"):
         negf.calc_n_open(H, H.q)
