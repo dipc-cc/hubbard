@@ -1013,3 +1013,62 @@ def test_orbital_charge_overlaps_nonorthogonal_raises(k):
     H = hh.HubbardHamiltonian(sp2(sisl.geom.graphene(), s1=0.13), U=0)
     with pytest.raises(NotImplementedError, match='non-orthogonal'):
         H.calc_orbital_charge_overlaps(k=k)
+
+
+# shift must move TBHam with H, or the next iteration rebuilds the diagonal
+# from TBHam and loses the shift
+
+def _shift_dimer():
+    g = sisl.Geometry([[0, 0, 0], [1.42, 0, 0]], atoms=sisl.Atom(6, R=1.5), lattice=[10, 10, 10])
+    g.set_nsc([1, 1, 1])
+    h = sisl.Hamiltonian(g, spin='polarized')
+    h[0, 0], h[1, 1], h[0, 1], h[1, 0] = 0.4, -0.4, -1, -1
+    return h
+
+
+@pytest.mark.parametrize('E', [1., (1., -0.5)])
+def test_shift_persists_dimer_analytic(E):
+    # At U = 0 the dimer eigenvalues are -+sqrt(0.4**2 + 1) + E_sigma
+    H = hh.HubbardHamiltonian(_shift_dimer(), U=0, q=(1, 1))
+    H.shift(E)
+    for _ in range(2):
+        H.iterate(density.calc_n_insulator)
+    e0 = np.sqrt(0.4**2 + 1)
+    for s, Es in enumerate(np.broadcast_to(E, 2)):
+        assert np.allclose(H.eigh(spin=s), [Es - e0, Es + e0], rtol=0, atol=1e-12)
+
+
+@pytest.mark.parametrize('s1', [0, 0.13])
+@pytest.mark.parametrize('E', [0.7, (0.7, -0.3)])
+def test_shift_persists_converged(E, s1):
+    # A rigid shift per spin leaves the closed-shell densities unchanged and moves
+    # every eigenvalue of spin sigma by E_sigma (with the overlap, H + E S has the
+    # eigenvalues of H plus E), and Etot by sum_sigma E_sigma q_sigma.
+    # Reference: an unshifted copy of the converged solution
+    g = sisl.geom.zgnr(3).tile(4, 0)
+    g.set_nsc([1, 1, 1])
+    H = hh.HubbardHamiltonian(sp2(g, s1=s1), U=3.5)
+    H.set_polarization([0], dn=[g.na - 1])
+    H.converge(density.calc_n_insulator, tol=1e-12, print_info=False)
+    ref = H.copy()
+    H.shift(E)
+    for _ in range(3):
+        H.iterate(density.calc_n_insulator)
+    Es = np.broadcast_to(E, 2)
+    assert np.allclose(H.n, ref.n, rtol=0, atol=1e-10)
+    for s in range(2):
+        assert np.allclose(H.eigh(spin=s), ref.eigh(spin=s) + Es[s], rtol=0, atol=1e-9)
+    assert np.isclose(H.Etot, ref.Etot + Es @ H.q, rtol=0, atol=1e-8)
+
+
+@pytest.mark.parametrize('s1', [0, 0.13])
+def test_shift_leaves_caller_tbham_unchanged(s1):
+    # The constructor stores the caller's Hamiltonian as TBHam; shift must not modify it
+    g = sisl.geom.zgnr(3)
+    g.set_nsc([1, 1, 1])
+    h = sp2(g, s1=s1)
+    before = [h.tocsr(i).toarray() for i in range(h.shape[-1])]
+    H = hh.HubbardHamiltonian(h, U=3.5)
+    H.shift((0.7, -0.3))
+    for i in range(h.shape[-1]):
+        assert np.array_equal(h.tocsr(i).toarray(), before[i])
