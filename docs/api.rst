@@ -4,21 +4,13 @@
 API documentation
 =================
 
-Here we list all the modules of the hubbard package, where all the routies are contained.
-
-.. toctree::
-   :maxdepth: 2
-
-   api-generated/hubbard
-   api-generated/hubbard.plot
-
+Here we list all the modules of the hubbard package, where all the routines are contained.
 
 .. Here we should list *all* modules we want to be hosted in the
    hubbard documentation.
 
 .. autosummary::
    :toctree: api-generated
-   :hidden:
 
    hubbard
    hubbard.plot
