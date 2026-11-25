@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mean-field Hubbard model (hubbard) &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -58,7 +58,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul>
@@ -76,7 +76,7 @@
 <li class="toctree-l4"><a class="reference internal" href="hubbard.sp2.html">sp2</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-real-space-grid-for-a-geometry-and-lattice">Create real space grid for a geometry and lattice</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="hubbard.real_space_grid.html">real_space_grid</a></li>
 </ul>
 </li>
@@ -135,7 +135,7 @@
 <h2>Read and write in binary files<a class="headerlink" href="#read-and-write-in-binary-files" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.ncSileHubbard.html#hubbard.ncSileHubbard" title="hubbard.ncSileHubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncSileHubbard</span></code></a>(filename[, mode, lvl, access])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="hubbard.ncSileHubbard.html#hubbard.ncSileHubbard" title="hubbard.ncSileHubbard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ncSileHubbard</span></code></a>(filename, *args, **kwargs)</p></td>
 <td><p>Read and write <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object in binary files (netCDF4 support)</p></td>
 </tr>
 </tbody>
@@ -151,12 +151,12 @@
 </tbody>
 </table>
 </section>
-<section id="create-real-space-grid-for-a-geometry-and-supercell">
-<h2>Create real space grid for a geometry and supercell<a class="headerlink" href="#create-real-space-grid-for-a-geometry-and-supercell" title="Link to this heading"></a></h2>
+<section id="create-real-space-grid-for-a-geometry-and-lattice">
+<h2>Create real space grid for a geometry and lattice<a class="headerlink" href="#create-real-space-grid-for-a-geometry-and-lattice" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="hubbard.real_space_grid.html#hubbard.real_space_grid" title="hubbard.real_space_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real_space_grid</span></code></a>(geometry, lattice, vector, shape)</p></td>
-<td><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p></td>
+<td><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Lattice.html#sisl.Lattice" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Lattice</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -174,7 +174,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -8,17 +8,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Charge &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -60,7 +60,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a></li>
@@ -111,7 +111,7 @@
 <h1>Charge<a class="headerlink" href="#charge" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="hubbard.plot.Charge">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">hubbard.plot.</span></span><span class="sig-name descname"><span class="pre">Charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/charge.html#Charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Charge" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hubbard.plot.</span></span><span class="sig-name descname"><span class="pre">Charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/plot/charge.html#Charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.plot.Charge" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeometryPlot</span></code></p>
 <p>Plot the total charge for the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> object</p>
 <p><span class="math notranslate nohighlight">\(\langle n_{\uparrow}\rangle+\langle n_{\downarrow}\rangle\)</span></p>
@@ -121,12 +121,12 @@ by specifying the <em class="xref py py-obj">spin</em> index.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>HH</strong> (<a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><em>hubbard.HubbardHamiltonian</em></a>) – mean-field Hubbard Hamiltonian</p></li>
-<li><p><strong>ext_geom</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.16.3-05dbf0868)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don’t play
+<li><p><strong>ext_geom</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.20.1-9f24133c3)"><em>sisl.Geometry</em></a><em>, </em><em>optional</em>) – usually sp2 carbon-like systems are saturated with Hydrogen atoms, that don’t play
 a role in the Hubbard Hamiltonian. If ext_geom is passed it plots the full sp2 carbon system
 otherwise it only uses the geometry associated to the <a class="reference internal" href="hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian" title="hubbard.HubbardHamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian</span></code></a> (carbon backbone)</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional:</em>) – plot charge associated to one specific spin index, or both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
-<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
-If True either a <code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.SuperCell</span></code> (<em class="xref py py-obj">sc</em> kwarg) or the <em class="xref py py-obj">z</em> kwarg to slice the real space grid at the desired z coordinate needs to be passed</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a><em> or </em><em>array_like</em><em>, </em><em>optional:</em>) – plot charge associated to one specific spin index, or both if <code class="docutils literal notranslate"><span class="pre">spin=[0,1]</span></code></p></li>
+<li><p><strong>realspace</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#bool" title="(in Python v3.16)"><em>bool</em></a><em>, </em><em>optional</em>) – if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
+If True either a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Lattice.html#sisl.Lattice" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Lattice</span></code></a> (<em class="xref py py-obj">sc</em> kwarg) or the <em class="xref py py-obj">z</em> kwarg to slice the real space grid at the desired z coordinate needs to be passed</p></li>
 </ul>
 </dd>
 </dl>
@@ -202,9 +202,9 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.10.7)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
-<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
+<li><p><strong>layer</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/cm_api.html#matplotlib.cm.ScalarMappable" title="(in Matplotlib v3.11.2)"><em>matplotlib.cm.ScalarMappable</em></a>) – i.e., <em class="xref py py-obj">AxesImage</em>, <em class="xref py py-obj">ContourSet</em>, etc. described by this colorbar</p></li>
+<li><p><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a><em>, </em><em>optional</em>) – position of the colorbar with respect to axes</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a><em>, </em><em>optional</em>) – size of the colorbar in %</p></li>
 </ul>
 </dd>
 </dl>
@@ -218,7 +218,7 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sites</strong> (<em>array_like</em><em>, </em><em>optional</em>) – specify sites to be annotated in figure</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – font size for the annotation</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a><em>, </em><em>optional</em>) – font size for the annotation</p></li>
 </ul>
 </dd>
 </dl>
@@ -252,12 +252,12 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dd><p>Save figure to external file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – external file name to save plot</p>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a>) – external file name to save plot</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.10.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code></a></p>
+<p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="(in Matplotlib v3.11.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.savefig</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -303,8 +303,8 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – figure title</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a>) – figure title</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a><em>, </em><em>optional</em>) – title fontsize, defaults to 16</p></li>
 </ul>
 </dd>
 </dl>
@@ -317,8 +317,8 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – label for the x-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a>) – label for the x-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -331,8 +331,8 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
-<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#float" title="(in Python v3.16)"><em>float</em></a>) – minimum value to show in the x-axis</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#float" title="(in Python v3.16)"><em>float</em></a>) – maximum value to show in the x-axis</p></li>
 </ul>
 </dd>
 </dl>
@@ -345,8 +345,8 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – label for the y-axis</p></li>
-<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a>) – label for the y-axis</p></li>
+<li><p><strong>fontsize</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a><em>, </em><em>optional</em>) – label fontsize</p></li>
 </ul>
 </dd>
 </dl>
@@ -359,8 +359,8 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
-<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#float" title="(in Python v3.16)"><em>float</em></a>) – minimum value to show in the y-axis</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#float" title="(in Python v3.16)"><em>float</em></a>) – maximum value to show in the y-axis</p></li>
 </ul>
 </dd>
 </dl>
@@ -381,7 +381,7 @@ If True either a <code class="xref py py-obj docutils literal notranslate"><span
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

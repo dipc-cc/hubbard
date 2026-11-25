@@ -8,17 +8,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard Package &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +59,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
 </ul>
@@ -90,7 +90,7 @@
              
   <section id="welcome-to-hubbard-s-documentation">
 <h1>Welcome to hubbard’s documentation!<a class="headerlink" href="#welcome-to-hubbard-s-documentation" title="Link to this heading"></a></h1>
-<p>The <a class="reference external" href="https://github.com/dipc-cc/hubbard">hubbard</a> Python package allows to find the self-consistent solution for the mean-field Hubbard Model
+<p>The <a class="reference external" href="https://github.com/dipc-cc/hubbard">hubbard</a> Python package finds the self-consistent solution of the mean-field Hubbard model
 for a certain tight-binding Hamiltonian and a certain Coulomb repulsion parameter <span class="math notranslate nohighlight">\(U\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}H &amp;= -\sum_{ij\sigma}t_{ij\sigma}c^{\dagger}_{i\sigma}c_{j\sigma} + \sum_{i}U_in_{i\uparrow}n_{i\downarrow} +
@@ -99,29 +99,48 @@ for a certain tight-binding Hamiltonian and a certain Coulomb repulsion paramete
 \sum_{i\sigma} U_i \left\langle n_{i\sigma}\right\rangle n_{i\bar{\sigma}} +
 \frac{1}{2}\sum_{i\neq j\sigma}\left(U_{ij}
 + U_{ji}\right)\left(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\right)n_{j\sigma} + E_U\end{split}\]</div>
-<p>Where it has been sepparated into intra- (<span class="math notranslate nohighlight">\(U_{i}\)</span>) and inter-atomic (<span class="math notranslate nohighlight">\(U_{ij}\)</span>) Coulomb repulsion terms,
+<p>Where it has been separated into intra- (<span class="math notranslate nohighlight">\(U_{i}\)</span>) and inter-atomic (<span class="math notranslate nohighlight">\(U_{ij}\)</span>) Coulomb repulsion terms,
 <span class="math notranslate nohighlight">\(\langle n_{i\sigma}\rangle\)</span> is the <span class="math notranslate nohighlight">\(\sigma=\uparrow,\downarrow\)</span>-spin density on site <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(E_U\)</span> is a constant term:</p>
 <div class="math notranslate nohighlight">
 \[E_U = -\sum_i U_i \langle n_{i\uparrow}\rangle\langle n_{i\downarrow}\rangle -
 \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle
 + \langle n_{j\downarrow}\rangle\right)\]</div>
 <p>which can be directly added to the total electronic energy.</p>
+<p>In the code, <span class="math notranslate nohighlight">\(\langle n_{i\sigma}\rangle\)</span> in the <span class="math notranslate nohighlight">\(U_i\)</span> term and <span class="math notranslate nohighlight">\(\langle n_{i\uparrow}\rangle + \langle n_{i\downarrow}\rangle\)</span>
+in the <span class="math notranslate nohighlight">\(U_{ij}\)</span> term are both shifted by <span class="math notranslate nohighlight">\(-q_0/(2N)\)</span>, with <span class="math notranslate nohighlight">\(N\)</span> the number of orbitals and <span class="math notranslate nohighlight">\(q_0\)</span>
+the total reference charge, the sum of each orbital’s <code class="docutils literal notranslate"><span class="pre">q0</span></code>.
+The code applies <span class="math notranslate nohighlight">\(\sum_j U_{ij}\left(\langle n_{j\uparrow}\rangle + \langle n_{j\downarrow}\rangle\right)\)</span> to orbital <span class="math notranslate nohighlight">\(i\)</span>,
+which matches the <span class="math notranslate nohighlight">\(\frac{1}{2}\left(U_{ij} + U_{ji}\right)\)</span> form above only for a symmetric <code class="docutils literal notranslate"><span class="pre">Uij</span></code> with zero diagonal;
+neither is checked.</p>
+<p>It covers:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>finite and periodic systems, the latter with k-point sampling (<code class="docutils literal notranslate"><span class="pre">nkpt</span></code>), with <a class="reference internal" href="api-generated/hubbard.calc_n.html#hubbard.calc_n" title="hubbard.calc_n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.calc_n</span></code></a> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.calc_n_insulator</span></code>;</p></li>
+<li><p>open systems, a device coupled to semi-infinite electrodes, with <a class="reference internal" href="api-generated/hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code></a>, at equilibrium (zero bias) only;</p></li>
+<li><p>non-orthogonal bases (an overlap matrix) in <a class="reference internal" href="api-generated/hubbard.calc_n.html#hubbard.calc_n" title="hubbard.calc_n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.calc_n</span></code></a> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.calc_n_insulator</span></code>, which then return
+Mulliken populations; <a class="reference internal" href="api-generated/hubbard.NEGF.html#hubbard.NEGF" title="hubbard.NEGF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.NEGF</span></code></a> requires an orthogonal basis;</p></li>
+<li><p>intersite repulsion <code class="docutils literal notranslate"><span class="pre">Uij</span></code>, implemented in the self-consistent loop and the total energy but not tested against an
+independent reference, though <a class="reference internal" href="api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.tile" title="hubbard.HubbardHamiltonian.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian.tile</span></code></a>
+and <a class="reference internal" href="api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.repeat" title="hubbard.HubbardHamiltonian.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian.repeat</span></code></a> refuse a nonzero <code class="docutils literal notranslate"><span class="pre">Uij</span></code>, and <a class="reference internal" href="api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.sub" title="hubbard.HubbardHamiltonian.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian.sub</span></code></a> and
+<a class="reference internal" href="api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.remove" title="hubbard.HubbardHamiltonian.remove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard.HubbardHamiltonian.remove</span></code></a> carry it only with one orbital per atom.</p></li>
+</ul>
+</div></blockquote>
 <p>This package allows for:</p>
 <blockquote>
 <div><ul class="simple">
 <li><dl class="simple">
 <dt>Easy calculations of spin-resolved quantities.</dt><dd><p>It takes advantage of many routines from <a class="reference external" href="https://sisl.readthedocs.io/en/latest/introduction.html">sisl</a> as well as <a class="reference external" href="https://numpy.org/">numpy</a> and <a class="reference external" href="https://www.scipy.org/">scipy</a>,
-which makes it very efficient when handling with thousands of atoms, given the usage of sparse matrices.
+which makes it very efficient when handling thousands of atoms, given the usage of sparse matrices.
 The goal of this package is to include electron correlations in the tight-binding Hamiltonian by solving self-consistently
 the mean-field Hubbard model. Given the simplicity of the model one can find the solution in short time to problems that are typically
-adressed with DFT and obtain similar accuracy, especially for sp2 carbon systems. Here it is also very easy to manipulate
+addressed with DFT and obtain similar accuracy, especially for sp2 carbon systems. Here it is also very easy to manipulate
 the spin configuration to obtain different magnetic solutions, e.g., obtain the approximated energy difference between the singlet and
 the triplet states, etc. This package is fully implemented in Python, which makes it very easy and comfortable to use.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>It provides with nice plotting functions to visualize the different physical quantities</dt><dd><p>that are obtained with the hubbard package,
+<dt>It provides nice plotting functions to visualize the different physical quantities</dt><dd><p>that are obtained with the hubbard package,
 such as the spin-polarization, wavefunctions for each spin-channel, density of states maps, etc.</p>
 </dd>
 </dl>
@@ -159,7 +178,7 @@ such as the spin-polarization, wavefunctions for each spin-channel, density of s
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api-generated/hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a></li>
@@ -173,7 +192,7 @@ such as the spin-polarization, wavefunctions for each spin-channel, density of s
 <h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h1>
 <p>Contributions are highly appreciated.</p>
 <ul class="simple">
-<li><p>If you find any bugs plase form a <a class="reference external" href="https://github.com/dipc-cc/hubbard/issues">bug report/issue</a>.</p></li>
+<li><p>If you find any bugs please form a <a class="reference external" href="https://github.com/dipc-cc/hubbard/issues">bug report/issue</a>.</p></li>
 <li><p>If you have a fix please consider adding a <a class="reference external" href="https://github.com/dipc-cc/hubbard/pulls">pull request</a>.</p></li>
 </ul>
 </section>
@@ -196,7 +215,7 @@ such as the spin-polarization, wavefunctions for each spin-channel, density of s
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.density &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -55,7 +55,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
 </ul>
@@ -89,13 +89,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">einsum</span><span class="p">,</span> <span class="n">conj</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;calc_n&#39;</span><span class="p">,</span> <span class="s1">&#39;calc_n_insulator&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'calc_n'</span><span class="p">,</span> <span class="s1">'calc_n_insulator'</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="calc_n">
 <a class="viewcode-back" href="../../api-generated/hubbard.calc_n.html#hubbard.calc_n">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calc_n</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; General method to obtain the spin densities for periodic or finite systems at a given temperature</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">""" General method to obtain the spin densities for periodic or finite systems at a given temperature</span>
 
 <span class="sd">    It obtains the spin densities from the direct diagonalization of the Hamiltonian (``H.H``) taking into account</span>
 <span class="sd">    a possible overlap matrix (``H.H.S``):</span>
@@ -116,13 +116,13 @@
 <span class="sd">    See Also</span>
 <span class="sd">    ------------</span>
 <span class="sd">    sisl.physics.electron.EigenstateElectron.norm2: sisl routine to obtain the dot product of the eigenstates with the overlap matrix</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Create fermi-level determination distribution</span>
-    <span class="n">dist</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">'fermi_dirac'</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span>
     <span class="n">Ef</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">fermi_level</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">dist</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Ef</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
         <span class="n">Ef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Ef</span><span class="p">])</span>
-    <span class="n">dist</span> <span class="o">=</span> <span class="p">[</span><span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">Ef</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)]</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="p">[</span><span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">'fermi_dirac'</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">H</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">Ef</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)]</span>
 
     <span class="n">ni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">H</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
     <span class="n">Etot</span> <span class="o">=</span> <span class="mi">0</span>
@@ -133,7 +133,7 @@
 
         <span class="c1"># Reduce to occupied stuff</span>
         <span class="n">occ</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">occupation</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">spin</span><span class="p">])</span> <span class="o">*</span> <span class="n">weight</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;i,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">occ</span><span class="p">,</span> <span class="n">es</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;orbitals&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">'i,ij-&gt;j'</span><span class="p">,</span> <span class="n">occ</span><span class="p">,</span> <span class="n">es</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'orbitals'</span><span class="p">)</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
 
         <span class="n">Etot</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">eig</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">occ</span><span class="p">)</span>
 
@@ -154,7 +154,34 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">calc_n_insulator</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Method to obtain the spin-densities only for the corner case for *insulators* at *T=0* &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">""" Method to obtain the spin densities only for the corner case for *insulators* at *T=0*</span>
+
+<span class="sd">    For each spin channel and k-point it occupies the lowest ``round(q[s])`` eigenstates of</span>
+<span class="sd">    ``H.H`` and leaves the rest empty, which is correct only when each spin channel has a gap</span>
+<span class="sd">    at its Fermi level. For a non-orthogonal basis the occupations are Mulliken populations,</span>
+<span class="sd">    as in `calc_n`:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \langle n_{i\sigma} \rangle = \sum_{\mathbf k}w_{\mathbf k}\sum_{\alpha\ \mathrm{occ}}\mathrm{Re}\Big[c^{*\alpha}_{i\sigma\mathbf k}\sum_{j}S_{ij}(\mathbf k)c^{\alpha}_{j\sigma\mathbf k}\Big]</span>
+
+<span class="sd">    with :math:`w_{\mathbf k}` the k-point weights of ``H.mp``, so the occupations sum to ``round(q[s])`` per spin (per unit cell for a periodic system).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    H: HubbardHamiltonian</span>
+<span class="sd">        `hubbard.HubbardHamiltonian` object of the system to obtain the spin-densities from</span>
+<span class="sd">    q: array_like</span>
+<span class="sd">        charge resolved in spin channels (first index for up-electrons and second index for down-electrons),</span>
+<span class="sd">        rounded to the nearest integer</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    n: numpy.ndarray</span>
+<span class="sd">        occupations per orbital, of shape ``(H.spin_size, H.sites)``</span>
+<span class="sd">    Etot: float</span>
+<span class="sd">        sum of the occupied eigenvalues in eV, weighted by the k-point weights, and doubled</span>
+<span class="sd">        for spin degeneracy if ``H`` is not spin-polarized</span>
+<span class="sd">    """</span>
     <span class="n">ni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">H</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
     <span class="n">Etot</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -164,7 +191,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">calc_occ</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">spin</span><span class="p">):</span>
         <span class="n">es</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
 
-        <span class="n">n</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">conj</span><span class="p">(</span><span class="n">es</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">spin</span><span class="p">]]),</span> <span class="n">es</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">spin</span><span class="p">]])</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">weight</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">spin</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">H</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">:</span>
+            <span class="n">Sc</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Mulliken populations, with S(k) in the gauge of the eigenstates</span>
+            <span class="n">Sc</span> <span class="o">=</span> <span class="p">(</span><span class="n">es</span><span class="o">.</span><span class="n">Sk</span><span class="p">()</span> <span class="o">@</span> <span class="n">c</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">einsum</span><span class="p">(</span><span class="s1">'ij,ij-&gt;j'</span><span class="p">,</span> <span class="n">conj</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">Sc</span><span class="p">)</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="n">weight</span>
 
         <span class="c1"># Calculate total energy</span>
         <span class="n">Etot</span> <span class="o">=</span> <span class="n">es</span><span class="o">.</span><span class="n">eig</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">spin</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">weight</span>
@@ -188,7 +221,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

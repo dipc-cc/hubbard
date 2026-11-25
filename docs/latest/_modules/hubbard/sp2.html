@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.sp2 &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -55,7 +55,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
 </ul>
@@ -88,14 +88,14 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sisl</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sp2&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'sp2'</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="sp2">
 <a class="viewcode-back" href="../../api-generated/hubbard.sp2.html#hubbard.sp2">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sp2</span><span class="p">(</span><span class="n">ext_geom</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">t2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">t3</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">eB</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">eN</span><span class="o">=-</span><span class="mf">3.</span><span class="p">,</span>
-        <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Spin</span><span class="p">(</span><span class="s1">&#39;polarized&#39;</span><span class="p">),</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</span>
+        <span class="n">s1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dq</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Spin</span><span class="p">(</span><span class="s1">'polarized'</span><span class="p">),</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">""" Function to create a Tight Binding Hamiltoninan for sp2 Carbon systems</span>
 
 <span class="sd">    It takes advantage of the `sisl` class for building sparse Hamiltonian matrices,</span>
 <span class="sd">    `sisl.physics.Hamiltonian`</span>
@@ -146,7 +146,17 @@
 <span class="sd">    -------</span>
 <span class="sd">    H: sisl.physics.Hamiltonian</span>
 <span class="sd">        tight-binding Hamiltonian for the sp2 structure</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if ``s2`` or ``s3`` is nonzero while ``s1`` is zero, since second- and</span>
+<span class="sd">        third-neighbor overlap without first-neighbor overlap is not physical</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">s1</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">s3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"sp2: second- and third-neighbor overlap (s2=</span><span class="si">{</span><span class="n">s2</span><span class="si">}</span><span class="s2">, s3=</span><span class="si">{</span><span class="n">s3</span><span class="si">}</span><span class="s2">) "</span>
+                         <span class="s2">"needs a nonzero first-neighbor overlap s1"</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
         <span class="n">spin</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>
 
@@ -180,7 +190,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">atom_</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">Z</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">Z</span><span class="p">),</span> <span class="n">atoms</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">except</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Atom with Z=</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Atom with Z=</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">Z</span><span class="si">}</span><span class="s1"> not found'</span><span class="p">)</span>
                 <span class="n">pi_geom</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">replace_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">atom_</span><span class="p">)</span>
 
     <span class="c1"># Construct Hamiltonian</span>
@@ -196,7 +206,7 @@
 
     <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="n">pi_geom</span><span class="p">:</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">pi_geom</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
-        <span class="c1"># NB: I found that &#39;:&#39; is necessary in the following lines, but I don&#39;t understand why...</span>
+        <span class="c1"># NB: I found that ':' is necessary in the following lines, but I don't understand why...</span>
         <span class="k">if</span> <span class="n">pi_geom</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">Z</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
             <span class="n">H</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">ia</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">eB</span> <span class="c1"># set onsite for B sites</span>
         <span class="k">elif</span> <span class="n">pi_geom</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">Z</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
@@ -224,7 +234,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

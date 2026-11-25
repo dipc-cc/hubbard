@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -62,7 +62,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API documentation</a></li>
 </ul>
@@ -97,17 +97,17 @@
 <h2>Required dependencies<a class="headerlink" href="#required-dependencies" title="Link to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference external" href="https://www.python.org/">Python</a> 3.6 or newer</p></li>
-<li><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/">NumPy</a> 1.13 or newer</p></li>
-<li><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/">SciPy</a> 0.18 or newer</p></li>
-<li><p><a class="reference external" href="https://zerothi.github.io/sisl">sisl</a> 0.15.0 or newer</p></li>
-<li><p><a class="reference external" href="https://matplotlib.org/">Matplotlib</a> 2.2.2 or newer (plotting)</p></li>
+<li><p><a class="reference external" href="https://www.python.org/">Python</a> 3.10 or newer</p></li>
+<li><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/">NumPy</a> 2.0 or newer</p></li>
+<li><p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/">SciPy</a> 1.14 or newer</p></li>
+<li><p><a class="reference external" href="https://zerothi.github.io/sisl">sisl</a> 0.15 or newer (with SciPy 1.17 or newer, sisl 0.16.4 or newer)</p></li>
+<li><p><a class="reference external" href="https://matplotlib.org/">Matplotlib</a> 3.9 or newer (plotting)</p></li>
 </ul>
 </div></blockquote>
 <p>Optional:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference external" href="https://github.com/Unidata/netcdf4-python">netCDF4</a> 1.3.1 or newer</p></li>
+<li><p><a class="reference external" href="https://github.com/Unidata/netcdf4-python">netCDF4</a> 1.7 or newer (reading and writing <code class="docutils literal notranslate"><span class="pre">HU.nc</span></code> files)</p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -118,7 +118,6 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="w"> </span>--prefix<span class="o">=</span>&lt;prefix&gt;
 </pre></div>
 </div>
-<p>One can also use the auxiliary file <em class="xref py py-obj">install-py3.sh</em></p>
 <p>One may also wish to set the following environment variables</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span>&lt;my-python-home&gt;/lib/python/
 <span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:&lt;my-python-home&gt;/bin/
@@ -138,7 +137,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

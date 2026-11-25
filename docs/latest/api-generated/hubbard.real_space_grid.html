@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>real_space_grid &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -58,14 +58,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="hubbard.html">Mean-field Hubbard model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">hubbard</span></code>)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="hubbard.html#self-consistent-field-class">Self Consistent field class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.html#read-and-write-in-binary-files">Read and write in binary files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="hubbard.html#build-the-specific-tb-hamiltonian-for-a-sp2-system">Build the specific TB Hamiltonian for a sp2 system</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#create-real-space-grid-for-a-geometry-and-supercell">Create real space grid for a geometry and supercell</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="hubbard.html#create-real-space-grid-for-a-geometry-and-lattice">Create real space grid for a geometry and lattice</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">real_space_grid</a></li>
 </ul>
 </li>
@@ -107,23 +107,23 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="hubbard.real_space_grid">
 <span class="sig-prename descclassname"><span class="pre">hubbard.</span></span><span class="sig-name descname"><span class="pre">real_space_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wavefunction'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hubbard/grid.html#real_space_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hubbard.real_space_grid" title="Link to this definition"></a></dt>
-<dd><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <em class="xref py py-obj">sisl.Supercell</em></p>
+<dd><p>Create real space <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a> object for a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Geometry</span></code></a> and a <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Lattice.html#sisl.Lattice" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Lattice</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>g</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.16.3-05dbf0868)"><em>sisl.Geometry</em></a>) – geometry</p></li>
+<li><p><strong>g</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Geometry.html#sisl.Geometry" title="(in sisl v0.20.1-9f24133c3)"><em>sisl.Geometry</em></a>) – geometry</p></li>
 <li><p><strong>vector</strong> (<em>numpy.array</em>) – vector to expand in the real space grid</p></li>
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/dev/library/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em> or </em><em>(</em><em>3</em><em>,</em><em>) of </em><a class="reference external" href="https://docs.python.org/dev/library/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
-(see <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a>)</p></li>
-<li><p><strong>lattice</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Lattice.html#sisl.Lattice" title="(in sisl v0.16.3-05dbf0868)"><em>sisl.Lattice</em></a>) – lattice object of the grid</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/library/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – to build the grid from sisl.electron.wavefunction object (<code class="docutils literal notranslate"><span class="pre">mode='wavefunction'</span></code>)
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#float" title="(in Python v3.16)"><em>float</em></a><em> or </em><em>(</em><em>3</em><em>,</em><em>) of </em><a class="reference external" href="https://docs.python.org/dev/builtins/functions.html#int" title="(in Python v3.16)"><em>int</em></a>) – the shape of the grid. A float specifies the grid spacing in Angstrom, while a list of integers specifies the exact grid size
+(see <a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a>)</p></li>
+<li><p><strong>lattice</strong> (<a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Lattice.html#sisl.Lattice" title="(in sisl v0.20.1-9f24133c3)"><em>sisl.Lattice</em></a>) – lattice object of the grid</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/dev/builtins/stdtypes.html#str" title="(in Python v3.16)"><em>str</em></a><em>, </em><em>optional</em>) – to build the grid from sisl.electron.wavefunction object (<code class="docutils literal notranslate"><span class="pre">mode='wavefunction'</span></code>)
 or from the sisl.physics.DensityMatrix (<code class="docutils literal notranslate"><span class="pre">mode='charge'</span></code>), e.g. for charge-related plots</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.16.3-05dbf0868)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a></p>
+<p><a class="reference external" href="https://zerothi.github.io/sisl/api/generated/sisl.Grid.html#sisl.Grid" title="(in sisl v0.20.1-9f24133c3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sisl.Grid</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -140,7 +140,7 @@ or from the sisl.physics.DensityMatrix (<code class="docutils literal notranslat
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -7,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>hubbard.hamiltonian &mdash; hubbard documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -55,7 +55,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../funding.html">Funding</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API documentation</a></li>
 </ul>
@@ -94,13 +94,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="n">_pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HubbardHamiltonian&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'HubbardHamiltonian'</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HubbardHamiltonian</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</span>
+<span class="w">    </span><span class="sd">""" A class to create a Self Consistent field (SCF) object related to the mean-field Hubbard (MFH) model</span>
 
 <span class="sd">    The `hubbard.HubbardHamiltonian` class opens the possibility to include electron correlations in the tight-binding Hamiltonian</span>
 <span class="sd">    by solving self-consistently the mean-field Hubbard Hamiltonian</span>
@@ -134,10 +134,10 @@
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
 <span class="sd">    The implementation to solve the extended Hubbard model (with inter-atomic interactions) has not been tested</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TBHam</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize HubbardHamiltonian &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TBHam</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">kT</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'eV'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Initialize HubbardHamiltonian """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span> <span class="c1"># Label to know the used units</span>
 
@@ -154,9 +154,9 @@
         <span class="n">H0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">H0</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="c1"># Apply a shift to incorporate effect of S</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span> <span class="o">+</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span> <span class="o">+</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">H0</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hash_base</span> <span class="o">=</span> <span class="n">s</span>
         <span class="k">del</span> <span class="n">H0</span>
 
@@ -211,7 +211,7 @@
             <span class="c1"># Ensure n is an array</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">):</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Incorrect shape of n, initializing spin densities&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Incorrect shape of n, initializing spin densities"</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
@@ -220,37 +220,37 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; The shape of the Hamiltonian matrix &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" The shape of the Hamiltonian matrix """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shape</span>
 
 <div class="viewcode-block" id="HubbardHamiltonian.set_kmesh">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_kmesh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_kmesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Set the k-mesh for the HubbardHamiltonian</span>
+<span class="w">        </span><span class="sd">""" Set the k-mesh for the HubbardHamiltonian</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        nkpt : array_like or sisl.physics.BrillouinZone, optional</span>
 <span class="sd">            k-mesh to be associated with the `hubbard.HubbardHamiltonian` instance</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nkpt</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">BrillouinZone</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> <span class="n">nkpt</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nkpt</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">MonkhorstPack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">,</span> <span class="n">nkpt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;.set_kmesh(...) requires an array_like input&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.set_kmesh(...) requires an array_like input'</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Representation of the model &quot;&quot;&quot;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">q: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s1">, U: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, kT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, Uij: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> &#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">}&#39;</span>
+<span class="w">        </span><span class="sd">""" Representation of the model """</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="s1">q: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="si">}</span><span class="s1">, U: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, kT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s1">, Uij: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1"> '</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">}'</span>
 
 <div class="viewcode-block" id="HubbardHamiltonian.eigh">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Diagonalize Hamiltonian using the ``eigh`` routine</span>
+<span class="w">        </span><span class="sd">""" Diagonalize Hamiltonian using the ``eigh`` routine</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -269,14 +269,14 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        eigenvalues: numpy.ndarray</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="n">eigvals_only</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.eigenstate">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.eigenstate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eigenstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Solve the eigenvalue problem at `k` and return it as a `sisl.physics.electron.EigenstateElectron` object containing all eigenstates</span>
+<span class="w">        </span><span class="sd">""" Solve the eigenvalue problem at `k` and return it as a `sisl.physics.electron.EigenstateElectron` object containing all eigenstates</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -288,14 +288,62 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        object: `sisl.physics.electron.EigenstateElectron` object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">eigenstate</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_derive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TBHam</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Return a new object with reference Hamiltonian `TBHam` whose mean-field Hamiltonian starts as `H`</span>
+
+<span class="sd">        `TBHam` must be derived from ``self.TBHam`` and `H` from ``self.H`` by the same operation,</span>
+<span class="sd">        so that the first `update_hamiltonian` of the new object adds the mean-field terms once.</span>
+<span class="sd">        The new object gets its own copies of `U`, `Uij` and this object's k-mesh.</span>
+<span class="sd">        The new object takes `n` as given, set after construction. With `exact` it also takes `q`</span>
+<span class="sd">        as given; otherwise the constructor reads `q`, and treats a non-positive ``q[0]`` as not given</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">U</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Uij</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Uij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Uij</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Set n (and q) after construction, so the constructor neither renormalizes an empty</span>
+        <span class="c1"># spin channel nor reads q = 0 for spin up as "not given"</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">TBHam</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="n">Uij</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                             <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)[:</span><span class="n">new</span><span class="o">.</span><span class="n">spin_size</span><span class="p">]</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="n">H</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">H</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Raise if the electron count `q` passed to `method` has an entry that is not &gt;= 0, NaN included """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> requires a non-negative q, got </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_Uij</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">nonzero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Raise if `method` cannot carry ``self.Uij`` over to a derived object</span>
+
+<span class="sd">        Atom-indexed operations cannot map an orbital-indexed `Uij` when an atom has more than</span>
+<span class="sd">        one orbital; with `nonzero`, the operation cannot carry over any nonzero `Uij` at all</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">no</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> cannot handle Uij "</span>
+                                      <span class="s2">"with more than one orbital per atom"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nonzero</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> cannot handle a nonzero Uij"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HubbardHamiltonian.tile">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.tile">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Tile the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
+<span class="w">        </span><span class="sd">""" Tile the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
+
+<span class="sd">        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``</span>
+<span class="sd">        and `U` are all tiled, orbital by orbital as sisl orders them, so a converged object tiles</span>
+<span class="sd">        into a converged one once its k-mesh samples the same Brillouin-zone points</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -310,23 +358,32 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A new larger `hubbard.HubbardHamiltonian` object</span>
+<span class="sd">        A new larger `hubbard.HubbardHamiltonian` object, with ``q`` the charge per spin channel of the tiled</span>
+<span class="sd">        densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,</span>
+<span class="sd">        so use `set_kmesh` to sample the same Brillouin-zone points as this object</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
-<span class="sd">        We need to update this function so Uij also gets tiled like the geometry</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Htile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.</span>
+<span class="sd">            `Uij` is not tiled yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_Uij</span><span class="p">(</span><span class="s1">'tile'</span><span class="p">,</span> <span class="n">nonzero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># sisl tiles cell by cell, so the orbitals keep their order within each copy</span>
         <span class="n">ntile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
-        <span class="n">q</span> <span class="o">=</span> <span class="n">ntile</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Htile</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">ntile</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">),</span>
+                            <span class="n">ntile</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ntile</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.repeat">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.repeat">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
+<span class="w">        </span><span class="sd">""" Repeat the HubbardHamiltonian object along a specified axis to obtain a larger one</span>
+
+<span class="sd">        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``</span>
+<span class="sd">        and `U` are all repeated, orbital by orbital as sisl orders them, so a converged object repeats</span>
+<span class="sd">        into a converged one once its k-mesh samples the same Brillouin-zone points</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -341,85 +398,150 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        A new larger `hubbard.HubbardHamiltonian` object</span>
+<span class="sd">        A new larger `hubbard.HubbardHamiltonian` object, with ``q`` the charge per spin channel of the repeated</span>
+<span class="sd">        densities. It keeps this object's k-mesh in units of the new reciprocal lattice vectors,</span>
+<span class="sd">        so use `set_kmesh` to sample the same Brillouin-zone points as this object</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
-<span class="sd">        We need to update this function so Uij also gets repeated like the geometry</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Hrep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-        <span class="n">nrep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">q</span> <span class="o">=</span> <span class="n">nrep</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="n">reps</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hrep</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nrep</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this object has a nonzero `Uij`, or any `Uij` with more than one orbital per atom.</span>
+<span class="sd">            `Uij` is not repeated yet: an all-zero `Uij` is dropped, so the new object has ``Uij=None``</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_Uij</span><span class="p">(</span><span class="s1">'repeat'</span><span class="p">,</span> <span class="n">nonzero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># sisl repeats atom by atom, keeping the orbitals of each atom together</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">a2o</span><span class="p">(</span><span class="n">ia</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">reps</span><span class="p">)</span> <span class="k">for</span> <span class="n">ia</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">na</span><span class="p">)])</span>
+        <span class="n">nrep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">reps</span><span class="p">,</span> <span class="n">axis</span><span class="p">),</span>
+                            <span class="n">nrep</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">nrep</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.remove">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.remove">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Remove a subset of this sparse matrix by only retaining the atoms corresponding to `atom`</span>
+<span class="w">        </span><span class="sd">""" Return a new `HubbardHamiltonian` object without the atoms in `atoms`</span>
+
+<span class="sd">        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,</span>
+<span class="sd">        `U` and `Uij` are restricted to the remaining atoms (and their orbitals), and the densities are</span>
+<span class="sd">        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its</span>
+<span class="sd">        mean-field terms from the reference Hamiltonian and the new densities.</span>
+<span class="sd">        `Uij` is passed through, not validated, and only with one orbital per atom</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        atoms: array_like of int</span>
-<span class="sd">            atomic ndices of removed atoms</span>
+<span class="sd">            atomic indices of removed atoms</span>
 <span class="sd">        q: array_like, optional</span>
-<span class="sd">            Two values specifying up, down electron occupations for the remaining subset of atoms after removal</span>
+<span class="sd">            electron count per spin channel (one value if unpolarized, up and down if polarized)</span>
+<span class="sd">            for the remaining atoms. The default takes it from the charge of the remaining atoms,</span>
+<span class="sd">            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.</span>
+<span class="sd">            A spin channel with no density on the remaining atoms stays empty if its charge is zero,</span>
+<span class="sd">            and otherwise starts uniform, at its charge over the number of orbitals</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        ------------</span>
 <span class="sd">        sisl.physics.Hamiltonian.remove</span>
 <span class="sd">        sisl.Geometry.remove</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A new smaller `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if an entry of `q` is negative or NaN</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this object has `Uij` and an atom with more than one orbital</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_q</span><span class="p">(</span><span class="s1">'remove'</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_Uij</span><span class="p">(</span><span class="s1">'remove'</span><span class="p">)</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">sc2uc</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">sisl._array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_a</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">_a</span><span class="o">.</span><span class="n">arangei</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">),</span> <span class="n">atoms</span><span class="p">)</span>
-        <span class="n">Hsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-        <span class="n">nsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span><span class="n">atoms</span><span class="p">]</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[</span><span class="n">atoms</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">Uij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">Hsub</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="n">Uij</span><span class="p">,</span>
-                    <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.sub">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.sub">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a new `HubbardHamiltonian` object of a subset of selected atoms</span>
+<span class="w">        </span><span class="sd">""" Return a new `HubbardHamiltonian` object of a subset of selected atoms</span>
+
+<span class="sd">        The reference Hamiltonian ``TBHam``, the mean-field Hamiltonian ``H``, the spin densities ``n``,</span>
+<span class="sd">        `U` and `Uij` are restricted to the kept atoms (and their orbitals), and the densities are</span>
+<span class="sd">        renormalized to `q`. The first `iterate` solves this restricted ``H``, and then rebuilds its</span>
+<span class="sd">        mean-field terms from the reference Hamiltonian and the new densities.</span>
+<span class="sd">        `Uij` is passed through, not validated, and only with one orbital per atom</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        atoms : int or array_like</span>
 <span class="sd">            indices/boolean of all atoms to be kept</span>
 <span class="sd">        q: array_like, optional</span>
-<span class="sd">            Two values specifying up, down electron occupations for the subset of atoms</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">nsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">atoms</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span>
+<span class="sd">            electron count per spin channel (one value if unpolarized, up and down if polarized)</span>
+<span class="sd">            for the kept atoms. The default takes it from the charge of the kept atoms,</span>
+<span class="sd">            as `HubbardHamiltonian` does when `q` is not given. Any other `q` is used as given.</span>
+<span class="sd">            A spin channel with no density on the kept atoms stays empty if its charge is zero,</span>
+<span class="sd">            and otherwise starts uniform, at its charge over the number of orbitals</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        ------------</span>
+<span class="sd">        sisl.physics.Hamiltonian.sub</span>
+<span class="sd">        sisl.Geometry.sub</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A new smaller `hubbard.HubbardHamiltonian` object</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if an entry of `q` is negative or NaN</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if this object has `Uij` and an atom with more than one orbital</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_q</span><span class="p">(</span><span class="s1">'sub'</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_Uij</span><span class="p">(</span><span class="s1">'sub'</span><span class="p">)</span>
+        <span class="c1"># n and U are indexed by orbital, atoms by atom</span>
+        <span class="n">orbs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">a2o</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">)[</span><span class="n">atoms</span><span class="p">],</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">nsub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">orbs</span><span class="p">]</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">)[</span><span class="n">orbs</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Uij</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">[</span><span class="n">atoms</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Uij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">Uij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="n">n</span><span class="o">=</span><span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="n">Uij</span><span class="p">,</span>
-                    <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+        <span class="c1"># The default q is read by the constructor; any other q is used as given</span>
+        <span class="n">exact</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="n">nsub</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">Uij</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
+        <span class="c1"># A spin channel without density on the kept atoms but with charge cannot be scaled</span>
+        <span class="c1"># (0/0 = NaN): it starts uniform at q/no, as an object without a density does</span>
+        <span class="n">fill</span> <span class="o">=</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">q</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="n">fill</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="n">fill</span><span class="p">]</span> <span class="o">/</span> <span class="n">new</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.copy">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.copy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return a copy of the `HubbardHamiltonian` object &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span>
-                    <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">nkpt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">kT</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">""" Return an independent copy of the `HubbardHamiltonian` object</span>
+
+<span class="sd">        The copy holds the same reference and mean-field Hamiltonians, spin densities, charge, `U`, `Uij`,</span>
+<span class="sd">        `kT`, k-mesh, units and, if computed, total energy, and shares no mutable array with this object.</span>
+<span class="sd">        `Uij` is passed through, not validated</span>
+<span class="sd">        """</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'Etot'</span><span class="p">):</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">Etot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Etot</span>
+        <span class="k">return</span> <span class="n">new</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.update_hamiltonian">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.update_hamiltonian">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hamiltonian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Update spin Hamiltonian according to the extended Hubbard model,</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">""" Update spin Hamiltonian according to the extended Hubbard model,</span>
 <span class="sd">        see for instance `PRL 106, 236805 (2011) &lt;https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.236805&gt;`_</span>
 <span class="sd">        It updates the diagonal elements for each spin Hamiltonian following the mean field approximation:</span>
 
@@ -436,7 +558,7 @@
 <span class="sd">        \frac{1}{2}\sum_{i\neq j}U_{ij}\left(\langle n_{i\uparrow}\rangle+\langle n_{i\downarrow}\rangle\right)\left(\langle n_{j\uparrow}\rangle</span>
 <span class="sd">        + \langle n_{j\downarrow}\rangle\right)`</span>
 <span class="sd">        will be added to the Hamiltonian in the `iterate` method, where the total energy is calculated</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">):</span>
             <span class="c1"># Extract diagonal elements of TB Hamiltonian</span>
@@ -455,7 +577,7 @@
 <div class="viewcode-block" id="HubbardHamiltonian.random_density">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.random_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">random_density</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize spin polarization  with random density &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Initialize spin polarization  with random density """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize_charge</span><span class="p">()</span></div>
 
@@ -463,14 +585,17 @@
 <div class="viewcode-block" id="HubbardHamiltonian.normalize_charge">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.normalize_charge">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Ensure the total up/down charge in pi-network equals Nup/Ndn &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">""" Ensure the total up/down charge in pi-network equals Nup/Ndn """</span>
+        <span class="n">nsum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># A spin channel with no charge and no density stays empty, instead of 0/0 = NaN</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="o">~</span><span class="p">((</span><span class="n">nsum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="n">scale</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="n">scale</span><span class="p">]</span> <span class="o">/</span> <span class="n">nsum</span><span class="p">[</span><span class="n">scale</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.set_polarization">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.set_polarization">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_polarization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">up</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="nb">tuple</span><span class="p">()):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Maximize spin polarization on specific atomic sites</span>
+<span class="w">        </span><span class="sd">""" Maximize spin polarization on specific atomic sites</span>
 <span class="sd">        Optionally, sites with down-polarization can be specified</span>
 
 <span class="sd">        Parameters</span>
@@ -479,7 +604,16 @@
 <span class="sd">            atomic sites where the spin-up density is going to be maximized</span>
 <span class="sd">        dn: array_like, optional</span>
 <span class="sd">            atomic sites where the spin-down density is going to be maximized</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin</span>
+<span class="sd">            polarization needs a polarized Hamiltonian</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.set_polarization(...) requires a spin-polarized Hamiltonian '</span>
+                             <span class="sa">f</span><span class="s1">'(spin_size == 2), got spin_size == </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[:,</span> <span class="n">dn</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -489,9 +623,19 @@
 <div class="viewcode-block" id="HubbardHamiltonian.polarize_sublattices">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.polarize_sublattices">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">polarize_sublattices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Quick way to polarize the lattices</span>
+<span class="w">        </span><span class="sd">""" Quick way to polarize the lattices</span>
 <span class="sd">        without checking that consequtive atoms actually belong to</span>
-<span class="sd">        different sublattices &quot;&quot;&quot;</span>
+<span class="sd">        different sublattices</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if the Hamiltonian is unpolarized (``spin_size == 1``), since spin</span>
+<span class="sd">            polarization needs a polarized Hamiltonian</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.polarize_sublattices(...) requires a spin-polarized Hamiltonian '</span>
+                             <span class="sa">f</span><span class="s1">'(spin_size == 2), got spin_size == </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
@@ -501,7 +645,7 @@
 <div class="viewcode-block" id="HubbardHamiltonian.find_midgap">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.find_midgap">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_midgap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Find the midgap for the system</span>
+<span class="w">        </span><span class="sd">""" Find the midgap for the system</span>
 <span class="sd">        taking into account the up and dn different spectrums</span>
 
 <span class="sd">        This method makes sense for insulators (where there is a bandgap)</span>
@@ -509,7 +653,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        midgap: float</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">HOMO</span><span class="p">,</span> <span class="n">LUMO</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e10</span><span class="p">,</span> <span class="mf">1e10</span>
         <span class="n">ev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
@@ -524,8 +668,8 @@
 
 <div class="viewcode-block" id="HubbardHamiltonian.fermi_level">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.fermi_level">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;fermi_dirac&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Find the fermi level for a certain charge `q` at a certain `kT`</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fermi_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">'fermi_dirac'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Find the fermi level for a certain charge `q` at a certain `kT`</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -544,7 +688,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Ef: numpy.array</span>
 <span class="sd">            Fermi-level for each spin channel</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">q</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -559,7 +703,10 @@
 <div class="viewcode-block" id="HubbardHamiltonian.shift">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.shift">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">E</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Shift the electronic structure by a constant energy (in-place operation)</span>
+<span class="w">        </span><span class="sd">""" Shift the electronic structure by a constant energy (in-place operation)</span>
+
+<span class="sd">        Both `H` and `TBHam` are shifted, so the shift persists through later iterations;</span>
+<span class="sd">        the tight-binding Hamiltonian passed to the constructor is left unchanged.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -569,20 +716,24 @@
 <span class="sd">        See Also</span>
 <span class="sd">        ------------</span>
 <span class="sd">        sisl.physics.Hamiltonian.shift</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
+        <span class="c1"># update_hamiltonian rebuilds the diagonal of H from TBHam; copy TBHam first,</span>
+        <span class="c1"># since the constructor stores the caller's Hamiltonian itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TBHam</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">E</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.get_hash">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">])</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">])</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash_base</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">7</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">])</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">])</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_hash_base</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">7</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.read_density">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.read_density">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Read density from binary file</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Read density from binary file</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -592,13 +743,13 @@
 <span class="sd">            mode in which the file is opened</span>
 <span class="sd">        group: str, optional</span>
 <span class="sd">            netCDF4 group</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
             <span class="n">fh</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">ncSileHubbard</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read_density</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Update charge with read density</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Groups found in </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">, using the density from the first one&#39;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Groups found in </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">, using the density from the first one'</span><span class="p">)</span>
                 <span class="c1"># Read only the first element from the list</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read_density</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># Update charge with read density</span>
@@ -608,8 +759,8 @@
 
 <div class="viewcode-block" id="HubbardHamiltonian.write_density">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_density">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write density in a binary file</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Write density in a binary file</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -619,63 +770,105 @@
 <span class="sd">            mode in which the file is opened</span>
 <span class="sd">        group: str, optional</span>
 <span class="sd">            netCDF4 group</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">'w'</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">ncSileHubbard</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">write_density</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">Uij</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Uij</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.write_initspin">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.write_initspin">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_initspin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spinfix</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write spin polarization to SIESTA fdf-block</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_initspin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">ext_geom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spinfix</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Write spin polarization to SIESTA fdf-block</span>
 <span class="sd">        This function only makes sense for spin-polarized calculations</span>
+
+<span class="sd">        Each line of the ``DM.InitSpin`` block holds a SIESTA atom index (counted from 1)</span>
+<span class="sd">        and the polarization ``n[0] - n[1]`` (in electrons) of the corresponding site.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        fn: str</span>
 <span class="sd">            name of the fdf-file</span>
 <span class="sd">        ext_geom: sisl.Geometry, optional</span>
-<span class="sd">            an &quot;external&quot; geometry that contains the sp2-sites included in the simulation</span>
+<span class="sd">            an "external" geometry that contains the sp2-sites included in the simulation,</span>
+<span class="sd">            for instance the full geometry including hydrogen atoms.</span>
+<span class="sd">            Only the atoms of `ext_geom` that coincide with an atom of the Hamiltonian's geometry</span>
+<span class="sd">            are written, indexed as in `ext_geom` and given the polarization of the coinciding atom.</span>
+<span class="sd">            If omitted, every site is written with its index in the Hamiltonian's geometry</span>
 <span class="sd">        spinfix: bool, optional</span>
-<span class="sd">            specifies if the Spin.Fix and Spin.Total lines are written to the fdf</span>
+<span class="sd">            specifies if the Spin.Fix and Spin.Total lines are written to the fdf.</span>
+<span class="sd">            Spin.Total is the sum of the polarizations written in the block</span>
 <span class="sd">        mode: str, optional</span>
 <span class="sd">            mode in which the file is opened</span>
 <span class="sd">        eps: float, optional</span>
-<span class="sd">            atoms within this distance will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            atoms within this distance (in Ang) will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if `ext_geom` is neither None nor a `sisl.Geometry`, if no atom of `ext_geom`</span>
+<span class="sd">            coincides with an atom of the Hamiltonian's geometry, or if an atom of either</span>
+<span class="sd">            geometry lies within `eps` of more than one atom of the other, or if an atom of the</span>
+<span class="sd">            Hamiltonian's geometry has more than one orbital (the polarization is written per atom)</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        UserWarning</span>
+<span class="sd">            if some atoms of the Hamiltonian's geometry have no coinciding atom in `ext_geom`</span>
+<span class="sd">            (only the primary unit cell of `ext_geom` is searched); their polarization is not written</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">orbitals</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># n is indexed by orbital, the DM.InitSpin block by atom</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.write_initspin(...) writes the polarization per atom '</span>
+                             <span class="s1">'and requires one orbital per atom'</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">'w'</span>
         <span class="k">if</span> <span class="n">ext_geom</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">))</span>
+            <span class="n">idx_internal</span> <span class="o">=</span> <span class="n">idx</span>
             <span class="n">geom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ext_geom</span><span class="p">,</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Geometry</span><span class="p">):</span>
-            <span class="n">idx</span><span class="p">,</span> <span class="n">idx_internal</span> <span class="o">=</span> <span class="n">ext_geom</span><span class="o">.</span><span class="n">overlap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
+            <span class="c1"># idx[i] (in ext_geom) and idx_internal[i] (in self.geometry) are the same atom</span>
+            <span class="n">idx</span><span class="p">,</span> <span class="n">idx_internal</span> <span class="o">=</span> <span class="n">ext_geom</span><span class="o">.</span><span class="n">overlap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
             <span class="n">geom</span> <span class="o">=</span> <span class="n">ext_geom</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.write_initspin(...)'</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> found no atom of ext_geom within eps=</span><span class="si">{</span><span class="n">eps</span><span class="si">}</span><span class="s1"> of an atom of the Hamiltonian geometry'</span><span class="p">)</span>
+            <span class="c1"># each atom may be paired once, or a SIESTA index or a polarization would be written twice</span>
+            <span class="n">ext_atoms</span><span class="p">,</span> <span class="n">ext_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">int_atoms</span><span class="p">,</span> <span class="n">int_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">idx_internal</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">ext_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">int_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> pairs atoms ambiguously, an atom lies within eps=</span><span class="si">{</span><span class="n">eps</span><span class="si">}</span><span class="s1"> of more than one atom '</span>
+                                 <span class="sa">f</span><span class="s1">'of the other geometry: ext_geom atoms </span><span class="si">{</span><span class="n">ext_atoms</span><span class="p">[</span><span class="n">ext_count</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s1">, '</span>
+                                 <span class="sa">f</span><span class="s1">'Hamiltonian geometry atoms </span><span class="si">{</span><span class="n">int_atoms</span><span class="p">[</span><span class="n">int_count</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">na</span><span class="p">),</span> <span class="n">int_atoms</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">missing</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">missing</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s1"> atoms of the Hamiltonian geometry have no match in ext_geom '</span>
+                              <span class="sa">f</span><span class="s1">'and are not written (first indices: </span><span class="si">{</span><span class="n">missing</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s1">)'</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">&#39;.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom&#39;</span><span class="p">)</span>
-        <span class="n">polarization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s1">'.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom'</span><span class="p">)</span>
+        <span class="n">polarization</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="n">idx_internal</span><span class="p">]</span>
         <span class="n">dq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">polarization</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">spinfix</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Spin.Fix True</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Spin.Total </span><span class="si">%.6f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dq</span><span class="p">)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;%block DM.InitSpin</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ia</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%6i</span><span class="s1"> </span><span class="si">%10.6f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ia</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">polarization</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1"># SIESTA counts from 1</span>
-            <span class="c1"># add documentation string</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39; # </span><span class="si">%2s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">symbol</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                <span class="n">s</span> <span class="o">+=</span> <span class="s1">&#39; </span><span class="si">%9.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%e</span><span class="s1">ndblock DM.InitSpin</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">spinfix</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'Spin.Fix True</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'Spin.Total </span><span class="si">%.6f</span><span class="se">\n</span><span class="s1">'</span> <span class="o">%</span> <span class="n">dq</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'%block DM.InitSpin</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ia</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s1">'</span><span class="si">%6i</span><span class="s1"> </span><span class="si">%10.6f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">ia</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">polarization</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1"># SIESTA counts from 1</span>
+                <span class="c1"># add documentation string</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="s1">' # </span><span class="si">%2s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">ia</span><span class="p">]</span><span class="o">.</span><span class="n">symbol</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="s1">' </span><span class="si">%9.4f</span><span class="s1">'</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="n">ia</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="si">%e</span><span class="s1">ndblock DM.InitSpin</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.iterate">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.iterate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">""" Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation</span>
 
 <span class="sd">        The only thing that may change is the way in which the spin-densities (``n``) and total energy (``Etot``) are obtained</span>
 <span class="sd">        where one needs to use the correct `calc_n_method` for the particular system.</span>
@@ -686,7 +879,11 @@
 <span class="sd">            method to obtain the spin-densities</span>
 <span class="sd">            it *must* return the corresponding spin-densities (``n``) and the total energy (``Etot``)</span>
 <span class="sd">        q: array_like, optional</span>
-<span class="sd">            total charge separated in spin-channels, q=[q_up, q_dn]</span>
+<span class="sd">            electron count per spin channel passed to `calc_n_method`, ``q=[q_up, q_dn]`` for a polarized</span>
+<span class="sd">            Hamiltonian and ``q=[q]`` for an unpolarized one (the count of one spin).</span>
+<span class="sd">            A ``None`` entry takes ``self.q[s]`` for that channel, unrounded. Defaults to `self.q`.</span>
+<span class="sd">            The caller's `q` is not modified. `hubbard.NEGF.calc_n_open` uses only the total of `q`,</span>
+<span class="sd">            so the per-spin values are not enforced on the open-boundary path.</span>
 <span class="sd">        mixer: Mixer, optional</span>
 <span class="sd">            `sisl.mixing.Mixer` instance for the SCF loop, defaults to linear mixing with weight 0.7</span>
 
@@ -702,13 +899,23 @@
 <span class="sd">        -------</span>
 <span class="sd">        dn : array_like</span>
 <span class="sd">            difference between the ith and the (i-1)th iteration densities</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if `q` does not have one entry per spin channel, or if an entry of an explicit `q`</span>
+<span class="sd">            is negative or NaN</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.iterate: q must have one entry per spin channel "</span>
+                                 <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="si">}</span><span class="s2">), got </span><span class="si">{</span><span class="n">q</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="c1"># Build a new array so the caller's q is left unchanged</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">q</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)],</span>
+                         <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_q</span><span class="p">(</span><span class="s1">'iterate'</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
 
         <span class="n">ni</span><span class="p">,</span> <span class="n">Etot</span> <span class="o">=</span> <span class="n">calc_n_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -735,7 +942,7 @@
 <div class="viewcode-block" id="HubbardHamiltonian.converge">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.converge">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">converge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calc_n_method</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_info</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">func_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Iterate Hamiltonian towards a specified tolerance criterion</span>
+<span class="w">        </span><span class="sd">""" Iterate Hamiltonian towards a specified tolerance criterion</span>
 
 <span class="sd">        This method calls `iterate` as many times as it needs until it reaches the specified tolerance</span>
 
@@ -772,9 +979,21 @@
 <span class="sd">        -------</span>
 <span class="sd">        dn</span>
 <span class="sd">            difference between the ith and the (i-1)th iteration densities</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FloatingPointError</span>
+<span class="sd">            if ``dn`` is not finite after an iteration, for instance when `calc_n_method`</span>
+<span class="sd">            returns a NaN density</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        UserWarning</span>
+<span class="sd">            if `max_iter` iterations are completed while ``dn &gt; tol``. The returned ``dn``,</span>
+<span class="sd">            the densities and the energy are then those of the last, unconverged iteration</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">print_info</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;   HubbardHamiltonian: converge towards tol=</span><span class="si">{:.2e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tol</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'   HubbardHamiltonian: converge towards tol=</span><span class="si">{:.2e}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tol</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">mixer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mixer</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">mixing</span><span class="o">.</span><span class="n">DIISMixer</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">max_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -784,23 +1003,31 @@
         <span class="k">while</span> <span class="n">dn</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">dn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">calc_n_method</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="n">mixer</span><span class="p">,</span> <span class="o">**</span><span class="n">func_args</span><span class="p">)</span>
+            <span class="c1"># A NaN dn would end the loop as if converged, since NaN &gt; tol is False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">dn</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">FloatingPointError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HubbardHamiltonian.converge: density change dn=</span><span class="si">{</span><span class="n">dn</span><span class="si">}</span><span class="s2"> "</span>
+                                         <span class="sa">f</span><span class="s2">"at iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> is not finite"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">steps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># Print some info from time to time</span>
                 <span class="k">if</span> <span class="n">print_info</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;   </span><span class="si">%i</span><span class="s1"> iterations completed:&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Etot</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'   </span><span class="si">%i</span><span class="s1"> iterations completed:'</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">dn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Etot</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">fn</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">write_density</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write_density</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">max_iter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dn</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HubbardHamiltonian.converge stopped after max_iter=</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> "</span>
+                                  <span class="sa">f</span><span class="s2">"iteration</span><span class="si">{</span><span class="s1">'s'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2"> without converging: "</span>
+                                  <span class="sa">f</span><span class="s2">"dn=</span><span class="si">{</span><span class="n">dn</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &gt; tol=</span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">dn</span>
         <span class="k">if</span> <span class="n">print_info</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;   found solution in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'   found solution in </span><span class="si">%i</span><span class="s1"> iterations'</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dn</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.calc_orbital_charge_overlaps">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.calc_orbital_charge_overlaps">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calc_orbital_charge_overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">spin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Obtain orbital (eigenstate) charge overlaps as :math:`\int dr |\psi_{\sigma\alpha}|^{4}`</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">""" Obtain orbital (eigenstate) charge overlaps as :math:`\int dr |\psi_{\sigma\alpha}|^{4}`</span>
 
 <span class="sd">        Where :math:`\sigma` is the spin index and :math:`\alpha` is the eigenstate index</span>
 
@@ -817,17 +1044,25 @@
 <span class="sd">            eigenvalues</span>
 <span class="sd">        L: numpy.ndarray</span>
 <span class="sd">            orbital charge overlaps</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            if ``H.H`` is non-orthogonal: the overlap matrix is not supported</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.calc_orbital_charge_overlaps: "</span>
+                                      <span class="s2">"a non-orthogonal H is not supported"</span><span class="p">)</span>
         <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
         <span class="c1"># Compute orbital charge overlaps</span>
-        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ia,ia,ib,ib-&gt;ab&#39;</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ia,ia,ib,ib-&gt;ab'</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">evec</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">evec</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
         <span class="k">return</span> <span class="n">ev</span><span class="p">,</span> <span class="n">L</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.get_Zak_phase">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_Zak_phase">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_Zak_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">nk</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s1">&#39;filled&#39;</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Computes the intercell Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Zak_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">nk</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s1">'filled'</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Computes the intercell Zak phase for 1D (periodic) systems using `sisl.physics.electron.berry_phase`</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -851,7 +1086,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Zak: float</span>
 <span class="sd">            Intercell Zak phase for the 1D system</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">func</span><span class="p">:</span>
             <span class="c1"># Discretize kx over [0.0, 1.0[ in Nx-1 segments (1BZ)</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
@@ -859,7 +1094,7 @@
                 <span class="n">f</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">N</span>
                 <span class="k">return</span> <span class="n">f</span>
         <span class="n">bz</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">BrillouinZone</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">nk</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">sub</span> <span class="o">==</span> <span class="s1">&#39;filled&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sub</span> <span class="o">==</span> <span class="s1">'filled'</span><span class="p">:</span>
             <span class="c1"># Sum up over all occupied bands:</span>
             <span class="n">sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
         <span class="k">return</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">berry_phase</span><span class="p">(</span><span class="n">bz</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">=</span><span class="n">eigvals</span><span class="p">)</span></div>
@@ -867,22 +1102,22 @@
 
 <div class="viewcode-block" id="HubbardHamiltonian.get_bond_order">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.get_bond_order">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_bond_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">,</span> <span class="n">midgap</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute Huckel bond order</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bond_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'csr'</span><span class="p">,</span> <span class="n">midgap</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Compute Huckel bond order</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        format: {&#39;csr&#39;, &#39;array&#39;, &#39;dense&#39;, &#39;coo&#39;, ...}</span>
+<span class="sd">        format: {'csr', 'array', 'dense', 'coo', ...}</span>
 <span class="sd">           the returned format of the matrix, defaulting to the `scipy.sparse.csr_matrix`,</span>
 <span class="sd">           however if one always requires operations on dense matrices, one can always</span>
-<span class="sd">           return in `numpy.ndarray` (`&#39;array&#39;`) or `numpy.matrix` (`&#39;dense&#39;`).</span>
+<span class="sd">           return in `numpy.ndarray` (`'array'`) or `numpy.matrix` (`'dense'`).</span>
 <span class="sd">        midgap: float, optional</span>
 <span class="sd">           energy value that separates filled states (lower energy) from empty states (higher energy) </span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        the Huckel bond-order matrix object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span>
         <span class="n">BO</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">Hamiltonian</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
         <span class="n">R</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">]</span>
@@ -916,7 +1151,7 @@
 <div class="viewcode-block" id="HubbardHamiltonian.spin_contamination">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.spin_contamination">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">spin_contamination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; Obtains the spin contamination for the MFH Hamiltonian following</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">""" Obtains the spin contamination for the MFH Hamiltonian following</span>
 <span class="sd">        `Ref. Chemical Physics Letters. 183 (5): 423–431 &lt;https://www.sciencedirect.com/science/article/abs/pii/000926149190405X?via%3Dihub&gt;`_.</span>
 
 <span class="sd">        .. math::</span>
@@ -929,9 +1164,16 @@
 
 <span class="sd">            \langle S^{2} \rangle_{exact}=(\frac{ N_{\alpha}-N_{\beta}}{2})(\frac{N_{\alpha}-N_{\beta} }{2} + 1)</span>
 
+<span class="sd">        Here :math:`N_{\alpha} \geq N_{\beta}` are the electron counts of the two spin channels, and</span>
+<span class="sd">        the sum runs over the :math:`N_{\alpha}` and :math:`N_{\beta}` lowest eigenstates of</span>
+<span class="sd">        ``self.H`` at the Gamma point. In a non-orthogonal basis the overlaps are</span>
+<span class="sd">        :math:`\langle \psi^{\alpha}_{i}|\mathbf S|\psi^{\beta}_{j}\rangle`.</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        The current implementation works for non-periodic systems only.</span>
+<span class="sd">        The method is for finite, closed systems with integer occupations: it diagonalizes</span>
+<span class="sd">        only at the Gamma point, and it rounds ``self.q`` to the nearest integer to count</span>
+<span class="sd">        the occupied states, ignoring ``kT``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -940,7 +1182,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        ------------</span>
-<span class="sd">        sisl.physics.electron.spin_squared: sisl class function</span>
+<span class="sd">        sisl.physics.electron.spin_contamination: sisl function that sums the overlaps</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -948,7 +1190,7 @@
 <span class="sd">            expectation value for the MFH Hamiltonian</span>
 <span class="sd">        S: float</span>
 <span class="sd">            exact expectation value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Define Nalpha and Nbeta, where Nalpha &gt;= Nbeta</span>
         <span class="n">Nalpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
@@ -957,17 +1199,21 @@
         <span class="c1"># Exact Total Spin expected value (&lt; S² &gt;)</span>
         <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">Nalpha</span> <span class="o">-</span> <span class="n">Nbeta</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">Nalpha</span> <span class="o">-</span> <span class="n">Nbeta</span><span class="p">)</span> <span class="o">*</span> <span class="mf">.25</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
 
-        <span class="c1"># Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons</span>
-        <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">):</span>
-            <span class="n">ev</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">evec</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+        <span class="c1"># Eigenvectors of spin-up and spin-dn electrons, kept in the dtype eigh</span>
+        <span class="c1"># returns (complex for a complex Hamiltonian)</span>
+        <span class="n">evec</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">s</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_size</span><span class="p">)]</span>
 
-        <span class="c1"># No need to tell which matrix of eigenstates correspond to alpha or beta,</span>
-        <span class="c1"># the sisl function spin_squared already takes this into account</span>
-        <span class="n">s2alpha</span><span class="p">,</span> <span class="n">s2beta</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">spin_squared</span><span class="p">(</span><span class="n">evec</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">evec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="c1"># Overlap matrix at Gamma, where eigh normalizes the eigenvectors as c^dagger S c = 1</span>
+        <span class="n">Sk</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">orthogonal</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Sk</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">'array'</span><span class="p">)</span>
+
+        <span class="c1"># Sum over occupied states of |&lt;psi^alpha_i|S|psi^beta_j&gt;|^2; it is</span>
+        <span class="c1"># symmetric in alpha and beta, so the channel order does not matter</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">spin_contamination</span><span class="p">(</span><span class="n">evec</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                              <span class="n">evec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span> <span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                              <span class="n">S</span><span class="o">=</span><span class="n">Sk</span><span class="p">,</span> <span class="nb">sum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Spin contamination</span>
-        <span class="n">S_MFH</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">Nbeta</span> <span class="o">-</span> <span class="n">s2beta</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">S_MFH</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">Nbeta</span> <span class="o">-</span> <span class="n">s2</span>
 
         <span class="k">if</span> <span class="n">ret_exact</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">S_MFH</span><span class="p">,</span> <span class="n">S</span>
@@ -977,8 +1223,12 @@
 
 <div class="viewcode-block" id="HubbardHamiltonian.DOS">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.DOS">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Obtains the density of states (DOS) of the system with a distribution function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">DOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">'Lorentzian'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Obtains the density of states (DOS) of the system with a distribution function</span>
+
+<span class="sd">        The DOS is averaged over the k-points of the Brillouin-zone sampling of the object,</span>
+<span class="sd">        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.</span>
+<span class="sd">        For a molecule (``nkpt=[1, 1, 1]``) this is the DOS at the Gamma point.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1000,8 +1250,11 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DOS: numpy.ndarray</span>
-<span class="sd">            density of states at the given energies for the selected spin</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            density of states at the given energies for the selected spin, in states per eV</span>
+<span class="sd">            per unit cell. Integrated over energy, each spin channel gives the number of</span>
+<span class="sd">            orbitals in the unit cell, for k-point weights that sum to one (as those of</span>
+<span class="sd">            ``nkpt``, a `sisl.MonkhorstPack`, do).</span>
+<span class="sd">        """</span>
         <span class="c1"># Ensure spin is iterable</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
             <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
@@ -1013,20 +1266,30 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">eta</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value"</span><span class="p">)</span>
 
-        <span class="c1"># Obtain eigenvalues</span>
+        <span class="c1"># Average over the k-points with their weights</span>
         <span class="n">dos</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="n">spin</span><span class="p">:</span>
-            <span class="n">eig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
-            <span class="n">dos</span> <span class="o">+=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">DOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">eig</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+                <span class="n">eig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
+                <span class="n">dos</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">sisl</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">DOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">eig</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dos</span></div>
 
 
 <div class="viewcode-block" id="HubbardHamiltonian.PDOS">
 <a class="viewcode-back" href="../../api-generated/hubbard.HubbardHamiltonian.html#hubbard.HubbardHamiltonian.PDOS">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;Lorentzian&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Obtains the projected density of states (PDOS) of the system with a distribution function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">PDOS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">egrid</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">'Lorentzian'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">""" Obtains the projected density of states (PDOS) of the system with a distribution function</span>
+
+<span class="sd">        The PDOS is averaged over the k-points of the Brillouin-zone sampling of the object,</span>
+<span class="sd">        ``self.mp`` (set by ``nkpt`` or `set_kmesh`), with their weights.</span>
+<span class="sd">        For a molecule (``nkpt=[1, 1, 1]``) this is the PDOS at the Gamma point.</span>
+
+<span class="sd">        The weight of an eigenstate ``c`` on orbital ``i`` is ``|c_i|**2`` for an orthogonal</span>
+<span class="sd">        basis. For a non-orthogonal basis the projection is Mulliken's,</span>
+<span class="sd">        ``Re[conj(c_i) (S(k) c)_i]`` with the overlap ``S(k)``, so that the PDOS still sums</span>
+<span class="sd">        to the DOS; the PDOS of an orbital can then be negative.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1048,8 +1311,11 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        PDOS: numpy.ndarray</span>
-<span class="sd">            projected density of states at the given energies for the selected spin</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            projected density of states at the given energies for the selected spin, in states</span>
+<span class="sd">            per eV per unit cell, of shape ``(1, no, len(egrid))`` with the orbital index on the</span>
+<span class="sd">            second axis. Its sum over orbitals is the DOS, for an orthogonal and a</span>
+<span class="sd">            non-orthogonal basis alike.</span>
+<span class="sd">        """</span>
         <span class="c1"># Ensure spin is iterable</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
             <span class="n">spin</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
@@ -1061,13 +1327,19 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="n">smearing</span><span class="o">=</span><span class="n">eta</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Using distribution created outside this function. The energy reference may be shifted if the distribution is calculated with respect to a non-zero energy value"</span><span class="p">)</span>
 
-        <span class="c1"># Obtain PDOS</span>
+        <span class="c1"># Average over the k-points with their weights</span>
         <span class="n">pdos</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">ispin</span> <span class="ow">in</span> <span class="n">spin</span><span class="p">:</span>
-            <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
-            <span class="n">pdos</span> <span class="o">+=</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">PDOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">k</span><span class="p">):</span>
+                <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">eigvals_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">ispin</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">:</span>
+                    <span class="n">pdos</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">PDOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Mulliken weights Re[c^* (S(k) c)]; Sk and eigh both use sisl's default gauge</span>
+                    <span class="n">Sk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H</span><span class="o">.</span><span class="n">Sk</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'csr'</span><span class="p">)</span>
+                    <span class="n">pdos</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">sisl</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">electron</span><span class="o">.</span><span class="n">PDOS</span><span class="p">(</span><span class="n">egrid</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">evec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">Sk</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">distribution</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">pdos</span></div>
 </div>
@@ -1081,7 +1353,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018-2025, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
+    <p>&#169; Copyright 2018-2026, Sofia Sanz, Nick R. Papior, Mads Brandbyge and Thomas Frederiksen.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
