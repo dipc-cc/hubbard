@@ -880,10 +880,18 @@ class HubbardHamiltonian(object):
             eigenvalues
         L: numpy.ndarray
             orbital charge overlaps
+
+        Raises
+        ------
+        NotImplementedError
+            if ``H.H`` is non-orthogonal: the overlap matrix is not supported
         """
+        if not self.H.orthogonal:
+            raise NotImplementedError(f"{self.__class__.__name__}.calc_orbital_charge_overlaps: "
+                                      "a non-orthogonal H is not supported")
         ev, evec = self.eigh(k=k, eigvals_only=False, spin=spin)
         # Compute orbital charge overlaps
-        L = np.einsum('ia,ia,ib,ib->ab', evec, evec, evec, evec).real
+        L = np.einsum('ia,ia,ib,ib->ab', evec.conj(), evec, evec.conj(), evec).real
         return ev, L
 
     def get_Zak_phase(self, func=None, axis=0, nk=51, sub='filled', eigvals=False):
