@@ -569,6 +569,9 @@ class HubbardHamiltonian(object):
     def shift(self, E):
         """ Shift the electronic structure by a constant energy (in-place operation)
 
+        Both `H` and `TBHam` are shifted, so the shift persists through later iterations;
+        the tight-binding Hamiltonian passed to the constructor is left unchanged.
+
         Parameters
         ----------
         E: float or (2,)
@@ -578,6 +581,10 @@ class HubbardHamiltonian(object):
         ------------
         sisl.physics.Hamiltonian.shift
         """
+        # update_hamiltonian rebuilds the diagonal of H from TBHam; copy TBHam first,
+        # since the constructor stores the caller's Hamiltonian itself
+        self.TBHam = self.TBHam.copy()
+        self.TBHam.shift(E)
         self.H.shift(E)
 
     def get_hash(self):
