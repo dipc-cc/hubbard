@@ -998,9 +998,16 @@ class HubbardHamiltonian(object):
 
             \langle S^{2} \rangle_{exact}=(\frac{ N_{\alpha}-N_{\beta}}{2})(\frac{N_{\alpha}-N_{\beta} }{2} + 1)
 
+        Here :math:`N_{\alpha} \geq N_{\beta}` are the electron counts of the two spin channels, and
+        the sum runs over the :math:`N_{\alpha}` and :math:`N_{\beta}` lowest eigenstates of
+        ``self.H`` at the Gamma point. In a non-orthogonal basis the overlaps are
+        :math:`\langle \psi^{\alpha}_{i}|\mathbf S|\psi^{\beta}_{j}\rangle`.
+
         Notes
         -----
-        The current implementation works for non-periodic systems only.
+        The method is for finite, closed systems with integer occupations: it diagonalizes
+        only at the Gamma point, and it rounds ``self.q`` to the nearest integer to count
+        the occupied states, ignoring ``kT``.
 
         Parameters
         ----------
@@ -1009,7 +1016,7 @@ class HubbardHamiltonian(object):
 
         See Also
         ------------
-        sisl.physics.electron.spin_squared: sisl class function
+        sisl.physics.electron.spin_contamination: sisl function that sums the overlaps
 
         Returns
         -------
@@ -1026,17 +1033,21 @@ class HubbardHamiltonian(object):
         # Exact Total Spin expected value (< S² >)
         S = (Nalpha - Nbeta) * ((Nalpha - Nbeta) * .25 + 0.5)
 
-        # Extract eigenvalues and eigenvectors of spin-up and spin-dn electrons
-        ev, evec = np.zeros((self.spin_size, self.sites)), np.zeros((self.spin_size, self.sites, self.sites))
-        for s in range(self.spin_size):
-            ev[s], evec[s] = self.eigh(eigvals_only=False, spin=s)
+        # Eigenvectors of spin-up and spin-dn electrons, kept in the dtype eigh
+        # returns (complex for a complex Hamiltonian)
+        evec = [self.eigh(eigvals_only=False, spin=s)[1] for s in range(self.spin_size)]
 
-        # No need to tell which matrix of eigenstates correspond to alpha or beta,
-        # the sisl function spin_squared already takes this into account
-        s2alpha, s2beta = sisl.electron.spin_squared(evec[0, :, :int(round(self.q[0]))].T, evec[-1, :, :int(round(self.q[-1]))].T)
+        # Overlap matrix at Gamma, where eigh normalizes the eigenvectors as c^dagger S c = 1
+        Sk = None if self.H.orthogonal else self.H.Sk(format='array')
+
+        # Sum over occupied states of |<psi^alpha_i|S|psi^beta_j>|^2; it is
+        # symmetric in alpha and beta, so the channel order does not matter
+        s2 = sisl.electron.spin_contamination(evec[0][:, :int(round(self.q[0]))].T,
+                                              evec[-1][:, :int(round(self.q[-1]))].T,
+                                              S=Sk, sum=True)
 
         # Spin contamination
-        S_MFH = S + Nbeta - s2beta.sum()
+        S_MFH = S + Nbeta - s2
 
         if ret_exact:
             return S_MFH, S

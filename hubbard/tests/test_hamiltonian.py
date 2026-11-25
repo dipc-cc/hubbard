@@ -1072,3 +1072,91 @@ def test_shift_leaves_caller_tbham_unchanged(s1):
     H.shift((0.7, -0.3))
     for i in range(h.shape[-1]):
         assert np.array_equal(h.tocsr(i).toarray(), before[i])
+
+
+# spin_contamination of finite, closed systems against closed-form values.
+# <S^2>_MFH = <S^2>_exact + N_beta - sum_ij |<psi^alpha_i|S|psi^beta_j>|^2 over
+# occupied states, with <S^2>_exact = (Na - Nb)/2 * ((Na - Nb)/2 + 1).
+
+def _spin_dimer(onsite_up=(0., 0.), onsite_dn=(0., 0.), t=-1., s=None, extra=None,
+                dtype=np.float64, q=(1, 1)):
+    # Two-site molecule with spin-dependent onsite energies and hopping t,
+    # optionally non-orthogonal with overlap s between the two sites, plus an
+    # optional isolated third site with onsite energies extra = (up, dn)
+    xyz = [[0, 0, 0], [1.42, 0, 0]] + ([[0, 0, 10.]] if extra is not None else [])
+    g = sisl.Geometry(xyz, atoms=sisl.Atom(6, R=1.5), lattice=[30, 30, 30])
+    g.set_nsc([1, 1, 1])
+    h = sisl.Hamiltonian(g, spin='polarized', orthogonal=s is None, dtype=dtype)
+    S = [] if s is None else [1.]
+    for i in range(2):
+        h[i, i] = [onsite_up[i], onsite_dn[i]] + S
+    S = [] if s is None else [s]
+    h[0, 1] = [t, t] + S
+    h[1, 0] = [np.conj(t), np.conj(t)] + S
+    if extra is not None:
+        h[2, 2] = list(extra) + ([] if s is None else [1.])
+    return hh.HubbardHamiltonian(h, U=0, q=q)
+
+
+def test_spin_contamination_dimer_closed_shell():
+    # Both spins occupy the same bonding orbital: no contamination
+    H = _spin_dimer()
+    S_MFH, S = H.spin_contamination(ret_exact=True)
+    assert S == pytest.approx(0.)
+    assert S_MFH == pytest.approx(0., abs=1e-12)
+    assert H.spin_contamination() == pytest.approx(S_MFH)
+
+
+@pytest.mark.parametrize('swap', [False, True])
+@pytest.mark.parametrize('delta', [0.5, 1., 3.])
+def test_spin_contamination_broken_symmetry_dimer(delta, swap):
+    # Onsite +-delta of opposite sign per spin and hopping t: the bonding
+    # orbitals overlap by |<a|b>|^2 = t^2 / (t^2 + delta^2), so
+    # <S^2>_MFH = delta^2 / (delta^2 + t^2) on an exact singlet. Swapping
+    # the spins leaves it unchanged.
+    up, dn = (delta, -delta), (-delta, delta)
+    if swap:
+        up, dn = dn, up
+    H = _spin_dimer(up, dn)
+    S_MFH, S = H.spin_contamination(ret_exact=True)
+    assert S == pytest.approx(0.)
+    assert S_MFH == pytest.approx(delta**2 / (delta**2 + 1.), abs=1e-12)
+
+
+@pytest.mark.parametrize('swap', [False, True])
+def test_spin_contamination_polarized_doublet(swap):
+    # Broken-symmetry dimer plus an isolated site that holds one extra spin-up
+    # electron: N_alpha = 2, N_beta = 1, <S^2>_exact = 3/4, and the isolated
+    # orbital is orthogonal to the beta one, so
+    # <S^2>_MFH = 3/4 + delta^2 / (delta^2 + t^2)
+    delta = 0.5
+    up, dn, extra, q = (delta, -delta), (-delta, delta), (-10., 10.), (2, 1)
+    if swap:
+        up, dn, extra, q = dn, up, extra[::-1], q[::-1]
+    H = _spin_dimer(up, dn, extra=extra, q=q)
+    S_MFH, S = H.spin_contamination(ret_exact=True)
+    assert S == pytest.approx(0.75)
+    assert S_MFH == pytest.approx(0.75 + delta**2 / (delta**2 + 1.), abs=1e-12)
+
+
+@pytest.mark.parametrize('q, expected', [((1, 1), 0.), ((2, 1), 0.75)])
+@pytest.mark.parametrize('s', [0.1, 0.3])
+def test_spin_contamination_nonorthogonal_dimer(s, q, expected):
+    # Non-orthogonal dimer with the same Hamiltonian for both spins. With one
+    # electron per spin both occupy the bonding orbital; with N_alpha = 2 the
+    # alpha states span the basis, and sum_i |<a_i|S|b>|^2 = <b|S|b> = 1. Both
+    # give <S^2>_MFH = <S^2>_exact only when the overlap enters the scalar products.
+    H = _spin_dimer(t=-1., s=s, q=q)
+    assert not H.H.orthogonal
+    S_MFH, S = H.spin_contamination(ret_exact=True)
+    assert S == pytest.approx(expected)
+    assert S_MFH == pytest.approx(expected, abs=1e-12)
+
+
+def test_spin_contamination_complex_eigenstates():
+    # A complex hopping t = -exp(i phi) makes the eigenvectors complex. Both
+    # spins share the bonding orbital, so <S^2>_MFH = 0
+    H = _spin_dimer(t=-np.exp(0.7j), dtype=np.complex128)
+    evec = H.eigh(eigvals_only=False)[1]
+    assert np.abs(evec.imag).max() > 0.1
+    assert H.spin_contamination() == pytest.approx(0., abs=1e-12)
