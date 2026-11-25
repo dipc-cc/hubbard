@@ -63,7 +63,7 @@ if not success:
     MFH_HC.n = n
 
 # First create NEGF object
-negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx, V=0.1)
+negf = NEGF(MFH_HC, [(MFH_elec, '-A'), (MFH_elec, '+A')], elec_indx)
 dn = MFH_HC.converge(negf.calc_n_open, steps=1, tol=1e-5, mixer=sisl.mixing.PulayMixer(0.6, history=7), func_args={'qtol': 1e-4}, print_info=True)
 
 print('Nup, Ndn: ', MFH_HC.n.sum(axis=1))

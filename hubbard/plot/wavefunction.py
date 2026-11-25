@@ -23,7 +23,7 @@ class Wavefunction(GeometryPlot):
     Notes
     -----
     If `realspace` kwarg is passed it plots the wavefunction in a realspace grid
-    In this case either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+    In this case either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     In other case the wavefunction is plotted as a scatter plot, where the size of the blobs depend on the value
     of the coefficient of `wf` on the atomic sites
     """
@@ -60,7 +60,7 @@ class Wavefunction(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
             if 'axis' not in kwargs:
                 kwargs['axis'] = 2

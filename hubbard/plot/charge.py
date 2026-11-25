@@ -27,7 +27,7 @@ class Charge(GeometryPlot):
         plot charge associated to one specific spin index, or both if ``spin=[0,1]``
     realspace: bool, optional
         if True it plots the total charge in a realspace grid. In other case it will be plotted as Mulliken populations
-        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        If True either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
 
     """
 
@@ -72,7 +72,7 @@ class Charge(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
             if 'axis' not in kwargs:
                 kwargs['axis'] = 2
@@ -104,7 +104,7 @@ class ChargeDifference(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the charge difference in a realspace grid. In other case it will be plotted as Mulliken populations
-        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        If True either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -149,7 +149,7 @@ class ChargeDifference(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
             if 'axis' not in kwargs:
                 kwargs['axis'] = 2
@@ -183,7 +183,7 @@ class SpinPolarization(GeometryPlot):
         otherwise it only uses the geometry associated to the `hubbard.HubbardHamiltonian` (carbon backbone)
     realspace: bool, optional
         if True it plots the spin polarization in a realspace grid. In other case it will be plotted as Mulliken populations
-        If True either a `sisl.SuperCell` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
+        If True either a `sisl.Lattice` (`sc` kwarg) or the `z` kwarg to slice the real space grid at the desired z coordinate needs to be passed
     """
 
     def __init__(self, HH, ext_geom=None, realspace=False, **kwargs):
@@ -224,7 +224,7 @@ class SpinPolarization(GeometryPlot):
                 else:
                     raise ValueError('Either a SC or the z coordinate to slice the real space grid needs to be passed')
 
-                kwargs['sc'] = sisl.SuperCell([xmax-xmin, ymax-ymin, 1000], origin=origin)
+                kwargs['sc'] = sisl.Lattice([xmax-xmin, ymax-ymin, 1000], origin=origin)
 
 
             if 'axis' not in kwargs:

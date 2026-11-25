@@ -57,7 +57,17 @@ def sp2(ext_geom, t1=2.7, t2=0.2, t3=0.18, eB=3., eN=-3.,
     -------
     H: sisl.physics.Hamiltonian
         tight-binding Hamiltonian for the sp2 structure
+
+    Raises
+    ------
+    ValueError
+        if ``s2`` or ``s3`` is nonzero while ``s1`` is zero, since second- and
+        third-neighbor overlap without first-neighbor overlap is not physical
     """
+    if s1 == 0 and (s2 != 0 or s3 != 0):
+        raise ValueError(f"sp2: second- and third-neighbor overlap (s2={s2}, s3={s3}) "
+                         "needs a nonzero first-neighbor overlap s1")
+
     if isinstance(spin,str):
         spin = sisl.physics.Spin(spin)
 
