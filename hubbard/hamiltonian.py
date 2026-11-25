@@ -628,44 +628,86 @@ class HubbardHamiltonian(object):
         """ Write spin polarization to SIESTA fdf-block
         This function only makes sense for spin-polarized calculations
 
+        Each line of the ``DM.InitSpin`` block holds a SIESTA atom index (counted from 1)
+        and the polarization ``n[0] - n[1]`` (in electrons) of the corresponding site.
+
         Parameters
         ----------
         fn: str
             name of the fdf-file
         ext_geom: sisl.Geometry, optional
-            an "external" geometry that contains the sp2-sites included in the simulation
+            an "external" geometry that contains the sp2-sites included in the simulation,
+            for instance the full geometry including hydrogen atoms.
+            Only the atoms of `ext_geom` that coincide with an atom of the Hamiltonian's geometry
+            are written, indexed as in `ext_geom` and given the polarization of the coinciding atom.
+            If omitted, every site is written with its index in the Hamiltonian's geometry
         spinfix: bool, optional
-            specifies if the Spin.Fix and Spin.Total lines are written to the fdf
+            specifies if the Spin.Fix and Spin.Total lines are written to the fdf.
+            Spin.Total is the sum of the polarizations written in the block
         mode: str, optional
             mode in which the file is opened
         eps: float, optional
-            atoms within this distance will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)
+            atoms within this distance (in Ang) will be considered equivalent in case ``ext_geom != geometry`` (see `sisl.Geometry.overlap`)
+
+        Raises
+        ------
+        ValueError
+            if `ext_geom` is neither None nor a `sisl.Geometry`, if no atom of `ext_geom`
+            coincides with an atom of the Hamiltonian's geometry, or if an atom of either
+            geometry lies within `eps` of more than one atom of the other, or if an atom of the
+            Hamiltonian's geometry has more than one orbital (the polarization is written per atom)
+
+        Warns
+        -----
+        UserWarning
+            if some atoms of the Hamiltonian's geometry have no coinciding atom in `ext_geom`
+            (only the primary unit cell of `ext_geom` is searched); their polarization is not written
         """
+        if np.any(self.geometry.orbitals > 1):
+            # n is indexed by orbital, the DM.InitSpin block by atom
+            raise ValueError(self.__class__.__name__ + '.write_initspin(...) writes the polarization per atom '
+                             'and requires one orbital per atom')
         if not os.path.isfile(fn):
             mode = 'w'
         if ext_geom is None:
             idx = np.arange(len(self.H))
+            idx_internal = idx
             geom = self.geometry
         elif isinstance(ext_geom, sisl.Geometry):
-            idx, idx_internal = ext_geom.overlap(self.geometry, eps=eps)
+            # idx[i] (in ext_geom) and idx_internal[i] (in self.geometry) are the same atom
+            idx, idx_internal = ext_geom.overlap(self.geometry, atol=eps)
             geom = ext_geom
+            name = self.__class__.__name__ + '.write_initspin(...)'
+            if len(idx) == 0:
+                raise ValueError(f'{name} found no atom of ext_geom within eps={eps} of an atom of the Hamiltonian geometry')
+            # each atom may be paired once, or a SIESTA index or a polarization would be written twice
+            ext_atoms, ext_count = np.unique(idx, return_counts=True)
+            int_atoms, int_count = np.unique(idx_internal, return_counts=True)
+            if np.any(ext_count > 1) or np.any(int_count > 1):
+                raise ValueError(f'{name} pairs atoms ambiguously, an atom lies within eps={eps} of more than one atom '
+                                 f'of the other geometry: ext_geom atoms {ext_atoms[ext_count > 1].tolist()}, '
+                                 f'Hamiltonian geometry atoms {int_atoms[int_count > 1].tolist()}')
+            missing = np.setdiff1d(np.arange(self.geometry.na), int_atoms)
+            if missing.size > 0:
+                warnings.warn(f'{name}: {missing.size} atoms of the Hamiltonian geometry have no match in ext_geom '
+                              f'and are not written (first indices: {missing[:5].tolist()})', UserWarning)
         else:
             raise ValueError(self.__class__.__name__ + '.write_initspin(...) requires a sisl.Geometry instance for keyword ext_geom')
-        polarization = self.n[0] - self.n[1]
+        polarization = (self.n[0] - self.n[1])[idx_internal]
         dq = np.sum(polarization)
-        f = open(fn, mode=mode)
-        if spinfix:
-            f.write('Spin.Fix True\n')
-            f.write('Spin.Total %.6f\n' % dq)
-        f.write('%block DM.InitSpin\n')
-        for i, ia in enumerate(idx):
-            s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
-            # add documentation string
-            s += ' # %2s' % geom.atoms[ia].symbol
-            for j in range(3):
-                s += ' %9.4f' % geom.xyz[ia, j]
-            f.write(s + '\n')
-        f.write('%endblock DM.InitSpin\n\n')
+        with open(fn, mode=mode) as f:
+            if spinfix:
+                f.write('Spin.Fix True\n')
+                f.write('Spin.Total %.6f\n' % dq)
+            f.write('%block DM.InitSpin\n')
+            for i, ia in enumerate(idx):
+                s = '%6i %10.6f' % (ia + 1, polarization[i]) # SIESTA counts from 1
+                # add documentation string
+                s += ' # %2s' % geom.atoms[ia].symbol
+                for j in range(3):
+                    s += ' %9.4f' % geom.xyz[ia, j]
+                f.write(s + '\n')
+            f.write('%endblock DM.InitSpin\n\n')
 
     def iterate(self, calc_n_method, q=None, mixer=None, **kwargs):
         r""" Common method to iterate in a SCF loop that corresponds to the mean-field Hubbard approximation
