@@ -3,10 +3,16 @@ from numpy import einsum, conj
 import sisl
 import os
 import math
-from scipy.interpolate import interp1d
 from scipy.linalg import inv
 
 _pi = math.pi
+# Largest step of the device Fermi level before the charge root is bracketed (eV)
+# and the number of such steps calc_n_open takes before giving up.
+# The step is below the band width of the models hubbard builds (sp2: t = 2.7 eV),
+# so it cannot jump across a whole spectrum; 50 such steps reach any band
+# from a start up to 50 eV away.
+_EF_STEP_MAX = 1.
+_EF_BRACKET_PASSES = 50
 
 __all__ = ['NEGF']
 
@@ -256,6 +262,15 @@ class NEGF:
             spin densities
         Etot: float
             total energy
+
+        Raises
+        ------
+        RuntimeError
+            if no device Fermi level brackets the charge `q` within 50 steps of at
+            most 1 eV each from the starting `self.Ef`, for instance when it starts
+            far outside the bands; or if the bracket around the Fermi level shrinks
+            to floating-point resolution before the charge is within `qtol`, for
+            instance when `qtol` is below the precision of the contour integration
         """
         # ensure scalar, for open systems one cannot impose a spin-charge
         # This spin-charge would be dependent on the system size
@@ -270,32 +285,68 @@ class NEGF:
         ntot = -1.
         Ef = self.Ef
 
-        conv_q = []
+        # The device charge grows with Ef, so the root of dq(Ef) = ni.sum() - q
+        # is searched in two stages:
+        # 1. until a bracket exists, a Lorentzian step from the DOS at Ef. A step
+        #    that did not at least halve |dq| did worse than a bisection would,
+        #    so the next one is expanded to the zero of the line through the last
+        #    two points (twice that if |dq| hardly changed), and at least doubled,
+        #    until the root gets bracketed.
+        #    Steps are capped at _EF_STEP_MAX, so that Ef cannot run away where
+        #    N(Ef) no longer changes (outside the bands), and after
+        #    _EF_BRACKET_PASSES steps without a bracket the search fails;
+        # 2. once Ef with dq < 0 (lo) and dq > 0 (hi) are known, the Illinois
+        #    variant of regula falsi inside [lo, hi], keeping only the latest
+        #    point on each side. Plain regula falsi stalls when one end of the
+        #    bracket never moves (as it does when Ef must cross a gap); Illinois
+        #    halves the dq of an end retained twice in a row, which restores
+        #    superlinear convergence. A step outside the bracket, a non-finite
+        #    one, or a fourth update in a row on the same side bisects instead,
+        #    so the bracket always shrinks, until no float lies inside it and the
+        #    search fails.
+        lo = hi = None # [Ef, dq] of the bracket ends
+        side = 0 # side of the last update: -1 (lo) or 1 (hi)
+        nside = 0 # number of consecutive updates on that side
+        step = 0. # the last step taken without a bracket
+        dq_step = 0. # dq before that step
+        nopen = 0 # number of steps taken without a bracket
+        first = True # the first pass only computes the charge at the starting Ef
+        dq_min = math.inf # smallest |dq| reached
         while abs(ntot - q) > qtol:
             # for debug purposes
             #print(ntot, q, qtol, Ef)
 
-            if ntot > 0.:
+            if not first:
                 # correct fermi-level
                 dq = ni.sum() - q
+                dq_min = min(dq_min, abs(dq))
 
-                conv_q.append([dq, Ef])
-                if len(conv_q) > 1:
-                    # do a bisection of the fermi level
-                    f = np.array(conv_q)
-                    try:
-                        Ef = interp1d(f[:, 0], f[:, 1],
-                                          fill_value="extrapolate")(0.)
-                    except:
-                        Ef = conv_q[-1][1]
-                    if np.isnan(Ef):
-                        Ef = conv_q[-1][1]
+                s = -1 if dq < 0 else 1
+                nside = nside + 1 if s == side else 1
+                side = s
+                if s < 0:
+                    lo = [Ef, dq]
+                else:
+                    hi = [Ef, dq]
 
-                    # check that the fermi-level is not one we already have
-                    if np.any(np.fabs(Ef - f[:, 1]) < 1e-15):
-                        conv_q = [conv_q[-1]]
+                if lo is not None and hi is not None:
+                    if nside > 1:
+                        # Illinois: halve dq of the end that was retained again
+                        if s < 0:
+                            hi[1] *= 0.5
+                        else:
+                            lo[1] *= 0.5
+                    Ef = lo[0] - lo[1] * (hi[0] - lo[0]) / (hi[1] - lo[1])
+                    a, b = min(lo[0], hi[0]), max(lo[0], hi[0])
+                    if nside > 3 or not np.isfinite(Ef) or not a < Ef < b:
+                        Ef = 0.5 * (a + b)
+                    if not a < Ef < b:
+                        # No float lies strictly inside the bracket: it cannot shrink
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open cannot shrink the bracket "
+                                           f"[{a}, {b}] of the Fermi level any further: |dq| = {dq_min} "
+                                           f"reached, qtol = {qtol}")
 
-                if len(conv_q) == 1:
+                else:
 
                     # Fermi-level is at 0.
                     # The Lorentzian has ~70% of its integral within
@@ -304,14 +355,19 @@ class NEGF:
                     # and expect the Lorentzian peak to be positioned at
                     # the current Fermi-level we will use eta = 100 meV
                     # Calculate charge at the Fermi-level
+                    # The density of states at Ef, broadened by eta, summed over the
+                    # spin channels in ni and over k with the weights wk.
+                    # For an unpolarized H, ni and q both hold one spin channel, so
+                    # dq and this sum are both per spin and their ratio needs no
+                    # degeneracy factor.
                     f = 0.
+                    cc = Ef + 1j * self.eta
                     for spin in range(H.spin_size):
-                        for ik, k in enumerate(H.mp.k):
+                        for ik, [wk, k] in enumerate(zip(H.mp.weight, H.mp.k)):
                             if H.spin_size == 2:
                                 HC = H.H.Hk(spin=spin, k=k, format='array')
                             else:
                                 HC = H.H.Hk(k=k, format='array')
-                            cc = Ef + 1j * self.eta
 
                             GF = _G(cc, HC, self.elec_idx, ef_SE[spin][ik])
 
@@ -324,13 +380,38 @@ class NEGF:
                             # and consider this a pre-factor
                             f -= np.trace(GF).imag * wk / _pi # Integrate over k-space with weight wk
 
-                        # calculate fractional change
-                        f = dq / f
-                        # Since x above is in units of eta, we have to multiply with eta
-                        if abs(f) < 0.45:
-                            Ef -= self.eta * math.tan(f * _pi) * 0.5
-                        else:
-                            Ef -= self.eta * math.tan((_pi / 2 - math.atan(1 / (f * _pi)))) * 0.5
+                    # calculate fractional change, and move Ef once for all spins
+                    f = dq / f
+                    # Since x above is in units of eta, we have to multiply with eta
+                    if abs(f) < 0.45:
+                        dEf = - self.eta * math.tan(f * _pi) * 0.5
+                    else:
+                        # eta * tan(pi/2 - atan(1 / (f * pi))) / 2, written so that
+                        # the sign is kept and an infinite f stays infinite
+                        dEf = - self.eta * _pi * f * 0.5
+                    if not np.isfinite(dEf):
+                        dEf = - s * self.eta
+                    # Without a bracket every step goes the same way, -sign(dq)
+                    r = abs(dq / dq_step) if step != 0. else 0.
+                    if r > 0.5:
+                        # The last step did not halve |dq|. Expand it to where the line
+                        # through the last two points meets dq = 0, and at least double it.
+                        # If |dq| changed by less than 10%, that line is the local slope,
+                        # which undershoots on the exponential tail of a band edge (about
+                        # kT per step), so aim twice as far to bracket the root.
+                        m = r / (1 - r) if r < 1 else math.inf
+                        if r > 0.9:
+                            m *= 2
+                        dEf = math.copysign(max(abs(dEf), max(2., m) * abs(step)), step)
+                    dEf = math.copysign(min(abs(dEf), _EF_STEP_MAX), dEf)
+                    nopen += 1
+                    if nopen > _EF_BRACKET_PASSES:
+                        raise RuntimeError(f"{self.__class__.__name__}.calc_n_open found no Fermi level "
+                                           f"that brackets the charge q={q} within {_EF_BRACKET_PASSES} "
+                                           f"steps of at most {_EF_STEP_MAX} eV (Ef={Ef}, dq={dq})")
+                    step = dEf
+                    dq_step = dq
+                    Ef += dEf
 
             Etot = 0.
             for spin in range(H.spin_size):
@@ -385,6 +466,7 @@ class NEGF:
 
             # Calculate new charge
             ntot = ni.sum()
+            first = False
 
         # Save Fermi-level of the device
         self.Ef = Ef
