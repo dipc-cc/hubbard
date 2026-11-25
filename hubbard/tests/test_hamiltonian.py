@@ -950,3 +950,29 @@ def test_write_initspin_ext_geom_ambiguous(tmp_path, case):
     with pytest.raises(ValueError, match='more than one atom'):
         H.write_initspin(fn, ext_geom=ext, eps=eps)
     assert not fn.exists()
+
+
+@pytest.mark.parametrize('ext', [False, True])
+def test_write_initspin_rejects_several_orbitals_per_atom(tmp_path, ext):
+    # two atoms with two orbitals each: n is indexed by orbital, DM.InitSpin by atom
+    atom = sisl.Atom(6, orbitals=[sisl.Orbital(1.6), sisl.Orbital(1.6)])
+    geom = sisl.Geometry([[0., 0., 0.], [1.42, 0., 0.]], atoms=atom, lattice=sisl.Lattice([10., 10., 10.]))
+    TB = sisl.Hamiltonian(geom, spin='polarized')
+    for io in range(geom.no):
+        TB[io, io] = 0.
+    for io in range(2):
+        TB[io, io + 2] = TB[io + 2, io] = -2.7
+    H = hh.HubbardHamiltonian(TB, U=3.)
+    H.n = np.array([[0.6, 0.7, 0.8, 0.9], [0.4, 0.3, 0.2, 0.1]])
+    ext_geom = geom if ext else None
+
+    fn = tmp_path / 'new.fdf'
+    with pytest.raises(ValueError, match='one orbital per atom'):
+        H.write_initspin(fn, ext_geom=ext_geom)
+    assert not fn.exists()
+
+    fn = tmp_path / 'existing.fdf'
+    fn.write_text('SystemLabel test\n')
+    with pytest.raises(ValueError, match='one orbital per atom'):
+        H.write_initspin(fn, ext_geom=ext_geom, mode='a')
+    assert fn.read_text() == 'SystemLabel test\n'

@@ -654,7 +654,8 @@ class HubbardHamiltonian(object):
         ValueError
             if `ext_geom` is neither None nor a `sisl.Geometry`, if no atom of `ext_geom`
             coincides with an atom of the Hamiltonian's geometry, or if an atom of either
-            geometry lies within `eps` of more than one atom of the other
+            geometry lies within `eps` of more than one atom of the other, or if an atom of the
+            Hamiltonian's geometry has more than one orbital (the polarization is written per atom)
 
         Warns
         -----
@@ -662,6 +663,10 @@ class HubbardHamiltonian(object):
             if some atoms of the Hamiltonian's geometry have no coinciding atom in `ext_geom`
             (only the primary unit cell of `ext_geom` is searched); their polarization is not written
         """
+        if np.any(self.geometry.orbitals > 1):
+            # n is indexed by orbital, the DM.InitSpin block by atom
+            raise ValueError(self.__class__.__name__ + '.write_initspin(...) writes the polarization per atom '
+                             'and requires one orbital per atom')
         if not os.path.isfile(fn):
             mode = 'w'
         if ext_geom is None:
