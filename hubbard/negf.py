@@ -520,6 +520,31 @@ class NEGF:
 
         return Delta, weight
 
+    def _check_dos_input(self, H, method):
+        """ Refuse an input for which `DOS` and `PDOS` would return a wrong spectrum """
+        name = f"{self.__class__.__name__}.{method}"
+        spin_size = len(self._ef_SE)
+        if H.spin_size != spin_size:
+            raise ValueError(f"{name}: H has spin_size={H.spin_size}, "
+                             f"but the electrode self-energies were set up for spin_size={spin_size}")
+        for i, se in enumerate(self.elec_SE):
+            # The Hamiltonian a semi-infinite (spgeom0) or real-space (parent) electrode
+            # is built from; read from the instance, not through SelfEnergy.__getattr__.
+            # A WideBandSE couples every spin channel alike and is not checked
+            spin = None
+            for attr in ('spgeom0', 'parent'):
+                spin = getattr(getattr(se, '__dict__', {}).get(attr), 'spin', None)
+                if spin is not None:
+                    break
+            if spin is not None and spin.spinor != spin_size:
+                raise ValueError(f"{name}: electrode {i} has spin_size={spin.spinor}, "
+                                 f"but the device has spin_size={spin_size}")
+        if len(H.mp.k) > 1 or np.any(H.mp.k[0] != 0):
+            raise NotImplementedError(f"{name}: H has a k-mesh of {len(H.mp.k)} point(s) other than Gamma "
+                                      "alone, but only the Gamma point is evaluated; k-sampling is #141")
+        if not H.H.orthogonal:
+            raise NotImplementedError(f"{name}: a non-orthogonal H is not supported")
+
     def DOS(self, H, E, spin=[0, 1], eta=0.01):
         r"""
         Obtains the density of states (DOS) from the Green's function of the device
@@ -535,25 +560,42 @@ class NEGF:
         E: array_like
             energy grid to obtan the DOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the DOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the DOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.DOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
         Returns
         -------
         DOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for, or
+            if a recursive or real-space electrode was built from a Hamiltonian of another spin
+            size than the device's
+        NotImplementedError
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
+            non-orthogonal
         """
+        self._check_dos_input(H, 'DOS')
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
 
         dos = np.zeros([len(E)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
 
                 # Append all the self-energies for the electrodes at each energy point
-                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
 
                 dos[i] -= np.trace(GF).imag
@@ -577,23 +619,40 @@ class NEGF:
         E: array_like
             energy grid to obtan the PDOS
         spin: int, array_like, optional
-            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices
+            spin index. If ``spin=[0,1]`` (default) it sums the PDOS corresponding to both spin indices.
+            For an unpolarized Hamiltonian ``spin=0`` and ``spin=1`` both give the PDOS of its
+            single spin channel, so the default is twice that of ``spin=0``, as in
+            `hubbard.HubbardHamiltonian.PDOS`
         eta: float, optional
             smearing parameter (complex term in the Green's function)
 
         Returns
         -------
         PDOS : numpy.ndarray
+
+        Raises
+        ------
+        ValueError
+            if ``H.spin_size`` differs from that of the device this object was built for, or
+            if a recursive or real-space electrode was built from a Hamiltonian of another spin
+            size than the device's
+        NotImplementedError
+            if `H` has a k-mesh other than Γ alone (only the Gamma point is evaluated), or if `H` is
+            non-orthogonal
         """
+        self._check_dos_input(H, 'PDOS')
         # Ensure spin instance is iterable
         if not isinstance(spin, (list, tuple, np.ndarray)):
             spin = [spin]
 
         ldos = np.zeros([len(E), len(H.H)])
         for ispin in spin:
-            HC = H.H.Hk(spin=ispin, format='array')
+            # An unpolarized Hamiltonian has a single spin channel, which
+            # Hk and the self-energies take without a spin keyword
+            kw = {'spin': ispin} if H.spin_size > 1 else {}
+            HC = H.H.Hk(format='array', **kw)
             for i, e in enumerate(E):
-                SE = [_self_energy(se, e, spin=ispin) for se in self.elec_SE]
+                SE = [_self_energy(se, e, **kw) for se in self.elec_SE]
                 GF = _G(e + 1j * eta, HC, self.elec_idx, SE)
                 ldos[i] -= GF.diagonal().imag
 
